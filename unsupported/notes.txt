@@ -1,0 +1,120 @@
+Deploying via CLI:
+
+
+1NIC:
+
+############## FULL STACK
+
+aws cloudformation create-stack 
+--region us-west-2 
+--template-body file://full-stack-vpc-w-byol-1nic-bigip.template 
+--stack-name full-stack-bigip-1nic
+--parameters  
+ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
+ParameterKey=AvailabilityZone1,ParameterValue=us-west-2a
+ParameterKey=BigIPInstanceType,ParameterValue=m3.xlarge
+ParameterKey=BigIPPerformanceType,ParameterValue=Good
+ParameterKey=WebserverInstanceType,ParameterValue=t1.micro
+ParameterKey=BigIPAdminUsername,ParameterValue=admin
+ParameterKey=BigIPAdminPassword,ParameterValue='YOURPASSWORD'
+ParameterKey=BigIPManagementGuiPort,ParameterValue=443
+ParameterKey=LicenseKey,ParameterValue=LUFJD-YREAG-VQHVI-EYOQH-JBBKXAI
+
+aws cloudformation create-stack  --region us-west-2  --template-body file://full-stack-vpc-w-byol-1nic-bigip.template  --stack-name full-stack-bigip-1nic --parameters   ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY ParameterKey=AvailabilityZone1,ParameterValue=us-west-2a ParameterKey=BigIPInstanceType,ParameterValue=m3.xlarge ParameterKey=BigIPPerformanceType,ParameterValue=Good ParameterKey=WebserverInstanceType,ParameterValue=t1.micro ParameterKey=BigIPAdminUsername,ParameterValue=admin ParameterKey=BigIPAdminPassword,ParameterValue='YOURPASSWORD' ParameterKey=BigIPManagementGuiPort,ParameterValue=443 ParameterKey=LicenseKey,ParameterValue=LUFJD-YREAG-VQHVI-EYOQH-JBBKXAI
+
+
+################# EXISTING STACK:
+
+aws cloudformation create-stack 
+--region us-west-2 
+--template-body file://existing-stack-byol-1nic-bigip.template
+--stack-name existing-stack-bigip-1nic
+--parameters  
+ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
+ParameterKey=BigIPInstanceType,ParameterValue=m3.xlarge
+ParameterKey=BigIPPerformanceType,ParameterValue=Good
+ParameterKey=BigIPAdminUsername,ParameterValue=admin
+ParameterKey=BigIPAdminPassword,ParameterValue='YOURPASSWORD'
+ParameterKey=BigIPManagementGuiPort,ParameterValue=443
+ParameterKey=VPC,ParameterValue=vpc-61a94705
+ParameterKey=ExternalSubnetId,ParameterValue=subnet-aec1d4d9
+ParameterKey=BigIPExternalSecurityGroupId,ParameterValue=sg-d90eb9be
+ParameterKey=Webserver,ParameterValue="10.0.3.8"
+ParameterKey=LicenseKey,ParameterValue=NEHQF-CDKUY-RJTJB-XSPTZ-XVKSQJS
+
+
+aws cloudformation create-stack  --region us-west-2  --template-body file://existing-stack-byol-1nic-bigip.template --stack-name existing-stack-bigip-1nic --parameters   ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY ParameterKey=BigIPInstanceType,ParameterValue=m3.xlarge ParameterKey=BigIPPerformanceType,ParameterValue=Good ParameterKey=BigIPAdminUsername,ParameterValue=admin ParameterKey=BigIPAdminPassword,ParameterValue='YOURPASSWORD' ParameterKey=BigIPManagementGuiPort,ParameterValue=443 ParameterKey=VPC,ParameterValue=vpc-61a94705 ParameterKey=ExternalSubnetId,ParameterValue=subnet-aec1d4d9 ParameterKey=BigIPExternalSecurityGroupId,ParameterValue=sg-d90eb9be ParameterKey=Webserver,ParameterValue="10.0.3.8" ParameterKey=LicenseKey,ParameterValue=NEHQF-CDKUY-RJTJB-XSPTZ-XVKSQJS 
+
+
+
+2NIC:
+
+############## FULL STACK
+
+aws cloudformation create-stack 
+--region us-west-2 
+--template-body file://full-stack-vpc-w-byol-2nic-bigip.template 
+--stack-name full-stack-bigip-2nic
+--parameters  
+ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
+ParameterKey=AvailabilityZone1,ParameterValue=us-west-2a
+ParameterKey=BigIPInstanceType,ParameterValue=m3.xlarge
+ParameterKey=BigIPPerformanceType,ParameterValue=Good
+ParameterKey=WebserverInstanceType,ParameterValue=t1.micro
+ParameterKey=BigIPAdminUsername,ParameterValue=admin
+ParameterKey=BigIPAdminPassword,ParameterValue='YOURPASSWORD'
+ParameterKey=LicenseKey,ParameterValue=HOXXC-QTDPU-KARFZ-GCNAN-EKVPEDU
+
+aws cloudformation create-stack --region us-west-2 --template-body file://full-stack-vpc-w-byol-2nic-bigip.template --stack-name full-stack-bigip-2nic --parameters ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY ParameterKey=AvailabilityZone1,ParameterValue=us-west-2a ParameterKey=BigIPInstanceType,ParameterValue=m3.xlarge ParameterKey=BigIPPerformanceType,ParameterValue=Good ParameterKey=WebserverInstanceType,ParameterValue=t1.micro ParameterKey=BigIPAdminUsername,ParameterValue=admin ParameterKey=BigIPAdminPassword,ParameterValue='YOURPASSWORD' ParameterKey=LicenseKey,ParameterValue=HOXXC-QTDPU-KARFZ-GCNAN-EKVPEDU
+
+
+################# EXISTING STACK:
+
+aws cloudformation create-stack 
+--region us-west-2 
+--template-body file://existing-stack-byol-2nic-bigip.template
+--stack-name existing-stack-bigip-2nic
+--parameters  
+ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
+ParameterKey=BigIPInstanceType,ParameterValue=m3.xlarge
+ParameterKey=BigIPPerformanceType,ParameterValue=Good
+ParameterKey=BigIPAdminUsername,ParameterValue=admin
+ParameterKey=BigIPAdminPassword,ParameterValue='YOURPASSWORD'
+ParameterKey=VPC,ParameterValue=vpc-8a05ebee
+ParameterKey=ExternalSubnetId,ParameterValue=subnet-436d7934
+ParameterKey=ManagementSubnetId,ParameterValue=subnet-406d7937
+ParameterKey=BigIPExternalSecurityGroupId,ParameterValue=sg-bd8c3dda
+ParameterKey=BigIPManagementSecurityGroupId,ParameterValue=sg-bc8c3ddb
+ParameterKey=Webserver,ParameterValue="10.0.3.39"
+ParameterKey=LicenseKey,ParameterValue=CCSVQ-ZXHDA-JBJYU-ZKXZI-LLUHUMX
+
+aws cloudformation create-stack  --region us-west-2  --template-body file://existing-stack-byol-2nic-bigip.template --stack-name existing-stack-bigip-2nic --parameters   ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY ParameterKey=BigIPInstanceType,ParameterValue=m3.xlarge ParameterKey=BigIPPerformanceType,ParameterValue=Good ParameterKey=BigIPAdminUsername,ParameterValue=admin ParameterKey=BigIPAdminPassword,ParameterValue='YOURPASSWORD' ParameterKey=VPC,ParameterValue=vpc-8a05ebee ParameterKey=ExternalSubnetId,ParameterValue=subnet-436d7934 ParameterKey=ManagementSubnetId,ParameterValue=subnet-406d7937 ParameterKey=BigIPExternalSecurityGroupId,ParameterValue=sg-bd8c3dda ParameterKey=BigIPManagementSecurityGroupId,ParameterValue=sg-bc8c3ddb ParameterKey=Webserver,ParameterValue="10.0.3.39" ParameterKey=LicenseKey,ParameterValue=CCSVQ-ZXHDA-JBJYU-ZKXZI-LLUHUMX
+
+###########################
+
+
+BIG-IQ:
+
+aws cloudformation create-stack 
+--region us-west-2 
+--template-body file://existing-stack-bigiq-license-pool-1nic-bigip.template
+--stack-name existing-stack-bigip-1nic-bigiq-license-pool
+--parameters  
+ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
+ParameterKey=BigIPInstanceType,ParameterValue=m3.xlarge
+ParameterKey=BigIPPerformanceType,ParameterValue=Good
+ParameterKey=BigIPAdminUsername,ParameterValue=admin
+ParameterKey=BigIPAdminPassword,ParameterValue='YOURPASSWORD'
+ParameterKey=BigIPManagementGuiPort,ParameterValue=443
+ParameterKey=VPC,ParameterValue=vpc-efb75d8b
+ParameterKey=ExternalSubnetId,ParameterValue=subnet-76faeb01
+ParameterKey=BigIPExternalSecurityGroupId,ParameterValue=sg-0556e862
+ParameterKey=Webserver,ParameterValue="10.0.3.195"
+ParameterKey=BigIQUsername,ParameterValue=admin
+ParameterKey=BigIQPassword,ParameterValue="YOURPASSWORD"
+ParameterKey=BigIQAddress,ParameterValue=52.89.223.123
+ParameterKey=BigIQLicensePoolUUID,ParameterValue=92ff652f-3569-40ce-80db-6f0fce4b900a
+
+
+aws cloudformation create-stack  --region us-west-2  --template-body file://existing-stack-bigiq-license-pool-1nic-bigip.template --stack-name existing-stack-bigip-1nic-bigiq-license-pool --parameters   ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY ParameterKey=BigIPInstanceType,ParameterValue=m3.xlarge ParameterKey=BigIPPerformanceType,ParameterValue=Good ParameterKey=BigIPAdminUsername,ParameterValue=admin ParameterKey=BigIPAdminPassword,ParameterValue='YOURPASSWORD' ParameterKey=BigIPManagementGuiPort,ParameterValue=443 ParameterKey=VPC,ParameterValue=vpc-efb75d8b ParameterKey=ExternalSubnetId,ParameterValue=subnet-76faeb01 ParameterKey=BigIPExternalSecurityGroupId,ParameterValue=sg-0556e862 ParameterKey=Webserver,ParameterValue="10.0.3.195" ParameterKey=BigIQUsername,ParameterValue=admin ParameterKey=BigIQPassword,ParameterValue="YOURPASSWORD" ParameterKey=BigIQAddress,ParameterValue=52.89.223.123 ParameterKey=BigIQLicensePoolUUID,ParameterValue=92ff652f-3569-40ce-80db-6f0fce4b900a
+

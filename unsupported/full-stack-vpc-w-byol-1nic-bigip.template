@@ -25,7 +25,7 @@
                 "AMI": "ami-71520941"
             }
         },
-        "BigIPRegionMap": {
+        "BigipRegionMap": {
             "ap-northeast-1": {
                 "Best": "ami-bcf69bbc",
                 "Better": "ami-d6f69bd6",
@@ -73,54 +73,72 @@
             "Description": "Availability Zone",
             "Value": {
                 "Fn::GetAtt": [
-                    "BigIPInstance",
+                    "BigipInstance",
                     "AvailabilityZone"
                 ]
             }
         },
-        "Az1ApplicationSubnetId": {
+        "Az1ApplicationSubnet": {
             "Description": "Az1 Application Subnet Id",
             "Value": {
                 "Ref": "Az1ApplicationSubnet"
             }
         },
-        "Az1ExternalSubnetId": {
+        "Az1ExternalSubnet": {
             "Description": "Az1 Public or External Subnet Id",
             "Value": {
                 "Ref": "Az1ExternalSubnet"
             }
         },
-        "Az1InternalSubnetId": {
+        "Az1InternalSubnet": {
             "Description": "Az1 Private or Internal Subnet Id",
             "Value": {
                 "Ref": "Az1InternalSubnet"
             }
         },
-        "Az1ManagementSubnetId": {
+        "Az1ManagementSubnet": {
             "Description": "Az1 Management Subnet Id",
             "Value": {
                 "Ref": "Az1ManagementSubnet"
             }
         },
-        "BigIPExternalSecurityGroupId": {
+        "Az2ApplicationSubnet": {
+            "Description": "Az2 Application Subnet Id",
+            "Value": {
+                "Ref": "Az1ApplicationSubnet"
+            }
+        },
+        "Az2ExternalSubnet": {
+            "Description": "Az2 Public or External Subnet Id",
+            "Value": {
+                "Ref": "Az2ExternalSubnet"
+            }
+        },
+        "Az2InternalSubnet": {
+            "Description": "Az2 Private or Internal Subnet Id",
+            "Value": {
+                "Ref": "Az2InternalSubnet"
+            }
+        },
+        "Az2ManagementSubnet": {
+            "Description": "Az2 Management Subnet Id",
+            "Value": {
+                "Ref": "Az2ManagementSubnet"
+            }
+        },
+        "BigipExternalSecurityGroup": {
             "Description": "Public or External Security Group",
             "Value": {
-                "Ref": "BigIPExternalSecurityGroup"
+                "Ref": "BigipExternalSecurityGroup"
             }
         },
-        "BigIPInstanceId": {
+        "BigipInstanceId": {
             "Description": "Instance Id of Big-IP in Amazon",
             "Value": {
-                "Ref": "BigIPInstance"
+                "Ref": "BigipInstance"
             }
         },
-        "BigIPManagementSecurityGroupId": {
-            "Description": "Management Security Group",
-            "Value": {
-                "Ref": "BigIPManagementSecurityGroup"
-            }
-        },
-        "BigIPUrl": {
+        "BigipUrl": {
             "Description": "Big-IP Management GUI",
             "Value": {
                 "Fn::Join": [
@@ -129,15 +147,19 @@
                         "https://",
                         {
                             "Fn::GetAtt": [
-                                "BigIPInstance",
+                                "BigipInstance",
                                 "PublicIp"
                             ]
+                        },
+                        ":",
+                        {
+                            "Ref": "BigipManagementGuiPort"
                         }
                     ]
                 ]
             }
         },
-        "ExternalInterfaceId": {
+        "ExternalInterface": {
             "Description": "External interface Id on BIG-Ip",
             "Value": {
                 "Ref": "ExternalInterface"
@@ -158,60 +180,10 @@
                 "Ref": "ExternalSelfEipAddress"
             }
         },
-        "ManagementEipAddress": {
-            "Description": "Ip address of management port on BIG-Ip",
-            "Value": {
-                "Ref": "ManagementEipAddress"
-            }
-        },
-        "ManagementInterfaceId": {
-            "Description": "Management interface Id on BIG-Ip",
-            "Value": {
-                "Ref": "ManagementInterface"
-            }
-        },
-        "ManagementInterfacePrivateIp": {
-            "Description": "Internally routable Ip of management interface on BIG-Ip",
-            "Value": {
-                "Fn::GetAtt": [
-                    "ManagementInterface",
-                    "PrimaryPrivateIpAddress"
-                ]
-            }
-        },
-        "VipEipAddress": {
-            "Description": "EIP address for VIP",
-            "Value": {
-                "Fn::Join": [
-                    "",
-                    [
-                        "http://",
-                        {
-                            "Ref": "VipEipAddress"
-                        },
-                        ":80"
-                    ]
-                ]
-            }
-        },
-        "ViprivateIp": {
-            "Description": "VIP on External Interface Secondary IP 1",
-            "Value": {
-                "Fn::Select": [
-                    "0",
-                    {
-                        "Fn::GetAtt": [
-                            "ExternalInterface",
-                            "SecondaryPrivateIpAddresses"
-                        ]
-                    }
-                ]
-            }
-        },
-        "VpcID": {
+        "Vpc": {
             "Description": "VPC ID",
             "Value": {
-                "Ref": "VPC"
+                "Ref": "Vpc"
             }
         },
         "WebserverPrivateIp": {
@@ -255,7 +227,11 @@
             "Description": "Name of an Availability Zone in this Region",
             "Type": "AWS::EC2::AvailabilityZone::Name"
         },
-        "BigIPAdminPassword": {
+        "AvailabilityZone2": {
+            "Description": "Name of an Availability Zone in this Region",
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        "BigipAdminPassword": {
             "ConstraintDescription": "Please verify your BIG-IP Admin Password",
             "Description": "Please enter your BIG-IP Admin Password",
             "MaxLength": "255",
@@ -263,7 +239,7 @@
             "NoEcho": true,
             "Type": "String"
         },
-        "BigIPAdminUsername": {
+        "BigipAdminUsername": {
             "ConstraintDescription": "Please verify your BIG-IP Admin Username",
             "Default": "admin",
             "Description": "Please enter your BIG-IP Admin Username",
@@ -271,7 +247,7 @@
             "MinLength": "1",
             "Type": "String"
         },
-        "BigIPInstanceType": {
+        "BigipInstanceType": {
             "AllowedValues": [
                 "m3.xlarge",
                 "m3.2xlarge",
@@ -286,7 +262,21 @@
             "Description": "F5 BIG-IP Virtual Instance Type",
             "Type": "String"
         },
-        "BigIPPerformanceType": {
+        "BigipLicenseKey": {
+            "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
+            "ConstraintDescription": "Please verify your F5 BYOL regkey.",
+            "Description": "Please enter your F5 BYOL regkey here:",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "BigipManagementGuiPort": {
+            "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
+            "Default": "443",
+            "Description": "Port to use for the managment GUI",
+            "Type": "Number"
+        },
+        "BigipPerformanceType": {
             "AllowedValues": [
                 "Good",
                 "Better",
@@ -294,20 +284,12 @@
             ],
             "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
             "Default": "Good",
-            "Description": "F5 BigIP Performance Type",
+            "Description": "F5 Bigip Performance Type",
             "Type": "String"
         },
         "KeyName": {
             "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
             "Type": "AWS::EC2::KeyPair::KeyName"
-        },
-        "LicenseKey": {
-            "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
-            "ConstraintDescription": "Please verify your F5 BYOL regkey.",
-            "Description": "Please enter your F5 BYOL regkey here:",
-            "MaxLength": "255",
-            "MinLength": "1",
-            "Type": "String"
         },
         "SSHLocation": {
             "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
@@ -335,7 +317,7 @@
         }
     },
     "Resources": {
-        "ApplicationRoute": {
+        "ApplicationDefaultRoute": {
             "Properties": {
                 "DestinationCidrBlock": "0.0.0.0/0",
                 "GatewayId": {
@@ -366,21 +348,10 @@
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::RouteTable"
-        },
-        "ApplicationSubnetRouteTableAssociation": {
-            "Properties": {
-                "RouteTableId": {
-                    "Ref": "ApplicationRouteTable"
-                },
-                "SubnetId": {
-                    "Ref": "Az1ApplicationSubnet"
-                }
-            },
-            "Type": "AWS::EC2::SubnetRouteTableAssociation"
         },
         "AttachGateway": {
             "Properties": {
@@ -388,7 +359,7 @@
                     "Ref": "InternetGateway"
                 },
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::VPCGatewayAttachment"
@@ -412,10 +383,21 @@
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::Subnet"
+        },
+        "Az1ApplicationSubnetRouteTableAssociation": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "ApplicationRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "Az1ApplicationSubnet"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
         },
         "Az1ExternalSubnet": {
             "Properties": {
@@ -436,10 +418,21 @@
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::Subnet"
+        },
+        "Az1ExternalSubnetRouteTableAssociation": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "ExternalRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "Az1ExternalSubnet"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
         },
         "Az1InternalSubnet": {
             "Properties": {
@@ -460,10 +453,21 @@
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::Subnet"
+        },
+        "Az1InternalSubnetRouteTableAssociation": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "InternalRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "Az1InternalSubnet"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
         },
         "Az1ManagementSubnet": {
             "Properties": {
@@ -484,15 +488,194 @@
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::Subnet"
         },
-        "BigIPExternalSecurityGroup": {
+        "Az1ManagementSubnetRouteTableAssociation": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "ManagementRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "Az1ManagementSubnet"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
+        },
+        "Az2ApplicationSubnet": {
+            "Properties": {
+                "AvailabilityZone": {
+                    "Ref": "AvailabilityZone2"
+                },
+                "CidrBlock": "10.0.13.0/24",
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackId"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "Az2 Application Subnet"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "Vpc"
+                }
+            },
+            "Type": "AWS::EC2::Subnet"
+        },
+        "Az2ApplicationSubnetRouteTableAssociation": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "ApplicationRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "Az2ApplicationSubnet"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
+        },
+        "Az2ExternalSubnet": {
+            "Properties": {
+                "AvailabilityZone": {
+                    "Ref": "AvailabilityZone2"
+                },
+                "CidrBlock": "10.0.11.0/24",
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackId"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "Az2 External Subnet"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "Vpc"
+                }
+            },
+            "Type": "AWS::EC2::Subnet"
+        },
+        "Az2ExternalSubnetRouteTableAssociation": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "ExternalRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "Az2ExternalSubnet"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
+        },
+        "Az2InternalSubnet": {
+            "Properties": {
+                "AvailabilityZone": {
+                    "Ref": "AvailabilityZone2"
+                },
+                "CidrBlock": "10.0.12.0/24",
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackId"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "Az2 Internal Subnet"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "Vpc"
+                }
+            },
+            "Type": "AWS::EC2::Subnet"
+        },
+        "Az2InternalSubnetRouteTableAssociation": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "InternalRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "Az2InternalSubnet"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
+        },
+        "Az2ManagementSubnet": {
+            "Properties": {
+                "AvailabilityZone": {
+                    "Ref": "AvailabilityZone2"
+                },
+                "CidrBlock": "10.0.10.0/24",
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackId"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "Az2 Management Subnet"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "Vpc"
+                }
+            },
+            "Type": "AWS::EC2::Subnet"
+        },
+        "Az2ManagementSubnetRouteTableAssociation": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "ManagementRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "Az2ManagementSubnet"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
+        },
+        "BigipExternalSecurityGroup": {
             "Properties": {
                 "GroupDescription": "Public or External interface rules",
                 "SecurityGroupIngress": [
+                    {
+                        "CidrIp": {
+                            "Ref": "SSHLocation"
+                        },
+                        "FromPort": "22",
+                        "IpProtocol": "tcp",
+                        "ToPort": "22"
+                    },
+                    {
+                        "CidrIp": {
+                            "Ref": "SSHLocation"
+                        },
+                        "FromPort": {
+                            "Ref": "BigipManagementGuiPort"
+                        },
+                        "IpProtocol": "tcp",
+                        "ToPort": {
+                            "Ref": "BigipManagementGuiPort"
+                        }
+                    },
+                    {
+                        "CidrIp": {
+                            "Ref": "SSHLocation"
+                        },
+                        "FromPort": "-1",
+                        "IpProtocol": "icmp",
+                        "ToPort": "-1"
+                    },
                     {
                         "CidrIp": "0.0.0.0/0",
                         "FromPort": "80",
@@ -527,21 +710,31 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "BigIP External Security Group"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Bigip Security Group: ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::SecurityGroup"
         },
-        "BigIPInstance": {
+        "BigipInstance": {
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "commands": {
-                            "b-configure-BigIP": {
+                            "b-configure-Bigip": {
                                 "command": "/tmp/firstrun.sh\n"
                             }
                         },
@@ -553,54 +746,21 @@
                                         [
                                             "#!/bin/bash\n",
                                             "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
-                                            "REGKEY='",
-                                            {
-                                                "Ref": "LicenseKey"
-                                            },
-                                            "'\n",
                                             "TZ='America/Los_Angeles'\n",
-                                            "MGMTIP='",
-                                            {
-                                                "Fn::GetAtt": [
-                                                    "ManagementInterface",
-                                                    "PrimaryPrivateIpAddress"
-                                                ]
-                                            },
-                                            "'\n",
-                                            "EXTIP='",
-                                            {
-                                                "Fn::GetAtt": [
-                                                    "ExternalInterface",
-                                                    "PrimaryPrivateIpAddress"
-                                                ]
-                                            },
-                                            "'\n",
-                                            "EXTPRIVIP='",
-                                            {
-                                                "Fn::Select": [
-                                                    "0",
-                                                    {
-                                                        "Fn::GetAtt": [
-                                                            "ExternalInterface",
-                                                            "SecondaryPrivateIpAddresses"
-                                                        ]
-                                                    }
-                                                ]
-                                            },
-                                            "'\n",
-                                            "EXTMASK='24'\n",
                                             "BIGIP_ADMIN_USERNAME='",
                                             {
-                                                "Ref": "BigIPAdminUsername"
+                                                "Ref": "BigipAdminUsername"
                                             },
                                             "'\n",
                                             "BIGIP_ADMIN_PASSWORD='",
                                             {
-                                                "Ref": "BigIPAdminPassword"
+                                                "Ref": "BigipAdminPassword"
                                             },
                                             "'\n",
                                             "APPNAME='demo-app-1'\n",
                                             "VIRTUALSERVERPORT=80\n",
+                                            "CRT='default.crt'\n",
+                                            "KEY='default.key'\n",
                                             "POOLMEM='",
                                             {
                                                 "Fn::GetAtt": [
@@ -610,8 +770,16 @@
                                             },
                                             "'\n",
                                             "POOLMEMPORT=80\n",
-                                            "CRT='default.crt'\n",
-                                            "KEY='default.key'\n"
+                                            "MANAGEMENT_GUI_PORT='",
+                                            {
+                                                "Ref": "BigipManagementGuiPort"
+                                            },
+                                            "'\n",
+                                            "REGKEY='",
+                                            {
+                                                "Ref": "BigipLicenseKey"
+                                            },
+                                            "'\n"
                                         ]
                                     ]
                                 },
@@ -682,7 +850,7 @@
                                             "tmsh modify auth password root <<< $'${BIGIP_ADMIN_PASSWORD}\n${BIGIP_ADMIN_PASSWORD}\n'\n",
                                             "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
                                             "tmsh save /sys config\n",
-                                            "tmsh install /sys license registration-key ${REGKEY} license-server activate.f5.com\n",
+                                            "tmsh install /sys license registration-key ${REGKEY}\n",
                                             "checkStatusnoret\n",
                                             "sleep 30\n",
                                             "tmsh save /sys config\n",
@@ -690,12 +858,13 @@
                                             "tmsh modify sys ntp timezone ${TZ}\n",
                                             "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
                                             "tmsh modify sys global-settings gui-setup disabled\n",
-                                            "tmsh create net vlan external interfaces add { 1.1 } \n",
-                                            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
-                                            "tmsh create net route default gw 10.0.1.1\n",
+                                            "checkStatusnoret\n",
+                                            "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
+                                            "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
                                             "tmsh save /sys config\n",
-                                            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor gateway_icmp\n",
-                                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} ip-protocol tcp mask 255.255.255.255 pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                            "checkStatusnoret\n",
+                                            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} ip-protocol tcp mask any pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             "tmsh save /sys config\n"
                                         ]
                                     ]
@@ -711,32 +880,25 @@
             "Properties": {
                 "ImageId": {
                     "Fn::FindInMap": [
-                        "BigIPRegionMap",
+                        "BigipRegionMap",
                         {
                             "Ref": "AWS::Region"
                         },
                         {
-                            "Ref": "BigIPPerformanceType"
+                            "Ref": "BigipPerformanceType"
                         }
                     ]
                 },
                 "InstanceType": {
-                    "Ref": "BigIPInstanceType"
+                    "Ref": "BigipInstanceType"
                 },
                 "KeyName": {
                     "Ref": "KeyName"
                 },
                 "NetworkInterfaces": [
                     {
-                        "Description": "Management Interface",
-                        "DeviceIndex": "0",
-                        "NetworkInterfaceId": {
-                            "Ref": "ManagementInterface"
-                        }
-                    },
-                    {
                         "Description": "Public or External Interface",
-                        "DeviceIndex": "1",
+                        "DeviceIndex": "0",
                         "NetworkInterfaceId": {
                             "Ref": "ExternalInterface"
                         }
@@ -746,7 +908,21 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackId"
+                            "Ref": "AWS::StackName"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Big-IP: ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
                         }
                     }
                 ],
@@ -760,7 +936,7 @@
                                 {
                                     "Ref": "AWS::StackId"
                                 },
-                                " -r BigIPInstance ",
+                                " -r BigipInstance ",
                                 " --region ",
                                 {
                                     "Ref": "AWS::Region"
@@ -773,69 +949,7 @@
             },
             "Type": "AWS::EC2::Instance"
         },
-        "BigIPManagementSecurityGroup": {
-            "Properties": {
-                "GroupDescription": "Big-IP Management UI rules",
-                "SecurityGroupIngress": [
-                    {
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
-                        },
-                        "FromPort": "22",
-                        "IpProtocol": "tcp",
-                        "ToPort": "22"
-                    },
-                    {
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
-                        },
-                        "FromPort": "443",
-                        "IpProtocol": "tcp",
-                        "ToPort": "443"
-                    },
-                    {
-                        "CidrIp": {
-                            "Ref": "SSHLocation"
-                        },
-                        "FromPort": "-1",
-                        "IpProtocol": "icmp",
-                        "ToPort": "-1"
-                    }
-                ],
-                "Tags": [
-                    {
-                        "Key": "Application",
-                        "Value": {
-                            "Ref": "AWS::StackName"
-                        }
-                    },
-                    {
-                        "Key": "Name",
-                        "Value": "BigIP Management Security Group"
-                    }
-                ],
-                "VpcId": {
-                    "Ref": "VPC"
-                }
-            },
-            "Type": "AWS::EC2::SecurityGroup"
-        },
-        "ExternalInterface": {
-            "Properties": {
-                "Description": "Public External Interface for the BigIP",
-                "GroupSet": [
-                    {
-                        "Ref": "BigIPExternalSecurityGroup"
-                    }
-                ],
-                "SecondaryPrivateIpAddressCount": "1",
-                "SubnetId": {
-                    "Ref": "Az1ExternalSubnet"
-                }
-            },
-            "Type": "AWS::EC2::NetworkInterface"
-        },
-        "ExternalRoute": {
+        "ExternalDefaultRoute": {
             "Properties": {
                 "DestinationCidrBlock": "0.0.0.0/0",
                 "GatewayId": {
@@ -846,6 +960,21 @@
                 }
             },
             "Type": "AWS::EC2::Route"
+        },
+        "ExternalInterface": {
+            "Properties": {
+                "Description": "Public External Interface for the Bigip",
+                "GroupSet": [
+                    {
+                        "Ref": "BigipExternalSecurityGroup"
+                    }
+                ],
+                "SecondaryPrivateIpAddressCount": "1",
+                "SubnetId": {
+                    "Ref": "Az1ExternalSubnet"
+                }
+            },
+            "Type": "AWS::EC2::NetworkInterface"
         },
         "ExternalRouteTable": {
             "Properties": {
@@ -866,13 +995,12 @@
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::RouteTable"
         },
         "ExternalSelfEipAddress": {
-            "DependsOn": "AttachGateway",
             "Properties": {
                 "Domain": "vpc"
             },
@@ -898,18 +1026,7 @@
             },
             "Type": "AWS::EC2::EIPAssociation"
         },
-        "ExternalSubnetRouteTableAssociation": {
-            "Properties": {
-                "RouteTableId": {
-                    "Ref": "ExternalRouteTable"
-                },
-                "SubnetId": {
-                    "Ref": "Az1ExternalSubnet"
-                }
-            },
-            "Type": "AWS::EC2::SubnetRouteTableAssociation"
-        },
-        "InternalRoute": {
+        "InternalDefaultRoute": {
             "Properties": {
                 "DestinationCidrBlock": "0.0.0.0/0",
                 "GatewayId": {
@@ -940,21 +1057,10 @@
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::RouteTable"
-        },
-        "InternalSubnetRouteTableAssociation": {
-            "Properties": {
-                "RouteTableId": {
-                    "Ref": "InternalRouteTable"
-                },
-                "SubnetId": {
-                    "Ref": "Az1InternalSubnet"
-                }
-            },
-            "Type": "AWS::EC2::SubnetRouteTableAssociation"
         },
         "InternetGateway": {
             "Properties": {
@@ -969,42 +1075,7 @@
             },
             "Type": "AWS::EC2::InternetGateway"
         },
-        "ManagementEipAddress": {
-            "DependsOn": "AttachGateway",
-            "Properties": {
-                "Domain": "vpc"
-            },
-            "Type": "AWS::EC2::EIP"
-        },
-        "ManagementEipAssociation": {
-            "Properties": {
-                "AllocationId": {
-                    "Fn::GetAtt": [
-                        "ManagementEipAddress",
-                        "AllocationId"
-                    ]
-                },
-                "NetworkInterfaceId": {
-                    "Ref": "ManagementInterface"
-                }
-            },
-            "Type": "AWS::EC2::EIPAssociation"
-        },
-        "ManagementInterface": {
-            "Properties": {
-                "Description": "Management Interface for the BigIP",
-                "GroupSet": [
-                    {
-                        "Ref": "BigIPManagementSecurityGroup"
-                    }
-                ],
-                "SubnetId": {
-                    "Ref": "Az1ManagementSubnet"
-                }
-            },
-            "Type": "AWS::EC2::NetworkInterface"
-        },
-        "ManagementRoute": {
+        "ManagementDefaultRoute": {
             "Properties": {
                 "DestinationCidrBlock": "0.0.0.0/0",
                 "GatewayId": {
@@ -1035,23 +1106,12 @@
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::RouteTable"
         },
-        "ManagementSubnetRouteTableAssociation": {
-            "Properties": {
-                "RouteTableId": {
-                    "Ref": "ManagementRouteTable"
-                },
-                "SubnetId": {
-                    "Ref": "Az1ManagementSubnet"
-                }
-            },
-            "Type": "AWS::EC2::SubnetRouteTableAssociation"
-        },
-        "VPC": {
+        "Vpc": {
             "Properties": {
                 "CidrBlock": "10.0.0.0/16",
                 "EnableDnsHostnames": "true",
@@ -1072,38 +1132,6 @@
                 ]
             },
             "Type": "AWS::EC2::VPC"
-        },
-        "VipEipAddress": {
-            "DependsOn": "AttachGateway",
-            "Properties": {
-                "Domain": "vpc"
-            },
-            "Type": "AWS::EC2::EIP"
-        },
-        "VipEipAssociation": {
-            "Properties": {
-                "AllocationId": {
-                    "Fn::GetAtt": [
-                        "VipEipAddress",
-                        "AllocationId"
-                    ]
-                },
-                "NetworkInterfaceId": {
-                    "Ref": "ExternalInterface"
-                },
-                "PrivateIpAddress": {
-                    "Fn::Select": [
-                        "0",
-                        {
-                            "Fn::GetAtt": [
-                                "ExternalInterface",
-                                "SecondaryPrivateIpAddresses"
-                            ]
-                        }
-                    ]
-                }
-            },
-            "Type": "AWS::EC2::EIPAssociation"
         },
         "Webserver": {
             "Properties": {
@@ -1215,7 +1243,7 @@
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPC"
+                    "Ref": "Vpc"
                 }
             },
             "Type": "AWS::EC2::SecurityGroup"

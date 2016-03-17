@@ -1,8 +1,8 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template for creating an 1nic Big-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Description": "AWS CloudFormation Template for creating an 2nic Big-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
     "Mappings": {
-        "BigIPRegionMap": {
+        "BigipRegionMap": {
             "ap-northeast-1": {
                 "Best": "ami-bcf69bbc",
                 "Better": "ami-d6f69bd6",
@@ -46,35 +46,26 @@
         }
     },
     "Outputs": {
-        "AvailabilityZone": {
-            "Description": "Availability Zone",
-            "Value": {
-                "Fn::GetAtt": [
-                    "BigIPInstance",
-                    "AvailabilityZone"
-                ]
-            }
-        },
-        "Az1ExternalSubnetId": {
-            "Description": "Az1 Public or External Subnet ID",
-            "Value": {
-                "Ref": "ExternalSubnetId"
-            }
-        },
-        "BigIPExternalSecurityGroupId": {
+        "BigipExternalSecurityGroup": {
             "Description": "Public or External Security Group",
             "Value": {
-                "Ref": "BigIPExternalSecurityGroupId"
+                "Ref": "BigipExternalSecurityGroup"
             }
         },
-        "BigIPInstanceId": {
-            "Description": "Instance ID of Big-IP in Amazon",
+        "BigipInstanceId": {
+            "Description": "Instance Id of Big-IP in Amazon",
             "Value": {
-                "Ref": "BigIPInstance"
+                "Ref": "BigipInstance"
             }
         },
-        "BigIPUrl": {
-            "Description": "BigIP Management GUI",
+        "BigipManagementSecurityGroup": {
+            "Description": "Management Security Group",
+            "Value": {
+                "Ref": "BigipManagementSecurityGroup"
+            }
+        },
+        "BigipUrl": {
+            "Description": "Big-IP Management GUI",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -82,29 +73,52 @@
                         "https://",
                         {
                             "Fn::GetAtt": [
-                                "BigIPInstance",
+                                "BigipInstance",
                                 "PublicIp"
                             ]
-                        },
-                        ":",
-                        {
-                            "Ref": "BigIPManagementGuiPort"
                         }
                     ]
                 ]
             }
         },
-        "ExternalInterfaceId": {
-            "Description": "External interface ID on BIG-IP",
+        "ExternalInterface": {
+            "Description": "External interface Id on BIG-Ip",
             "Value": {
                 "Ref": "ExternalInterface"
             }
         },
         "ExternalInterfacePrivateIp": {
-            "Description": "Internally routable IP of public interface on BIG-IP",
+            "Description": "Internally routable Ip of public interface on BIG-Ip",
             "Value": {
                 "Fn::GetAtt": [
                     "ExternalInterface",
+                    "PrimaryPrivateIpAddress"
+                ]
+            }
+        },
+        "ExternalSelfEipAddress": {
+            "Description": "IP Address of External interface attached to BIG-IP",
+            "Value": {
+                "Ref": "ExternalSelfEipAddress"
+            }
+        },
+        "ManagementEipAddress": {
+            "Description": "Ip address of management port on BIG-Ip",
+            "Value": {
+                "Ref": "ManagementEipAddress"
+            }
+        },
+        "ManagementInterface": {
+            "Description": "Management interface Id on BIG-Ip",
+            "Value": {
+                "Ref": "ManagementInterface"
+            }
+        },
+        "ManagementInterfacePrivateIp": {
+            "Description": "Internally routable Ip of management interface on BIG-Ip",
+            "Value": {
+                "Fn::GetAtt": [
+                    "ManagementInterface",
                     "PrimaryPrivateIpAddress"
                 ]
             }
@@ -117,22 +131,40 @@
                     [
                         "http://",
                         {
-                            "Ref": "ExternalSelfEipAddress"
+                            "Ref": "VipEipAddress"
                         },
                         ":80"
                     ]
                 ]
             }
         },
-        "VpcID": {
-            "Description": "VPC ID",
+        "VipPrivateIp": {
+            "Description": "VIP on External Interface Secondary IP 1",
             "Value": {
-                "Ref": "VPC"
+                "Fn::Select": [
+                    "0",
+                    {
+                        "Fn::GetAtt": [
+                            "ExternalInterface",
+                            "SecondaryPrivateIpAddresses"
+                        ]
+                    }
+                ]
             }
         }
     },
     "Parameters": {
-        "BigIPAdminPassword": {
+        "Az1ExternalSubnet": {
+            "ConstraintDescription": "Must be subnet ID within existing VPC",
+            "Description": "Public or External subnet ID",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "Az1ManagementSubnet": {
+            "ConstraintDescription": "Must be subnet ID within existing VPC",
+            "Description": "Management Subnet ID",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "BigipAdminPassword": {
             "ConstraintDescription": "Please verify your BIG-IP Admin Password",
             "Description": "Please enter your BIG-IP Admin Password",
             "MaxLength": "255",
@@ -140,7 +172,7 @@
             "NoEcho": true,
             "Type": "String"
         },
-        "BigIPAdminUsername": {
+        "BigipAdminUsername": {
             "ConstraintDescription": "Please verify your BIG-IP Admin Username",
             "Default": "admin",
             "Description": "Please enter your BIG-IP Admin Username",
@@ -148,12 +180,12 @@
             "MinLength": "1",
             "Type": "String"
         },
-        "BigIPExternalSecurityGroupId": {
+        "BigipExternalSecurityGroup": {
             "ConstraintDescription": "Must be security group ID within existing VPC",
             "Description": "Public or External Security Group ID",
             "Type": "AWS::EC2::SecurityGroup::Id"
         },
-        "BigIPInstanceType": {
+        "BigipInstanceType": {
             "AllowedValues": [
                 "m3.xlarge",
                 "m3.2xlarge",
@@ -168,13 +200,20 @@
             "Description": "F5 BIG-IP Virtual Instance Type",
             "Type": "String"
         },
-        "BigIPManagementGuiPort": {
-            "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
-            "Default": "443",
-            "Description": "Port to use for the managment GUI",
-            "Type": "Number"
+        "BigipLicenseKey": {
+            "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
+            "ConstraintDescription": "Please verify your F5 BYOL regkey.",
+            "Description": "Please enter your F5 BYOL regkey here:",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "Type": "String"
         },
-        "BigIPPerformanceType": {
+        "BigipManagementSecurityGroup": {
+            "ConstraintDescription": "Must be security group ID within existing VPC",
+            "Description": "Bigip Management Security Group",
+            "Type": "AWS::EC2::SecurityGroup::Id"
+        },
+        "BigipPerformanceType": {
             "AllowedValues": [
                 "Good",
                 "Better",
@@ -182,25 +221,12 @@
             ],
             "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
             "Default": "Good",
-            "Description": "F5 BigIP Performance Type",
+            "Description": "F5 Bigip Performance Type",
             "Type": "String"
-        },
-        "ExternalSubnetId": {
-            "ConstraintDescription": "Must be subnet ID within existing VPC",
-            "Description": "Public or External subnet ID",
-            "Type": "AWS::EC2::Subnet::Id"
         },
         "KeyName": {
             "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
             "Type": "AWS::EC2::KeyPair::KeyName"
-        },
-        "LicenseKey": {
-            "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
-            "ConstraintDescription": "Please verify your F5 BYOL regkey.",
-            "Description": "Please enter your F5 BYOL regkey here:",
-            "MaxLength": "255",
-            "MinLength": "1",
-            "Type": "String"
         },
         "SSHLocation": {
             "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
@@ -211,23 +237,23 @@
             "MinLength": "9",
             "Type": "String"
         },
-        "VPC": {
+        "Vpc": {
             "ConstraintDescription": "Must be an existing VPC within working region.",
             "Type": "AWS::EC2::VPC::Id"
         },
-        "Webserver": {
+        "WebserverPrivateIp": {
             "ConstraintDescription": "Web Server IP used for Big-IP pool Member",
             "Description": "Web Server IP used for Big-IP pool member",
             "Type": "String"
         }
     },
     "Resources": {
-        "BigIPInstance": {
+        "BigipInstance": {
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "commands": {
-                            "b-configure-BigIP": {
+                            "b-configure-Bigip": {
                                 "command": "/tmp/firstrun.sh\n"
                             }
                         },
@@ -239,37 +265,62 @@
                                         [
                                             "#!/bin/bash\n",
                                             "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
-                                            "REGKEY='",
-                                            {
-                                                "Ref": "LicenseKey"
-                                            },
-                                            "'\n",
                                             "TZ='America/Los_Angeles'\n",
                                             "BIGIP_ADMIN_USERNAME='",
                                             {
-                                                "Ref": "BigIPAdminUsername"
+                                                "Ref": "BigipAdminUsername"
                                             },
                                             "'\n",
                                             "BIGIP_ADMIN_PASSWORD='",
                                             {
-                                                "Ref": "BigIPAdminPassword"
-                                            },
-                                            "'\n",
-                                            "MANAGEMENT_GUI_PORT='",
-                                            {
-                                                "Ref": "BigIPManagementGuiPort"
+                                                "Ref": "BigipAdminPassword"
                                             },
                                             "'\n",
                                             "APPNAME='demo-app-1'\n",
                                             "VIRTUALSERVERPORT=80\n",
+                                            "CRT='default.crt'\n",
+                                            "KEY='default.key'\n",
                                             "POOLMEM='",
                                             {
-                                                "Ref": "Webserver"
+                                                "Ref": "WebserverPrivateIp"
                                             },
                                             "'\n",
                                             "POOLMEMPORT=80\n",
-                                            "CRT='default.crt'\n",
-                                            "KEY='default.key'\n"
+                                            "MGMTIP='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "ManagementInterface",
+                                                    "PrimaryPrivateIpAddress"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTIP='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "ExternalInterface",
+                                                    "PrimaryPrivateIpAddress"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTPRIVIP='",
+                                            {
+                                                "Fn::Select": [
+                                                    "0",
+                                                    {
+                                                        "Fn::GetAtt": [
+                                                            "ExternalInterface",
+                                                            "SecondaryPrivateIpAddresses"
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTMASK='24'\n",
+                                            "REGKEY='",
+                                            {
+                                                "Ref": "BigipLicenseKey"
+                                            },
+                                            "'\n"
                                         ]
                                     ]
                                 },
@@ -340,7 +391,7 @@
                                             "tmsh modify auth password root <<< $'${BIGIP_ADMIN_PASSWORD}\n${BIGIP_ADMIN_PASSWORD}\n'\n",
                                             "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
                                             "tmsh save /sys config\n",
-                                            "tmsh install /sys license registration-key ${REGKEY} license-server activate.f5.com\n",
+                                            "tmsh install /sys license registration-key ${REGKEY}\n",
                                             "checkStatusnoret\n",
                                             "sleep 30\n",
                                             "tmsh save /sys config\n",
@@ -349,13 +400,13 @@
                                             "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
                                             "tmsh modify sys global-settings gui-setup disabled\n",
                                             "checkStatusnoret\n",
-                                            "### BZID 572255 = Device Service Clustering Would need to be done here before changing GUI port\n",
-                                            "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
-                                            "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
+                                            "tmsh create net vlan external interfaces add { 1.1 } \n",
+                                            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
+                                            "tmsh create net route default gw 10.0.1.1\n",
                                             "tmsh save /sys config\n",
                                             "checkStatusnoret\n",
-                                            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor gateway_icmp\n",
-                                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} ip-protocol tcp mask 255.255.255.255 pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} ip-protocol tcp mask 255.255.255.255 pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             "tmsh save /sys config\n"
                                         ]
                                     ]
@@ -371,25 +422,32 @@
             "Properties": {
                 "ImageId": {
                     "Fn::FindInMap": [
-                        "BigIPRegionMap",
+                        "BigipRegionMap",
                         {
                             "Ref": "AWS::Region"
                         },
                         {
-                            "Ref": "BigIPPerformanceType"
+                            "Ref": "BigipPerformanceType"
                         }
                     ]
                 },
                 "InstanceType": {
-                    "Ref": "BigIPInstanceType"
+                    "Ref": "BigipInstanceType"
                 },
                 "KeyName": {
                     "Ref": "KeyName"
                 },
                 "NetworkInterfaces": [
                     {
-                        "Description": "Public or External Interface",
+                        "Description": "Management Interface",
                         "DeviceIndex": "0",
+                        "NetworkInterfaceId": {
+                            "Ref": "ManagementInterface"
+                        }
+                    },
+                    {
+                        "Description": "Public or External Interface",
+                        "DeviceIndex": "1",
                         "NetworkInterfaceId": {
                             "Ref": "ExternalInterface"
                         }
@@ -399,7 +457,21 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackId"
+                            "Ref": "AWS::StackName"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Big-IP: ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
                         }
                     }
                 ],
@@ -413,7 +485,7 @@
                                 {
                                     "Ref": "AWS::StackId"
                                 },
-                                " -r BigIPInstance ",
+                                " -r BigipInstance ",
                                 " --region ",
                                 {
                                     "Ref": "AWS::Region"
@@ -428,15 +500,15 @@
         },
         "ExternalInterface": {
             "Properties": {
-                "Description": "Public External Interface for the BigIP",
+                "Description": "Public External Interface for the Bigip",
                 "GroupSet": [
                     {
-                        "Ref": "BigIPExternalSecurityGroupId"
+                        "Ref": "BigipExternalSecurityGroup"
                     }
                 ],
                 "SecondaryPrivateIpAddressCount": "1",
                 "SubnetId": {
-                    "Ref": "ExternalSubnetId"
+                    "Ref": "Az1ExternalSubnet"
                 }
             },
             "Type": "AWS::EC2::NetworkInterface"
@@ -462,6 +534,71 @@
                     "Fn::GetAtt": [
                         "ExternalInterface",
                         "PrimaryPrivateIpAddress"
+                    ]
+                }
+            },
+            "Type": "AWS::EC2::EIPAssociation"
+        },
+        "ManagementEipAddress": {
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "ManagementEipAssociation": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "ManagementEipAddress",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "ManagementInterface"
+                }
+            },
+            "Type": "AWS::EC2::EIPAssociation"
+        },
+        "ManagementInterface": {
+            "Properties": {
+                "Description": "Management Interface for the Bigip",
+                "GroupSet": [
+                    {
+                        "Ref": "BigipManagementSecurityGroup"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Az1ManagementSubnet"
+                }
+            },
+            "Type": "AWS::EC2::NetworkInterface"
+        },
+        "VipEipAddress": {
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "VipEipAssociation": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "VipEipAddress",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "ExternalInterface"
+                },
+                "PrivateIpAddress": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Fn::GetAtt": [
+                                "ExternalInterface",
+                                "SecondaryPrivateIpAddresses"
+                            ]
+                        }
                     ]
                 }
             },

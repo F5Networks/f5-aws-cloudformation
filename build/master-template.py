@@ -1001,6 +1001,9 @@ def main():
                         "tmsh mv cm device bigip1 ${HOSTNAME}\n",
                         "tmsh modify auth password root <<< $'${BIGIP_ADMIN_PASSWORD}\n${BIGIP_ADMIN_PASSWORD}\n'\n",
                         "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
+                        "tmsh modify sys ntp timezone ${TZ}\n",
+                        "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
+                        "tmsh modify sys dns name-servers add { 10.0.0.2 }\n",
                         "tmsh save /sys config\n",
                     ]
 
@@ -1015,8 +1018,6 @@ def main():
                         "sleep 30\n",
                         "tmsh save /sys config\n",
                         "tmsh modify sys db dhclient.mgmt { value disable }\n",
-                        "tmsh modify sys ntp timezone ${TZ}\n",
-                        "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
                         "tmsh modify sys global-settings gui-setup disabled\n",
                         "checkStatusnoret\n",
                     ]
@@ -1330,7 +1331,7 @@ def main():
             Value=Join("", ["http://", GetAtt(Webserver, "PublicIp")]),
         ))
 
-    print(t.to_json())
+    print(t.to_json(indent=2))
 
 if __name__ == "__main__":
     main()

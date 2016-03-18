@@ -106,10 +106,10 @@ This will launch the first full stack (vpc, subnets, security groups, bigip, web
 
 #####Known Issues:
 
-1. Full stack Big-IQ pool templates are too large to be deployed via AWS cli.
+1. Some templates may become too large to be deployed via AWS cli.
 
 		'templateBody' failed to satisfy constraint: Member must have length less than or equal to 51200
 
-   **Workaround:** _Use AWS console or store template on S3_
-   **Todo:** Change init script to download bigiq license section from S3 instead.
+   **Workaround:** _Use AWS console or store template on S3 or minify_
+   **Todo:** Change init script to download sections (ex. bigiq license section) from remote location instead.
 

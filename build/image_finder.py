@@ -170,8 +170,7 @@ def main():
 
     image_finder_obj = BigIpImageFinder()
 
-
-    # Hourly Region Map:
+    # Hourly Region Map ( Need to wait for v12/v13 to be released before can use Cloudinit )
     HourlyRegionMap = image_finder_obj.getBigipRegionMap(license="hourly", version="11.6.0.4.0.420", throughput="1gbps", regions=regions)
     
     with open('cached-hourly-region-map.json', 'w') as outfile:

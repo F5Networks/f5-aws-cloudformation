@@ -29,7 +29,7 @@
         "Good": "ami-36962e5a"
       },
       "us-east-1": {
-        "Best": "ami-98715bf0",
+        "Best": "ami-eb421d8e",
         "Better": "ami-f1421d94",
         "Good": "ami-03421d66"
       },
@@ -255,6 +255,13 @@
       "Description": "F5 Bigip Performance Type",
       "Type": "String"
     },
+    "DnsServers": {
+      "AllowedPattern": "((\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\s?)+",
+      "ConstraintDescription": "Usually .2 for your VPC CIDR, ex. 10.0.0.2 for a 10.0.0.0/16 network",
+      "Default": "10.0.0.2",
+      "Description": "Space Seperated list of DNS Servers",
+      "Type": "String"
+    },
     "KeyName": {
       "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
       "Type": "AWS::EC2::KeyPair::KeyName"
@@ -311,6 +318,11 @@
                       "VIRTUALSERVERPORT=80\n",
                       "CRT='default.crt'\n",
                       "KEY='default.key'\n",
+                      "NAME_SERVERS='",
+                      {
+                        "Ref": "DnsServers"
+                      },
+                      "'\n",
                       "POOLMEM='",
                       {
                         "Ref": "WebserverPrivateIp"
@@ -426,13 +438,15 @@
                       "exec 1<>$FILE\n",
                       "exec 2>&1\n",
                       "checkF5Ready\n",
+                      "sleep 150\n",
+                      "logger -p local0.info 'firstrun debug: starting-tmsh-config'\n",
                       "tmsh modify /sys global-settings hostname ${HOSTNAME}\n",
                       "tmsh mv cm device bigip1 ${HOSTNAME}\n",
                       "tmsh modify auth password root <<< $'${BIGIP_ADMIN_PASSWORD}\n${BIGIP_ADMIN_PASSWORD}\n'\n",
                       "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
                       "tmsh modify sys ntp timezone ${TZ}\n",
                       "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
-                      "tmsh modify sys dns name-servers add { 10.0.0.2 }\n",
+                      "tmsh modify sys dns name-servers add { ${NAME_SERVERS} }\n",
                       "tmsh save /sys config\n",
                       "tmsh install /sys license registration-key ${REGKEY}\n",
                       "checkStatusnoret\n",
@@ -450,7 +464,9 @@
                       "checkStatusnoret\n",
                       "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
                       "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} ip-protocol tcp mask 255.255.255.255 pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                      "tmsh save /sys config\n"
+                      "tmsh save /sys config\n",
+                      "# for security purposes, remove firstrun.config\n",
+                      "# rm /tmp/firstrun.config\n"
                     ]
                   ]
                 },

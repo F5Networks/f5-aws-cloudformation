@@ -1,6 +1,7 @@
 #/usr/bin/python env
 
 from optparse import OptionParser
+import json
 from troposphere import Base64, Select, FindInMap, GetAtt, GetAZs, Join, Output
 from troposphere import Parameter, Ref, Tags, Template
 from troposphere.cloudformation import Init, Metadata, InitConfig, InitFiles, InitFile
@@ -19,11 +20,10 @@ from troposphere.cloudformation import Init, Metadata, InitConfig, InitFiles, In
 # from troposphere.ec2 import Instance
 from troposphere.ec2 import *
 
-
 def usage():
     print "OPTIONS:"
     print "     -n  <number fo nics>. <1, 2, or 3>"
-    print "     -l  license  <byol, util or bigiq>"
+    print "     -l  license  <byol, hourly or bigiq>"
     print "     -s  stack  <full or existing>"
     print "USAGE: "
     print " ex. " + sys.argv[0] + " -n 1 -l byol -s create"
@@ -34,7 +34,7 @@ def main():
 
     parser = OptionParser()
     parser.add_option("-n", "--nics", action="store", type="int", dest="num_nics", help="Number of nics: 1,2 or 3")
-    parser.add_option("-l", "--license", action="store", type="string", dest="license_type", help="Type of License: byol, util or bigiq" )
+    parser.add_option("-l", "--license", action="store", type="string", dest="license_type", help="Type of License: byol, hourly or bigiq" )
     parser.add_option("-s", "--stack", action="store", type="string", dest="stack", help="Stack: create or existing" )
     (options, args) = parser.parse_args()
 
@@ -135,6 +135,15 @@ def main():
             "Vpc",
             ConstraintDescription="Must be an existing VPC within working region.",
             Type="AWS::EC2::VPC::Id",
+        ))
+
+        DnsServers = t.add_parameter(Parameter(
+            "DnsServers",
+            Default="10.0.0.2",
+            ConstraintDescription="Usually .2 for your VPC CIDR, ex. 10.0.0.2 for a 10.0.0.0/16 network",
+            Type="String",
+            Description="Space Seperated list of DNS Servers",
+            AllowedPattern="((\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\s?)+",
         ))
 
         Az1ExternalSubnet = t.add_parameter(Parameter(
@@ -255,47 +264,88 @@ def main():
         ))
 
 
+    if options.license_type == "hourly":
 
-    ### BEGIN MAPPINGS
-    if options.license_type != "util":
-        t.add_mapping("BigipRegionMap",
-        {u'ap-northeast-1': {u'Best': u'ami-bcf69bbc',
-                             u'Better': u'ami-d6f69bd6',
-                             u'Good': u'ami-1ef69b1e'},
-         u'ap-southeast-1': {u'Best': u'ami-3c9a896e',
-                             u'Better': u'ami-249a8976',
-                             u'Good': u'ami-029a8950'},
-         u'ap-southeast-2': {u'Best': u'ami-bfd69c85',
-                             u'Better': u'ami-45d69c7f',
-                             u'Good': u'ami-63d69c59'},
-         u'eu-west-1': {u'Best': u'ami-3798a740',
-                        u'Better': u'ami-2b98a75c',
-                        u'Good': u'ami-f799a680'},
-         u'sa-east-1': {u'Best': u'ami-a3952dcf',
-                        u'Better': u'ami-f69e269a',
-                        u'Good': u'ami-36962e5a'},
-         u'us-east-1': {u'Best': u'ami-98715bf0',
-                        u'Better': u'ami-f1421d94',
-                        u'Good': u'ami-03421d66'},
-         u'us-west-1': {u'Best': u'ami-a70bc8e3',
-                        u'Better': u'ami-af0bc8eb',
-                        u'Good': u'ami-e90bc8ad'},
-         u'us-west-2': {u'Best': u'ami-e2d735d1',
-                        u'Better': u'ami-ccd735ff',
-                        u'Good': u'ami-36d73505'}}
+        with open("cached-hourly-region-map.json") as json_file:
+            RegionMap = json.load(json_file)
+
+        t.add_mapping("BigipRegionMap",  
+        {u'ap-northeast-1': {u'Best': RegionMap['ap-northeast-1']['Best'],
+                             u'Better': RegionMap['ap-northeast-1']['Better'],
+                             u'Good': RegionMap['ap-northeast-1']['Good']},
+         u'ap-southeast-1': {u'Best': RegionMap['ap-southeast-1']['Best'],
+                             u'Better': RegionMap['ap-southeast-1']['Better'],
+                             u'Good': RegionMap['ap-southeast-1']['Good']},
+         u'ap-southeast-2': {u'Best': RegionMap['ap-southeast-2']['Best'],
+                             u'Better': RegionMap['ap-southeast-2']['Better'],
+                             u'Good': RegionMap['ap-southeast-2']['Good']},
+         u'eu-west-1': {u'Best': RegionMap['eu-west-1']['Best'],
+                        u'Better': RegionMap['eu-west-1']['Better'],
+                        u'Good': RegionMap['eu-west-1']['Good']},
+         u'sa-east-1': {u'Best': RegionMap['sa-east-1']['Best'],
+                        u'Better': RegionMap['sa-east-1']['Better'],
+                        u'Good': RegionMap['sa-east-1']['Good']},
+         u'us-east-1': {u'Best': RegionMap['us-east-1']['Best'],
+                        u'Better': RegionMap['us-east-1']['Better'],
+                        u'Good': RegionMap['us-east-1']['Good']},
+         u'us-west-1': {u'Best': RegionMap['us-west-1']['Best'],
+                        u'Better': RegionMap['us-west-1']['Better'],
+                        u'Good': RegionMap['us-west-1']['Good']},
+         u'us-west-2': {u'Best': RegionMap['us-west-2']['Best'],
+                        u'Better': RegionMap['us-west-2']['Better'],
+                        u'Good': RegionMap['us-west-2']['Good']}}
         )
 
+
+    if options.license_type != "hourly":
+
+        with open("cached-byol-region-map.json") as json_file:
+            RegionMap = json.load(json_file)
+
+        t.add_mapping("BigipRegionMap",  
+        {u'ap-northeast-1': {u'Best': RegionMap['ap-northeast-1']['Best'],
+                             u'Better': RegionMap['ap-northeast-1']['Better'],
+                             u'Good': RegionMap['ap-northeast-1']['Good']},
+         u'ap-southeast-1': {u'Best': RegionMap['ap-southeast-1']['Best'],
+                             u'Better': RegionMap['ap-southeast-1']['Better'],
+                             u'Good': RegionMap['ap-southeast-1']['Good']},
+         u'ap-southeast-2': {u'Best': RegionMap['ap-southeast-2']['Best'],
+                             u'Better': RegionMap['ap-southeast-2']['Better'],
+                             u'Good': RegionMap['ap-southeast-2']['Good']},
+         u'eu-west-1': {u'Best': RegionMap['eu-west-1']['Best'],
+                        u'Better': RegionMap['eu-west-1']['Better'],
+                        u'Good': RegionMap['eu-west-1']['Good']},
+         u'sa-east-1': {u'Best': RegionMap['sa-east-1']['Best'],
+                        u'Better': RegionMap['sa-east-1']['Better'],
+                        u'Good': RegionMap['sa-east-1']['Good']},
+         u'us-east-1': {u'Best': RegionMap['us-east-1']['Best'],
+                        u'Better': RegionMap['us-east-1']['Better'],
+                        u'Good': RegionMap['us-east-1']['Good']},
+         u'us-west-1': {u'Best': RegionMap['us-west-1']['Best'],
+                        u'Better': RegionMap['us-west-1']['Better'],
+                        u'Good': RegionMap['us-west-1']['Good']},
+         u'us-west-2': {u'Best': RegionMap['us-west-2']['Best'],
+                        u'Better': RegionMap['us-west-2']['Better'],
+                        u'Good': RegionMap['us-west-2']['Good']}}
+        )
+
+
+    # WEB SERVER MAPPING
     if options.stack == "create":
-        t.add_mapping("AWSRegionArch2AMI",
-        {u'ap-northeast-1': {u'AMI': u'ami-489b8049'},
-         u'ap-southeast-1': {u'AMI': u'ami-0ad2f858'},
-         u'eu-west-1': {u'AMI': u'ami-7dfc720a'},
-         u'sa-east-1': {u'AMI': u'ami-6def5070'},
-         u'us-east-1': {u'AMI': u'ami-00266568'},
-         u'us-west-1': {u'AMI': u'ami-fc8b93b9'},
-         u'us-west-2': {u'AMI': u'ami-71520941'}}
-        )
 
+        with open("cached-webserver-region-map.json") as json_file:
+            RegionMap = json.load(json_file)
+
+        t.add_mapping("AWSRegionArch2AMI",
+        {u'ap-northeast-1': {u'AMI': RegionMap['ap-northeast-1']},
+         u'ap-southeast-1': {u'AMI': RegionMap['ap-southeast-1']},
+         u'ap-southeast-2': {u'AMI': RegionMap['ap-southeast-2']},
+         u'eu-west-1': {u'AMI': RegionMap['eu-west-1']},
+         u'sa-east-1': {u'AMI': RegionMap['sa-east-1']},
+         u'us-east-1': {u'AMI': RegionMap['us-east-1']},
+         u'us-west-1': {u'AMI': RegionMap['us-west-1']},
+         u'us-west-2': {u'AMI': RegionMap['us-west-2']}}
+        )
 
     ### BEGIN RESOURCES
     if options.stack == "create":
@@ -813,7 +863,7 @@ def main():
                             "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n", 
                             "TZ='America/Los_Angeles'\n", 
                             "BIGIP_ADMIN_USERNAME='", Ref(BigipAdminUsername), "'\n", 
-                            "BIGIP_ADMIN_PASSWORD='", Ref(BigipAdminPassword), "'\n", 
+                            "BIGIP_ADMIN_PASSWORD='", Ref(BigipAdminPassword), "'\n",
                             "APPNAME='demo-app-1'\n", 
                             "VIRTUALSERVERPORT=80\n",
                             "CRT='default.crt'\n", 
@@ -822,11 +872,13 @@ def main():
 
     if options.stack == "create":
         firstrun_config +=  [              
+                            "NAME_SERVERS='10.0.0.2'\n", 
                             "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n", 
                             "POOLMEMPORT=80\n", 
                             ]
     elif options.stack == "existing":
-        firstrun_config +=  [ 
+        firstrun_config +=  [
+                            "NAME_SERVERS='", Ref(DnsServers), "'\n",   
                             "POOLMEM='", Ref(WebserverPrivateIp), "'\n", 
                             "POOLMEMPORT=80\n", 
                             ]         
@@ -917,72 +969,22 @@ def main():
                         "tmsh install /sys license registration-key ${REGKEY}\n" 
                     ]
 
-    license_from_bigiq =  [                    
+    # License file downloaded remotely from https://cdn.f5.com/product/iapp/utils/license-from-bigiq.sh
+    license_from_bigiq =  [
                         "### BEGIN BIGIQ LICENSE ###\n",
                         "declare -i i\n",
-                        "i=0\n",
-                        "while ([ -z \"${MACHINE_STATE}\" ] || [ \"${MACHINE_STATE}\" == \"null\" ]);\n",
-                        "do\n",
-                        "     logger -p local0.info \"license_from_bigiq_debug: Attempting to register the BIGIP: ${BIGIP_DEVICE_ADDRESS} with BIGIQ: ${BIGIQ_ADDRESS}\"\n",
-                        "     curl -sSk -u ${BIGIQ_USERNAME}:${BIGIQ_PASSWORD} -o /tmp/add-managed-device-output.json --max-time 15  -H \"Content-Type: application/json\" -X POST -d '{\"deviceAddress\": \"'${BIGIP_DEVICE_ADDRESS}'\", \"username\":\"'${BIGIP_ADMIN_USERNAME}'\", \"password\":\"'${BIGIP_ADMIN_PASSWORD}'\", \"automaticallyUpdateFramework\":\"true\", \"rootUsername\":\"root\", \"rootPassword\":\"'${BIGIP_ROOT_PASSWORD}'\"}' https://${BIGIQ_ADDRESS}/mgmt/cm/cloud/managed-devices\n",
-                        "     MACHINE_ID=`cat /tmp/add-managed-device-output.json | /usr/bin/jq -r .machineId`\n",
-                        "     MACHINE_SELFLINK=`cat /tmp/add-managed-device-output.json | /usr/bin/jq -r .selfLink`\n",
-                        "     MACHINE_STATE=`cat /tmp/add-managed-device-output.json | /usr/bin/jq -r .state`\n",
-                        "     MACHINE_CODE=`cat /tmp/add-managed-device-output.json | /usr/bin/jq -r .code`\n",
-                        "     MACHINE_MESSAGE=`cat /tmp/add-managed-device-output.json | /usr/bin/jq -r .message`\n",
-                        "     if [ $i == 10 ]; then\n",
-                        "         logger -p local0.err \"license_from_bigiq_debug: EXITING - Could not register the device. CODE: ${MACHINE_CODE}, MESSAGE: ${MACHINE_MESSAGE}\"\n",
-                        "         exit 1\n",
+                        "i=0\n",  
+                        "while [ -z \"${CONTENT_SUCCESS}\" ]; do \n",
+                        "    curl -sSk -o /tmp/license_from_bigiq.sh --max-time 15 https://cdn.f5.com/product/iapp/utils/license_from_bigiq.sh\n",
+                        "    CONTENT_SUCCESS=$( egrep 'bin/bash' /tmp/license_from_bigiq.sh )\n",
+                        "    if [ $i == 30 ]; then\n",
+                        "        logger -p local0.err \"first_run.sh EXITING. failed to download bigiq license file.\"\n",
+                        "        exit 1\n",
                         "    fi\n",
                         "    i=$i+1\n",
                         "    sleep 10\n",
                         "done\n",
-                        "i=0\n",
-                        "while [ \"${MACHINE_STATE}\" != \"ACTIVE\" ];\n",
-                        "do \n",
-                        "     MACHINE_STATE=$( curl -sSk -u ${BIGIQ_USERNAME}:${BIGIQ_PASSWORD} --max-time 15 -H \"Content-Type: application/json\" -X GET https://${BIGIQ_ADDRESS}/mgmt/cm/cloud/managed-devices/${MACHINE_ID} | /usr/bin/jq -r .state )\n",
-                        "     if [ $i == 30 ] && [ \"${MACHINE_STATE}\" != \"ACTIVE\" ]; then\n",
-                        "       logger -p local0.err \"license_from_bigiq_debug: ABORT! Taking too long to register this BIGIP with BIGIQ.\"\n",
-                        "       exit 1\n",
-                        "     fi\n",
-                        "     i=$i+1\n",
-                        "     logger -p local0.info \"license_from_bigiq_debug: Machine State: ${MACHINE_STATE}...\"\n",
-                        "     sleep 30\n",
-                        "done\n",
-                        "# Install License From Pool\n",
-                        "i=0\n",
-                        "while ( [ -z \"$LICENSE_STATE\" ] || [ \"${LICENSE_STATE}\" == \"null\" ] );\n",
-                        "do\n",
-                        "     logger -p local0.info \"license_from_bigiq_debug: Attempting to get license BIG-IP: ${MACHINE_ID} from license pool: ${BIGIQ_LICENSE_POOL_UUID}\"\n",
-                        "     curl -sSk -u ${BIGIQ_USERNAME}:${BIGIQ_PASSWORD} -o /tmp/install-license-output.json --max-time 15  -H \"Content-Type: application/json\" -X POST -d '{\"deviceReference\":{\"link\": \"'${MACHINE_SELFLINK}'\"}}' https://${BIGIQ_ADDRESS}/mgmt/cm/shared/licensing/pools/${BIGIQ_LICENSE_POOL_UUID}/members\n",
-                        "     LICENSE_UUID=`cat /tmp/install-license-output.json | /usr/bin/jq -r .uuid`\n",
-                        "     LICENSE_STATE=`cat /tmp/install-license-output.json | /usr/bin/jq -r .state`\n",
-                        "     LICENSE_CODE=`cat /tmp/install-license-output.json | /usr/bin/jq -r .code`\n",
-                        "     LICENSE_MESSAGE=`cat /tmp/install-license-output.json | /usr/bin/jq -r .message`\n",
-                        "     if [ $i == 5 ]; then\n",
-                        "       logger -p local0.err \"license_from_bigiq_debug: EXITING, could not license the device. CODE: ${LICENSE_CODE}, MESSAGE: ${LICENSE_MESSAGE}\"\n",
-                        "       exit 1\n",
-                        "     fi\n",
-                        "     i=$i+1\n",
-                        "     sleep 10\n",
-                        "done\n",
-                        "i=0\n",
-                        "while [ \"${LICENSE_STATE}\" != \"LICENSED\" ];\n",
-                        "do\n",
-                        "     LICENSE_STATE=$( curl -sSk -u ${BIGIQ_USERNAME}:${BIGIQ_PASSWORD} --max-time 15 -H \"Content-Type: application/json\" -X GET https://${BIGIQ_ADDRESS}/mgmt/cm/shared/licensing/pools/${BIGIQ_LICENSE_POOL_UUID}/members/${LICENSE_UUID} | /usr/bin/jq -r .state )\n",
-                        "     if [ \"${LICENSE_STATE}\" == \"INSTALL\" ] ; then\n",
-                        "       sleep 5\n",
-                        "       continue\n",
-                        "     fi\n",
-                        "     if [ $i == 5 ] && [ \"${LICENSE_STATE}\" != \"LICENSED\" ]; then\n",
-                        "       logger -p local0.info \"license_from_bigiq_debug: BIGIP node not moving to 'LICENSED' state\"\n",
-                        "       exit 1\n",
-                        "     fi\n",
-                        "     i=$i+1\n",
-                        "     logger -p local0.info \"license_from_bigiq_debug: License Status: ${LICENSE_STATE}...\"\n",
-                        "     sleep 10\n",
-                        "done\n",
-                        "### END BIGIQ LICENSE ###\n",
+                        ". /tmp/license_from_bigiq.sh\n",
                         ]
 
     # begin building firstrun.sh
@@ -997,13 +999,15 @@ def main():
     firstrun_sh += checkF5Ready
 
     firstrun_sh += [
+                        "sleep 150\n",
+                        "logger -p local0.info 'firstrun debug: starting-tmsh-config'\n",
                         "tmsh modify /sys global-settings hostname ${HOSTNAME}\n",
                         "tmsh mv cm device bigip1 ${HOSTNAME}\n",
                         "tmsh modify auth password root <<< $'${BIGIP_ADMIN_PASSWORD}\n${BIGIP_ADMIN_PASSWORD}\n'\n",
                         "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
                         "tmsh modify sys ntp timezone ${TZ}\n",
                         "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
-                        "tmsh modify sys dns name-servers add { 10.0.0.2 }\n",
+                        "tmsh modify sys dns name-servers add { ${NAME_SERVERS} }\n",
                         "tmsh save /sys config\n",
                     ]
 
@@ -1058,7 +1062,9 @@ def main():
                         "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} ip-protocol tcp mask 255.255.255.255 pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                         ]
     firstrun_sh += [
-                        "tmsh save /sys config\n"
+                        "tmsh save /sys config\n",
+                        "# for security purposes, remove firstrun.config\n",
+                        "# rm /tmp/firstrun.config\n"
                    ]
 
     metadata = Metadata(
@@ -1155,6 +1161,12 @@ def main():
             "Vpc",
             Description="VPC ID",
             Value=Ref(Vpc),
+        ))
+
+        DnsServers = t.add_output(Output(
+            "DnsServers",
+            Description="DNS server for VPC",
+            Value="10.0.0.2",
         ))
 
         AvailabilityZone = t.add_output(Output(

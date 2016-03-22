@@ -1,47 +1,47 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "AWS CloudFormation Template for creating an 2nic Big-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Description": "AWS CloudFormation Template for creating an 3nic Big-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
   "Mappings": {
     "BigipRegionMap": {
       "ap-northeast-1": {
-        "Best": "ami-bcf69bbc",
-        "Better": "ami-d6f69bd6",
-        "Good": "ami-1ef69b1e"
+        "Best": "ami-29e11229",
+        "Better": "ami-c3f300c3",
+        "Good": "ami-5bc23f5b"
       },
       "ap-southeast-1": {
-        "Best": "ami-3c9a896e",
-        "Better": "ami-249a8976",
-        "Good": "ami-029a8950"
+        "Best": "ami-dcebdb8e",
+        "Better": "ami-92eadac0",
+        "Good": "ami-fc5764ae"
       },
       "ap-southeast-2": {
-        "Best": "ami-bfd69c85",
-        "Better": "ami-45d69c7f",
-        "Good": "ami-63d69c59"
+        "Best": "ami-eb5625d1",
+        "Better": "ami-0b562531",
+        "Good": "ami-e7e192dd"
       },
       "eu-west-1": {
-        "Best": "ami-3798a740",
-        "Better": "ami-2b98a75c",
-        "Good": "ami-f799a680"
+        "Best": "ami-c7158db0",
+        "Better": "ami-c9138bbe",
+        "Good": "ami-695fc51e"
       },
       "sa-east-1": {
-        "Best": "ami-a3952dcf",
-        "Better": "ami-f69e269a",
-        "Good": "ami-36962e5a"
+        "Best": "ami-0d7cc710",
+        "Better": "ami-4d73c850",
+        "Good": "ami-4b09b256"
       },
       "us-east-1": {
-        "Best": "ami-eb421d8e",
-        "Better": "ami-f1421d94",
-        "Good": "ami-03421d66"
+        "Best": "ami-7c9ab114",
+        "Better": "ami-c281aaaa",
+        "Good": "ami-488ca720"
       },
       "us-west-1": {
-        "Best": "ami-a70bc8e3",
-        "Better": "ami-af0bc8eb",
-        "Good": "ami-e90bc8ad"
+        "Best": "ami-614cad25",
+        "Better": "ami-254dac61",
+        "Good": "ami-f737d7b3"
       },
       "us-west-2": {
-        "Best": "ami-e2d735d1",
-        "Better": "ami-ccd735ff",
-        "Good": "ami-36d73505"
+        "Best": "ami-d1735de1",
+        "Better": "ami-2f755b1f",
+        "Good": "ami-a1775991"
       }
     }
   },
@@ -56,6 +56,12 @@
       "Description": "Instance Id of Big-IP in Amazon",
       "Value": {
         "Ref": "BigipInstance"
+      }
+    },
+    "BigipInternalSecurityGroup": {
+      "Description": "Private or Internal Security Group",
+      "Value": {
+        "Ref": "BigipInternalSecurityGroup"
       }
     },
     "BigipManagementSecurityGroup": {
@@ -100,6 +106,21 @@
       "Description": "IP Address of External interface attached to BIG-IP",
       "Value": {
         "Ref": "ExternalSelfEipAddress"
+      }
+    },
+    "InternalInterface": {
+      "Description": "Internal interface ID on BIG-IP",
+      "Value": {
+        "Ref": "InternalInterface"
+      }
+    },
+    "InternalInterfacePrivateIp": {
+      "Description": "Internally routable IP of internal interface on BIG-IP",
+      "Value": {
+        "Fn::GetAtt": [
+          "InternalInterface",
+          "PrimaryPrivateIpAddress"
+        ]
       }
     },
     "ManagementEipAddress": {
@@ -159,6 +180,11 @@
       "Description": "Public or External subnet ID",
       "Type": "AWS::EC2::Subnet::Id"
     },
+    "Az1InternalSubnet": {
+      "ConstraintDescription": "Must be subnet ID within existing VPC",
+      "Description": "Private or Internal subnet ID",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
     "Az1ManagementSubnet": {
       "ConstraintDescription": "Must be subnet ID within existing VPC",
       "Description": "Management Subnet ID",
@@ -200,6 +226,11 @@
       "Description": "F5 BIG-IP Virtual Instance Type",
       "Type": "String"
     },
+    "BigipInternalSecurityGroup": {
+      "ConstraintDescription": "Must be security group ID within existing VPC",
+      "Description": "Private or Internal Security Group ID",
+      "Type": "AWS::EC2::SecurityGroup::Id"
+    },
     "BigipManagementSecurityGroup": {
       "ConstraintDescription": "Must be security group ID within existing VPC",
       "Description": "Bigip Management Security Group",
@@ -214,35 +245,6 @@
       "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
       "Default": "Good",
       "Description": "F5 Bigip Performance Type",
-      "Type": "String"
-    },
-    "BigiqAddress": {
-      "ConstraintDescription": "Please verify your BIG-IQ Hostname or IP",
-      "Description": "Please enter your BIG-IQ Hostname or IP",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "Type": "String"
-    },
-    "BigiqLicensePoolUUID": {
-      "ConstraintDescription": "Please verify your BIG-IQ License Pool UUID",
-      "Description": "Please enter your BIG-IQ License Pool UUID",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "Type": "String"
-    },
-    "BigiqPassword": {
-      "ConstraintDescription": "Please verify your BIG-IQ Password",
-      "Description": "Please enter your BIG-IQ Password",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "NoEcho": true,
-      "Type": "String"
-    },
-    "BigiqUsername": {
-      "ConstraintDescription": "Please verify your BIG-IQ Username.",
-      "Description": "Please enter your BIG-IQ Username",
-      "MaxLength": "255",
-      "MinLength": "1",
       "Type": "String"
     },
     "DnsServers": {
@@ -349,31 +351,15 @@
                       },
                       "'\n",
                       "EXTMASK='24'\n",
-                      "BIGIQ_ADDRESS='",
+                      "INTIP='",
                       {
-                        "Ref": "BigiqAddress"
+                        "Fn::GetAtt": [
+                          "InternalInterface",
+                          "PrimaryPrivateIpAddress"
+                        ]
                       },
                       "'\n",
-                      "BIGIQ_USERNAME='",
-                      {
-                        "Ref": "BigiqUsername"
-                      },
-                      "'\n",
-                      "BIGIQ_PASSWORD='",
-                      {
-                        "Ref": "BigiqPassword"
-                      },
-                      "'\n",
-                      "BIGIQ_LICENSE_POOL_UUID='",
-                      {
-                        "Ref": "BigiqLicensePoolUUID"
-                      },
-                      "'\n",
-                      "BIGIP_DEVICE_ADDRESS='",
-                      {
-                        "Ref": "ManagementEipAddress"
-                      },
-                      "'\n"
+                      "INTMASK='24'\n"
                     ]
                   ]
                 },
@@ -449,20 +435,6 @@
                       "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
                       "tmsh modify sys dns name-servers add { ${NAME_SERVERS} }\n",
                       "tmsh save /sys config\n",
-                      "### BEGIN BIGIQ LICENSE ###\n",
-                      "declare -i i\n",
-                      "i=0\n",
-                      "while [ -z \"${CONTENT_SUCCESS}\" ]; do \n",
-                      "    curl -sSk -o /tmp/license_from_bigiq.sh --max-time 15 https://cdn.f5.com/product/iapp/utils/license_from_bigiq.sh\n",
-                      "    CONTENT_SUCCESS=$( egrep 'bin/bash' /tmp/license_from_bigiq.sh )\n",
-                      "    if [ $i == 30 ]; then\n",
-                      "        logger -p local0.err \"first_run.sh EXITING. failed to download bigiq license file.\"\n",
-                      "        exit 1\n",
-                      "    fi\n",
-                      "    i=$i+1\n",
-                      "    sleep 10\n",
-                      "done\n",
-                      ". /tmp/license_from_bigiq.sh\n",
                       "checkStatusnoret\n",
                       "sleep 30\n",
                       "tmsh save /sys config\n",
@@ -472,6 +444,8 @@
                       "tmsh create net vlan external interfaces add { 1.1 } \n",
                       "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
                       "tmsh create net route default gw 10.0.1.1\n",
+                      "tmsh create net vlan internal interfaces add { 1.2 } \n",
+                      "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
                       "tmsh save /sys config\n",
                       "checkStatusnoret\n",
                       "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
@@ -521,6 +495,13 @@
             "DeviceIndex": "1",
             "NetworkInterfaceId": {
               "Ref": "ExternalInterface"
+            }
+          },
+          {
+            "Description": "Private or Internal Interface",
+            "DeviceIndex": "2",
+            "NetworkInterfaceId": {
+              "Ref": "InternalInterface"
             }
           }
         ],
@@ -609,6 +590,20 @@
         }
       },
       "Type": "AWS::EC2::EIPAssociation"
+    },
+    "InternalInterface": {
+      "Properties": {
+        "Description": "Internal Interface for the Bigip",
+        "GroupSet": [
+          {
+            "Ref": "BigipInternalSecurityGroup"
+          }
+        ],
+        "SubnetId": {
+          "Ref": "Az1InternalSubnet"
+        }
+      },
+      "Type": "AWS::EC2::NetworkInterface"
     },
     "ManagementEipAddress": {
       "Properties": {

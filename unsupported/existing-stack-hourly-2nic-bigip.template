@@ -4,44 +4,44 @@
   "Mappings": {
     "BigipRegionMap": {
       "ap-northeast-1": {
-        "Best": "ami-bcf69bbc",
-        "Better": "ami-d6f69bd6",
-        "Good": "ami-1ef69b1e"
+        "Best": "ami-29e11229",
+        "Better": "ami-c3f300c3",
+        "Good": "ami-5bc23f5b"
       },
       "ap-southeast-1": {
-        "Best": "ami-3c9a896e",
-        "Better": "ami-249a8976",
-        "Good": "ami-029a8950"
+        "Best": "ami-dcebdb8e",
+        "Better": "ami-92eadac0",
+        "Good": "ami-fc5764ae"
       },
       "ap-southeast-2": {
-        "Best": "ami-bfd69c85",
-        "Better": "ami-45d69c7f",
-        "Good": "ami-63d69c59"
+        "Best": "ami-eb5625d1",
+        "Better": "ami-0b562531",
+        "Good": "ami-e7e192dd"
       },
       "eu-west-1": {
-        "Best": "ami-3798a740",
-        "Better": "ami-2b98a75c",
-        "Good": "ami-f799a680"
+        "Best": "ami-c7158db0",
+        "Better": "ami-c9138bbe",
+        "Good": "ami-695fc51e"
       },
       "sa-east-1": {
-        "Best": "ami-a3952dcf",
-        "Better": "ami-f69e269a",
-        "Good": "ami-36962e5a"
+        "Best": "ami-0d7cc710",
+        "Better": "ami-4d73c850",
+        "Good": "ami-4b09b256"
       },
       "us-east-1": {
-        "Best": "ami-eb421d8e",
-        "Better": "ami-f1421d94",
-        "Good": "ami-03421d66"
+        "Best": "ami-7c9ab114",
+        "Better": "ami-c281aaaa",
+        "Good": "ami-488ca720"
       },
       "us-west-1": {
-        "Best": "ami-a70bc8e3",
-        "Better": "ami-af0bc8eb",
-        "Good": "ami-e90bc8ad"
+        "Best": "ami-614cad25",
+        "Better": "ami-254dac61",
+        "Good": "ami-f737d7b3"
       },
       "us-west-2": {
-        "Best": "ami-e2d735d1",
-        "Better": "ami-ccd735ff",
-        "Good": "ami-36d73505"
+        "Best": "ami-d1735de1",
+        "Better": "ami-2f755b1f",
+        "Good": "ami-a1775991"
       }
     }
   },
@@ -216,35 +216,6 @@
       "Description": "F5 Bigip Performance Type",
       "Type": "String"
     },
-    "BigiqAddress": {
-      "ConstraintDescription": "Please verify your BIG-IQ Hostname or IP",
-      "Description": "Please enter your BIG-IQ Hostname or IP",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "Type": "String"
-    },
-    "BigiqLicensePoolUUID": {
-      "ConstraintDescription": "Please verify your BIG-IQ License Pool UUID",
-      "Description": "Please enter your BIG-IQ License Pool UUID",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "Type": "String"
-    },
-    "BigiqPassword": {
-      "ConstraintDescription": "Please verify your BIG-IQ Password",
-      "Description": "Please enter your BIG-IQ Password",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "NoEcho": true,
-      "Type": "String"
-    },
-    "BigiqUsername": {
-      "ConstraintDescription": "Please verify your BIG-IQ Username.",
-      "Description": "Please enter your BIG-IQ Username",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "Type": "String"
-    },
     "DnsServers": {
       "AllowedPattern": "((\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\s?)+",
       "ConstraintDescription": "Usually .2 for your VPC CIDR, ex. 10.0.0.2 for a 10.0.0.0/16 network",
@@ -348,32 +319,7 @@
                         ]
                       },
                       "'\n",
-                      "EXTMASK='24'\n",
-                      "BIGIQ_ADDRESS='",
-                      {
-                        "Ref": "BigiqAddress"
-                      },
-                      "'\n",
-                      "BIGIQ_USERNAME='",
-                      {
-                        "Ref": "BigiqUsername"
-                      },
-                      "'\n",
-                      "BIGIQ_PASSWORD='",
-                      {
-                        "Ref": "BigiqPassword"
-                      },
-                      "'\n",
-                      "BIGIQ_LICENSE_POOL_UUID='",
-                      {
-                        "Ref": "BigiqLicensePoolUUID"
-                      },
-                      "'\n",
-                      "BIGIP_DEVICE_ADDRESS='",
-                      {
-                        "Ref": "ManagementEipAddress"
-                      },
-                      "'\n"
+                      "EXTMASK='24'\n"
                     ]
                   ]
                 },
@@ -449,20 +395,6 @@
                       "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
                       "tmsh modify sys dns name-servers add { ${NAME_SERVERS} }\n",
                       "tmsh save /sys config\n",
-                      "### BEGIN BIGIQ LICENSE ###\n",
-                      "declare -i i\n",
-                      "i=0\n",
-                      "while [ -z \"${CONTENT_SUCCESS}\" ]; do \n",
-                      "    curl -sSk -o /tmp/license_from_bigiq.sh --max-time 15 https://cdn.f5.com/product/iapp/utils/license_from_bigiq.sh\n",
-                      "    CONTENT_SUCCESS=$( egrep 'bin/bash' /tmp/license_from_bigiq.sh )\n",
-                      "    if [ $i == 30 ]; then\n",
-                      "        logger -p local0.err \"first_run.sh EXITING. failed to download bigiq license file.\"\n",
-                      "        exit 1\n",
-                      "    fi\n",
-                      "    i=$i+1\n",
-                      "    sleep 10\n",
-                      "done\n",
-                      ". /tmp/license_from_bigiq.sh\n",
                       "checkStatusnoret\n",
                       "sleep 30\n",
                       "tmsh save /sys config\n",

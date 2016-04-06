@@ -37,7 +37,7 @@ def main():
 
 
     parser = OptionParser()
-    parser.add_option("-n", "--nics", action="store", type="int", dest="num_nics", help="Number of nics: 1,2 or 3")
+    parser.add_option("-n", "--nics", action="store", type="int", dest="num_nics", default=1, help="Number of nics: 1,2 or 3")
     parser.add_option("-l", "--license", action="store", type="string", dest="license_type", default="hourly", help="Type of License: hourly, byol or bigiq" )
     parser.add_option("-s", "--stack", action="store", type="string", dest="stack", help="Stack: network, security_groups, infra, full or existing" )
     parser.add_option("-c", "--component", action="store", type="string", dest="component", help="Component: waf" )
@@ -273,15 +273,6 @@ def main():
         ))
 
     if options.stack == "existing":
-
-        DnsServers = t.add_parameter(Parameter(
-            "DnsServers",
-            Default="10.0.0.2",
-            ConstraintDescription="Usually .2 for your VPC CIDR, ex. 10.0.0.2 for a 10.0.0.0/16 network",
-            Type="String",
-            Description="Space Seperated list of DNS Servers",
-            AllowedPattern="((\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\s?)+",
-        ))
 
         Az1ExternalSubnet = t.add_parameter(Parameter(
             "Az1ExternalSubnet",
@@ -966,44 +957,10 @@ def main():
         firstrun_config += [
                                 "#!/bin/bash\n", 
                                 "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n", 
-                                "TZ='America/Los_Angeles'\n", 
+                                "TZ='America/Los_Angeles'\n",
                                 "BIGIP_ADMIN_USERNAME='", Ref(BigipAdminUsername), "'\n", 
                                 "BIGIP_ADMIN_PASSWORD='", Ref(BigipAdminPassword), "'\n",
-                                "APPNAME='demo-app-1'\n", 
-                                "VIRTUALSERVERPORT=80\n",
-                                "CRT='default.crt'\n", 
-                                "KEY='default.key'\n",
                             ]
-
-        if options.stack == "full":
-            firstrun_config +=  [              
-                                "NAME_SERVERS='10.0.0.2'\n", 
-                                "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n", 
-                                "POOLMEMPORT=80\n", 
-                                ]
-        elif options.stack == "existing":
-            firstrun_config +=  [
-                                "NAME_SERVERS='", Ref(DnsServers), "'\n",   
-                                "POOLMEM='", Ref(WebserverPrivateIp), "'\n", 
-                                "POOLMEMPORT=80\n", 
-                                ]         
-
-
-        if options.num_nics == 1:
-            firstrun_config += [ "MANAGEMENT_GUI_PORT='", Ref(BigipManagementGuiPort), "'\n", ] 
-        if options.num_nics > 1:
-            firstrun_config += [ 
-                                "MGMTIP='", GetAtt("ManagementInterface", "PrimaryPrivateIpAddress"), "'\n", 
-                                "EXTIP='", GetAtt("ExternalInterface", "PrimaryPrivateIpAddress"), "'\n", 
-                                "EXTPRIVIP='", Select("0", GetAtt("ExternalInterface", "SecondaryPrivateIpAddresses")), "'\n", 
-                                "EXTMASK='24'\n" 
-                                ]
-        if options.num_nics > 2:
-            firstrun_config += [ 
-                                "INTIP='",GetAtt("InternalInterface", "PrimaryPrivateIpAddress"),"'\n",
-                                "INTMASK='24'\n", 
-                               ]
-
 
         if options.license_type == "byol":
             firstrun_config += [ "REGKEY='", Ref(BigipLicenseKey), "'\n" ]
@@ -1021,53 +978,131 @@ def main():
                 firstrun_config += [ "BIGIP_DEVICE_ADDRESS='", Ref(ManagementEipAddress),"'\n" ] 
 
 
+        if options.num_nics == 1:
+            firstrun_config += [ 
+                                "MANAGEMENT_GUI_PORT='", Ref(BigipManagementGuiPort), "'\n",  
+                                "GATEWAY_MAC=`ifconfig eth0 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                               ]
+
+        if options.num_nics > 1:
+            firstrun_config += [ 
+                                "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                               ]
+
+        firstrun_config += [
+                                "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                                "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                                "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                                "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                                "VPC_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-block`\n",
+                                "VPC_NET=${VPC_CIDR_BLOCK%/*}\n",
+                                "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
+                                "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n", 
+                            ]
+
+
+        if options.num_nics > 1:
+            firstrun_config += [ 
+                                "MGMTIP='", GetAtt("ManagementInterface", "PrimaryPrivateIpAddress"), "'\n", 
+                                "EXTIP='", GetAtt("ExternalInterface", "PrimaryPrivateIpAddress"), "'\n", 
+                                "EXTPRIVIP='", Select("0", GetAtt("ExternalInterface", "SecondaryPrivateIpAddresses")), "'\n", 
+                                "EXTMASK='24'\n" 
+                                ]
+        if options.num_nics > 2:
+            firstrun_config += [ 
+                                "INTIP='",GetAtt("InternalInterface", "PrimaryPrivateIpAddress"),"'\n",
+                                "INTMASK='24'\n", 
+                               ]
+
+
+        if options.stack == "full":
+            firstrun_config +=  [              
+                                "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n", 
+                                "POOLMEMPORT=80\n", 
+                                ]
+        elif options.stack == "existing":
+            firstrun_config +=  [
+                                "POOLMEM='", Ref(WebserverPrivateIp), "'\n", 
+                                "POOLMEMPORT=80\n", 
+                                ]         
+
+
+        firstrun_config +=  [
+                                "APPNAME='demo-app-1'\n", 
+                                "VIRTUALSERVERPORT=80\n",
+                                "CRT='default.crt'\n", 
+                                "KEY='default.key'\n",
+                            ]
+
         # build firstrun.sh vars
 
         checkF5Ready =  [
-                            "if [ ! -e $FILE ]\n"," then\n",
-                            "     touch $FILE\n",
-                            "     nohup $0 0<&- &>/dev/null &\n",
-                            "     exit\n",
-                            "fi\n",
-                            "function checkF5Ready {\n",
-                            "     sleep 5\n",
-                            "     while [[ ! -e '/var/prompt/ps1' ]]\n"," do\n",
-                            "     echo -n '.'\n",
-                            "     sleep 5\n",
-                            "done \n",
-                            "sleep 5\n",
-                            "STATUS=`cat /var/prompt/ps1`\n",
-                            "while [[ ${STATUS}x != 'NO LICENSE'x ]]\n"," do\n",
-                            "     echo -n '.'\n",
-                            "     sleep 5\n",
-                            "     STATUS=`cat /var/prompt/ps1`\n",
-                            "done\n",
-                            "echo -n ' '\n",
-                            "while [[ ! -e '/var/prompt/cmiSyncStatus' ]]\n"," do\n",
-                            "     echo -n '.'\n",
-                            "     sleep 5\n",
-                            "done \n",
-                            "STATUS=`cat /var/prompt/cmiSyncStatus`\n",
-                            "while [[ ${STATUS}x != 'Standalone'x ]]\n"," do\n",
-                            "     echo -n '.'\n",
-                            "     sleep 5\n",
-                            "     STATUS=`cat /var/prompt/cmiSyncStatus`\n",
-                            "done\n",
-                            "}\n",
-                            "function checkStatusnoret {\n",
-                            "sleep 10\n",
-                            "STATUS=`cat /var/prompt/ps1`\n",
-                            "while [[ ${STATUS}x != 'Active'x ]]\n"," do\n",
-                            "     echo -n '.'\n",
-                            "     sleep 5\n",
-                            "     STATUS=`cat /var/prompt/ps1`\n",
-                            "done\n",
-                            "}\n",
-                            "exec 1<&-\n",
-                            "exec 2<&-\n",
-                            "exec 1<>$FILE\n",
-                            "exec 2>&1\n",
-                            "checkF5Ready\n",
+                          "if [ ! -e $FILE ]\n",
+                          " then\n",
+                          "     touch $FILE\n",
+                          "     nohup $0 0<&- &>/dev/null &\n",
+                          "     exit\n",
+                          "fi\n",
+                          "function checkStatus() {\n",
+                          "        count=1\n",
+                          "        sleep 10;\n",
+                          "        STATUS=`cat /var/prompt/ps1`;\n",
+                          "        while [[ ${STATUS}x != 'Active'x ]]; do\n",
+                          "                echo -n '.';\n",
+                          "                sleep 5;\n",
+                          "                count=$(($count+1));\n",
+                          "                STATUS=`cat /var/prompt/ps1`;\n",
+                          "                if [[ $count -eq 60 ]]; then",
+                          "                        checkretstatus=\"restart\";\n",
+                          "                        return;\n",
+                          "                fi\n",
+                          "        done;\n",
+                          "        checkretstatus=\"run\";\n",
+                          "}\n",
+                          "function checkF5Ready {\n",
+                          "     sleep 5\n",
+                          "     while [[ ! -e '/var/prompt/ps1' ]]\n",
+                          " do\n",
+                          "     echo -n '.'\n",
+                          "     sleep 5\n",
+                          "done \n",
+                          "sleep 5\n",
+                          "STATUS=`cat /var/prompt/ps1`\n",
+                          "while [[ ${STATUS}x != 'NO LICENSE'x ]]\n",
+                          " do\n",
+                          "     echo -n '.'\n",
+                          "     sleep 5\n",
+                          "     STATUS=`cat /var/prompt/ps1`\n",
+                          "done\n",
+                          "echo -n ' '\n",
+                          "while [[ ! -e '/var/prompt/cmiSyncStatus' ]]\n",
+                          " do\n",
+                          "     echo -n '.'\n",
+                          "     sleep 5\n",
+                          "done \n",
+                          "STATUS=`cat /var/prompt/cmiSyncStatus`\n",
+                          "while [[ ${STATUS}x != 'Standalone'x ]]\n",
+                          " do\n",
+                          "     echo -n '.'\n",
+                          "     sleep 5\n",
+                          "     STATUS=`cat /var/prompt/cmiSyncStatus`\n",
+                          "done\n",
+                          "}\n",
+                          "function checkStatusnoret {\n",
+                          "sleep 10\n",
+                          "STATUS=`cat /var/prompt/ps1`\n",
+                          "while [[ ${STATUS}x != 'Active'x ]]\n",
+                          " do\n",
+                          "     echo -n '.'\n",
+                          "     sleep 5\n",
+                          "     STATUS=`cat /var/prompt/ps1`\n",
+                          "done\n",
+                          "}\n",
+                          "exec 1<&-\n",
+                          "exec 2<&-\n",
+                          "exec 1<>$FILE\n",
+                          "exec 2>&1\n",
+                          "checkF5Ready\n",
                         ]
 
         license_byol =  [ 
@@ -1112,7 +1147,7 @@ def main():
                             "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
                             "tmsh modify sys ntp timezone ${TZ}\n",
                             "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
-                            "tmsh modify sys dns name-servers add { ${NAME_SERVERS} }\n",
+                            "tmsh modify sys dns name-servers add { ${NAME_SERVER} }\n",
                             "tmsh save /sys config\n",
                         ]
 

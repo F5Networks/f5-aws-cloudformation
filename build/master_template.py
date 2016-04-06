@@ -40,7 +40,7 @@ def main():
     parser.add_option("-n", "--nics", action="store", type="int", dest="num_nics", default=1, help="Number of nics: 1,2 or 3")
     parser.add_option("-l", "--license", action="store", type="string", dest="license_type", default="hourly", help="Type of License: hourly, byol or bigiq" )
     parser.add_option("-s", "--stack", action="store", type="string", dest="stack", help="Stack: network, security_groups, infra, full or existing" )
-    parser.add_option("-c", "--component", action="store", type="string", dest="component", help="Component: waf" )
+    parser.add_option("-c", "--components", action="store", type="string", dest="components", help="Comma seperated list of components: ex. waf" )
     (options, args) = parser.parse_args()
 
     network=True
@@ -78,6 +78,13 @@ def main():
         security_groups=False
         webserver=False
         bigip=True
+
+
+    components = {}
+    if options.components:
+        for component in options.components.split(','):
+            components[component] = True
+
 
 
     t = Template()
@@ -189,7 +196,7 @@ def main():
 
         BigipPerformanceType = t.add_parameter(Parameter(
             "BigipPerformanceType",
-            Default="Good",
+            Default="Best",
             ConstraintDescription="Must be a valid F5 Big-IP performance type",
             Type="String",
             Description="F5 Bigip Performance Type",
@@ -265,12 +272,12 @@ def main():
                 MaxLength="255",
             ))
 
-    if options.stack == "existing" or security_groups == True:
-        Vpc = t.add_parameter(Parameter(
-            "Vpc",
-            ConstraintDescription="Must be an existing VPC within working region.",
-            Type="AWS::EC2::VPC::Id",
-        ))
+    if options.stack == "existing" or options.stack == "security_groups":
+            Vpc = t.add_parameter(Parameter(
+                "Vpc",
+                ConstraintDescription="Must be an existing VPC within working region.",
+                Type="AWS::EC2::VPC::Id",
+            ))
 
     if options.stack == "existing":
 
@@ -568,7 +575,7 @@ def main():
         #https://forums.aws.amazon.com/thread.jspa?threadID=100750
         ManagementDefaultRoute = t.add_resource(Route(
             "ManagementDefaultRoute",
-            DependsOn=Ref(AttachGateway),
+            DependsOn="AttachGateway",
             GatewayId=Ref(Igw),
             DestinationCidrBlock="0.0.0.0/0",
             RouteTableId=Ref(ManagementRouteTable),
@@ -576,7 +583,7 @@ def main():
 
         ExternalDefaultRoute = t.add_resource(Route(
             "ExternalDefaultRoute",
-            DependsOn=Ref(AttachGateway),
+            DependsOn="AttachGateway",
             GatewayId=Ref(Igw),
             DestinationCidrBlock="0.0.0.0/0",
             RouteTableId=Ref(ExternalRouteTable),
@@ -584,7 +591,7 @@ def main():
 
         InternalDefaultRoute = t.add_resource(Route(
             "InternalDefaultRoute",
-            DependsOn=Ref(AttachGateway),
+            DependsOn="AttachGateway",
             GatewayId=Ref(Igw),
             DestinationCidrBlock="0.0.0.0/0",
             RouteTableId=Ref(InternalRouteTable),
@@ -592,7 +599,7 @@ def main():
 
         ApplicationDefaultRoute = t.add_resource(Route(
             "ApplicationDefaultRoute",
-            DependsOn=Ref(AttachGateway),
+            DependsOn="AttachGateway",
             GatewayId=Ref(Igw),
             DestinationCidrBlock="0.0.0.0/0",
             RouteTableId=Ref(ApplicationRouteTable),
@@ -877,21 +884,27 @@ def main():
         if options.stack == "full":
             ExternalSelfEipAddress = t.add_resource(EIP(
                 "ExternalSelfEipAddress",
-                DependsOn=Ref(AttachGateway),
+                DependsOn="AttachGateway",
                 Domain="vpc",
+            ))
+            ExternalSelfEipAssociation = t.add_resource(EIPAssociation(
+                "ExternalSelfEipAssociation",
+                DependsOn="AttachGateway",
+                NetworkInterfaceId=Ref(ExternalInterface),
+                AllocationId=GetAtt(ExternalSelfEipAddress, "AllocationId"),
+                PrivateIpAddress=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
             ))
         else:
             ExternalSelfEipAddress = t.add_resource(EIP(
                 "ExternalSelfEipAddress",
                 Domain="vpc",
             ))
-
-        ExternalSelfEipAssociation = t.add_resource(EIPAssociation(
-            "ExternalSelfEipAssociation",
-            NetworkInterfaceId=Ref(ExternalInterface),
-            AllocationId=GetAtt(ExternalSelfEipAddress, "AllocationId"),
-            PrivateIpAddress=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
-        ))
+            ExternalSelfEipAssociation = t.add_resource(EIPAssociation(
+                "ExternalSelfEipAssociation",
+                NetworkInterfaceId=Ref(ExternalInterface),
+                AllocationId=GetAtt(ExternalSelfEipAddress, "AllocationId"),
+                PrivateIpAddress=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
+            ))
      
         if options.num_nics > 1:
 
@@ -899,23 +912,28 @@ def main():
 
                 VipEipAddress = t.add_resource(EIP(
                     "VipEipAddress",
-                    DependsOn=Ref(AttachGateway),
+                    DependsOn="AttachGateway",
                     Domain="vpc",
                 ))
+                VipEipAssociation = t.add_resource(EIPAssociation(
+                    "VipEipAssociation",
+                    DependsOn="AttachGateway",
+                    NetworkInterfaceId=Ref(ExternalInterface),
+                    AllocationId=GetAtt(VipEipAddress, "AllocationId"),
+                    PrivateIpAddress=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
+                ))
+
             else:
                 VipEipAddress = t.add_resource(EIP(
                     "VipEipAddress",
                     Domain="vpc",
                 ))
-
-
-            VipEipAssociation = t.add_resource(EIPAssociation(
-                "VipEipAssociation",
-                NetworkInterfaceId=Ref(ExternalInterface),
-                AllocationId=GetAtt(VipEipAddress, "AllocationId"),
-                PrivateIpAddress=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
-            ))
-
+                VipEipAssociation = t.add_resource(EIPAssociation(
+                    "VipEipAssociation",
+                    NetworkInterfaceId=Ref(ExternalInterface),
+                    AllocationId=GetAtt(VipEipAddress, "AllocationId"),
+                    PrivateIpAddress=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
+                ))
 
             ManagementInterface = t.add_resource(NetworkInterface(
                 "ManagementInterface",
@@ -927,20 +945,26 @@ def main():
             if options.stack == "full":
                 ManagementEipAddress = t.add_resource(EIP(
                     "ManagementEipAddress",
-                    DependsOn=Ref(AttachGateway),
+                    DependsOn="AttachGateway",
                     Domain="vpc",
                 ))
+                ManagementEipAssociation = t.add_resource(EIPAssociation(
+                    "ManagementEipAssociation",
+                    DependsOn="AttachGateway",
+                    NetworkInterfaceId=Ref(ManagementInterface),
+                    AllocationId=GetAtt(ManagementEipAddress, "AllocationId"),
+                ))
+
             else:
                 ManagementEipAddress = t.add_resource(EIP(
                     "ManagementEipAddress",
                     Domain="vpc",
                 ))
-
-            ManagementEipAssociation = t.add_resource(EIPAssociation(
-                "ManagementEipAssociation",
-                NetworkInterfaceId=Ref(ManagementInterface),
-                AllocationId=GetAtt(ManagementEipAddress, "AllocationId"),
-            ))
+                ManagementEipAssociation = t.add_resource(EIPAssociation(
+                    "ManagementEipAssociation",
+                    NetworkInterfaceId=Ref(ManagementInterface),
+                    AllocationId=GetAtt(ManagementEipAddress, "AllocationId"),
+                ))
 
             if options.num_nics > 2:
                 InternalInterface = t.add_resource(NetworkInterface(
@@ -1124,6 +1148,7 @@ def main():
                             "    i=$i+1\n",
                             "    sleep 10\n",
                             "done\n",
+                            "curl -sSk -o /tmp/remove_license_from_bigiq.sh --max-time 15 https://cdn.f5.com/product/iapp/utils/remove_license_from_bigiq.sh\n",
                             ". /tmp/license_from_bigiq.sh\n",
                             ]
 
@@ -1156,6 +1181,27 @@ def main():
         elif options.license_type == "bigiq":
             firstrun_sh += license_from_bigiq
 
+
+        if 'waf' in components:
+            firstrun_sh += [
+                              "checkStatusnoret\n",
+                              "sleep 30\n",
+                              "echo \"provisioning asm\"\n",
+                              "sleep 20\n",
+                              "tmsh modify /sys provision asm level nominal\n",
+                              "checkretstatus='stop'\n",
+                              "while [[ $checkretstatus != \"run\" ]]; do\n",
+                              "     checkStatus\n",
+                              "     if [[ $checkretstatus == \"restart\" ]]; then\n",
+                              "         echo restarting\n",
+                              "         tmsh modify /sys provision asm level none\n",
+                              "         checkStatusnoret\n",
+                              "         checkretstatus='stop'\n",
+                              "         tmsh modify /sys provision asm level nominal\n",
+                              "     fi\n",
+                              "done\n",
+                              "echo done\n",
+                            ]
         # Global
         firstrun_sh += [ 
                             "checkStatusnoret\n",
@@ -1176,7 +1222,7 @@ def main():
             firstrun_sh +=  [ 
                             "tmsh create net vlan external interfaces add { 1.1 } \n",
                             "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
-                            "tmsh create net route default gw 10.0.1.1\n",
+                            "tmsh create net route default gw ${GATEWAY}\n",
                             ]
         if options.num_nics > 2:
             firstrun_sh +=  [ 
@@ -1190,17 +1236,46 @@ def main():
                        ]
 
         # Add virtual service
-        if options.num_nics == 1:
-            firstrun_sh +=  [
-                            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} ip-protocol tcp mask any pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                            ]
+        if 'waf' not in components:
 
-        if options.num_nics > 1:
-            firstrun_sh +=  [
-                            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} ip-protocol tcp mask 255.255.255.255 pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                            ]
+            if options.num_nics == 1:
+                firstrun_sh +=  [
+                                "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                                "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                ]
+
+            if options.num_nics > 1:
+                firstrun_sh +=  [
+                                "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                                "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                ]
+
+        if 'waf' in components:
+            if options.num_nics == 1:
+                firstrun_sh +=  [
+                                  "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                                  "curl https://cdn.f5.com/product/blackbox/asm-policy-linux-high.xml > /home/admin/asm-policy-linux-high.xml\n",
+                                  "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
+                                  "tmsh modify asm policy /Common/linux-high active\n",
+                                  "tmsh create ltm policy app-ltm-policy strategy first-match\n",
+                                  "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
+                                  "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
+                                  "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                                ]
+
+            if options.num_nics > 1:
+                firstrun_sh +=  [
+                                  "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                                  "curl https://cdn.f5.com/product/blackbox/asm-policy-linux-high.xml > /home/admin/asm-policy-linux-high.xml\n",
+                                  "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
+                                  "tmsh modify asm policy /Common/linux-high active\n",
+                                  "tmsh create ltm policy app-ltm-policy strategy first-match\n",
+                                  "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
+                                  "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
+                                  "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                                ]
+
+
         firstrun_sh += [
                             "tmsh save /sys config\n",
                             "# for security purposes, remove firstrun.config\n",

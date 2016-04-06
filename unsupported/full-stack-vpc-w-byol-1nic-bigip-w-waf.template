@@ -269,6 +269,14 @@
       "Description": "F5 BIG-IP Virtual Instance Type",
       "Type": "String"
     },
+    "BigipLicenseKey": {
+      "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
+      "ConstraintDescription": "Please verify your F5 BYOL regkey.",
+      "Description": "Please enter your F5 BYOL regkey here:",
+      "MaxLength": "255",
+      "MinLength": "1",
+      "Type": "String"
+    },
     "BigipManagementGuiPort": {
       "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
       "Default": "443",
@@ -284,35 +292,6 @@
       "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
       "Default": "Best",
       "Description": "F5 Bigip Performance Type",
-      "Type": "String"
-    },
-    "BigiqAddress": {
-      "ConstraintDescription": "Please verify your BIG-IQ Hostname or IP",
-      "Description": "Please enter your BIG-IQ Hostname or IP",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "Type": "String"
-    },
-    "BigiqLicensePoolUUID": {
-      "ConstraintDescription": "Please verify your BIG-IQ License Pool UUID",
-      "Description": "Please enter your BIG-IQ License Pool UUID",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "Type": "String"
-    },
-    "BigiqPassword": {
-      "ConstraintDescription": "Please verify your BIG-IQ Password",
-      "Description": "Please enter your BIG-IQ Password",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "NoEcho": true,
-      "Type": "String"
-    },
-    "BigiqUsername": {
-      "ConstraintDescription": "Please verify your BIG-IQ Username.",
-      "Description": "Please enter your BIG-IQ Username",
-      "MaxLength": "255",
-      "MinLength": "1",
       "Type": "String"
     },
     "KeyName": {
@@ -786,29 +765,9 @@
                         "Ref": "BigipAdminPassword"
                       },
                       "'\n",
-                      "BIGIQ_ADDRESS='",
+                      "REGKEY='",
                       {
-                        "Ref": "BigiqAddress"
-                      },
-                      "'\n",
-                      "BIGIQ_USERNAME='",
-                      {
-                        "Ref": "BigiqUsername"
-                      },
-                      "'\n",
-                      "BIGIQ_PASSWORD='",
-                      {
-                        "Ref": "BigiqPassword"
-                      },
-                      "'\n",
-                      "BIGIQ_LICENSE_POOL_UUID='",
-                      {
-                        "Ref": "BigiqLicensePoolUUID"
-                      },
-                      "'\n",
-                      "BIGIP_DEVICE_ADDRESS='",
-                      {
-                        "Ref": "ExternalSelfEipAddress"
+                        "Ref": "BigipLicenseKey"
                       },
                       "'\n",
                       "MANAGEMENT_GUI_PORT='",
@@ -929,21 +888,24 @@
                       "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
                       "tmsh modify sys dns name-servers add { ${NAME_SERVER} }\n",
                       "tmsh save /sys config\n",
-                      "### BEGIN BIGIQ LICENSE ###\n",
-                      "declare -i i\n",
-                      "i=0\n",
-                      "while [ -z \"${CONTENT_SUCCESS}\" ]; do \n",
-                      "    curl -sSk -o /tmp/license_from_bigiq.sh --max-time 15 https://cdn.f5.com/product/iapp/utils/license_from_bigiq.sh\n",
-                      "    CONTENT_SUCCESS=$( egrep 'bin/bash' /tmp/license_from_bigiq.sh )\n",
-                      "    if [ $i == 30 ]; then\n",
-                      "        logger -p local0.err \"first_run.sh EXITING. failed to download bigiq license file.\"\n",
-                      "        exit 1\n",
-                      "    fi\n",
-                      "    i=$i+1\n",
-                      "    sleep 10\n",
+                      "tmsh install /sys license registration-key ${REGKEY}\n",
+                      "checkStatusnoret\n",
+                      "sleep 30\n",
+                      "echo \"provisioning asm\"\n",
+                      "sleep 20\n",
+                      "tmsh modify /sys provision asm level nominal\n",
+                      "checkretstatus='stop'\n",
+                      "while [[ $checkretstatus != \"run\" ]]; do\n",
+                      "     checkStatus\n",
+                      "     if [[ $checkretstatus == \"restart\" ]]; then\n",
+                      "         echo restarting\n",
+                      "         tmsh modify /sys provision asm level none\n",
+                      "         checkStatusnoret\n",
+                      "         checkretstatus='stop'\n",
+                      "         tmsh modify /sys provision asm level nominal\n",
+                      "     fi\n",
                       "done\n",
-                      "curl -sSk -o /tmp/remove_license_from_bigiq.sh --max-time 15 https://cdn.f5.com/product/iapp/utils/remove_license_from_bigiq.sh\n",
-                      ". /tmp/license_from_bigiq.sh\n",
+                      "echo done\n",
                       "checkStatusnoret\n",
                       "sleep 30\n",
                       "tmsh save /sys config\n",
@@ -955,7 +917,13 @@
                       "tmsh save /sys config\n",
                       "checkStatusnoret\n",
                       "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                      "curl https://cdn.f5.com/product/blackbox/asm-policy-linux-high.xml > /home/admin/asm-policy-linux-high.xml\n",
+                      "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
+                      "tmsh modify asm policy /Common/linux-high active\n",
+                      "tmsh create ltm policy app-ltm-policy strategy first-match\n",
+                      "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
+                      "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
+                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
                       "tmsh save /sys config\n",
                       "# for security purposes, remove firstrun.config\n",
                       "# rm /tmp/firstrun.config\n"

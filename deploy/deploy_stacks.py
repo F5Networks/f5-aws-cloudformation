@@ -148,9 +148,9 @@ class DeploymentManager:
 
 
 parser = OptionParser()
+parser.add_option("-t", "--templates", action="store", type="string", dest="templates", help="REQUIRED: Comma separated list of templates" )
 parser.add_option("-d", "--dir", action="store", type="string", dest="template_dir", help="directory containing templates" )
-parser.add_option("-t", "--templates", action="store", type="string", dest="templates", help="Comma separated list of templates" )
-parser.add_option("-r", "--regkeys", action="store", type="string", dest="regkeys", help="Comma seperated list of regkeys" )
+parser.add_option("-r", "--regkeys", action="store", type="string", dest="regkeys", help="Comma seperated list of regkeys. List must match # of templates" )
 parser.add_option("-c", "--config", action="store", type="string", dest="config_file", help="Config file used" )
 
 
@@ -163,10 +163,14 @@ parser.set_defaults(template_dir='../unsupported')
 TEMPLATES_DIR = options.template_dir
 
 # define set of templates we are deploying
-file_list = options.templates.split(',')
+file_list = []
 template_list = []
-for file in file_list: 
-    template_list.append(os.path.splitext(os.path.basename(file))[0])
+if not options.templates:
+    parser.error("-t <template or list of templates> required. Type -h for help")
+else:
+    file_list = options.templates.split(',')
+    for file in file_list: 
+        template_list.append(os.path.splitext(os.path.basename(file))[0])
 
 # create list of regkeys (should be indexed same as list of input templates)
 # if there's a non-byol bigip template in the beginning or middle, add a comma space
@@ -182,12 +186,15 @@ else:
         regkey_list.append("")
 
 if len(regkey_list) != len(template_list):
-    #usage()
-    print "Error: Number of regkey entries needs to match number of templates." 
-    print "ex. 3 templates should have 3 regkey entries:"
-    print "  --regkeys ,XXXXX-XXXXX-XXXXX-XXXXX-XXXXX,XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
-    print "  --regkeys XXXXX-XXXXX-XXXXX-XXXXX-XXXXX,,XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
-    sys.exit(0)
+    parser.error(
+"Number of regkey entries needs to match number of templates.\n \
+ex. 2 templates should have 2 regkey entries:\n \
+   --regkeys XXXXX-XXXXX-XXXXX-XXXXX-XXXXX,XXXXX-XXXXX-XXXXX-XXXXX-XXXXX\n \
+   --regkeys XXXXX-XXXXX-XXXXX-XXXXX-XXXXX,\n \
+   --regkeys ,XXXXX-XXXXX-XXXXX-XXXXX-XXXXX\n\n \
+Type -h for help.\n \
+"
+)
 
 
 # # load variables provided by user

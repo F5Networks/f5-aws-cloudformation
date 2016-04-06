@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "AWS CloudFormation Template for creating an a full stack with VPC, 4 subnets, 3nic BIG-IP and Bitnami webeserver LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Description": "AWS CloudFormation Template for creating a full stack with a 3nic BIG-IP, two Availability Zone VPC, subnets, security groups and a webeserver (Bitnami LAMP stack with username bitnami) **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
   "Mappings": {
     "AWSRegionArch2AMI": {
       "ap-northeast-1": {
@@ -357,7 +357,7 @@
         "Best"
       ],
       "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
-      "Default": "Good",
+      "Default": "Best",
       "Description": "F5 Bigip Performance Type",
       "Type": "String"
     },
@@ -392,6 +392,7 @@
   },
   "Resources": {
     "ApplicationDefaultRoute": {
+      "DependsOn": "AttachGateway",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
@@ -793,20 +794,20 @@
                         "Ref": "BigipAdminPassword"
                       },
                       "'\n",
-                      "APPNAME='demo-app-1'\n",
-                      "VIRTUALSERVERPORT=80\n",
-                      "CRT='default.crt'\n",
-                      "KEY='default.key'\n",
-                      "NAME_SERVERS='10.0.0.2'\n",
-                      "POOLMEM='",
+                      "REGKEY='",
                       {
-                        "Fn::GetAtt": [
-                          "Webserver",
-                          "PrivateIp"
-                        ]
+                        "Ref": "BigipLicenseKey"
                       },
                       "'\n",
-                      "POOLMEMPORT=80\n",
+                      "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                      "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                      "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                      "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                      "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                      "VPC_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-block`\n",
+                      "VPC_NET=${VPC_CIDR_BLOCK%/*}\n",
+                      "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
+                      "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n",
                       "MGMTIP='",
                       {
                         "Fn::GetAtt": [
@@ -846,11 +847,19 @@
                       },
                       "'\n",
                       "INTMASK='24'\n",
-                      "REGKEY='",
+                      "POOLMEM='",
                       {
-                        "Ref": "BigipLicenseKey"
+                        "Fn::GetAtt": [
+                          "Webserver",
+                          "PrivateIp"
+                        ]
                       },
-                      "'\n"
+                      "'\n",
+                      "POOLMEMPORT=80\n",
+                      "APPNAME='demo-app-1'\n",
+                      "VIRTUALSERVERPORT=80\n",
+                      "CRT='default.crt'\n",
+                      "KEY='default.key'\n"
                     ]
                   ]
                 },
@@ -872,6 +881,22 @@
                       "     nohup $0 0<&- &>/dev/null &\n",
                       "     exit\n",
                       "fi\n",
+                      "function checkStatus() {\n",
+                      "        count=1\n",
+                      "        sleep 10;\n",
+                      "        STATUS=`cat /var/prompt/ps1`;\n",
+                      "        while [[ ${STATUS}x != 'Active'x ]]; do\n",
+                      "                echo -n '.';\n",
+                      "                sleep 5;\n",
+                      "                count=$(($count+1));\n",
+                      "                STATUS=`cat /var/prompt/ps1`;\n",
+                      "                if [[ $count -eq 60 ]]; then",
+                      "                        checkretstatus=\"restart\";\n",
+                      "                        return;\n",
+                      "                fi\n",
+                      "        done;\n",
+                      "        checkretstatus=\"run\";\n",
+                      "}\n",
                       "function checkF5Ready {\n",
                       "     sleep 5\n",
                       "     while [[ ! -e '/var/prompt/ps1' ]]\n",
@@ -924,7 +949,7 @@
                       "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
                       "tmsh modify sys ntp timezone ${TZ}\n",
                       "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
-                      "tmsh modify sys dns name-servers add { ${NAME_SERVERS} }\n",
+                      "tmsh modify sys dns name-servers add { ${NAME_SERVER} }\n",
                       "tmsh save /sys config\n",
                       "tmsh install /sys license registration-key ${REGKEY}\n",
                       "checkStatusnoret\n",
@@ -935,13 +960,13 @@
                       "checkStatusnoret\n",
                       "tmsh create net vlan external interfaces add { 1.1 } \n",
                       "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
-                      "tmsh create net route default gw 10.0.1.1\n",
+                      "tmsh create net route default gw ${GATEWAY}\n",
                       "tmsh create net vlan internal interfaces add { 1.2 } \n",
                       "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
                       "tmsh save /sys config\n",
                       "checkStatusnoret\n",
                       "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} ip-protocol tcp mask 255.255.255.255 pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                       "tmsh save /sys config\n",
                       "# for security purposes, remove firstrun.config\n",
                       "# rm /tmp/firstrun.config\n"
@@ -1119,6 +1144,7 @@
       "Type": "AWS::EC2::SecurityGroup"
     },
     "ExternalDefaultRoute": {
+      "DependsOn": "AttachGateway",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
@@ -1170,12 +1196,14 @@
       "Type": "AWS::EC2::RouteTable"
     },
     "ExternalSelfEipAddress": {
+      "DependsOn": "AttachGateway",
       "Properties": {
         "Domain": "vpc"
       },
       "Type": "AWS::EC2::EIP"
     },
     "ExternalSelfEipAssociation": {
+      "DependsOn": "AttachGateway",
       "Properties": {
         "AllocationId": {
           "Fn::GetAtt": [
@@ -1196,6 +1224,7 @@
       "Type": "AWS::EC2::EIPAssociation"
     },
     "InternalDefaultRoute": {
+      "DependsOn": "AttachGateway",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
@@ -1259,6 +1288,7 @@
       "Type": "AWS::EC2::InternetGateway"
     },
     "ManagementDefaultRoute": {
+      "DependsOn": "AttachGateway",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
@@ -1271,12 +1301,14 @@
       "Type": "AWS::EC2::Route"
     },
     "ManagementEipAddress": {
+      "DependsOn": "AttachGateway",
       "Properties": {
         "Domain": "vpc"
       },
       "Type": "AWS::EC2::EIP"
     },
     "ManagementEipAssociation": {
+      "DependsOn": "AttachGateway",
       "Properties": {
         "AllocationId": {
           "Fn::GetAtt": [
@@ -1329,12 +1361,14 @@
       "Type": "AWS::EC2::RouteTable"
     },
     "VipEipAddress": {
+      "DependsOn": "AttachGateway",
       "Properties": {
         "Domain": "vpc"
       },
       "Type": "AWS::EC2::EIP"
     },
     "VipEipAssociation": {
+      "DependsOn": "AttachGateway",
       "Properties": {
         "AllocationId": {
           "Fn::GetAtt": [

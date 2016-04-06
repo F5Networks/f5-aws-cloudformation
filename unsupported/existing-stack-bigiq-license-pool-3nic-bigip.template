@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "AWS CloudFormation Template for creating an 3nic Big-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Description": "AWS CloudFormation Template for creating a 3nic Big-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
   "Mappings": {
     "BigipRegionMap": {
       "ap-northeast-1": {
@@ -46,28 +46,19 @@
     }
   },
   "Outputs": {
-    "BigipExternalSecurityGroup": {
-      "Description": "Public or External Security Group",
+    "AvailabilityZone": {
+      "Description": "Availability Zone",
       "Value": {
-        "Ref": "BigipExternalSecurityGroup"
+        "Fn::GetAtt": [
+          "BigipInstance",
+          "AvailabilityZone"
+        ]
       }
     },
     "BigipInstanceId": {
       "Description": "Instance Id of Big-IP in Amazon",
       "Value": {
         "Ref": "BigipInstance"
-      }
-    },
-    "BigipInternalSecurityGroup": {
-      "Description": "Private or Internal Security Group",
-      "Value": {
-        "Ref": "BigipInternalSecurityGroup"
-      }
-    },
-    "BigipManagementSecurityGroup": {
-      "Description": "Management Security Group",
-      "Value": {
-        "Ref": "BigipManagementSecurityGroup"
       }
     },
     "BigipUrl": {
@@ -243,7 +234,7 @@
         "Best"
       ],
       "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
-      "Default": "Good",
+      "Default": "Best",
       "Description": "F5 Bigip Performance Type",
       "Type": "String"
     },
@@ -274,13 +265,6 @@
       "Description": "Please enter your BIG-IQ Username",
       "MaxLength": "255",
       "MinLength": "1",
-      "Type": "String"
-    },
-    "DnsServers": {
-      "AllowedPattern": "((\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\s?)+",
-      "ConstraintDescription": "Usually .2 for your VPC CIDR, ex. 10.0.0.2 for a 10.0.0.0/16 network",
-      "Default": "10.0.0.2",
-      "Description": "Space Seperated list of DNS Servers",
       "Type": "String"
     },
     "KeyName": {
@@ -335,21 +319,40 @@
                         "Ref": "BigipAdminPassword"
                       },
                       "'\n",
-                      "APPNAME='demo-app-1'\n",
-                      "VIRTUALSERVERPORT=80\n",
-                      "CRT='default.crt'\n",
-                      "KEY='default.key'\n",
-                      "NAME_SERVERS='",
+                      "BIGIQ_ADDRESS='",
                       {
-                        "Ref": "DnsServers"
+                        "Ref": "BigiqAddress"
                       },
                       "'\n",
-                      "POOLMEM='",
+                      "BIGIQ_USERNAME='",
                       {
-                        "Ref": "WebserverPrivateIp"
+                        "Ref": "BigiqUsername"
                       },
                       "'\n",
-                      "POOLMEMPORT=80\n",
+                      "BIGIQ_PASSWORD='",
+                      {
+                        "Ref": "BigiqPassword"
+                      },
+                      "'\n",
+                      "BIGIQ_LICENSE_POOL_UUID='",
+                      {
+                        "Ref": "BigiqLicensePoolUUID"
+                      },
+                      "'\n",
+                      "BIGIP_DEVICE_ADDRESS='",
+                      {
+                        "Ref": "ManagementEipAddress"
+                      },
+                      "'\n",
+                      "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                      "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                      "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                      "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                      "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                      "VPC_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-block`\n",
+                      "VPC_NET=${VPC_CIDR_BLOCK%/*}\n",
+                      "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
+                      "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n",
                       "MGMTIP='",
                       {
                         "Fn::GetAtt": [
@@ -389,31 +392,16 @@
                       },
                       "'\n",
                       "INTMASK='24'\n",
-                      "BIGIQ_ADDRESS='",
+                      "POOLMEM='",
                       {
-                        "Ref": "BigiqAddress"
+                        "Ref": "WebserverPrivateIp"
                       },
                       "'\n",
-                      "BIGIQ_USERNAME='",
-                      {
-                        "Ref": "BigiqUsername"
-                      },
-                      "'\n",
-                      "BIGIQ_PASSWORD='",
-                      {
-                        "Ref": "BigiqPassword"
-                      },
-                      "'\n",
-                      "BIGIQ_LICENSE_POOL_UUID='",
-                      {
-                        "Ref": "BigiqLicensePoolUUID"
-                      },
-                      "'\n",
-                      "BIGIP_DEVICE_ADDRESS='",
-                      {
-                        "Ref": "ManagementEipAddress"
-                      },
-                      "'\n"
+                      "POOLMEMPORT=80\n",
+                      "APPNAME='demo-app-1'\n",
+                      "VIRTUALSERVERPORT=80\n",
+                      "CRT='default.crt'\n",
+                      "KEY='default.key'\n"
                     ]
                   ]
                 },
@@ -435,6 +423,22 @@
                       "     nohup $0 0<&- &>/dev/null &\n",
                       "     exit\n",
                       "fi\n",
+                      "function checkStatus() {\n",
+                      "        count=1\n",
+                      "        sleep 10;\n",
+                      "        STATUS=`cat /var/prompt/ps1`;\n",
+                      "        while [[ ${STATUS}x != 'Active'x ]]; do\n",
+                      "                echo -n '.';\n",
+                      "                sleep 5;\n",
+                      "                count=$(($count+1));\n",
+                      "                STATUS=`cat /var/prompt/ps1`;\n",
+                      "                if [[ $count -eq 60 ]]; then",
+                      "                        checkretstatus=\"restart\";\n",
+                      "                        return;\n",
+                      "                fi\n",
+                      "        done;\n",
+                      "        checkretstatus=\"run\";\n",
+                      "}\n",
                       "function checkF5Ready {\n",
                       "     sleep 5\n",
                       "     while [[ ! -e '/var/prompt/ps1' ]]\n",
@@ -487,7 +491,7 @@
                       "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
                       "tmsh modify sys ntp timezone ${TZ}\n",
                       "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
-                      "tmsh modify sys dns name-servers add { ${NAME_SERVERS} }\n",
+                      "tmsh modify sys dns name-servers add { ${NAME_SERVER} }\n",
                       "tmsh save /sys config\n",
                       "### BEGIN BIGIQ LICENSE ###\n",
                       "declare -i i\n",
@@ -502,6 +506,7 @@
                       "    i=$i+1\n",
                       "    sleep 10\n",
                       "done\n",
+                      "curl -sSk -o /tmp/remove_license_from_bigiq.sh --max-time 15 https://cdn.f5.com/product/iapp/utils/remove_license_from_bigiq.sh\n",
                       ". /tmp/license_from_bigiq.sh\n",
                       "checkStatusnoret\n",
                       "sleep 30\n",
@@ -511,13 +516,13 @@
                       "checkStatusnoret\n",
                       "tmsh create net vlan external interfaces add { 1.1 } \n",
                       "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
-                      "tmsh create net route default gw 10.0.1.1\n",
+                      "tmsh create net route default gw ${GATEWAY}\n",
                       "tmsh create net vlan internal interfaces add { 1.2 } \n",
                       "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
                       "tmsh save /sys config\n",
                       "checkStatusnoret\n",
                       "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} ip-protocol tcp mask 255.255.255.255 pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                       "tmsh save /sys config\n",
                       "# for security purposes, remove firstrun.config\n",
                       "# rm /tmp/firstrun.config\n"

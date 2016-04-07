@@ -1,0 +1,510 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation Template for creating a 1nic Big-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Mappings": {
+    "BigipRegionMap": {
+      "ap-northeast-1": {
+        "Best": "ami-bcf69bbc",
+        "Better": "ami-d6f69bd6",
+        "Good": "ami-1ef69b1e"
+      },
+      "ap-southeast-1": {
+        "Best": "ami-3c9a896e",
+        "Better": "ami-249a8976",
+        "Good": "ami-029a8950"
+      },
+      "ap-southeast-2": {
+        "Best": "ami-bfd69c85",
+        "Better": "ami-45d69c7f",
+        "Good": "ami-63d69c59"
+      },
+      "eu-west-1": {
+        "Best": "ami-3798a740",
+        "Better": "ami-2b98a75c",
+        "Good": "ami-f799a680"
+      },
+      "sa-east-1": {
+        "Best": "ami-a3952dcf",
+        "Better": "ami-f69e269a",
+        "Good": "ami-36962e5a"
+      },
+      "us-east-1": {
+        "Best": "ami-eb421d8e",
+        "Better": "ami-f1421d94",
+        "Good": "ami-03421d66"
+      },
+      "us-west-1": {
+        "Best": "ami-a70bc8e3",
+        "Better": "ami-af0bc8eb",
+        "Good": "ami-e90bc8ad"
+      },
+      "us-west-2": {
+        "Best": "ami-e2d735d1",
+        "Better": "ami-ccd735ff",
+        "Good": "ami-36d73505"
+      }
+    }
+  },
+  "Outputs": {
+    "AvailabilityZone": {
+      "Description": "Availability Zone",
+      "Value": {
+        "Fn::GetAtt": [
+          "BigipInstance",
+          "AvailabilityZone"
+        ]
+      }
+    },
+    "BigipInstanceId": {
+      "Description": "Instance Id of Big-IP in Amazon",
+      "Value": {
+        "Ref": "BigipInstance"
+      }
+    },
+    "BigipUrl": {
+      "Description": "Big-IP Management GUI",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "BigipInstance",
+                "PublicIp"
+              ]
+            },
+            ":",
+            {
+              "Ref": "BigipManagementGuiPort"
+            }
+          ]
+        ]
+      }
+    },
+    "ExternalInterface": {
+      "Description": "External interface Id on BIG-Ip",
+      "Value": {
+        "Ref": "ExternalInterface"
+      }
+    },
+    "ExternalInterfacePrivateIp": {
+      "Description": "Internally routable Ip of public interface on BIG-Ip",
+      "Value": {
+        "Fn::GetAtt": [
+          "ExternalInterface",
+          "PrimaryPrivateIpAddress"
+        ]
+      }
+    },
+    "ExternalSelfEipAddress": {
+      "Description": "IP Address of External interface attached to BIG-IP",
+      "Value": {
+        "Ref": "ExternalSelfEipAddress"
+      }
+    }
+  },
+  "Parameters": {
+    "Az1ExternalSubnet": {
+      "ConstraintDescription": "Must be subnet ID within existing VPC",
+      "Description": "Public or External subnet ID",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "BigipAdminPassword": {
+      "ConstraintDescription": "Please verify your BIG-IP Admin Password",
+      "Description": "Please enter your BIG-IP Admin Password",
+      "MaxLength": "255",
+      "MinLength": "1",
+      "NoEcho": true,
+      "Type": "String"
+    },
+    "BigipAdminUsername": {
+      "ConstraintDescription": "Please verify your BIG-IP Admin Username",
+      "Default": "admin",
+      "Description": "Please enter your BIG-IP Admin Username",
+      "MaxLength": "255",
+      "MinLength": "1",
+      "Type": "String"
+    },
+    "BigipExternalSecurityGroup": {
+      "ConstraintDescription": "Must be security group ID within existing VPC",
+      "Description": "Public or External Security Group ID",
+      "Type": "AWS::EC2::SecurityGroup::Id"
+    },
+    "BigipInstanceType": {
+      "AllowedValues": [
+        "m3.xlarge",
+        "m3.2xlarge",
+        "c1.medium",
+        "c1.xlarge",
+        "cc1.4xlarge",
+        "cc2.8xlarge",
+        "cg1.4xlarge"
+      ],
+      "ConstraintDescription": "must be a valid Big-IP EC2 instance type",
+      "Default": "m3.xlarge",
+      "Description": "F5 BIG-IP Virtual Instance Type",
+      "Type": "String"
+    },
+    "BigipLicenseKey": {
+      "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
+      "ConstraintDescription": "Please verify your F5 BYOL regkey.",
+      "Description": "Please enter your F5 BYOL regkey here:",
+      "MaxLength": "255",
+      "MinLength": "1",
+      "Type": "String"
+    },
+    "BigipManagementGuiPort": {
+      "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
+      "Default": "443",
+      "Description": "Port to use for the managment GUI",
+      "Type": "Number"
+    },
+    "BigipPerformanceType": {
+      "AllowedValues": [
+        "Good",
+        "Better",
+        "Best"
+      ],
+      "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
+      "Default": "Best",
+      "Description": "F5 Bigip Performance Type",
+      "Type": "String"
+    },
+    "KeyName": {
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "SSHLocation": {
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+      "Default": "0.0.0.0/0",
+      "Description": " The IP address range that can be used to SSH to the EC2 instances",
+      "MaxLength": "18",
+      "MinLength": "9",
+      "Type": "String"
+    },
+    "Vpc": {
+      "ConstraintDescription": "Must be an existing VPC within working region.",
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "WebserverPrivateIp": {
+      "ConstraintDescription": "Web Server IP used for Big-IP pool Member",
+      "Description": "Web Server IP used for Big-IP pool member",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "BigipInstance": {
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "commands": {
+              "b-configure-Bigip": {
+                "command": "/tmp/firstrun.sh\n"
+              }
+            },
+            "files": {
+              "/tmp/firstrun.config": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "#!/bin/bash\n",
+                      "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+                      "TZ='America/Los_Angeles'\n",
+                      "BIGIP_ADMIN_USERNAME='",
+                      {
+                        "Ref": "BigipAdminUsername"
+                      },
+                      "'\n",
+                      "BIGIP_ADMIN_PASSWORD='",
+                      {
+                        "Ref": "BigipAdminPassword"
+                      },
+                      "'\n",
+                      "REGKEY='",
+                      {
+                        "Ref": "BigipLicenseKey"
+                      },
+                      "'\n",
+                      "MANAGEMENT_GUI_PORT='",
+                      {
+                        "Ref": "BigipManagementGuiPort"
+                      },
+                      "'\n",
+                      "GATEWAY_MAC=`ifconfig eth0 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                      "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                      "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                      "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                      "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                      "VPC_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-block`\n",
+                      "VPC_NET=${VPC_CIDR_BLOCK%/*}\n",
+                      "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
+                      "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n",
+                      "POOLMEM='",
+                      {
+                        "Ref": "WebserverPrivateIp"
+                      },
+                      "'\n",
+                      "POOLMEMPORT=80\n",
+                      "APPNAME='demo-app-1'\n",
+                      "VIRTUALSERVERPORT=80\n",
+                      "CRT='default.crt'\n",
+                      "KEY='default.key'\n"
+                    ]
+                  ]
+                },
+                "group": "root",
+                "mode": "000777",
+                "owner": "root"
+              },
+              "/tmp/firstrun.sh": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "#!/bin/bash\n",
+                      ". /tmp/firstrun.config\n",
+                      "FILE=/tmp/firstrun.log\n",
+                      "if [ ! -e $FILE ]\n",
+                      " then\n",
+                      "     touch $FILE\n",
+                      "     nohup $0 0<&- &>/dev/null &\n",
+                      "     exit\n",
+                      "fi\n",
+                      "function checkStatus() {\n",
+                      "        count=1\n",
+                      "        sleep 10;\n",
+                      "        STATUS=`cat /var/prompt/ps1`;\n",
+                      "        while [[ ${STATUS}x != 'Active'x ]]; do\n",
+                      "                echo -n '.';\n",
+                      "                sleep 5;\n",
+                      "                count=$(($count+1));\n",
+                      "                STATUS=`cat /var/prompt/ps1`;\n",
+                      "                if [[ $count -eq 60 ]]; then",
+                      "                        checkretstatus=\"restart\";\n",
+                      "                        return;\n",
+                      "                fi\n",
+                      "        done;\n",
+                      "        checkretstatus=\"run\";\n",
+                      "}\n",
+                      "function checkF5Ready {\n",
+                      "     sleep 5\n",
+                      "     while [[ ! -e '/var/prompt/ps1' ]]\n",
+                      " do\n",
+                      "     echo -n '.'\n",
+                      "     sleep 5\n",
+                      "done \n",
+                      "sleep 5\n",
+                      "STATUS=`cat /var/prompt/ps1`\n",
+                      "while [[ ${STATUS}x != 'NO LICENSE'x ]]\n",
+                      " do\n",
+                      "     echo -n '.'\n",
+                      "     sleep 5\n",
+                      "     STATUS=`cat /var/prompt/ps1`\n",
+                      "done\n",
+                      "echo -n ' '\n",
+                      "while [[ ! -e '/var/prompt/cmiSyncStatus' ]]\n",
+                      " do\n",
+                      "     echo -n '.'\n",
+                      "     sleep 5\n",
+                      "done \n",
+                      "STATUS=`cat /var/prompt/cmiSyncStatus`\n",
+                      "while [[ ${STATUS}x != 'Standalone'x ]]\n",
+                      " do\n",
+                      "     echo -n '.'\n",
+                      "     sleep 5\n",
+                      "     STATUS=`cat /var/prompt/cmiSyncStatus`\n",
+                      "done\n",
+                      "}\n",
+                      "function checkStatusnoret {\n",
+                      "sleep 10\n",
+                      "STATUS=`cat /var/prompt/ps1`\n",
+                      "while [[ ${STATUS}x != 'Active'x ]]\n",
+                      " do\n",
+                      "     echo -n '.'\n",
+                      "     sleep 5\n",
+                      "     STATUS=`cat /var/prompt/ps1`\n",
+                      "done\n",
+                      "}\n",
+                      "exec 1<&-\n",
+                      "exec 2<&-\n",
+                      "exec 1<>$FILE\n",
+                      "exec 2>&1\n",
+                      "checkF5Ready\n",
+                      "sleep 150\n",
+                      "logger -p local0.info 'firstrun debug: starting-tmsh-config'\n",
+                      "tmsh modify /sys global-settings hostname ${HOSTNAME}\n",
+                      "tmsh mv cm device bigip1 ${HOSTNAME}\n",
+                      "tmsh modify auth password root <<< $'${BIGIP_ADMIN_PASSWORD}\n${BIGIP_ADMIN_PASSWORD}\n'\n",
+                      "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
+                      "tmsh modify sys ntp timezone ${TZ}\n",
+                      "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
+                      "tmsh modify sys dns name-servers add { ${NAME_SERVER} }\n",
+                      "tmsh save /sys config\n",
+                      "tmsh install /sys license registration-key ${REGKEY}\n",
+                      "checkStatusnoret\n",
+                      "sleep 30\n",
+                      "echo \"provisioning asm\"\n",
+                      "sleep 20\n",
+                      "tmsh modify /sys provision asm level nominal\n",
+                      "checkretstatus='stop'\n",
+                      "while [[ $checkretstatus != \"run\" ]]; do\n",
+                      "     checkStatus\n",
+                      "     if [[ $checkretstatus == \"restart\" ]]; then\n",
+                      "         echo restarting\n",
+                      "         tmsh modify /sys provision asm level none\n",
+                      "         checkStatusnoret\n",
+                      "         checkretstatus='stop'\n",
+                      "         tmsh modify /sys provision asm level nominal\n",
+                      "     fi\n",
+                      "done\n",
+                      "echo done\n",
+                      "checkStatusnoret\n",
+                      "sleep 30\n",
+                      "tmsh save /sys config\n",
+                      "tmsh modify sys db dhclient.mgmt { value disable }\n",
+                      "tmsh modify sys global-settings gui-setup disabled\n",
+                      "checkStatusnoret\n",
+                      "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
+                      "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
+                      "tmsh save /sys config\n",
+                      "checkStatusnoret\n",
+                      "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                      "curl https://cdn.f5.com/product/blackbox/asm-policy-linux-high.xml > /home/admin/asm-policy-linux-high.xml\n",
+                      "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
+                      "tmsh modify asm policy /Common/linux-high active\n",
+                      "tmsh create ltm policy app-ltm-policy strategy first-match\n",
+                      "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
+                      "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
+                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                      "tmsh save /sys config\n",
+                      "# for security purposes, remove firstrun.config\n",
+                      "# rm /tmp/firstrun.config\n"
+                    ]
+                  ]
+                },
+                "group": "root",
+                "mode": "000777",
+                "owner": "root"
+              }
+            }
+          }
+        }
+      },
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "BigipRegionMap",
+            {
+              "Ref": "AWS::Region"
+            },
+            {
+              "Ref": "BigipPerformanceType"
+            }
+          ]
+        },
+        "InstanceType": {
+          "Ref": "BigipInstanceType"
+        },
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "NetworkInterfaces": [
+          {
+            "Description": "Public or External Interface",
+            "DeviceIndex": "0",
+            "NetworkInterfaceId": {
+              "Ref": "ExternalInterface"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "Big-IP: ",
+                  {
+                    "Ref": "AWS::StackName"
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
+                {
+                  "Ref": "AWS::StackId"
+                },
+                " -r BigipInstance ",
+                " --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "ExternalInterface": {
+      "Properties": {
+        "Description": "Public External Interface for the Bigip",
+        "GroupSet": [
+          {
+            "Ref": "BigipExternalSecurityGroup"
+          }
+        ],
+        "SecondaryPrivateIpAddressCount": "1",
+        "SubnetId": {
+          "Ref": "Az1ExternalSubnet"
+        }
+      },
+      "Type": "AWS::EC2::NetworkInterface"
+    },
+    "ExternalSelfEipAddress": {
+      "Properties": {
+        "Domain": "vpc"
+      },
+      "Type": "AWS::EC2::EIP"
+    },
+    "ExternalSelfEipAssociation": {
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "ExternalSelfEipAddress",
+            "AllocationId"
+          ]
+        },
+        "NetworkInterfaceId": {
+          "Ref": "ExternalInterface"
+        },
+        "PrivateIpAddress": {
+          "Fn::GetAtt": [
+            "ExternalInterface",
+            "PrimaryPrivateIpAddress"
+          ]
+        }
+      },
+      "Type": "AWS::EC2::EIPAssociation"
+    }
+  }
+}

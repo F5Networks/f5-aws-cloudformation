@@ -1,0 +1,120 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation Template for creating security groups for a 1nic BIG-IP",
+  "Outputs": {
+    "BigipExternalSecurityGroup": {
+      "Description": "Public or External Security Group",
+      "Value": {
+        "Ref": "BigipExternalSecurityGroup"
+      }
+    }
+  },
+  "Parameters": {
+    "BigipManagementGuiPort": {
+      "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
+      "Default": "443",
+      "Description": "Port to use for the managment GUI",
+      "Type": "Number"
+    },
+    "SSHLocation": {
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+      "Default": "0.0.0.0/0",
+      "Description": " The IP address range that can be used to SSH to the EC2 instances",
+      "MaxLength": "18",
+      "MinLength": "9",
+      "Type": "String"
+    },
+    "Vpc": {
+      "ConstraintDescription": "Must be an existing VPC within working region.",
+      "Type": "AWS::EC2::VPC::Id"
+    }
+  },
+  "Resources": {
+    "BigipExternalSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Public or External interface rules",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            },
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            },
+            "FromPort": {
+              "Ref": "BigipManagementGuiPort"
+            },
+            "IpProtocol": "tcp",
+            "ToPort": {
+              "Ref": "BigipManagementGuiPort"
+            }
+          },
+          {
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            },
+            "FromPort": "-1",
+            "IpProtocol": "icmp",
+            "ToPort": "-1"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "80",
+            "IpProtocol": "tcp",
+            "ToPort": "80"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "443",
+            "IpProtocol": "tcp",
+            "ToPort": "443"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "4353",
+            "IpProtocol": "tcp",
+            "ToPort": "4353"
+          },
+          {
+            "CidrIp": "10.0.0.0/16",
+            "FromPort": "1026",
+            "IpProtocol": "udp",
+            "ToPort": "1026"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "Bigip Security Group: ",
+                  {
+                    "Ref": "AWS::StackName"
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    }
+  }
+}

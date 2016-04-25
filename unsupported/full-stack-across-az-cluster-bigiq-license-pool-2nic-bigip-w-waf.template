@@ -946,7 +946,7 @@
            "   count=1\n",
            "   sleep 10\n",
            "   STATUS=`cat /var/prompt/ps1`\n",
-           "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+           "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
            "      echo -n '.'\n",
            "      sleep 5\n",
            "      count=$(($count+1))\n",
@@ -986,7 +986,7 @@
            "function checkStatusnoret {\n",
            "   sleep 10\n",
            "   STATUS=`cat /var/prompt/ps1`\n",
-           "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+           "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
            "      echo -n '.'\n",
            "      sleep 5\n",
            "      STATUS=`cat /var/prompt/ps1`\n",
@@ -1010,7 +1010,7 @@
            "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
            "tmsh save /sys config\n",
            "tmsh create net vlan external interfaces add { 1.1 } \n",
-           "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
+           "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
            "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
            "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
            "tmsh mv cm device bigip1 ${HOSTNAME}\n",
@@ -1070,8 +1070,10 @@
            "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.0.1rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
            "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
            "tmsh run cm config-sync to-group my_sync_failover_group\n",
+           "tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\n",
+           "tmsh run cm config-sync to-group datasync-global-dg\n",
            "tmsh save /sys config\n",
-           "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, generally want to remove firstrun.config\n",
+           "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
            "# rm /tmp/firstrun.config\n"
           ]
          ]
@@ -1415,7 +1417,7 @@
            "   count=1\n",
            "   sleep 10\n",
            "   STATUS=`cat /var/prompt/ps1`\n",
-           "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+           "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
            "      echo -n '.'\n",
            "      sleep 5\n",
            "      count=$(($count+1))\n",
@@ -1455,7 +1457,7 @@
            "function checkStatusnoret {\n",
            "   sleep 10\n",
            "   STATUS=`cat /var/prompt/ps1`\n",
-           "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+           "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
            "      echo -n '.'\n",
            "      sleep 5\n",
            "      STATUS=`cat /var/prompt/ps1`\n",
@@ -1479,7 +1481,7 @@
            "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
            "tmsh save /sys config\n",
            "tmsh create net vlan external interfaces add { 1.1 } \n",
-           "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
+           "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
            "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
            "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
            "tmsh mv cm device bigip1 ${HOSTNAME}\n",
@@ -1521,7 +1523,7 @@
            "tmsh modify sys db dhclient.mgmt { value disable }\n",
            "tmsh save /sys config\n",
            "tmsh save /sys config\n",
-           "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, generally want to remove firstrun.config\n",
+           "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
            "# rm /tmp/firstrun.config\n"
           ]
          ]
@@ -1677,6 +1679,12 @@
       "FromPort": "1026",
       "IpProtocol": "udp",
       "ToPort": "1026"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "6123",
+      "IpProtocol": "tcp",
+      "ToPort": "6128"
      }
     ],
     "Tags": [

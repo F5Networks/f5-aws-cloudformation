@@ -580,7 +580,7 @@
                       "   count=1\n",
                       "   sleep 10\n",
                       "   STATUS=`cat /var/prompt/ps1`\n",
-                      "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+                      "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
                       "      echo -n '.'\n",
                       "      sleep 5\n",
                       "      count=$(($count+1))\n",
@@ -620,7 +620,7 @@
                       "function checkStatusnoret {\n",
                       "   sleep 10\n",
                       "   STATUS=`cat /var/prompt/ps1`\n",
-                      "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+                      "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
                       "      echo -n '.'\n",
                       "      sleep 5\n",
                       "      STATUS=`cat /var/prompt/ps1`\n",
@@ -685,7 +685,7 @@
                       "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                       "tmsh run cm config-sync to-group my_sync_failover_group\n",
                       "tmsh save /sys config\n",
-                      "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, generally want to remove firstrun.config\n",
+                      "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
                       "# rm /tmp/firstrun.config\n"
                     ]
                   ]
@@ -1020,7 +1020,7 @@
                       "   count=1\n",
                       "   sleep 10\n",
                       "   STATUS=`cat /var/prompt/ps1`\n",
-                      "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+                      "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
                       "      echo -n '.'\n",
                       "      sleep 5\n",
                       "      count=$(($count+1))\n",
@@ -1060,7 +1060,7 @@
                       "function checkStatusnoret {\n",
                       "   sleep 10\n",
                       "   STATUS=`cat /var/prompt/ps1`\n",
-                      "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+                      "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
                       "      echo -n '.'\n",
                       "      sleep 5\n",
                       "      STATUS=`cat /var/prompt/ps1`\n",
@@ -1112,7 +1112,7 @@
                       "tmsh modify sys db dhclient.mgmt { value disable }\n",
                       "tmsh save /sys config\n",
                       "tmsh save /sys config\n",
-                      "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, generally want to remove firstrun.config\n",
+                      "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
                       "# rm /tmp/firstrun.config\n"
                     ]
                   ]

@@ -570,7 +570,7 @@
            "   count=1\n",
            "   sleep 10\n",
            "   STATUS=`cat /var/prompt/ps1`\n",
-           "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+           "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
            "      echo -n '.'\n",
            "      sleep 5\n",
            "      count=$(($count+1))\n",
@@ -610,7 +610,7 @@
            "function checkStatusnoret {\n",
            "   sleep 10\n",
            "   STATUS=`cat /var/prompt/ps1`\n",
-           "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+           "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
            "      echo -n '.'\n",
            "      sleep 5\n",
            "      STATUS=`cat /var/prompt/ps1`\n",
@@ -660,7 +660,7 @@
            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
            "tmsh save /sys config\n",
-           "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, generally want to remove firstrun.config\n",
+           "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
            "# rm /tmp/firstrun.config\n"
           ]
          ]
@@ -801,6 +801,12 @@
       "FromPort": "1026",
       "IpProtocol": "udp",
       "ToPort": "1026"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "6123",
+      "IpProtocol": "tcp",
+      "ToPort": "6128"
      }
     ],
     "Tags": [

@@ -679,6 +679,12 @@ def main():
                 RouteTableId=Ref(ApplicationRouteTable),
             ))
 
+    # See SOL13946 for more details
+    # Clustering uses UDP 1026 UDP (failover) and TCP 4353 (SYNC) 
+    # WAF uses 6123-6128 for SYNC
+    # As just examples, not going to break down example Security Groups for Cluster & WAF. 
+    # However, could further tighten if Standalone or no WAF.  
+
     if security_groups == True:
 
         # 1 Nic has consolidated rules
@@ -729,6 +735,12 @@ def main():
                                 ToPort="1026",
                                 CidrIp="10.0.0.0/16",
                     ), 
+                    SecurityGroupRule(
+                                IpProtocol="tcp",
+                                FromPort="6123",
+                                ToPort="6128",
+                                CidrIp="10.0.0.0/16",
+                    ),
                 ],
                 VpcId=Ref(Vpc),
                 GroupDescription="Public or External interface rules",
@@ -737,6 +749,7 @@ def main():
                     Application=Ref("AWS::StackName"),
                 ),
             ))
+
 
         if num_nics > 1:
 
@@ -767,6 +780,12 @@ def main():
                                 ToPort="1026",
                                 CidrIp="10.0.0.0/16",
                     ),
+                    SecurityGroupRule(
+                                IpProtocol="tcp",
+                                FromPort="6123",
+                                ToPort="6128",
+                                CidrIp="10.0.0.0/16",
+                    ),
                 ],
                 VpcId=Ref(Vpc),
                 GroupDescription="Public or External interface rules",
@@ -775,6 +794,7 @@ def main():
                     Application=Ref("AWS::StackName"),
                 ),
             ))
+            
 
             BigipManagementSecurityGroup = t.add_resource(SecurityGroup(
                 "BigipManagementSecurityGroup",
@@ -1134,7 +1154,7 @@ def main():
                               "   count=1\n",
                               "   sleep 10\n",
                               "   STATUS=`cat /var/prompt/ps1`\n",
-                              "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+                              "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
                               "      echo -n '.'\n",
                               "      sleep 5\n",
                               "      count=$(($count+1))\n",
@@ -1174,7 +1194,7 @@ def main():
                               "function checkStatusnoret {\n",
                               "   sleep 10\n",
                               "   STATUS=`cat /var/prompt/ps1`\n",
-                              "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+                              "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
                               "      echo -n '.'\n",
                               "      sleep 5\n",
                               "      STATUS=`cat /var/prompt/ps1`\n",
@@ -1332,17 +1352,49 @@ def main():
                             ]
 
             if num_nics == 1:
+
                 firstrun_sh +=  [
                                 "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
-                                "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
                                 ] 
+
+                # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
+                if 'waf' not in components:
+                    firstrun_sh +=  [ 
+                                    "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
+                                    ]
+
+                if 'waf' in components:
+                    firstrun_sh +=  [ 
+                                    "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                    ]
+
 
             # Network Settings
             if num_nics > 1:
+
                 firstrun_sh +=  [ 
                                 "tmsh create net vlan external interfaces add { 1.1 } \n",
-                                "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
                                 ]
+
+                if ha_type == "standalone":
+                    if 'waf' in components:                    
+                        firstrun_sh +=  [ 
+                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                        ]
+
+
+                if ha_type != "standalone":
+
+                    if 'waf' not in components:
+                        firstrun_sh +=  [ 
+                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
+                                        ]
+
+                    if 'waf' in components:
+                        firstrun_sh +=  [ 
+                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                        ]
+
 
                                 
             if num_nics > 2:
@@ -1469,7 +1521,16 @@ def main():
                                             "tmsh load sys application template /tmp/f5.aws_advanced_ha.v1.0.1rc1.tmpl\n",
                                             "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.0.1rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                             "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
-                                            "tmsh run cm config-sync to-group my_sync_failover_group\n",     
+                                            "tmsh run cm config-sync to-group my_sync_failover_group\n",
+                                    ]
+
+            # If ASM, Need to use overwite Config (SOL16509 / BZID: 487538 )
+            if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
+                if 'waf' in components:
+
+                    firstrun_sh += [
+                                            "tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\n", 
+                                            "tmsh run cm config-sync to-group datasync-global-dg\n",
                                     ]
 
             if license_type == "byol":                
@@ -1481,7 +1542,7 @@ def main():
             else:
                 firstrun_sh += [
                                     "tmsh save /sys config\n",
-                                    "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, generally want to remove firstrun.config\n",
+                                    "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
                                     "# rm /tmp/firstrun.config\n"
                                ]             
 

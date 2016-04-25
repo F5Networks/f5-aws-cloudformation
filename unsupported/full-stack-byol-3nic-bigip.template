@@ -683,7 +683,7 @@
            "   count=1\n",
            "   sleep 10\n",
            "   STATUS=`cat /var/prompt/ps1`\n",
-           "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+           "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
            "      echo -n '.'\n",
            "      sleep 5\n",
            "      count=$(($count+1))\n",
@@ -723,7 +723,7 @@
            "function checkStatusnoret {\n",
            "   sleep 10\n",
            "   STATUS=`cat /var/prompt/ps1`\n",
-           "   while [[ ${STATUS}x != 'Active'x ]]; do\n",
+           "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
            "      echo -n '.'\n",
            "      sleep 5\n",
            "      STATUS=`cat /var/prompt/ps1`\n",
@@ -745,7 +745,6 @@
            "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
            "tmsh save /sys config\n",
            "tmsh create net vlan external interfaces add { 1.1 } \n",
-           "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
            "tmsh create net vlan internal interfaces add { 1.2 } \n",
            "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
            "tmsh create net route default gw ${GATEWAY}\n",
@@ -972,6 +971,12 @@
       "FromPort": "1026",
       "IpProtocol": "udp",
       "ToPort": "1026"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "6123",
+      "IpProtocol": "tcp",
+      "ToPort": "6128"
      }
     ],
     "Tags": [

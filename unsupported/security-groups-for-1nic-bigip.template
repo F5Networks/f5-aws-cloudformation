@@ -86,6 +86,12 @@
             "FromPort": "1026",
             "IpProtocol": "udp",
             "ToPort": "1026"
+          },
+          {
+            "CidrIp": "10.0.0.0/16",
+            "FromPort": "6123",
+            "IpProtocol": "tcp",
+            "ToPort": "6128"
           }
         ],
         "Tags": [

@@ -1377,6 +1377,12 @@ def main():
                                 ]
 
                 if ha_type == "standalone":
+
+                    if 'waf' not in components:
+                        firstrun_sh +=  [ 
+                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
+                                        ]
+
                     if 'waf' in components:                    
                         firstrun_sh +=  [ 
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
@@ -1820,7 +1826,7 @@ def main():
 
             if num_nics > 2:
 
-                InternalInterface = "InternalInterface" + str(BIGIP_INDEX + 1)
+                InternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterface"
                 InternalInterfacePrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterfacePrivateIp"
 
                 OUTPUTS[InternalInterface] = t.add_output(Output(

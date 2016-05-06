@@ -82,11 +82,17 @@
         "Ref": "Bigip1Instance"
       }
     },
+    "Bigip1InternalInterface": {
+      "Description": "Internal interface ID on BIG-IP",
+      "Value": {
+        "Ref": "Bigip1InternalInterface"
+      }
+    },
     "Bigip1InternalInterfacePrivateIp": {
       "Description": "Internally routable IP of internal interface on BIG-IP",
       "Value": {
         "Fn::GetAtt": [
-          "InternalInterface1",
+          "Bigip1InternalInterface",
           "PrimaryPrivateIpAddress"
         ]
       }
@@ -127,12 +133,6 @@
             }
           ]
         ]
-      }
-    },
-    "InternalInterface1": {
-      "Description": "Internal interface ID on BIG-IP",
-      "Value": {
-        "Ref": "InternalInterface1"
       }
     }
   },
@@ -500,6 +500,7 @@
                       "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
                       "tmsh save /sys config\n",
                       "tmsh create net vlan external interfaces add { 1.1 } \n",
+                      "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
                       "tmsh create net vlan internal interfaces add { 1.2 } \n",
                       "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
                       "tmsh create net route default gw ${GATEWAY}\n",

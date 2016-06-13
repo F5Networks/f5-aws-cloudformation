@@ -818,6 +818,12 @@
      },
      {
       "CidrIp": "10.0.0.0/16",
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
       "FromPort": "1026",
       "IpProtocol": "udp",
       "ToPort": "1026"

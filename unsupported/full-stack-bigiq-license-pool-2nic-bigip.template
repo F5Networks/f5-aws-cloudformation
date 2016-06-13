@@ -986,6 +986,18 @@
       "FromPort": "-1",
       "IpProtocol": "icmp",
       "ToPort": "-1"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
      }
     ],
     "Tags": [

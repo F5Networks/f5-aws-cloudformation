@@ -723,18 +723,28 @@ def main():
                                 ToPort="443",
                                 CidrIp="0.0.0.0/0",
                     ),
+                    # Required Device Service Clustering (DSC) & GTM DNS
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort="4353",
                                 ToPort="4353",
                                 CidrIp="0.0.0.0/0",
                     ),
+                    # Required for DSC Initial Sync
+                    SecurityGroupRule(
+                                IpProtocol="tcp",
+                                FromPort="22",
+                                ToPort="22",
+                                CidrIp="10.0.0.0/16",
+                    ), 
+                    # Required for DSC Network Heartbeat
                     SecurityGroupRule(
                                 IpProtocol="udp",
                                 FromPort="1026",
                                 ToPort="1026",
                                 CidrIp="10.0.0.0/16",
                     ), 
+                    # ASM SYNC
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort="6123",
@@ -756,36 +766,42 @@ def main():
             BigipExternalSecurityGroup = t.add_resource(SecurityGroup(
                 "BigipExternalSecurityGroup",
                 SecurityGroupIngress=[
+                    # Example port for Virtual Server
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort="80",
                                 ToPort="80",
                                 CidrIp="0.0.0.0/0",
                     ),
+                    # Example port for Virtual Server
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort="443",
                                 ToPort="443",
                                 CidrIp="0.0.0.0/0",
                     ),
+                    # Required Device Service Clustering (DSC) & GTM DNS
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort="4353",
                                 ToPort="4353",
                                 CidrIp="0.0.0.0/0",
                     ),
+                    # Required for DSC Network Heartbeat
                     SecurityGroupRule(
                                 IpProtocol="udp",
                                 FromPort="1026",
                                 ToPort="1026",
                                 CidrIp="10.0.0.0/16",
-                    ),
+                    ), 
+                    # ASM SYNC
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort="6123",
                                 ToPort="6128",
                                 CidrIp="10.0.0.0/16",
                     ),
+
                 ],
                 VpcId=Ref(Vpc),
                 GroupDescription="Public or External interface rules",
@@ -817,6 +833,20 @@ def main():
                                 ToPort="-1",
                                 CidrIp=Ref(SSHLocation),
                     ),
+                    # Required for DSC Initial Sync
+                    SecurityGroupRule(
+                                IpProtocol="tcp",
+                                FromPort="22",
+                                ToPort="22",
+                                CidrIp="10.0.0.0/16",
+                    ),
+                    # Required for DSC Initial Sync
+                    SecurityGroupRule(
+                                IpProtocol="tcp",
+                                FromPort="443",
+                                ToPort="443",
+                                CidrIp="10.0.0.0/16",
+                    ),  
                 ],
                 VpcId=Ref(Vpc),
                 GroupDescription="Big-IP Management UI rules",

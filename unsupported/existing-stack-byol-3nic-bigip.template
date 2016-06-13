@@ -470,6 +470,7 @@
                       "tmsh install /sys license registration-key ${REGKEY}\n",
                       "tmsh save /sys config\n",
                       "checkStatusnoret\n",
+                      "echo 'sleeping additional 30 secs to wait for network to be reachable'\n",
                       "sleep 30\n",
                       "tmsh modify sys db dhclient.mgmt { value disable }\n",
                       "tmsh save /sys config\n",

@@ -387,6 +387,7 @@
                       "tmsh install /sys license registration-key ${REGKEY}\n",
                       "tmsh save /sys config\n",
                       "checkStatusnoret\n",
+                      "echo 'sleeping additional 30 secs to wait for network to be reachable'\n",
                       "sleep 30\n",
                       "echo 'provisioning asm'\n",
                       "tmsh modify /sys provision asm level nominal\n",

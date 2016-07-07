@@ -1085,7 +1085,7 @@ def main():
                                 ]
 
             if license_type == "byol":
-                firstrun_config += [ "REGKEY='", Ref(BigipLicenseKey), "'\n" ]
+                firstrun_config += [ "REGKEY=", Ref(BigipLicenseKey), "\n" ]
             elif license_type == "bigiq":
                 firstrun_config += [ 
                                     "BIGIQ_ADDRESS='", Ref(BigiqAddress), "'\n",
@@ -1174,91 +1174,15 @@ def main():
                                     ]
             # build firstrun.sh vars
 
-            checkF5Ready =  [
-                              "if [ ! -e $FILE ]; then\n",
-                              "   touch $FILE\n",
-                              "   nohup $0 0<&- &>/dev/null &\n",
-                              "   exit\n",
-                              "fi\n",
-                              "function checkStatus() {\n",
-                              "   count=1\n",
-                              "   sleep 10\n",
-                              "   STATUS=`cat /var/prompt/ps1`\n",
-                              "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
-                              "      echo -n '.'\n",
-                              "      sleep 5\n",
-                              "      count=$(($count+1))\n",
-                              "      STATUS=`cat /var/prompt/ps1`\n",
-                              "      if [[ $count -eq 60 ]]; then\n",
-                              "         checkretstatus=\"restart\"\n",
-                              "         return\n",
-                              "      fi\n",
-                              "    done\n",
-                              "    checkretstatus=\"run\"\n",
-                              "}\n",
-                              "function checkF5Ready {\n",
-                              "   sleep 5\n",
-                              "   while [[ ! -e '/var/prompt/ps1' ]]; do\n",
-                              "      echo -n '.'\n",
-                              "      sleep 5\n",
-                              "   done \n",
-                              "   sleep 5\n",
-                              "   STATUS=`cat /var/prompt/ps1`\n",
-                              "   while [[ ${STATUS}x != 'NO LICENSE'x ]]; do\n",
-                              "      echo -n '.'\n",
-                              "      sleep 5\n",
-                              "      STATUS=`cat /var/prompt/ps1`\n",
-                              "   done\n",
-                              "   echo -n ' '\n",
-                              "   while [[ ! -e '/var/prompt/cmiSyncStatus' ]]; do\n",
-                              "      echo -n '.'\n",
-                              "      sleep 5\n",
-                              "   done \n",
-                              "   STATUS=`cat /var/prompt/cmiSyncStatus`\n",
-                              "   while [[ ${STATUS}x != 'Standalone'x ]]; do\n",
-                              "      echo -n '.'\n",
-                              "      sleep 5\n",
-                              "      STATUS=`cat /var/prompt/cmiSyncStatus`\n",
-                              "   done\n",
-                              "}\n",
-                              "function checkStatusnoret {\n",
-                              "   sleep 10\n",
-                              "   STATUS=`cat /var/prompt/ps1`\n",
-                              "   while [[ (${STATUS}x != 'Active'x) && (${STATUS}x != 'Standby'x) ]]; do\n",
-                              "      echo -n '.'\n",
-                              "      sleep 5\n",
-                              "      STATUS=`cat /var/prompt/ps1`\n",
-                              "   done\n",
-                              "}\n",
-                              "exec 1<&-\n",
-                              "exec 2<&-\n",
-                              "exec 1<>$FILE\n",
-                              "exec 2>&1\n",
-                              "checkF5Ready\n",
-                            ]
-
             license_byol =  [ 
-                                "echo 'start install licensing'\n",
-                                "tmsh install /sys license registration-key ${REGKEY}\n" 
+                                "echo 'start install byol license'\n",
+                                "networkUp 120 \n",
+                                "tmsh install /sys license registration-key \"${REGKEY}\"\n" 
                             ]
 
             # License file downloaded remotely from https://cdn.f5.com/product/iapp/utils/license-from-bigiq.sh
             license_from_bigiq =  [
-                                "### BEGIN BIGIQ LICENSE ###\n",
-                                "echo 'start install license'\n",
-                                "declare -i i\n",
-                                "i=0\n",  
-                                "while [ -z \"${CONTENT_SUCCESS}\" ]; do \n",
-                                "    curl -sSk -o /tmp/license_from_bigiq.sh --max-time 15 https://cdn.f5.com/product/templates/utils/license_from_bigiq.sh\n",
-                                "    CONTENT_SUCCESS=$( egrep 'bin/bash' /tmp/license_from_bigiq.sh )\n",
-                                "    if [ $i == 30 ]; then\n",
-                                "        logger -p local0.err \"first_run.sh EXITING. failed to download bigiq license file.\"\n",
-                                "        exit 1\n",
-                                "    fi\n",
-                                "    i=$i+1\n",
-                                "    sleep 10\n",
-                                "done\n",
-                                "curl -sSk -o /tmp/remove_license_from_bigiq.sh --max-time 15 https://cdn.f5.com/product/templates/utils/remove_license_from_bigiq.sh\n",
+                                "echo 'start install biqiq license'\n",
                                 ". /tmp/license_from_bigiq.sh\n",
                                 ]
 
@@ -1348,15 +1272,22 @@ def main():
             firstrun_sh +=  [ 
                                 "#!/bin/bash\n",
                                 ". /tmp/firstrun.config\n",
+                                ". /tmp/firstrun.utils\n",
                                 "FILE=/tmp/firstrun.log\n",
+                                "if [ ! -e $FILE ]\n",
+                                " then\n",
+                                "     touch $FILE\n",
+                                "     nohup $0 0<&- &>/dev/null &\n",
+                                "     exit\n",
+                                "fi\n",
+                                "exec 1<&-\n",
+                                "exec 2<&-\n",
+                                "exec 1<>$FILE\n",
+                                "exec 2>&1\n",
+                                "date\n",
+                                "checkF5Ready\n",
                             ]
 
-            firstrun_sh += checkF5Ready
-
-            # Additional Pause 
-            firstrun_sh += [
-                                "sleep 150\n",
-                            ]
 
             # Global Settings
             firstrun_sh += [
@@ -1440,16 +1371,31 @@ def main():
                                 ]
 
             # Set Gateway
-            if num_nics > 1:
-                if ha_type == "across-az":
-                    firstrun_sh +=  [                    
-                                        "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
-                                        "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
-                                    ]
-                else:
+
+            if ha_type == "across-az" or ha_type == "autoscale":
+                firstrun_sh +=  [  
+                                    "tmsh delete net route default\n",                  
+                                    "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
+                                    "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
+                                ]
+            else:
+                if num_nics > 1:
                     firstrun_sh +=  [
                                         "tmsh create net route default gw ${GATEWAY}\n",
                                     ]
+
+            # Disable DHCP if clustering. 
+            if ha_type != "standalone":
+                if num_nics == 1:
+                    # Must disable provision 1nic to disable DHCP
+                    firstrun_sh += [ 
+                                    "tmsh modify sys db provision.1nic { value disable } \n",
+                                    "tmsh modify sys db dhclient.mgmt { value disable }\n",
+                                   ]
+                else:
+                    firstrun_sh += [ 
+                                    "tmsh modify sys db dhclient.mgmt { value disable }\n",
+                                   ] 
 
 
             # Wait until Self-IPs are configured to do this on every type of device, clustered or not
@@ -1467,22 +1413,14 @@ def main():
 
             # Wait until licensing finishes
             firstrun_sh += [
-                              "tmsh save /sys config\n",
                               "checkStatusnoret\n",
-                              "echo 'sleeping additional 30 secs to wait for network to be reachable'\n",
-                              "sleep 30\n",
+                              "sleep 20 \n",
+                              "tmsh save /sys config\n",
                            ]
 
             # Provision Modules
             if 'waf' in components:
                 firstrun_sh += provision_asm
-
-            # Potentially move this up if doesn't interupt one-nic licensing
-            firstrun_sh += [ 
-                                "tmsh modify sys db dhclient.mgmt { value disable }\n",
-                                "tmsh save /sys config\n",
-                            ]
-
 
 
             # Cluster Devices if Cluster Seed
@@ -1575,43 +1513,100 @@ def main():
             if license_type == "byol":                
                 firstrun_sh += [
                                     "tmsh save /sys config\n",
+                                    "date\n",
                                     "# for security purposes, remove firstrun.config\n",
                                     "# rm /tmp/firstrun.config\n"
                                ]
             else:
                 firstrun_sh += [
                                     "tmsh save /sys config\n",
+                                    "date\n",
                                     "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
                                     "# rm /tmp/firstrun.config\n"
                                ]             
 
-            metadata = Metadata(
-                    Init({
-                        'config': InitConfig(
-                            files=InitFiles(
-                                {
-                                    '/tmp/firstrun.config': InitFile(
-                                        content=Join('', firstrun_config ),
-                                        mode='000777',
-                                        owner='root',
-                                        group='root'
-                                    ),
-                                    '/tmp/firstrun.sh': InitFile(
-                                        content=Join('', firstrun_sh ),
-                                        mode='000777',
-                                        owner='root',
-                                        group='root'
-                                    )
-                                } 
-                            ),
-                            commands={
-                                       "b-configure-Bigip" : {
-                                            "command" : "/tmp/firstrun.sh\n"
-                                        }
-                            }
-                        ) 
-                    })
-                )
+
+            if license_type == "bigiq":
+
+                metadata = Metadata(
+                        Init({
+                            'config': InitConfig(
+                                files=InitFiles(
+                                    {
+                                        '/tmp/firstrun.config': InitFile(
+                                            content=Join('', firstrun_config ),
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/tmp/firstrun.utils': InitFile(
+                                            source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/tmp/license_from_bigiq.sh': InitFile(
+                                            source='http://cdn.f5.com/product/templates/utils/license_from_bigiq.sh',
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/tmp/remove_license_from_bigiq.sh': InitFile(
+                                            source='http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq.sh',
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/tmp/firstrun.sh': InitFile(
+                                            content=Join('', firstrun_sh ),
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        )
+                                    } 
+                                ),
+                                commands={
+                                           "b-configure-Bigip" : {
+                                                "command" : "/tmp/firstrun.sh\n"
+                                            }
+                                }
+                            ) 
+                        })
+                    )
+            else:
+                metadata = Metadata(
+                        Init({
+                            'config': InitConfig(
+                                files=InitFiles(
+                                    {
+                                        '/tmp/firstrun.config': InitFile(
+                                            content=Join('', firstrun_config ),
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/tmp/firstrun.utils': InitFile(
+                                            source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/tmp/firstrun.sh': InitFile(
+                                            content=Join('', firstrun_sh ),
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        )
+                                    } 
+                                ),
+                                commands={
+                                           "b-configure-Bigip" : {
+                                                "command" : "/tmp/firstrun.sh\n"
+                                            }
+                                }
+                            ) 
+                        })
+                    )
 
             NetworkInterfaces = []
 

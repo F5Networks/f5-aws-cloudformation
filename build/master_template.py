@@ -1272,7 +1272,7 @@ def main():
             firstrun_sh +=  [ 
                                 "#!/bin/bash\n",
                                 ". /tmp/firstrun.config\n",
-                                ". /tmp/firstrun.utils\n",
+                                ". /tmp/firstrun_utils.sh\n",
                                 "FILE=/tmp/firstrun.log\n",
                                 "if [ ! -e $FILE ]\n",
                                 " then\n",
@@ -1398,12 +1398,25 @@ def main():
                                    ] 
 
 
-            # Wait until Self-IPs are configured to do this on every type of device, clustered or not
             firstrun_sh +=  [
-                            "tmsh mv cm device bigip1 ${HOSTNAME}\n",    
-                            "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n", 
-                            "tmsh save /sys config\n",
-                            ]
+                            "tmsh mv cm device bigip1 ${HOSTNAME}\n",
+                            ]  
+
+
+            if num_nics == 1:
+                firstrun_sh += [
+                                "tmsh modify sys db configsync.allowmanagement value enable\n",
+                                "MGMT_ADDR=$(tmsh list sys management-ip | awk '/management-ip/ {print $3}')\n",
+                                "MGMT_IP=${MGMT_ADDR%/*}\n",
+                                "tmsh modify cm device ${HOSTNAME} configsync-ip ${MGMT_IP} unicast-address { { effective-ip ${MGMT_IP} effective-port 1026 ip ${MGMT_IP} } }\n", 
+                               ]
+            else:
+                # For simplicity, putting all clustering endpoints on external subnet
+                firstrun_sh += [
+                                "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n", 
+                               ]
+
+            firstrun_sh +=  [ "tmsh save /sys config\n", ]
 
             # License Device
             if license_type == "byol":
@@ -1539,8 +1552,8 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun.utils': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
+                                        '/tmp/firstrun_utils.sh': InitFile(
+                                            source='http://cdn.f5.com/product/templates/utils/firstrun_utils.sh',
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -1585,8 +1598,8 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun.utils': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
+                                        '/tmp/firstrun_utils.sh': InitFile(
+                                            source='http://cdn.f5.com/product/templates/utils/firstrun_utils.sh',
                                             mode='000755',
                                             owner='root',
                                             group='root'

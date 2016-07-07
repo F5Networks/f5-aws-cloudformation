@@ -560,7 +560,7 @@
                     [
                       "#!/bin/bash\n",
                       ". /tmp/firstrun.config\n",
-                      ". /tmp/firstrun.utils\n",
+                      ". /tmp/firstrun_utils.sh\n",
                       "FILE=/tmp/firstrun.log\n",
                       "if [ ! -e $FILE ]\n",
                       " then\n",
@@ -615,11 +615,11 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/tmp/firstrun.utils": {
+              "/tmp/firstrun_utils.sh": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",
-                "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
+                "source": "http://cdn.f5.com/product/templates/utils/firstrun_utils.sh"
               },
               "/tmp/license_from_bigiq.sh": {
                 "group": "root",
@@ -949,7 +949,7 @@
                     [
                       "#!/bin/bash\n",
                       ". /tmp/firstrun.config\n",
-                      ". /tmp/firstrun.utils\n",
+                      ". /tmp/firstrun_utils.sh\n",
                       "FILE=/tmp/firstrun.log\n",
                       "if [ ! -e $FILE ]\n",
                       " then\n",
@@ -997,11 +997,11 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/tmp/firstrun.utils": {
+              "/tmp/firstrun_utils.sh": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",
-                "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
+                "source": "http://cdn.f5.com/product/templates/utils/firstrun_utils.sh"
               },
               "/tmp/license_from_bigiq.sh": {
                 "group": "root",

@@ -307,7 +307,7 @@
                     [
                       "#!/bin/bash\n",
                       ". /tmp/firstrun.config\n",
-                      ". /tmp/firstrun.utils\n",
+                      ". /tmp/firstrun_utils.sh\n",
                       "FILE=/tmp/firstrun.log\n",
                       "if [ ! -e $FILE ]\n",
                       " then\n",
@@ -333,7 +333,10 @@
                       "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
                       "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
                       "tmsh mv cm device bigip1 ${HOSTNAME}\n",
-                      "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
+                      "tmsh modify sys db configsync.allowmanagement value enable\n",
+                      "MGMT_ADDR=$(tmsh list sys management-ip | awk '/management-ip/ {print $3}')\n",
+                      "MGMT_IP=${MGMT_ADDR%/*}\n",
+                      "tmsh modify cm device ${HOSTNAME} configsync-ip ${MGMT_IP} unicast-address { { effective-ip ${MGMT_IP} effective-port 1026 ip ${MGMT_IP} } }\n",
                       "tmsh save /sys config\n",
                       "echo 'start install byol license'\n",
                       "networkUp 120 \n",
@@ -354,11 +357,11 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/tmp/firstrun.utils": {
+              "/tmp/firstrun_utils.sh": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",
-                "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
+                "source": "http://cdn.f5.com/product/templates/utils/firstrun_utils.sh"
               }
             }
           }

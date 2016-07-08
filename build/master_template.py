@@ -1272,7 +1272,7 @@ def main():
             firstrun_sh +=  [ 
                                 "#!/bin/bash\n",
                                 ". /tmp/firstrun.config\n",
-                                ". /tmp/firstrun_utils.sh\n",
+                                ". /tmp/firstrun.utils\n",
                                 "FILE=/tmp/firstrun.log\n",
                                 "if [ ! -e $FILE ]\n",
                                 " then\n",
@@ -1552,8 +1552,8 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun_utils.sh': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/firstrun_utils.sh',
+                                        '/tmp/firstrun.utils': InitFile(
+                                            source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -1598,8 +1598,8 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun_utils.sh': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/firstrun_utils.sh',
+                                        '/tmp/firstrun.utils': InitFile(
+                                            source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
                                             mode='000755',
                                             owner='root',
                                             group='root'

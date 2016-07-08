@@ -1,6 +1,6 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "AWS CloudFormation Template for creating a full stack with a 2nic BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webeserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "AWS CloudFormation Template for creating a full stack with a 1nic BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webeserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -93,12 +93,6 @@
     "Ref": "Az1ExternalSubnet"
    }
   },
-  "Az1ManagementSubnet": {
-   "Description": "Az1Management Subnet Id",
-   "Value": {
-    "Ref": "Az1ManagementSubnet"
-   }
-  },
   "Bigip1ExternalInterface": {
    "Description": "External interface Id on Big-IP",
    "Value": {
@@ -126,27 +120,6 @@
     "Ref": "Bigip1Instance"
    }
   },
-  "Bigip1ManagementEipAddress": {
-   "Description": "Ip address of management port on BIG-IP",
-   "Value": {
-    "Ref": "Bigip1ManagementEipAddress"
-   }
-  },
-  "Bigip1ManagementInterface": {
-   "Description": "Management interface Id on BIG-IP",
-   "Value": {
-    "Ref": "Bigip1ManagementInterface"
-   }
-  },
-  "Bigip1ManagementInterfacePrivateIp": {
-   "Description": "Internally routable Ip of management interface on BIG-IP",
-   "Value": {
-    "Fn::GetAtt": [
-     "Bigip1ManagementInterface",
-     "PrimaryPrivateIpAddress"
-    ]
-   }
-  },
   "Bigip1Url": {
    "Description": "Big-IP Management GUI",
    "Value": {
@@ -159,6 +132,10 @@
         "Bigip1Instance",
         "PublicIp"
        ]
+      },
+      ":",
+      {
+       "Ref": "BigipManagementGuiPort"
       }
      ]
     ]
@@ -168,12 +145,6 @@
    "Description": "Public or External Security Group",
    "Value": {
     "Ref": "BigipExternalSecurityGroup"
-   }
-  },
-  "BigipManagementSecurityGroup": {
-   "Description": "Management Security Group",
-   "Value": {
-    "Ref": "BigipManagementSecurityGroup"
    }
   },
   "DnsServers": {
@@ -227,6 +198,14 @@
    "Description": "Name of an Availability Zone in this Region",
    "Type": "AWS::EC2::AvailabilityZone::Name"
   },
+  "Bigip1LicenseKey": {
+   "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
+   "ConstraintDescription": "Please verify your F5 BYOL regkey.",
+   "Description": "Please enter your F5 BYOL regkey here:",
+   "MaxLength": "255",
+   "MinLength": "1",
+   "Type": "String"
+  },
   "BigipAdminPassword": {
    "ConstraintDescription": "Please verify your BIG-IP Admin Password",
    "Description": "Please enter your BIG-IP Admin Password",
@@ -258,6 +237,12 @@
    "Description": "F5 BIG-IP Virtual Instance Type",
    "Type": "String"
   },
+  "BigipManagementGuiPort": {
+   "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
+   "Default": "443",
+   "Description": "Port to use for the managment GUI",
+   "Type": "Number"
+  },
   "BigipPerformanceType": {
    "AllowedValues": [
     "Good",
@@ -267,35 +252,6 @@
    "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
    "Default": "Best",
    "Description": "F5 Bigip Performance Type",
-   "Type": "String"
-  },
-  "BigiqAddress": {
-   "ConstraintDescription": "Please verify your BIG-IQ Hostname or IP",
-   "Description": "Please enter your BIG-IQ Hostname or IP",
-   "MaxLength": "255",
-   "MinLength": "1",
-   "Type": "String"
-  },
-  "BigiqLicensePoolUUID": {
-   "ConstraintDescription": "Please verify your BIG-IQ License Pool UUID",
-   "Description": "Please enter your BIG-IQ License Pool UUID",
-   "MaxLength": "255",
-   "MinLength": "1",
-   "Type": "String"
-  },
-  "BigiqPassword": {
-   "ConstraintDescription": "Please verify your BIG-IQ Password",
-   "Description": "Please enter your BIG-IQ Password",
-   "MaxLength": "255",
-   "MinLength": "1",
-   "NoEcho": true,
-   "Type": "String"
-  },
-  "BigiqUsername": {
-   "ConstraintDescription": "Please verify your BIG-IQ Username.",
-   "Description": "Please enter your BIG-IQ Username",
-   "MaxLength": "255",
-   "MinLength": "1",
    "Type": "String"
   },
   "KeyName": {
@@ -446,41 +402,6 @@
    },
    "Type": "AWS::EC2::SubnetRouteTableAssociation"
   },
-  "Az1ManagementSubnet": {
-   "Properties": {
-    "AvailabilityZone": {
-     "Ref": "AvailabilityZone1"
-    },
-    "CidrBlock": "10.0.0.0/24",
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "AWS::StackId"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": "Az1 Management Subnet"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::Subnet"
-  },
-  "Az1ManagementSubnetRouteTableAssociation": {
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "ManagementRouteTable"
-    },
-    "SubnetId": {
-     "Ref": "Az1ManagementSubnet"
-    }
-   },
-   "Type": "AWS::EC2::SubnetRouteTableAssociation"
-  },
   "Bigip1ExternalInterface": {
    "Properties": {
     "Description": "Public External Interface for the Bigip",
@@ -552,32 +473,17 @@
             "Ref": "BigipAdminPassword"
            },
            "'\n",
-           "BIGIQ_ADDRESS='",
+           "REGKEY=",
            {
-            "Ref": "BigiqAddress"
+            "Ref": "Bigip1LicenseKey"
+           },
+           "\n",
+           "MANAGEMENT_GUI_PORT='",
+           {
+            "Ref": "BigipManagementGuiPort"
            },
            "'\n",
-           "BIGIQ_USERNAME='",
-           {
-            "Ref": "BigiqUsername"
-           },
-           "'\n",
-           "BIGIQ_PASSWORD='",
-           {
-            "Ref": "BigiqPassword"
-           },
-           "'\n",
-           "BIGIQ_LICENSE_POOL_UUID='",
-           {
-            "Ref": "BigiqLicensePoolUUID"
-           },
-           "'\n",
-           "BIGIP_DEVICE_ADDRESS='",
-           {
-            "Ref": "Bigip1ManagementEipAddress"
-           },
-           "'\n",
-           "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+           "GATEWAY_MAC=`ifconfig eth0 | egrep HWaddr | awk '{print tolower($5)}'`\n",
            "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
            "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
@@ -586,36 +492,6 @@
            "VPC_NET=${VPC_CIDR_BLOCK%/*}\n",
            "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
            "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n",
-           "MGMTIP='",
-           {
-            "Fn::GetAtt": [
-             "Bigip1ManagementInterface",
-             "PrimaryPrivateIpAddress"
-            ]
-           },
-           "'\n",
-           "EXTIP='",
-           {
-            "Fn::GetAtt": [
-             "Bigip1ExternalInterface",
-             "PrimaryPrivateIpAddress"
-            ]
-           },
-           "'\n",
-           "EXTPRIVIP='",
-           {
-            "Fn::Select": [
-             "0",
-             {
-              "Fn::GetAtt": [
-               "Bigip1ExternalInterface",
-               "SecondaryPrivateIpAddresses"
-              ]
-             }
-            ]
-           },
-           "'\n",
-           "EXTMASK='24'\n",
            "POOLMEM='",
            {
             "Fn::GetAtt": [
@@ -666,22 +542,25 @@
            "tmsh modify auth password root <<< $'${BIGIP_ADMIN_PASSWORD}\n${BIGIP_ADMIN_PASSWORD}\n'\n",
            "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
            "tmsh save /sys config\n",
-           "tmsh create net vlan external interfaces add { 1.1 } \n",
-           "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
-           "tmsh create net route default gw ${GATEWAY}\n",
+           "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
+           "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
            "tmsh mv cm device bigip1 ${HOSTNAME}\n",
-           "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
+           "tmsh modify sys db configsync.allowmanagement value enable\n",
+           "MGMT_ADDR=$(tmsh list sys management-ip | awk '/management-ip/ {print $3}')\n",
+           "MGMT_IP=${MGMT_ADDR%/*}\n",
+           "tmsh modify cm device ${HOSTNAME} configsync-ip ${MGMT_IP} unicast-address { { effective-ip ${MGMT_IP} effective-port 1026 ip ${MGMT_IP} } }\n",
            "tmsh save /sys config\n",
-           "echo 'start install biqiq license'\n",
-           ". /tmp/license_from_bigiq.sh\n",
+           "echo 'start install byol license'\n",
+           "networkUp 120 \n",
+           "tmsh install /sys license registration-key \"${REGKEY}\"\n",
            "checkStatusnoret\n",
            "sleep 20 \n",
            "tmsh save /sys config\n",
            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-           "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+           "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
            "tmsh save /sys config\n",
            "date\n",
-           "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
+           "# for security purposes, remove firstrun.config\n",
            "# rm /tmp/firstrun.config\n"
           ]
          ]
@@ -695,18 +574,6 @@
         "mode": "000755",
         "owner": "root",
         "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
-       },
-       "/tmp/license_from_bigiq.sh": {
-        "group": "root",
-        "mode": "000755",
-        "owner": "root",
-        "source": "http://cdn.f5.com/product/templates/utils/license_from_bigiq.sh"
-       },
-       "/tmp/remove_license_from_bigiq.sh": {
-        "group": "root",
-        "mode": "000755",
-        "owner": "root",
-        "source": "http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq.sh"
        }
       }
      }
@@ -732,15 +599,8 @@
     },
     "NetworkInterfaces": [
      {
-      "Description": "Management Interface",
-      "DeviceIndex": "0",
-      "NetworkInterfaceId": {
-       "Ref": "Bigip1ManagementInterface"
-      }
-     },
-     {
       "Description": "Public or External Interface",
-      "DeviceIndex": "1",
+      "DeviceIndex": "0",
       "NetworkInterfaceId": {
        "Ref": "Bigip1ExternalInterface"
       }
@@ -792,79 +652,38 @@
    },
    "Type": "AWS::EC2::Instance"
   },
-  "Bigip1ManagementEipAddress": {
-   "DependsOn": "AttachGateway",
-   "Properties": {
-    "Domain": "vpc"
-   },
-   "Type": "AWS::EC2::EIP"
-  },
-  "Bigip1ManagementEipAssociation": {
-   "DependsOn": "AttachGateway",
-   "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "Bigip1ManagementEipAddress",
-      "AllocationId"
-     ]
-    },
-    "NetworkInterfaceId": {
-     "Ref": "Bigip1ManagementInterface"
-    }
-   },
-   "Type": "AWS::EC2::EIPAssociation"
-  },
-  "Bigip1ManagementInterface": {
-   "Properties": {
-    "Description": "Management Interface for the Bigip",
-    "GroupSet": [
-     {
-      "Ref": "BigipManagementSecurityGroup"
-     }
-    ],
-    "SubnetId": {
-     "Ref": "Az1ManagementSubnet"
-    }
-   },
-   "Type": "AWS::EC2::NetworkInterface"
-  },
-  "Bigip1VipEipAddress": {
-   "DependsOn": "AttachGateway",
-   "Properties": {
-    "Domain": "vpc"
-   },
-   "Type": "AWS::EC2::EIP"
-  },
-  "Bigip1VipEipAssociation": {
-   "DependsOn": "AttachGateway",
-   "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "Bigip1VipEipAddress",
-      "AllocationId"
-     ]
-    },
-    "NetworkInterfaceId": {
-     "Ref": "Bigip1ExternalInterface"
-    },
-    "PrivateIpAddress": {
-     "Fn::Select": [
-      "0",
-      {
-       "Fn::GetAtt": [
-        "Bigip1ExternalInterface",
-        "SecondaryPrivateIpAddresses"
-       ]
-      }
-     ]
-    }
-   },
-   "Type": "AWS::EC2::EIPAssociation"
-  },
   "BigipExternalSecurityGroup": {
    "Properties": {
     "GroupDescription": "Public or External interface rules",
     "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Ref": "SSHLocation"
+      },
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
+     },
+     {
+      "CidrIp": {
+       "Ref": "SSHLocation"
+      },
+      "FromPort": {
+       "Ref": "BigipManagementGuiPort"
+      },
+      "IpProtocol": "tcp",
+      "ToPort": {
+       "Ref": "BigipManagementGuiPort"
+      }
+     },
+     {
+      "CidrIp": {
+       "Ref": "SSHLocation"
+      },
+      "FromPort": "-1",
+      "IpProtocol": "icmp",
+      "ToPort": "-1"
+     },
      {
       "CidrIp": "0.0.0.0/0",
       "FromPort": "80",
@@ -882,6 +701,12 @@
       "FromPort": "4353",
       "IpProtocol": "tcp",
       "ToPort": "4353"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
      },
      {
       "CidrIp": "10.0.0.0/16",
@@ -905,66 +730,17 @@
      },
      {
       "Key": "Name",
-      "Value": "Bigip External Security Group"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::SecurityGroup"
-  },
-  "BigipManagementSecurityGroup": {
-   "Properties": {
-    "GroupDescription": "Big-IP Management UI rules",
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": {
-       "Ref": "SSHLocation"
-      },
-      "FromPort": "22",
-      "IpProtocol": "tcp",
-      "ToPort": "22"
-     },
-     {
-      "CidrIp": {
-       "Ref": "SSHLocation"
-      },
-      "FromPort": "443",
-      "IpProtocol": "tcp",
-      "ToPort": "443"
-     },
-     {
-      "CidrIp": {
-       "Ref": "SSHLocation"
-      },
-      "FromPort": "-1",
-      "IpProtocol": "icmp",
-      "ToPort": "-1"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "22",
-      "IpProtocol": "tcp",
-      "ToPort": "22"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "443",
-      "IpProtocol": "tcp",
-      "ToPort": "443"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Application",
       "Value": {
-       "Ref": "AWS::StackName"
+       "Fn::Join": [
+        "",
+        [
+         "Bigip Security Group: ",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
       }
-     },
-     {
-      "Key": "Name",
-      "Value": "Bigip Management Security Group"
      }
     ],
     "VpcId": {
@@ -1022,43 +798,6 @@
     ]
    },
    "Type": "AWS::EC2::InternetGateway"
-  },
-  "ManagementDefaultRoute": {
-   "DependsOn": "AttachGateway",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "InternetGateway"
-    },
-    "RouteTableId": {
-     "Ref": "ManagementRouteTable"
-    }
-   },
-   "Type": "AWS::EC2::Route"
-  },
-  "ManagementRouteTable": {
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "AWS::StackName"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": "Management Route Table"
-     },
-     {
-      "Key": "Network",
-      "Value": "Mgmt"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::RouteTable"
   },
   "Vpc": {
    "Properties": {

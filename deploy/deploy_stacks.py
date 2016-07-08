@@ -263,7 +263,7 @@ dm.add_vars_to_namespace({
 # deploy all of the cloudformation templates
 for i in range(len(template_list)):
     # To make BigipLicenseKey unique to each template
-    dm.add_vars_to_namespace({ 'BigipLicenseKey': regkey_list[i] })
+    dm.add_vars_to_namespace({ 'Bigip1LicenseKey': regkey_list[i] })
 
     print 'Deploying {} template'.format(template_list[i])
     dm.create_or_update_stack(template_list[i])

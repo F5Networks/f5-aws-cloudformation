@@ -1,8 +1,8 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "AWS CloudFormation Template for creating a two Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami) **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Description": "AWS CloudFormation Template for creating a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
   "Mappings": {
-    "AWSRegionArch2AMI": {
+    "WebserverRegionMap": {
       "ap-northeast-1": {
         "AMI": "ami-489b8049"
       },
@@ -31,51 +31,15 @@
   },
   "Outputs": {
     "Az1ApplicationSubnet": {
-      "Description": "Az1 Application Subnet Id",
+      "Description": "Az1Application Subnet Id",
       "Value": {
         "Ref": "Az1ApplicationSubnet"
       }
     },
     "Az1ExternalSubnet": {
-      "Description": "Az1 Public or External Subnet Id",
+      "Description": "Az1External Subnet Id",
       "Value": {
         "Ref": "Az1ExternalSubnet"
-      }
-    },
-    "Az1InternalSubnet": {
-      "Description": "Az1 Private or Internal Subnet Id",
-      "Value": {
-        "Ref": "Az1InternalSubnet"
-      }
-    },
-    "Az1ManagementSubnet": {
-      "Description": "Az1 Management Subnet Id",
-      "Value": {
-        "Ref": "Az1ManagementSubnet"
-      }
-    },
-    "Az2ApplicationSubnet": {
-      "Description": "Az2 Application Subnet Id",
-      "Value": {
-        "Ref": "Az1ApplicationSubnet"
-      }
-    },
-    "Az2ExternalSubnet": {
-      "Description": "Az2 Public or External Subnet Id",
-      "Value": {
-        "Ref": "Az2ExternalSubnet"
-      }
-    },
-    "Az2InternalSubnet": {
-      "Description": "Az2 Private or Internal Subnet Id",
-      "Value": {
-        "Ref": "Az2InternalSubnet"
-      }
-    },
-    "Az2ManagementSubnet": {
-      "Description": "Az2 Management Subnet Id",
-      "Value": {
-        "Ref": "Az2ManagementSubnet"
       }
     },
     "BigipExternalSecurityGroup": {
@@ -132,10 +96,6 @@
   },
   "Parameters": {
     "AvailabilityZone1": {
-      "Description": "Name of an Availability Zone in this Region",
-      "Type": "AWS::EC2::AvailabilityZone::Name"
-    },
-    "AvailabilityZone2": {
       "Description": "Name of an Availability Zone in this Region",
       "Type": "AWS::EC2::AvailabilityZone::Name"
     },
@@ -293,216 +253,6 @@
       },
       "Type": "AWS::EC2::SubnetRouteTableAssociation"
     },
-    "Az1InternalSubnet": {
-      "Properties": {
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone1"
-        },
-        "CidrBlock": "10.0.2.0/24",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Az1 Internal Subnet"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::Subnet"
-    },
-    "Az1InternalSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "InternalRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az1InternalSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
-    },
-    "Az1ManagementSubnet": {
-      "Properties": {
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone1"
-        },
-        "CidrBlock": "10.0.0.0/24",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Az1 Management Subnet"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::Subnet"
-    },
-    "Az1ManagementSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "ManagementRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az1ManagementSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
-    },
-    "Az2ApplicationSubnet": {
-      "Properties": {
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone2"
-        },
-        "CidrBlock": "10.0.13.0/24",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Az2 Application Subnet"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::Subnet"
-    },
-    "Az2ApplicationSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "ApplicationRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az2ApplicationSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
-    },
-    "Az2ExternalSubnet": {
-      "Properties": {
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone2"
-        },
-        "CidrBlock": "10.0.11.0/24",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Az2 External Subnet"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::Subnet"
-    },
-    "Az2ExternalSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "ExternalRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az2ExternalSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
-    },
-    "Az2InternalSubnet": {
-      "Properties": {
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone2"
-        },
-        "CidrBlock": "10.0.12.0/24",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Az2 Internal Subnet"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::Subnet"
-    },
-    "Az2InternalSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "InternalRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az2InternalSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
-    },
-    "Az2ManagementSubnet": {
-      "Properties": {
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone2"
-        },
-        "CidrBlock": "10.0.10.0/24",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Az2 Management Subnet"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::Subnet"
-    },
-    "Az2ManagementSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "ManagementRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az2ManagementSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
-    },
     "BigipExternalSecurityGroup": {
       "Properties": {
         "GroupDescription": "Public or External interface rules",
@@ -555,9 +305,21 @@
           },
           {
             "CidrIp": "10.0.0.0/16",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "10.0.0.0/16",
             "FromPort": "1026",
             "IpProtocol": "udp",
             "ToPort": "1026"
+          },
+          {
+            "CidrIp": "10.0.0.0/16",
+            "FromPort": "6123",
+            "IpProtocol": "tcp",
+            "ToPort": "6128"
           }
         ],
         "Tags": [
@@ -625,43 +387,6 @@
       },
       "Type": "AWS::EC2::RouteTable"
     },
-    "InternalDefaultRoute": {
-      "DependsOn": "AttachGateway",
-      "Properties": {
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "InternetGateway"
-        },
-        "RouteTableId": {
-          "Ref": "InternalRouteTable"
-        }
-      },
-      "Type": "AWS::EC2::Route"
-    },
-    "InternalRouteTable": {
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackName"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Internal Route Table"
-          },
-          {
-            "Key": "Network",
-            "Value": "Internal"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::RouteTable"
-    },
     "InternetGateway": {
       "Properties": {
         "Tags": [
@@ -674,43 +399,6 @@
         ]
       },
       "Type": "AWS::EC2::InternetGateway"
-    },
-    "ManagementDefaultRoute": {
-      "DependsOn": "AttachGateway",
-      "Properties": {
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "InternetGateway"
-        },
-        "RouteTableId": {
-          "Ref": "ManagementRouteTable"
-        }
-      },
-      "Type": "AWS::EC2::Route"
-    },
-    "ManagementRouteTable": {
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackName"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Management Route Table"
-          },
-          {
-            "Key": "Network",
-            "Value": "Mgmt"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::RouteTable"
     },
     "Vpc": {
       "Properties": {
@@ -738,7 +426,7 @@
       "Properties": {
         "ImageId": {
           "Fn::FindInMap": [
-            "AWSRegionArch2AMI",
+            "WebserverRegionMap",
             {
               "Ref": "AWS::Region"
             },

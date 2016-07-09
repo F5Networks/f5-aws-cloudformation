@@ -185,6 +185,35 @@
     ]
    }
   },
+  "Bigip1VipEipAddress": {
+   "Description": "EIP address for VIP",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Ref": "Bigip1VipEipAddress"
+      },
+      ":80"
+     ]
+    ]
+   }
+  },
+  "Bigip1VipPrivateIp": {
+   "Description": "VIP on External Interface Secondary IP 1",
+   "Value": {
+    "Fn::Select": [
+     "0",
+     {
+      "Fn::GetAtt": [
+       "Bigip1ExternalInterface",
+       "SecondaryPrivateIpAddresses"
+      ]
+     }
+    ]
+   }
+  },
   "BigipExternalSecurityGroup": {
    "Description": "Public or External Security Group",
    "Value": {

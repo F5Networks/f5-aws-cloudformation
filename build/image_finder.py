@@ -171,13 +171,13 @@ def main():
     image_finder_obj = BigIpImageFinder()
 
     # Hourly Region Map ( Need to wait for v12/v13 to be released before can use Cloudinit )
-    HourlyRegionMap = image_finder_obj.getBigipRegionMap(license="hourly", version="11.6.0.6.204.442", throughput="1gbps", regions=regions)
+    HourlyRegionMap = image_finder_obj.getBigipRegionMap(license="hourly", version="12.1.0.1.1.1447", throughput="1gbps", regions=regions)
     
     with open('cached-hourly-region-map.json', 'w') as outfile:
         json.dump(HourlyRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)
 
     # BYOL Region Map:
-    ByolRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="12.0.0.1.14.628", throughput="1gbps", regions=regions)
+    ByolRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="12.1.0.1.1.1447", throughput="1gbps", regions=regions)
 
     with open('cached-byol-region-map.json', 'w') as outfile:
         json.dump(ByolRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)

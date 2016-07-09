@@ -1813,11 +1813,20 @@ def main():
 
             if num_nics == 1:
 
+                VipEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAddress"
+
                 OUTPUTS[BigipUrl] = t.add_output(Output(
                     BigipUrl,
                     Description="Big-IP Management GUI",
                     Value=Join("", [ "https://", GetAtt(BigipInstance, "PublicIp"), ":", Ref(BigipManagementGuiPort) ]),
                 ))
+
+                OUTPUTS[VipEipAddress] = t.add_output(Output(
+                    VipEipAddress,
+                    Description="EIP address for VIP",
+                    Value=Join("", ["http://", GetAtt(BigipInstance, "PublicIp") , ":80"]),
+                ))
+
 
             if num_nics > 1:
 
@@ -1852,7 +1861,7 @@ def main():
                     Value=Ref(ManagementEipAddress),
                 ))
 
-                if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
+                if ha_type == "standalone":
                     OUTPUTS[VipPrivateIp] = t.add_output(Output(
                         VipPrivateIp,
                         Description="VIP on External Interface Secondary IP 1",
@@ -1864,6 +1873,20 @@ def main():
                         Description="EIP address for VIP",
                         Value=Join("", ["http://", Ref(VipEipAddress), ":80"]),
                     ))
+                else:
+                    # if clustered, needs to be cluster seed
+                    if (BIGIP_INDEX + 1) == CLUSTER_SEED:
+                        OUTPUTS[VipPrivateIp] = t.add_output(Output(
+                            VipPrivateIp,
+                            Description="VIP on External Interface Secondary IP 1",
+                            Value=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
+                        ))
+
+                        OUTPUTS[VipEipAddress] = t.add_output(Output(
+                            VipEipAddress,
+                            Description="EIP address for VIP",
+                            Value=Join("", ["http://", Ref(VipEipAddress), ":80"]),
+                        ))
 
             if num_nics > 2:
 

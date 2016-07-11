@@ -4,44 +4,44 @@
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Best": "ami-9f1704f1",
-    "Better": "ami-06687b68",
-    "Good": "ami-6410030a"
+    "Best": "ami-0659ab67",
+    "Better": "ami-ed5eac8c",
+    "Good": "ami-1859ab79"
    },
    "ap-southeast-1": {
-    "Best": "ami-93f82df0",
-    "Better": "ami-1ff82d7c",
-    "Good": "ami-89fe2bea"
+    "Best": "ami-0e17ca6d",
+    "Better": "ami-0d17ca6e",
+    "Good": "ami-0917ca6a"
    },
    "ap-southeast-2": {
-    "Best": "ami-bc486adf",
-    "Better": "ami-8a4466e9",
-    "Good": "ami-be486add"
+    "Best": "ami-4fd9f22c",
+    "Better": "ami-6ad9f209",
+    "Good": "ami-a6d8f3c5"
    },
    "eu-west-1": {
-    "Best": "ami-28c84b5b",
-    "Better": "ami-87c94af4",
-    "Good": "ami-17ca4964"
+    "Best": "ami-db3552a8",
+    "Better": "ami-9e3651ed",
+    "Good": "ami-c23651b1"
    },
    "sa-east-1": {
-    "Best": "ami-8f20afe3",
-    "Better": "ami-8e20afe2",
-    "Good": "ami-8b2aa5e7"
+    "Best": "ami-21fe6a4d",
+    "Better": "ami-21fc684d",
+    "Good": "ami-27fe6a4b"
    },
    "us-east-1": {
-    "Best": "ami-b89284d2",
-    "Better": "ami-a39583c9",
-    "Good": "ami-809284ea"
+    "Best": "ami-ddb730ca",
+    "Better": "ami-c08b47ad",
+    "Good": "ami-f7a92ee0"
    },
    "us-west-1": {
-    "Best": "ami-25b5c945",
-    "Better": "ami-99b3cff9",
-    "Good": "ami-98b3cff8"
+    "Best": "ami-e5054385",
+    "Better": "ami-4f02442f",
+    "Good": "ami-09054369"
    },
    "us-west-2": {
-    "Best": "ami-5fe81c3f",
-    "Better": "ami-a2ec18c2",
-    "Good": "ami-6bea1e0b"
+    "Best": "ami-dc33f3bc",
+    "Better": "ami-6736f607",
+    "Good": "ami-0d35f56d"
    }
   },
   "WebserverRegionMap": {
@@ -834,10 +834,10 @@
            "tmsh create cm device-group my_sync_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
            "tmsh run cm config-sync to-group my_sync_failover_group\n",
            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-           "curl https://cdn.f5.com/product/blackbox/asm-policy-linux-high.xml > /home/admin/asm-policy-linux-high.xml\n",
+           "curl -o /home/admin/asm-policy-linux-high.xml https://cdn.f5.com/product/blackbox/asm-policy-linux-high.xml\n",
            "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
            "tmsh modify asm policy /Common/linux-high active\n",
-           "tmsh create ltm policy app-ltm-policy strategy first-match\n",
+           "tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
            "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
            "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",

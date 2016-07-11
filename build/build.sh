@@ -2,7 +2,7 @@
 
 BUILD_DIR="../unsupported"
 
-# Populate Cache
+# To populate cache files, run
 # python image_finder.py
 
 # Network Only
@@ -30,14 +30,15 @@ python master_template.py -s infra -a 2 -n 2 > ${BUILD_DIR}/infra-only-2AZ-for-2
 python master_template.py -s infra -a 2 -n 3 > ${BUILD_DIR}/infra-only-2AZ-for-3nic-bigip.template
 
 
-# Uncomment when v12/v13 hourly is avail
-# python master_template.py -s full -n 1 -l hourly > ${BUILD_DIR}/full-stack-hourly-1nic-bigip.template
-# python master_template.py -s full -n 2 -l hourly > ${BUILD_DIR}/full-stack-hourly-2nic-bigip.template
-# python master_template.py -s full -n 3 -l hourly > ${BUILD_DIR}/full-stack-hourly-3nic-bigip.template
 
-# python master_template.py -s existing -n 1 -l hourly > ${BUILD_DIR}/existing-stack-hourly-1nic-bigip.template
-# python master_template.py -s existing -n 2 -l hourly > ${BUILD_DIR}/existing-stack-hourly-2nic-bigip.template
-# python master_template.py -s existing -n 3 -l hourly > ${BUILD_DIR}/existing-stack-hourly-3nic-bigip.template
+# BIGIP Stacks
+python master_template.py -s full -n 1 -l hourly > ${BUILD_DIR}/full-stack-hourly-1nic-bigip.template
+python master_template.py -s full -n 2 -l hourly > ${BUILD_DIR}/full-stack-hourly-2nic-bigip.template
+python master_template.py -s full -n 3 -l hourly > ${BUILD_DIR}/full-stack-hourly-3nic-bigip.template
+
+python master_template.py -s existing -n 1 -l hourly > ${BUILD_DIR}/existing-stack-hourly-1nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly > ${BUILD_DIR}/existing-stack-hourly-2nic-bigip.template
+python master_template.py -s existing -n 3 -l hourly > ${BUILD_DIR}/existing-stack-hourly-3nic-bigip.template
 
 python master_template.py -s full -n 1 -l byol > ${BUILD_DIR}/full-stack-byol-1nic-bigip.template
 python master_template.py -s full -n 2 -l byol > ${BUILD_DIR}/full-stack-byol-2nic-bigip.template
@@ -59,6 +60,8 @@ python master_template.py -s existing -n 3 -l bigiq > ${BUILD_DIR}/existing-stac
 # Components 
 
 ## WAF
+python master_template.py -s full -n 1 -l hourly -c waf > ${BUILD_DIR}/full-stack-hourly-1nic-bigip-w-waf.template
+python master_template.py -s existing -n 1 -l hourly -c waf > ${BUILD_DIR}/existing-stack-hourly-1nic-bigip-w-waf.template
 python master_template.py -s full -n 1 -l byol -c waf > ${BUILD_DIR}/full-stack-byol-1nic-bigip-w-waf.template
 python master_template.py -s existing -n 1 -l byol -c waf > ${BUILD_DIR}/existing-stack-byol-1nic-bigip-w-waf.template
 python master_template.py -s full -n 1 -l bigiq -c waf > ${BUILD_DIR}/full-stack-bigiq-license-pool-1nic-bigip-w-waf.template
@@ -68,6 +71,14 @@ python master_template.py -s existing -n 1 -l bigiq -c waf > ${BUILD_DIR}/existi
 ## Clusters 
 
 ### SAME AZ
+
+#### HOURLY
+python master_template.py -s full -n 2 -l hourly -H same-az > ${BUILD_DIR}/full-stack-same-az-cluster-hourly-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H same-az > ${BUILD_DIR}/existing-stack-same-az-cluster-hourly-2nic-bigip.template
+#### WITH WAF 
+python master_template.py -s full -n 2 -l hourly -c waf -H same-az > ${BUILD_DIR}/full-stack-same-az-cluster-hourly-2nic-bigip-w-waf.template
+python master_template.py -s existing -n 2 -l hourly -c waf -H same-az > ${BUILD_DIR}/existing-stack-same-az-cluster-hourly-2nic-bigip-w-waf.template
+
 #### BYOL
 python master_template.py -s full -n 2 -l byol -H same-az > ${BUILD_DIR}/full-stack-same-az-cluster-byol-2nic-bigip.template
 python master_template.py -s existing -n 2 -l byol -H same-az > ${BUILD_DIR}/existing-stack-same-az-cluster-byol-2nic-bigip.template
@@ -85,6 +96,14 @@ python master_template.py -s existing -n 2 -l bigiq -c waf -H same-az > ${BUILD_
 
 
 ### ACROSS AZ
+
+#### HOURLY
+python master_template.py -s full -n 2 -l hourly -H across-az > ${BUILD_DIR}/full-stack-across-az-cluster-hourly-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az > ${BUILD_DIR}/existing-stack-across-az-cluster-hourly-2nic-bigip.template
+#### WITH WAF 
+python master_template.py -s full -n 2 -l hourly -c waf -H across-az > ${BUILD_DIR}/full-stack-across-az-cluster-hourly-2nic-bigip-w-waf.template
+python master_template.py -s existing -n 2 -l hourly -c waf -H across-az > ${BUILD_DIR}/existing-stack-across-az-cluster-hourly-2nic-bigip-w-waf.template
+
 #### BYOL
 python master_template.py -s full -n 2 -l byol -H across-az > ${BUILD_DIR}/full-stack-across-az-cluster-byol-2nic-bigip.template
 python master_template.py -s existing -n 2 -l byol -H across-az > ${BUILD_DIR}/existing-stack-across-az-cluster-byol-2nic-bigip.template

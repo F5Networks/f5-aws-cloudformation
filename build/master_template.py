@@ -215,20 +215,28 @@ def main():
 
 
         if 'waf' in components:
-
+            # Default to 2xlarge
             BigipInstanceType = t.add_parameter(Parameter(
                 "BigipInstanceType",
-                Default="m3.xlarge",
+                Default="m3.2xlarge",
                 ConstraintDescription="must be a valid Big-IP EC2 instance type",
                 Type="String",
                 Description="F5 BIG-IP Virtual Instance Type",
                 AllowedValues=[
+                                "t2.medium",
+                                "t2.large",
+                                "m3.xlarge",
                                 "m3.2xlarge",
+                                "m4.large",
+                                "m4.xlarge",
                                 "m4.2xlarge",
                                 "m4.4xlarge",
                                 "m4.10xlarge",
+                                "c3.2xlarge",
                                 "c3.4xlarge",
                                 "c3.8xlarge",
+                                "c4.xlarge",
+                                "c4.2xlarge",
                                 "c4.4xlarge"       
                               ],
             ))

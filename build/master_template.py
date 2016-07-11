@@ -1488,7 +1488,7 @@ def main():
                 firstrun_sh +=  [
                                 "echo 'sleeping additional 120 secs to wait for peer to boot'\n",
                                 "sleep 120\n",
-                                "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password ${BIGIP_ADMIN_PASSWORD}\n",    
+                                "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",    
                                 "tmsh create cm device-group my_sync_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
                                 "tmsh run cm config-sync to-group my_sync_failover_group\n", 
                                 ]

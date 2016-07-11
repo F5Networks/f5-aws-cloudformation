@@ -1476,12 +1476,12 @@ def main():
                                         ]
 
                 if 'waf' in components:
-
+                    # 12.1.0 requires "first match legacy"
                     firstrun_sh += [
-                                      "curl https://cdn.f5.com/product/blackbox/asm-policy-linux-high.xml > /home/admin/asm-policy-linux-high.xml\n",
+                                      "curl -o /home/admin/asm-policy-linux-high.xml https://cdn.f5.com/product/blackbox/asm-policy-linux-high.xml\n",
                                       "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
                                       "tmsh modify asm policy /Common/linux-high active\n",
-                                      "tmsh create ltm policy app-ltm-policy strategy first-match\n",
+                                      "tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
                                       "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
                                       "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
                                     ]

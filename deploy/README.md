@@ -12,8 +12,34 @@ However, as a convenience, we include additional templates:
  - **"network-only":** creates a VPC, subnets, route-tables.
 
 
+If you are new to AWS, we recommend running a full-stack template as that will give you a full working environment you can inspect
+
+ex.
+full-stack-hourly-1nic-bigip.template
+
+
+If you are familiar with AWS and have an existing stack, we recommend first trying:
+
+existing-stack-hourly-1nic-bigip.template
+
+and taking a look at:
+
+security-groups-for-1nic-bigip.template
+
+to know which ports to enable.
+
+
+
 ## Example of deploying stacks through aws cli:
 
+
+For more information re: installing the aws cli:
+
+http://docs.aws.amazon.com/cli/latest/userguide/installing.html
+
+
+1) cd into directory containing templates
+2) run relevant command below
 
 ###1 NIC:
 
@@ -34,7 +60,7 @@ However, as a convenience, we include additional templates:
     ParameterKey=BigipAdminUsername,ParameterValue=admin
     ParameterKey=BigipAdminPassword,ParameterValue='YOURPASSWORD'
     ParameterKey=BigipManagementGuiPort,ParameterValue=443
-    ParameterKey=BigipLicenseKey,ParameterValue=LUFJD-YREAG-VQHVI-EYOQH-JBBKXAI
+    ParameterKey=Bigip1LicenseKey,ParameterValue=LUFJD-YREAG-VQHVI-EYOQH-JBBKXAI
 
 ####Existing Stack - BYOL:
 
@@ -53,7 +79,7 @@ However, as a convenience, we include additional templates:
     ParameterKey=Az1ExternalSubnet,ParameterValue=subnet-aec1d4d9
     ParameterKey=BigipExternalSecurityGroup,ParameterValue=sg-d90eb9be
     ParameterKey=WebserverPrivateIp,ParameterValue="10.0.3.8"
-    ParameterKey=BigipLicenseKey,ParameterValue=NEHQF-CDKUY-RJTJB-XSPTZ-XVKSQJS
+    ParameterKey=Bigip1LicenseKey,ParameterValue=NEHQF-CDKUY-RJTJB-XSPTZ-XVKSQJS
 
 
 ####Existing Stack - BYOL w/ WAF:
@@ -73,7 +99,7 @@ However, as a convenience, we include additional templates:
     ParameterKey=Az1ExternalSubnet,ParameterValue=subnet-aec1d4d9
     ParameterKey=BigipExternalSecurityGroup,ParameterValue=sg-d90eb9be
     ParameterKey=WebserverPrivateIp,ParameterValue="10.0.3.8"
-    ParameterKey=BigipLicenseKey,ParameterValue=NEHQF-CDKUY-RJTJB-XSPTZ-XZKSQIS
+    ParameterKey=Bigip1LicenseKey,ParameterValue=NEHQF-CDKUY-RJTJB-XSPTZ-XZKSQIS
 
 _NOTE:_ _The only difference for "with WAF" example above is the template name and "Performance Type" = Best_
 
@@ -117,7 +143,7 @@ _NOTE:_ _The only difference for "with WAF" example above is the template name a
     ParameterKey=WebserverInstanceType,ParameterValue=t1.micro
     ParameterKey=BigipAdminUsername,ParameterValue=admin
     ParameterKey=BigipAdminPassword,ParameterValue='YOURPASSWORD'
-    ParameterKey=BigipLicenseKey,ParameterValue=HOXXC-QTDPU-KARFZ-GCNAN-EKVPEDU
+    ParameterKey=Bigip1LicenseKey,ParameterValue=HOXXC-QTDPU-KARFZ-GCNAN-EKVPEDU
 
 ####Existing Stack:
 
@@ -137,12 +163,19 @@ _NOTE:_ _The only difference for "with WAF" example above is the template name a
     ParameterKey=BigipExternalSecurityGroup,ParameterValue=sg-bd8c3dda
     ParameterKey=BigipManagementSecurityGroup,ParameterValue=sg-bc8c3ddb
     ParameterKey=WebserverPrivateIp,ParameterValue="10.0.3.39"
-    ParameterKey=BigipLicenseKey,ParameterValue=CCSVQ-ZXHDA-JBJYU-ZKXZI-LLUHUMX
+    ParameterKey=Bigip1LicenseKey,ParameterValue=CCSVQ-ZXHDA-JBJYU-ZKXZI-LLUHUMX
 
 
 ## deploy_stacks.py
 
-As a further convience, we have included a simple python script (deploy_stacks.py) that can string together the two related tempates
+As a further convience, we have included a simple python script ( deploy/deploy_stacks.py ) that can string together the two related tempates. 
+
+Reqirements:
+
+boto3
+
+For more information, see:
+https://github.com/boto/boto3
 
 ex.
 

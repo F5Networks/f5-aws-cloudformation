@@ -10,39 +10,43 @@ However, as a convenience, we include additional templates:
  - **"full-stack":** creates a full example deployment (VPC, subnets, route-tables, security groups, sample webserver and a Big-IP) so you can quickly have a complete working environment from scratch to explore.
  - **"infra-only":** creates a VPC, subnet, route-tables, webserver, and security groups.   
  - **"network-only":** creates a VPC, subnets, route-tables.
+ - **"security-groups":** creates reference security groups.
 
 
+## Quickstart
+
+Go to the marketplace and accept the user agreement for the version being launched.
+ 
 If you are new to AWS, we recommend running a full-stack template as that will give you a full working environment you can inspect
 
 ex.
-full-stack-hourly-1nic-bigip.template
+[full-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/unsupported/full-stack-byol-1nic-bigip.template)
 
 
 If you are familiar with AWS and have an existing stack, we recommend first trying:
 
-existing-stack-hourly-1nic-bigip.template
+[existing-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/unsupported/existing-stack-hourly-1nic-bigip.template)
 
 and taking a look at:
 
-security-groups-for-1nic-bigip.template
+[security-groups-for-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/unsupported/security-groups-for-1nic-bigip.template)
 
 to know which ports to enable.
 
+*NOTE: Advanced templates require increased service limits (ex. EIPs) so make account has sufficient resources. You can open a ticket with AWS to increase your limits*
 
 
 ## Example of deploying stacks through aws cli:
-
 
 For more information re: installing the aws cli:
 
 http://docs.aws.amazon.com/cli/latest/userguide/installing.html
 
+ 1. cd into directory containing templates
+ 2. run relevant command below
 
-1) cd into directory containing templates
-2) run relevant command below
 
 ###1 NIC:
-
 
 ####Full Stack - BYOL:
 

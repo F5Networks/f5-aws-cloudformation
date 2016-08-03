@@ -1224,7 +1224,14 @@ def main():
             license_byol =  [ 
                                 "echo 'start install byol license'\n",
                                 "networkUp 120 \n",
-                                "tmsh install /sys license registration-key \"${REGKEY}\"\n" 
+                                "LicenseBigIP ${REGKEY}\n",
+                                # "nohup tcpdump -U -ni 0.0:nnn -s0 -c 10000 udp port 53 or host 104.219.104.132 -w /var/tmp/license-attempt.pcap &\n",
+                                # "sleep 10\n",
+                                # "LICENSE_RETURN=$( tmsh install /sys license registration-key \"${REGKEY}\")\n",
+                                # "echo \"LICENSE_RETURN=${LICENSE_RETURN}\"\n",
+                                # "pid=$(ps -e | pgrep tcpdump)\n",
+                                # "echo killing pid=${pid}\n",
+                                # "kill ${pid}\n", 
                             ]
 
             # License file downloaded remotely from https://cdn.f5.com/product/iapp/utils/license-from-bigiq.sh
@@ -1314,10 +1321,18 @@ def main():
 }'
 
             # begin building firstrun.sh
-            firstrun_sh = [] 
+            firstrun_sh = [
+                                "#!/bin/bash\n",
+                          ] 
+
+
+            if num_nics == 1:
+                if ha_type != "standalone":
+                    firstrun_sh += [
+                                        "/usr/bin/setdb provision.1nicautoconfig disable\n",
+                                   ]
 
             firstrun_sh +=  [ 
-                                "#!/bin/bash\n",
                                 ". /tmp/firstrun.config\n",
                                 ". /tmp/firstrun.utils\n",
                                 "FILE=/tmp/firstrun.log\n",
@@ -1354,7 +1369,7 @@ def main():
 
 
             firstrun_sh += [
-                                "tmsh modify auth password root <<< $'${BIGIP_ADMIN_PASSWORD}\n${BIGIP_ADMIN_PASSWORD}\n'\n",
+                                #"tmsh modify auth password root <<< $'${BIGIP_ADMIN_PASSWORD}\n${BIGIP_ADMIN_PASSWORD}\n'\n",
                                 "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
                                 "tmsh save /sys config\n",
                             ]
@@ -1369,12 +1384,17 @@ def main():
                 if 'waf' not in components:
                     firstrun_sh +=  [ 
                                     "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
+
                                     ]
 
                 if 'waf' in components:
                     firstrun_sh +=  [ 
                                     "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
                                     ]
+
+                firstrun_sh +=  [
+                                    "if [[ \"${MANAGEMENT_GUI_PORT}\" != \"443\" ]]; then tmsh modify net self-allow defaults delete { tcp:443 }; fi \n",
+                                ] 
 
 
             # Network Settings
@@ -1419,9 +1439,8 @@ def main():
 
             # Set Gateway
 
-            if ha_type == "across-az" or ha_type == "autoscale":
-                firstrun_sh +=  [  
-                                    "tmsh delete net route default\n",                  
+            if ha_type == "across-az":
+                firstrun_sh +=  [                  
                                     "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
                                     "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
                                 ]
@@ -1431,37 +1450,30 @@ def main():
                                         "tmsh create net route default gw ${GATEWAY}\n",
                                     ]
 
-            # Disable DHCP if clustering. 
-            if ha_type != "standalone":
-                if num_nics == 1:
-                    # Must disable provision 1nic to disable DHCP
-                    firstrun_sh += [ 
-                                    "tmsh modify sys db provision.1nic { value disable } \n",
-                                    "tmsh modify sys db dhclient.mgmt { value disable }\n",
-                                   ]
-                else:
-                    firstrun_sh += [ 
-                                    "tmsh modify sys db dhclient.mgmt { value disable }\n",
-                                   ] 
-
 
             firstrun_sh +=  [
-                            "tmsh mv cm device bigip1 ${HOSTNAME}\n",
+                                "tmsh mv cm device bigip1 ${HOSTNAME}\n",
                             ]  
 
+            # Disable DHCP if clustering. 
+            if ha_type != "standalone":
 
-            if num_nics == 1:
-                firstrun_sh += [
-                                "tmsh modify sys db configsync.allowmanagement value enable\n",
-                                "MGMT_ADDR=$(tmsh list sys management-ip | awk '/management-ip/ {print $3}')\n",
-                                "MGMT_IP=${MGMT_ADDR%/*}\n",
-                                "tmsh modify cm device ${HOSTNAME} configsync-ip ${MGMT_IP} unicast-address { { effective-ip ${MGMT_IP} effective-port 1026 ip ${MGMT_IP} } }\n", 
-                               ]
-            else:
-                # For simplicity, putting all clustering endpoints on external subnet
-                firstrun_sh += [
-                                "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n", 
-                               ]
+                firstrun_sh += [ 
+                                    "tmsh modify sys db dhclient.mgmt { value disable }\n",
+                                ] 
+
+
+                if num_nics == 1:
+                    firstrun_sh += [
+                                    "MGMT_ADDR=$(tmsh list sys management-ip | awk '/management-ip/ {print $3}')\n",
+                                    "MGMT_IP=${MGMT_ADDR%/*}\n",
+                                    "tmsh modify cm device ${HOSTNAME} configsync-ip ${MGMT_IP} }\n", 
+                                   ]
+                else:
+                    # For simplicity, putting all clustering endpoints on external subnet
+                    firstrun_sh += [
+                                    "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n", 
+                                   ]
 
             firstrun_sh +=  [ "tmsh save /sys config\n", ]
 
@@ -1501,23 +1513,32 @@ def main():
                                     "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
                                 ]
 
-                # Add virtual service
+                # Add virtual service with simple URI-Routing ltm policy
                 if 'waf' not in components:
 
+                    firstrun_sh +=  [
+                      "tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\n",
+                      "tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\n",
+                      "tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\n",
+                      "tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\n",
+                    ]
+
                     if ha_type != "across-az":
+
                         if num_nics == 1:
                             firstrun_sh +=  [
-                                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+
+                                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             ]
 
                         if num_nics > 1:
                             firstrun_sh +=  [
-                                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             ]
                     if ha_type == "across-az":                      
                         firstrun_sh +=  [
-                                            "tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                                            "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                            "tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                            "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
                                             "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
                                         ]

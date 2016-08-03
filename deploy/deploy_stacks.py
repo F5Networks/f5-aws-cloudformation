@@ -19,7 +19,7 @@ import json
 import sys
 import os
 
-STACK_WAIT_TIMEOUT = 300
+STACK_WAIT_TIMEOUT = 600
 
 class DeploymentManager:
     """Class to simplify management of a deployment composed of multiple CFTs"""

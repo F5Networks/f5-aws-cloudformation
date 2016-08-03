@@ -62,9 +62,21 @@ function checkStatusnoret {
 
 function networkUp {
 
+    # usage:
+    #   networkUp <num_attempts> <url>
+    #   networkUp 120
+    #   networkUp 120 https://aws.amazon.com
+
     NETWORK_UP=FALSE
+
+    if [[ "$2" ]]; then
+       NETWORK_UP_CMD="curl --output /dev/null --silent --fail -H 'Cache-Control: no-cache' ${2}"
+    else
+       NETWORK_UP_CMD="curl --output /dev/null --silent --fail --head -H 'Cache-Control: no-cache' https://activate.f5.com/license/index.jsp"
+    fi
+
     for ((i=1;i<=$1;i++)); do
-        if curl --output /dev/null --silent --fail --head -H 'Cache-Control: no-cache' https://activate.f5.com/license/index.jsp ; then
+        if ${NETWORK_UP_CMD}; then
             NETWORK_UP=TRUE
             break
         else
@@ -74,3 +86,20 @@ function networkUp {
     done
 }
 
+
+function LicenseBigIP { 
+
+    # usage
+    # LicenseBigIP <regkey>
+    
+    for ((i=1;i<=5;i++)); do
+        LICENSE_RETURN=$( tmsh install /sys license registration-key ${1} )
+        if [ "${LICENSE_RETURN}" == "New license installed" ]; then
+          break
+        else
+          echo "License attempt # ${i} failed. Trying again in 5 secs" 
+          sleep 5
+        fi
+    done
+
+}

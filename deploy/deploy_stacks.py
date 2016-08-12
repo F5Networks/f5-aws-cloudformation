@@ -154,7 +154,7 @@ parser.add_option("-r", "--regkeys", action="store", type="string", dest="regkey
 parser.add_option("-c", "--config", action="store", type="string", dest="config_file", help="Config file used" )
 
 
-parser.set_defaults(template_dir='../unsupported')
+parser.set_defaults(template_dir='../experimental')
 (options, args) = parser.parse_args()
 
 # CFT stacknames restricted 

@@ -1,6 +1,6 @@
 #/bin/bash
 
-BUILD_DIR="../unsupported"
+BUILD_DIR="../experimental"
 
 # To populate cache files, run
 # python image_finder.py

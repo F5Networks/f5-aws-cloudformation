@@ -4,70 +4,132 @@
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Best": "ami-e15eac80",
-    "Better": "ami-e25eac83",
-    "Good": "ami-8d58aaec"
+    "Best1000Mbps": "ami-e15eac80",
+    "Best200Mbps": "ami-5f5daf3e",
+    "Best25Mbps": "ami-f25daf93",
+    "Better1000Mbps": "ami-e25eac83",
+    "Better200Mbps": "ami-f05eac91",
+    "Better25Mbps": "ami-815ba9e0",
+    "Good1000Mbps": "ami-8d58aaec",
+    "Good200Mbps": "ami-165cae77",
+    "Good25Mbps": "ami-d95fadb8"
    },
    "ap-southeast-1": {
-    "Best": "ami-1416cb77",
-    "Better": "ami-fa11cc99",
-    "Good": "ami-5b10cd38"
+    "Best1000Mbps": "ami-1416cb77",
+    "Best200Mbps": "ami-1516cb76",
+    "Best25Mbps": "ami-f911cc9a",
+    "Better1000Mbps": "ami-fa11cc99",
+    "Better200Mbps": "ami-4c10cd2f",
+    "Better25Mbps": "ami-8a16cbe9",
+    "Good1000Mbps": "ami-5b10cd38",
+    "Good200Mbps": "ami-8b16cbe8",
+    "Good25Mbps": "ami-1316cb70"
    },
    "ap-southeast-2": {
-    "Best": "ami-d9daf1ba",
-    "Better": "ami-c5daf1a6",
-    "Good": "ami-18dbf07b"
+    "Best1000Mbps": "ami-d9daf1ba",
+    "Best200Mbps": "ami-abd8f3c8",
+    "Best25Mbps": "ami-97daf1f4",
+    "Better1000Mbps": "ami-c5daf1a6",
+    "Better200Mbps": "ami-1adbf079",
+    "Better25Mbps": "ami-1bdbf078",
+    "Good1000Mbps": "ami-18dbf07b",
+    "Good200Mbps": "ami-08d9f26b",
+    "Good25Mbps": "ami-89d9f2ea"
+   },
+   "eu-central-1": {
+    "Best1000Mbps": "ami-3b2cc654",
+    "Best200Mbps": "ami-b22cc6dd",
+    "Best25Mbps": "ami-8a2bc1e5",
+    "Better1000Mbps": "ami-f129c39e",
+    "Better200Mbps": "ami-3e2ec451",
+    "Better25Mbps": "ami-002ec46f",
+    "Good1000Mbps": "ami-832bc1ec",
+    "Good200Mbps": "ami-3f2ec450",
+    "Good25Mbps": "ami-da28c2b5"
    },
    "eu-west-1": {
-    "Best": "ami-873552f4",
-    "Better": "ami-963651e5",
-    "Good": "ami-ff35528c"
+    "Best1000Mbps": "ami-873552f4",
+    "Best200Mbps": "ami-813552f2",
+    "Best25Mbps": "ami-082a4d7b",
+    "Better1000Mbps": "ami-963651e5",
+    "Better200Mbps": "ami-3e37504d",
+    "Better25Mbps": "ami-b32a4dc0",
+    "Good1000Mbps": "ami-ff35528c",
+    "Good200Mbps": "ami-9b2047e8",
+    "Good25Mbps": "ami-a7294ed4"
    },
    "sa-east-1": {
-    "Best": "ami-dcfc68b0",
-    "Better": "ami-c5fe6aa9",
-    "Good": "ami-7eff6b12"
+    "Best1000Mbps": "ami-dcfc68b0",
+    "Best200Mbps": "ami-4bfd6927",
+    "Best25Mbps": "ami-24fe6a48",
+    "Better1000Mbps": "ami-c5fe6aa9",
+    "Better200Mbps": "ami-69f36705",
+    "Better25Mbps": "ami-e8f16584",
+    "Good1000Mbps": "ami-7eff6b12",
+    "Good200Mbps": "ami-c8fe6aa4",
+    "Good25Mbps": "ami-cbfe6aa7"
    },
    "us-east-1": {
-    "Best": "ami-c9ac2bde",
-    "Better": "ami-69a92e7e",
-    "Good": "ami-a4ac2bb3"
+    "Best1000Mbps": "ami-c9ac2bde",
+    "Best200Mbps": "ami-93ac2b84",
+    "Best25Mbps": "ami-3aab2c2d",
+    "Better1000Mbps": "ami-69a92e7e",
+    "Better200Mbps": "ami-c4ab2cd3",
+    "Better25Mbps": "ami-7aa92e6d",
+    "Good1000Mbps": "ami-a4ac2bb3",
+    "Good200Mbps": "ami-38ad2a2f",
+    "Good25Mbps": "ami-69aa2d7e"
    },
    "us-west-1": {
-    "Best": "ami-8f0244ef",
-    "Better": "ami-00024460",
-    "Good": "ami-47024427"
+    "Best1000Mbps": "ami-8f0244ef",
+    "Best200Mbps": "ami-b40345d4",
+    "Best25Mbps": "ami-01024461",
+    "Better1000Mbps": "ami-00024460",
+    "Better200Mbps": "ami-d10345b1",
+    "Better25Mbps": "ami-d30345b3",
+    "Good1000Mbps": "ami-47024427",
+    "Good200Mbps": "ami-b00345d0",
+    "Good25Mbps": "ami-8b0244eb"
    },
    "us-west-2": {
-    "Best": "ami-f12eee91",
-    "Better": "ami-a92fefc9",
-    "Good": "ami-c333f3a3"
+    "Best1000Mbps": "ami-f12eee91",
+    "Best200Mbps": "ami-d333f3b3",
+    "Best25Mbps": "ami-f62eee96",
+    "Better1000Mbps": "ami-a92fefc9",
+    "Better200Mbps": "ami-ba31f1da",
+    "Better25Mbps": "ami-6f33f30f",
+    "Good1000Mbps": "ami-c333f3a3",
+    "Good200Mbps": "ami-f92fef99",
+    "Good25Mbps": "ami-c033f3a0"
    }
   },
   "WebserverRegionMap": {
    "ap-northeast-1": {
-    "AMI": "ami-489b8049"
+    "AMI": "ami-a78b71c6"
    },
    "ap-southeast-1": {
-    "AMI": "ami-0ad2f858"
+    "AMI": "ami-9fd00ffc"
    },
    "ap-southeast-2": {
-    "AMI": "ami-25d7a31f"
+    "AMI": "ami-2952674a"
+   },
+   "eu-central-1": {
+    "AMI": "ami-af14e0c0"
    },
    "eu-west-1": {
-    "AMI": "ami-7dfc720a"
+    "AMI": "ami-277f1254"
    },
    "sa-east-1": {
-    "AMI": "ami-6def5070"
+    "AMI": "ami-2bed7a47"
    },
    "us-east-1": {
-    "AMI": "ami-00266568"
+    "AMI": "ami-cd7bf1da"
    },
    "us-west-1": {
-    "AMI": "ami-fc8b93b9"
+    "AMI": "ami-28e0a148"
    },
    "us-west-2": {
-    "AMI": "ami-71520941"
+    "AMI": "ami-d9b57ab9"
    }
   }
  },
@@ -324,12 +386,18 @@
   },
   "BigipPerformanceType": {
    "AllowedValues": [
-    "Good",
-    "Better",
-    "Best"
+    "Good25Mbps",
+    "Good200Mbps",
+    "Good1000Mbps",
+    "Better25Mbps",
+    "Better200Mbps",
+    "Better1000Mbps",
+    "Best25Mbps",
+    "Best200Mbps",
+    "Best1000Mbps"
    ],
    "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
-   "Default": "Best",
+   "Default": "Best1000Mbps",
    "Description": "F5 Bigip Performance Type",
    "Type": "String"
   },

@@ -679,13 +679,13 @@
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",
-                "source": "http://cdn.f5.com/product/templates/utils/license_from_bigiq.sh"
+                "source": "http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh"
               },
               "/tmp/remove_license_from_bigiq.sh": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",
-                "source": "http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq.sh"
+                "source": "http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh"
               }
             }
           }
@@ -1075,13 +1075,13 @@
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",
-                "source": "http://cdn.f5.com/product/templates/utils/license_from_bigiq.sh"
+                "source": "http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh"
               },
               "/tmp/remove_license_from_bigiq.sh": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",
-                "source": "http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq.sh"
+                "source": "http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh"
               }
             }
           }

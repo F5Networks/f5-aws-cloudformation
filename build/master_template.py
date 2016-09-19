@@ -237,7 +237,7 @@ def main():
                                 "c3.8xlarge",
                                 "c4.xlarge",
                                 "c4.2xlarge",
-                                "c4.4xlarge"       
+                                "c4.4xlarge",       
                               ],
             ))
 
@@ -264,19 +264,39 @@ def main():
                                 "c3.8xlarge",
                                 "c4.xlarge",
                                 "c4.2xlarge",
-                                "c4.4xlarge"       
+                                "c4.4xlarge",       
                               ],
             ))
 
+        if license_type == "hourly":
+            BigipPerformanceType = t.add_parameter(Parameter(
+                "BigipPerformanceType",
+                Default="Best1000Mbps",
+                ConstraintDescription="Must be a valid F5 Big-IP performance type",
+                Type="String",
+                Description="F5 Bigip Performance Type",
+                AllowedValues=[
+                                "Good25Mbps",
+                                "Good200Mbps",
+                                "Good1000Mbps",    
+                                "Better25Mbps",
+                                "Better200Mbps",
+                                "Better1000Mbps",                          
+                                "Best25Mbps",
+                                "Best200Mbps",
+                                "Best1000Mbps",
+                              ],
+            ))
 
-        BigipPerformanceType = t.add_parameter(Parameter(
-            "BigipPerformanceType",
-            Default="Best",
-            ConstraintDescription="Must be a valid F5 Big-IP performance type",
-            Type="String",
-            Description="F5 Bigip Performance Type",
-            AllowedValues=["Good", "Better", "Best"],
-        ))
+        if license_type != "hourly":
+            BigipPerformanceType = t.add_parameter(Parameter(
+                "BigipPerformanceType",
+                Default="Best",
+                ConstraintDescription="Must be a valid F5 Big-IP performance type",
+                Type="String",
+                Description="F5 Bigip Performance Type",
+                AllowedValues=["Good", "Better", "Best"],
+            ))
 
         BigipAdminUsername = t.add_parameter(Parameter(
             "BigipAdminUsername",
@@ -443,70 +463,14 @@ def main():
     if bigip == True: 
 
         if license_type == "hourly":
-
             with open("cached-hourly-region-map.json") as json_file:
                 RegionMap = json.load(json_file)
 
-            t.add_mapping("BigipRegionMap",  
-            {u'ap-northeast-1': {u'Best': RegionMap['ap-northeast-1']['Best'],
-                                 u'Better': RegionMap['ap-northeast-1']['Better'],
-                                 u'Good': RegionMap['ap-northeast-1']['Good']},
-             u'ap-southeast-1': {u'Best': RegionMap['ap-southeast-1']['Best'],
-                                 u'Better': RegionMap['ap-southeast-1']['Better'],
-                                 u'Good': RegionMap['ap-southeast-1']['Good']},
-             u'ap-southeast-2': {u'Best': RegionMap['ap-southeast-2']['Best'],
-                                 u'Better': RegionMap['ap-southeast-2']['Better'],
-                                 u'Good': RegionMap['ap-southeast-2']['Good']},
-             u'eu-west-1': {u'Best': RegionMap['eu-west-1']['Best'],
-                            u'Better': RegionMap['eu-west-1']['Better'],
-                            u'Good': RegionMap['eu-west-1']['Good']},
-             u'sa-east-1': {u'Best': RegionMap['sa-east-1']['Best'],
-                            u'Better': RegionMap['sa-east-1']['Better'],
-                            u'Good': RegionMap['sa-east-1']['Good']},
-             u'us-east-1': {u'Best': RegionMap['us-east-1']['Best'],
-                            u'Better': RegionMap['us-east-1']['Better'],
-                            u'Good': RegionMap['us-east-1']['Good']},
-             u'us-west-1': {u'Best': RegionMap['us-west-1']['Best'],
-                            u'Better': RegionMap['us-west-1']['Better'],
-                            u'Good': RegionMap['us-west-1']['Good']},
-             u'us-west-2': {u'Best': RegionMap['us-west-2']['Best'],
-                            u'Better': RegionMap['us-west-2']['Better'],
-                            u'Good': RegionMap['us-west-2']['Good']}}
-            )
-
-
         if license_type != "hourly":
-
             with open("cached-byol-region-map.json") as json_file:
                 RegionMap = json.load(json_file)
 
-            t.add_mapping("BigipRegionMap",  
-            {u'ap-northeast-1': {u'Best': RegionMap['ap-northeast-1']['Best'],
-                                 u'Better': RegionMap['ap-northeast-1']['Better'],
-                                 u'Good': RegionMap['ap-northeast-1']['Good']},
-             u'ap-southeast-1': {u'Best': RegionMap['ap-southeast-1']['Best'],
-                                 u'Better': RegionMap['ap-southeast-1']['Better'],
-                                 u'Good': RegionMap['ap-southeast-1']['Good']},
-             u'ap-southeast-2': {u'Best': RegionMap['ap-southeast-2']['Best'],
-                                 u'Better': RegionMap['ap-southeast-2']['Better'],
-                                 u'Good': RegionMap['ap-southeast-2']['Good']},
-             u'eu-west-1': {u'Best': RegionMap['eu-west-1']['Best'],
-                            u'Better': RegionMap['eu-west-1']['Better'],
-                            u'Good': RegionMap['eu-west-1']['Good']},
-             u'sa-east-1': {u'Best': RegionMap['sa-east-1']['Best'],
-                            u'Better': RegionMap['sa-east-1']['Better'],
-                            u'Good': RegionMap['sa-east-1']['Good']},
-             u'us-east-1': {u'Best': RegionMap['us-east-1']['Best'],
-                            u'Better': RegionMap['us-east-1']['Better'],
-                            u'Good': RegionMap['us-east-1']['Good']},
-             u'us-west-1': {u'Best': RegionMap['us-west-1']['Best'],
-                            u'Better': RegionMap['us-west-1']['Better'],
-                            u'Good': RegionMap['us-west-1']['Good']},
-             u'us-west-2': {u'Best': RegionMap['us-west-2']['Best'],
-                            u'Better': RegionMap['us-west-2']['Better'],
-                            u'Good': RegionMap['us-west-2']['Good']}}
-            )
-
+        t.add_mapping("BigipRegionMap", RegionMap )
 
     # WEB SERVER MAPPING
     if webserver == True:
@@ -514,17 +478,7 @@ def main():
         with open("cached-webserver-region-map.json") as json_file:
             RegionMap = json.load(json_file)
 
-        t.add_mapping("WebserverRegionMap",
-        {u'ap-northeast-1': {u'AMI': RegionMap['ap-northeast-1']},
-         u'ap-southeast-1': {u'AMI': RegionMap['ap-southeast-1']},
-         u'ap-southeast-2': {u'AMI': RegionMap['ap-southeast-2']},
-         u'eu-west-1': {u'AMI': RegionMap['eu-west-1']},
-         u'sa-east-1': {u'AMI': RegionMap['sa-east-1']},
-         u'us-east-1': {u'AMI': RegionMap['us-east-1']},
-         u'us-west-1': {u'AMI': RegionMap['us-west-1']},
-         u'us-west-2': {u'AMI': RegionMap['us-west-2']}}
-        )
-
+        t.add_mapping("WebserverRegionMap", RegionMap )
 
 
     ### BEGIN RESOURCES
@@ -1628,13 +1582,13 @@ def main():
                                             group='root'
                                         ),
                                         '/tmp/license_from_bigiq.sh': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/license_from_bigiq.sh',
+                                            source='http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh',
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
                                         '/tmp/remove_license_from_bigiq.sh': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq.sh',
+                                            source='http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh',
                                             mode='000755',
                                             owner='root',
                                             group='root'

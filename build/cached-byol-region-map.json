@@ -14,6 +14,11 @@
     "Better": "ami-6ad9f209", 
     "Good": "ami-a6d8f3c5"
   }, 
+  "eu-central-1": {
+    "Best": "ami-df28c2b0", 
+    "Better": "ami-0a2ec465", 
+    "Good": "ami-f229c39d"
+  }, 
   "eu-west-1": {
     "Best": "ami-db3552a8", 
     "Better": "ami-9e3651ed", 

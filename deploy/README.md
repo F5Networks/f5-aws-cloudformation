@@ -20,16 +20,16 @@ Go to the marketplace and accept the user agreement for the version being launch
 If you are new to AWS, we recommend running a full-stack template as that will give you a full working environment you can inspect
 
 ex.
-[full-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/unsupported/full-stack-byol-1nic-bigip.template)
+[full-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/full-stack-byol-1nic-bigip.template)
 
 
 If you are familiar with AWS and have an existing stack, we recommend first trying:
 
-[existing-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/unsupported/existing-stack-hourly-1nic-bigip.template)
+[existing-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/existing-stack-hourly-1nic-bigip.template)
 
 and taking a look at:
 
-[security-groups-for-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/unsupported/security-groups-for-1nic-bigip.template)
+[security-groups-for-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/security-groups-for-1nic-bigip.template)
 
 to know which ports to enable.
 

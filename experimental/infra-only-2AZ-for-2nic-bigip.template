@@ -1,0 +1,764 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation Template for creating a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Mappings": {
+    "WebserverRegionMap": {
+      "ap-northeast-1": {
+        "AMI": "ami-231fd242"
+      },
+      "ap-southeast-1": {
+        "AMI": "ami-1232eb71"
+      },
+      "ap-southeast-2": {
+        "AMI": "ami-b73f08d4"
+      },
+      "eu-central-1": {
+        "AMI": "ami-8ce819e3"
+      },
+      "eu-west-1": {
+        "AMI": "ami-9b4b3fe8"
+      },
+      "sa-east-1": {
+        "AMI": "ami-a435a3c8"
+      },
+      "us-east-1": {
+        "AMI": "ami-7e0e6a69"
+      },
+      "us-west-1": {
+        "AMI": "ami-cb480aab"
+      },
+      "us-west-2": {
+        "AMI": "ami-def124be"
+      }
+    }
+  },
+  "Outputs": {
+    "Az1ApplicationSubnet": {
+      "Description": "Az1Application Subnet Id",
+      "Value": {
+        "Ref": "Az1ApplicationSubnet"
+      }
+    },
+    "Az1ExternalSubnet": {
+      "Description": "Az1External Subnet Id",
+      "Value": {
+        "Ref": "Az1ExternalSubnet"
+      }
+    },
+    "Az1ManagementSubnet": {
+      "Description": "Az1Management Subnet Id",
+      "Value": {
+        "Ref": "Az1ManagementSubnet"
+      }
+    },
+    "Az2ApplicationSubnet": {
+      "Description": "Az2Application Subnet Id",
+      "Value": {
+        "Ref": "Az2ApplicationSubnet"
+      }
+    },
+    "Az2ExternalSubnet": {
+      "Description": "Az2External Subnet Id",
+      "Value": {
+        "Ref": "Az2ExternalSubnet"
+      }
+    },
+    "Az2ManagementSubnet": {
+      "Description": "Az2Management Subnet Id",
+      "Value": {
+        "Ref": "Az2ManagementSubnet"
+      }
+    },
+    "BigipExternalSecurityGroup": {
+      "Description": "Public or External Security Group",
+      "Value": {
+        "Ref": "BigipExternalSecurityGroup"
+      }
+    },
+    "BigipManagementSecurityGroup": {
+      "Description": "Management Security Group",
+      "Value": {
+        "Ref": "BigipManagementSecurityGroup"
+      }
+    },
+    "DnsServers": {
+      "Description": "DNS server for VPC",
+      "Value": "10.0.0.2"
+    },
+    "Vpc": {
+      "Description": "VPC ID",
+      "Value": {
+        "Ref": "Vpc"
+      }
+    },
+    "WebserverPrivateIp": {
+      "Description": "Private Ip for Webserver",
+      "Value": {
+        "Fn::GetAtt": [
+          "Webserver",
+          "PrivateIp"
+        ]
+      }
+    },
+    "WebserverPublicIp": {
+      "Description": "Public Ip for Webserver",
+      "Value": {
+        "Fn::GetAtt": [
+          "Webserver",
+          "PublicIp"
+        ]
+      }
+    },
+    "WebserverPublicUrl": {
+      "Description": "Public Url for Webserver",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "Webserver",
+                "PublicIp"
+              ]
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "AvailabilityZone1": {
+      "Description": "Name of an Availability Zone in this Region",
+      "Type": "AWS::EC2::AvailabilityZone::Name"
+    },
+    "AvailabilityZone2": {
+      "Description": "Name of an Availability Zone in this Region",
+      "Type": "AWS::EC2::AvailabilityZone::Name"
+    },
+    "KeyName": {
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "SSHLocation": {
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+      "Default": "0.0.0.0/0",
+      "Description": " The IP address range that can be used to SSH to the EC2 instances",
+      "MaxLength": "18",
+      "MinLength": "9",
+      "Type": "String"
+    },
+    "WebserverInstanceType": {
+      "AllowedValues": [
+        "t1.micro",
+        "m3.medium",
+        "m3.xlarge",
+        "m2.xlarge",
+        "m3.2xlarge",
+        "c3.large",
+        "c3.xlarge"
+      ],
+      "ConstraintDescription": "must be a valid EC2 instance type",
+      "Default": "t1.micro",
+      "Description": "Webserver EC2 instance type",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "ApplicationDefaultRoute": {
+      "DependsOn": "AttachGateway",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "ApplicationRouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "ApplicationRouteTable": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Application Route Table"
+          },
+          {
+            "Key": "Network",
+            "Value": "Application"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "AttachGateway": {
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment"
+    },
+    "Az1ApplicationSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone1"
+        },
+        "CidrBlock": "10.0.3.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Az1 Application Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "Az1ApplicationSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ApplicationRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Az1ApplicationSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "Az1ExternalSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone1"
+        },
+        "CidrBlock": "10.0.1.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Az1 External Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "Az1ExternalSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ExternalRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Az1ExternalSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "Az1ManagementSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone1"
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Az1 Management Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "Az1ManagementSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ManagementRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Az1ManagementSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "Az2ApplicationSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone2"
+        },
+        "CidrBlock": "10.0.13.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Az2 Application Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "Az2ApplicationSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ApplicationRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Az2ApplicationSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "Az2ExternalSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone2"
+        },
+        "CidrBlock": "10.0.11.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Az2 External Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "Az2ExternalSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ExternalRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Az2ExternalSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "Az2ManagementSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone2"
+        },
+        "CidrBlock": "10.0.10.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Az2 Management Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "Az2ManagementSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ManagementRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Az2ManagementSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "BigipExternalSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Public or External interface rules",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "80",
+            "IpProtocol": "tcp",
+            "ToPort": "80"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "443",
+            "IpProtocol": "tcp",
+            "ToPort": "443"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "4353",
+            "IpProtocol": "tcp",
+            "ToPort": "4353"
+          },
+          {
+            "CidrIp": "10.0.0.0/16",
+            "FromPort": "1026",
+            "IpProtocol": "udp",
+            "ToPort": "1026"
+          },
+          {
+            "CidrIp": "10.0.0.0/16",
+            "FromPort": "6123",
+            "IpProtocol": "tcp",
+            "ToPort": "6128"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Bigip External Security Group"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "BigipManagementSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Big-IP Management UI rules",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            },
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            },
+            "FromPort": "443",
+            "IpProtocol": "tcp",
+            "ToPort": "443"
+          },
+          {
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            },
+            "FromPort": "-1",
+            "IpProtocol": "icmp",
+            "ToPort": "-1"
+          },
+          {
+            "CidrIp": "10.0.0.0/16",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "10.0.0.0/16",
+            "FromPort": "443",
+            "IpProtocol": "tcp",
+            "ToPort": "443"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Bigip Management Security Group"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "ExternalDefaultRoute": {
+      "DependsOn": "AttachGateway",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "ExternalRouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "ExternalRouteTable": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "External Route Table"
+          },
+          {
+            "Key": "Network",
+            "Value": "External"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "InternetGateway": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          }
+        ]
+      },
+      "Type": "AWS::EC2::InternetGateway"
+    },
+    "ManagementDefaultRoute": {
+      "DependsOn": "AttachGateway",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "ManagementRouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "ManagementRouteTable": {
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Management Route Table"
+          },
+          {
+            "Key": "Network",
+            "Value": "Mgmt"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "Vpc": {
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": "true",
+        "EnableDnsSupport": "true",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          }
+        ]
+      },
+      "Type": "AWS::EC2::VPC"
+    },
+    "Webserver": {
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "WebserverRegionMap",
+            {
+              "Ref": "AWS::Region"
+            },
+            "AMI"
+          ]
+        },
+        "InstanceType": {
+          "Ref": "WebserverInstanceType"
+        },
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "Description": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  " Webserver Network Interface"
+                ]
+              ]
+            },
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "WebserverSecurityGroup"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "Az1ApplicationSubnet"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Webserver"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -x\n",
+                "echo \"Hello World\"\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "WebserverSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Enable Access to Webserver",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "22",
+            "IpProtocol": "tcp",
+            "ToPort": "22"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "80",
+            "IpProtocol": "tcp",
+            "ToPort": "80"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "443",
+            "IpProtocol": "tcp",
+            "ToPort": "443"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "-1",
+            "IpProtocol": "icmp",
+            "ToPort": "-1"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Webserver Security Group"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    }
+  }
+}

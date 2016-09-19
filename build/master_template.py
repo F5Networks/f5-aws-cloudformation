@@ -1535,6 +1535,8 @@ def main():
                                             "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.0.1rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                             "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                                             "tmsh run cm config-sync to-group my_sync_failover_group\n",
+                                            "sleep 15\n",
+                                            "curl -sSk -u admin:\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
                                     ]
 
             # If ASM, Need to use overwite Config (SOL16509 / BZID: 487538 )

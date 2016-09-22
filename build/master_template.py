@@ -920,7 +920,11 @@ def main():
 
         Webserver = t.add_resource(Instance(
             "Webserver",
-            UserData=Base64(Join("", ["#!/bin/bash -x\n", "echo \"Hello World\"\n"])),
+            UserData=Base64(Join("\n", [
+                                         "#cloud-config",
+                                         "runcmd:",
+                                         " - sudo docker run --name demo -p 80:80 -d f5devcentral/f5-demo-app:latest"
+                ])),
             Tags=Tags(
                 Name="Webserver",
                 Application=Ref("AWS::StackName"),

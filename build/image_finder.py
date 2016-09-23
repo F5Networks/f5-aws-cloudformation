@@ -210,22 +210,22 @@ def main():
     image_finder_obj = BigIpImageFinder()
 
     # Hourly Region Map ( Need to wait for v12/v13 to be released before can use Cloudinit )
-    HourlyRegionMap = image_finder_obj.getBigipRegionMap(license="hourly", version="12.1.0.1.1.1447", regions=regions)
+    HourlyRegionMap = image_finder_obj.getBigipRegionMap(license="hourly", version="12.1.0.2.0.1468", regions=regions)
     
     with open('cached-hourly-region-map.json', 'w') as outfile:
         json.dump(HourlyRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)
 
     # BYOL Region Map:
-    ByolRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="12.1.0.1.1.1447", regions=regions)
+    ByolRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="12.1.0.2.0.1468", regions=regions)
 
     with open('cached-byol-region-map.json', 'w') as outfile:
         json.dump(ByolRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)
 
-    Webserver Region Map:
-    bitnami-lampstack-5.5.13-0-dev-linux-ubuntu-12.04.4-x86_64-ebs-ami-a9f58699-3-ami-9dcd82ad
-    aws ec2 describe-images --region us-west-2 --filter 'Name=name,Values="bitnami-lampstack-5.5.13-0-dev-linux-ubuntu-12.04.4-x86_64-ebs*"' --query 'Images[*].[CreationDate,ImageId,Name,Description]' --output=text | awk '{print $2}'
+    #Webserver Region Map:
+    #bitnami-lampstack-5.5.13-0-dev-linux-ubuntu-12.04.4-x86_64-ebs-ami-a9f58699-3-ami-9dcd82ad
+    #aws ec2 describe-images --region us-west-2 --filter 'Name=name,Values="bitnami-lampstack-5.5.13-0-dev-linux-ubuntu-12.04.4-x86_64-ebs*"' --query 'Images[*].[CreationDate,ImageId,Name,Description]' --output=text | awk '{print $2}'
 
-    name_string = "bitnami-lampstack-5.6.25-0-r21-linux-ubuntu-14.04.3-x86_64-ebs"
+    name_string = "F5 Demo App v0.0.1"
     image_finder_obj = WebImageFinder()
     WebserverRegionMap = image_finder_obj.getWebRegionMap(name_string=name_string, regions=regions)
 

@@ -920,7 +920,11 @@ def main():
 
         Webserver = t.add_resource(Instance(
             "Webserver",
-            UserData=Base64(Join("", ["#!/bin/bash -x\n", "echo \"Hello World\"\n"])),
+            UserData=Base64(Join("\n", [
+                                         "#cloud-config",
+                                         "runcmd:",
+                                         " - sudo docker run --name demo -p 80:80 -d f5devcentral/f5-demo-app:latest"
+                ])),
             Tags=Tags(
                 Name="Webserver",
                 Application=Ref("AWS::StackName"),
@@ -1213,7 +1217,7 @@ def main():
 
 
             # TMSH CMD
-            # tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.0.1rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { 52.27.196.185 /Common/10.0.1.100 /Common/10.0.11.100 } } } } } variables add { eip_mappings__inbound { value yes } }
+            # tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.2.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { 52.27.196.185 /Common/10.0.1.100 /Common/10.0.11.100 } } } } } variables add { eip_mappings__inbound { value yes } }
 
             aws_advanced_ha_iapp_rest_payload = '{ \
     "name": "HA_Across_AZs", \
@@ -1221,7 +1225,7 @@ def main():
     "inheritedDevicegroup": "true", \
     "inheritedTrafficGroup": "true", \
     "strictUpdates": "enabled", \
-    "template": "/Common/f5.aws_advanced_ha.v1.0.1.tmpl", \
+    "template": "/Common/f5.aws_advanced_ha.v1.2.0.tmpl", \
     "templateModified": "no", \
     "tables": [ \
         { \
@@ -1530,9 +1534,9 @@ def main():
 
                 if ha_type == "across-az":
                     firstrun_sh += [
-                                            "curl -sSk -o /tmp/f5.aws_advanced_ha.v1.0.1rc1.tmpl --max-time 15 https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.0.1rc1.tmpl\n",
-                                            "tmsh load sys application template /tmp/f5.aws_advanced_ha.v1.0.1rc1.tmpl\n",
-                                            "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.0.1rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
+                                            "curl -sSk -o /tmp/f5.aws_advanced_ha.v1.2.0rc1.tmpl --max-time 15 https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
+                                            "tmsh load sys application template /tmp/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
+                                            "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.2.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                             "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                                             "tmsh run cm config-sync to-group my_sync_failover_group\n",
                                             "sleep 15\n",

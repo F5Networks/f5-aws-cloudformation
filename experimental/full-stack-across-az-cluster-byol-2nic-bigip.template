@@ -51,31 +51,31 @@
   },
   "WebserverRegionMap": {
    "ap-northeast-1": {
-    "AMI": "ami-231fd242"
+    "AMI": "ami-5b82503a"
    },
    "ap-southeast-1": {
-    "AMI": "ami-1232eb71"
+    "AMI": "ami-2e67c24d"
    },
    "ap-southeast-2": {
-    "AMI": "ami-b73f08d4"
+    "AMI": "ami-3af5c559"
    },
    "eu-central-1": {
-    "AMI": "ami-8ce819e3"
+    "AMI": "ami-f8768b97"
    },
    "eu-west-1": {
-    "AMI": "ami-9b4b3fe8"
+    "AMI": "ami-9c5f25ef"
    },
    "sa-east-1": {
-    "AMI": "ami-a435a3c8"
+    "AMI": "ami-6a52c106"
    },
    "us-east-1": {
-    "AMI": "ami-7e0e6a69"
+    "AMI": "ami-93fa8284"
    },
    "us-west-1": {
-    "AMI": "ami-cb480aab"
+    "AMI": "ami-5f1b553f"
    },
    "us-west-2": {
-    "AMI": "ami-def124be"
+    "AMI": "ami-c1e13da1"
    }
   }
  },
@@ -976,6 +976,8 @@
            "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.0.1rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
            "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
            "tmsh run cm config-sync to-group my_sync_failover_group\n",
+           "sleep 15\n",
+           "curl -sSk -u admin:\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
            "tmsh save /sys config\n",
            "date\n",
            "# for security purposes, remove firstrun.config\n",
@@ -1751,10 +1753,11 @@
     "UserData": {
      "Fn::Base64": {
       "Fn::Join": [
-       "",
+       "\n",
        [
-        "#!/bin/bash -x\n",
-        "echo \"Hello World\"\n"
+        "#cloud-config",
+        "runcmd:",
+        " - sudo docker run --name demo -p 80:80 -d f5devcentral/f5-demo-app:latest"
        ]
       ]
      }

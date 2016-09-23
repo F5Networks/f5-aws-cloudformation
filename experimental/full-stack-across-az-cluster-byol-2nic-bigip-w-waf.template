@@ -4,49 +4,49 @@
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Best": "ami-0659ab67",
-    "Better": "ami-ed5eac8c",
-    "Good": "ami-1859ab79"
+    "Best": "ami-e801d089",
+    "Better": "ami-2903d248",
+    "Good": "ami-1402d375"
    },
    "ap-southeast-1": {
-    "Best": "ami-0e17ca6d",
-    "Better": "ami-0d17ca6e",
-    "Good": "ami-0917ca6a"
+    "Best": "ami-f3439990",
+    "Better": "ami-50419b33",
+    "Good": "ami-f6439995"
    },
    "ap-southeast-2": {
-    "Best": "ami-4fd9f22c",
-    "Better": "ami-6ad9f209",
-    "Good": "ami-a6d8f3c5"
+    "Best": "ami-b58bbad6",
+    "Better": "ami-d289b8b1",
+    "Good": "ami-6489b807"
    },
    "eu-central-1": {
-    "Best": "ami-df28c2b0",
-    "Better": "ami-0a2ec465",
-    "Good": "ami-f229c39d"
+    "Best": "ami-1eb14c71",
+    "Better": "ami-29b64b46",
+    "Good": "ami-69b04d06"
    },
    "eu-west-1": {
-    "Best": "ami-db3552a8",
-    "Better": "ami-9e3651ed",
-    "Good": "ami-c23651b1"
+    "Best": "ami-32c5bc41",
+    "Better": "ami-f2394181",
+    "Good": "ami-c2c7beb1"
    },
    "sa-east-1": {
-    "Best": "ami-21fe6a4d",
-    "Better": "ami-21fc684d",
-    "Good": "ami-27fe6a4b"
+    "Best": "ami-69c15205",
+    "Better": "ami-73c2511f",
+    "Good": "ami-94dd4ef8"
    },
    "us-east-1": {
-    "Best": "ami-ddb730ca",
-    "Better": "ami-c08b47ad",
-    "Good": "ami-f7a92ee0"
+    "Best": "ami-83cab794",
+    "Better": "ami-3fc4b928",
+    "Good": "ami-e2c9b4f5"
    },
    "us-west-1": {
-    "Best": "ami-e5054385",
-    "Better": "ami-4f02442f",
-    "Good": "ami-09054369"
+    "Best": "ami-257c3345",
+    "Better": "ami-3f7c335f",
+    "Good": "ami-7d7c331d"
    },
    "us-west-2": {
-    "Best": "ami-dc33f3bc",
-    "Better": "ami-6736f607",
-    "Good": "ami-0d35f56d"
+    "Best": "ami-8b76a4eb",
+    "Better": "ami-a977a5c9",
+    "Good": "ami-2370a243"
    }
   },
   "WebserverRegionMap": {
@@ -988,9 +988,9 @@
            "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
            "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
            "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
-           "curl -sSk -o /tmp/f5.aws_advanced_ha.v1.0.1rc1.tmpl --max-time 15 https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.0.1rc1.tmpl\n",
-           "tmsh load sys application template /tmp/f5.aws_advanced_ha.v1.0.1rc1.tmpl\n",
-           "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.0.1rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
+           "curl -sSk -o /tmp/f5.aws_advanced_ha.v1.2.0rc1.tmpl --max-time 15 https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
+           "tmsh load sys application template /tmp/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
+           "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.2.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
            "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
            "tmsh run cm config-sync to-group my_sync_failover_group\n",
            "sleep 15\n",

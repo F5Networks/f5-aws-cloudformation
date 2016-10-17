@@ -1290,12 +1290,13 @@ def main():
     ] \
 }'
 
-            # begin building firstrun.sh
+            # begin building firstrun.sh and cloud lib calls
             firstrun_sh = [
                                 "#!/bin/bash\n",
                           ] 
-
-
+            onboard_BIG_IP = [
+                                "# f5-cloud-libs"
+                             ]
             if num_nics == 1:
                 if ha_type != "standalone":
                     firstrun_sh += [
@@ -1321,10 +1322,27 @@ def main():
                             ]
 
 
-            # Global Settings - now mostly handled by cloud libs
+            # Global Settings
             firstrun_sh += [
                                 "echo 'starting tmsh config'\n",
                             ]
+            onboard_BIG_IP += [
+                               "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                               "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+                               "-o  /var/log/onboard.log",
+                               "--background",
+                               "--no-reboot",
+                               "--host localhost",
+                               "--user admin",
+                               "--password '", { "Ref": "BigipAdminPassword" }, "'",
+                               "--set-password admin:'", { "Ref": "BigipAdminPassword" }, "'",
+                               "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                               "--ntp 0.us.pool.ntp.org",
+                               "--ntp 1.us.pool.ntp.org",
+                               "--tz UTC",
+                               "--dns ${NAME_SERVER}",
+                               "--module ltm:nominal"
+                              ]               
 
             if aws_creds:
                 firstrun_sh += [
@@ -1605,23 +1623,7 @@ def main():
                                 ),
                                 commands={
                                             "002-onboard-BIG-IP": {
-                                                "command": { "Fn::Join" : [ " ", [
-                                                                                    "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
-                                                                                    "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
-                                                                                    "-o  /var/log/onboard.log",
-                                                                                    "--background",
-                                                                                    "--no-reboot",
-                                                                                    "--host localhost",
-                                                                                    "--user admin",
-                                                                                    "--password '", { "Ref": "BigipAdminPassword" },"'",
-                                                                                    "--set-password admin:'", { "Ref": "BigipAdminPassword" },"'",
-                                                                                    "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
-                                                                                    "--ntp 0.us.pool.ntp.org",
-                                                                                    "--ntp 1.us.pool.ntp.org",
-                                                                                    "--tz UTC",
-                                                                                    "--dns ${NAME_SERVER}",
-                                                                                    "--module ltm:nominal"
-                                                                                 ]
+                                                "command": { "Fn::Join" : [ " ", onboard_BIG_IP
                                                                           ]
                                                 }
                                             }
@@ -1662,25 +1664,7 @@ def main():
                                 commands={
                                             "001-onboard-BIG-IP": {
                                                 "command": { 
-                                                    "Fn::Join" : [ 
-                                                                    " ", 
-                                                                        [
-                                                                            "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
-                                                                            "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
-                                                                            "-o  /var/log/onboard.log",
-                                                                            "--background",
-                                                                            "--no-reboot",
-                                                                            "--host localhost",
-                                                                            "--user admin",
-                                                                            "--password '", { "Ref": "BigipAdminPassword" },"'",
-                                                                            "--set-password admin:'", { "Ref": "BigipAdminPassword" },"'",
-                                                                            "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
-                                                                            "--ntp 0.us.pool.ntp.org",
-                                                                            "--ntp 1.us.pool.ntp.org",
-                                                                            "--tz UTC",
-                                                                            "--dns ${NAME_SERVER}",
-                                                                            "--module ltm:nominal"
-                                                                        ]
+                                                    "Fn::Join" : [ " ", onboard_BIG_IP
                                                                  ]
                                                 }
                                             },

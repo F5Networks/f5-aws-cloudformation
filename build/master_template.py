@@ -1321,14 +1321,9 @@ def main():
                             ]
 
 
-            # Global Settings
+            # Global Settings - now mostly handled by cloud libs
             firstrun_sh += [
                                 "echo 'starting tmsh config'\n",
-                                "tmsh modify sys ntp timezone ${TZ}\n",
-                                "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
-                                "tmsh modify sys dns name-servers add { ${NAME_SERVER} }\n",
-                                "tmsh modify sys global-settings gui-setup disabled\n",
-                                "tmsh modify sys global-settings hostname ${HOSTNAME}\n",
                             ]
 
             if aws_creds:
@@ -1337,12 +1332,6 @@ def main():
                                 "tmsh modify sys global-settings aws-secret-key ${IAM_SECRET_KEY}\n",
                                 ]   
 
-
-            firstrun_sh += [
-                                #"tmsh modify auth password root <<< $'${BIGIP_ADMIN_PASSWORD}\n${BIGIP_ADMIN_PASSWORD}\n'\n",
-                                "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
-                                "tmsh save /sys config\n",
-                            ]
 
             if num_nics == 1:
 
@@ -1672,26 +1661,32 @@ def main():
                                         )
                                     } 
                                 ),
+                                sources= {
+                                            "/shared": "https://f5-cloud-libs.s3.amazonaws.com/f5-cloud-libs.tar.gz"
+                                },
                                 commands={
                                             "001-onboard-BIG-IP": {
-                                                "command": { "Fn::Join" : [ " ", [
-                                                                                    "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
-                                                                                    "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
-                                                                                    "-o  /var/log/onboard.log",
-                                                                                    "--background",
-                                                                                    "--no-reboot",
-                                                                                    "--host localhost",
-                                                                                    "--user admin",
-                                                                                    "--password '", { "Ref": "BigipAdminPassword" },"'",
-                                                                                    "--set-password admin:'", { "Ref": "BigipAdminPassword" },"'",
-                                                                                    "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
-                                                                                    "--ntp 0.us.pool.ntp.org",
-                                                                                    "--ntp 1.us.pool.ntp.org",
-                                                                                    "--tz UTC",
-                                                                                    "--dns ${NAME_SERVER}",
-                                                                                    "--module ltm:nominal"
-                                                                                 ]
-                                                                          ]
+                                                "command": { 
+                                                    "Fn::Join" : [ 
+                                                                    " ", 
+                                                                        [
+                                                                            "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                                                            "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+                                                                            "-o  /var/log/onboard.log",
+                                                                            "--background",
+                                                                            "--no-reboot",
+                                                                            "--host localhost",
+                                                                            "--user admin",
+                                                                            "--password '", { "Ref": "BigipAdminPassword" },"'",
+                                                                            "--set-password admin:'", { "Ref": "BigipAdminPassword" },"'",
+                                                                            "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                                                                            "--ntp 0.us.pool.ntp.org",
+                                                                            "--ntp 1.us.pool.ntp.org",
+                                                                            "--tz UTC",
+                                                                            "--dns ${NAME_SERVER}",
+                                                                            "--module ltm:nominal"
+                                                                        ]
+                                                                 ]
                                                 }
                                             },
                                             "b-configure-Bigip": {

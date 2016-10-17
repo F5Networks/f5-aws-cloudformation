@@ -606,10 +606,7 @@
      "config": {
       "commands": {
        "001-onboard-BIG-IP": {
-        "command": {
-         "Fn::Join": [
-          " ",
-          [
+        "command": { "Fn::Join": [ " ", [
            "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
            "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
            "-o  /var/log/onboard.log",

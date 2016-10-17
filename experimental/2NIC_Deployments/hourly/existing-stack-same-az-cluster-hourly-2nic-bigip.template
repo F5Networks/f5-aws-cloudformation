@@ -454,7 +454,6 @@
                   "Fn::Join": [
                     " ",
                     [
-                      "# f5-cloud-libs",
                       "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
                       "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
                       "-o  /var/log/onboard.log",
@@ -869,7 +868,6 @@
                   "Fn::Join": [
                     " ",
                     [
-                      "# f5-cloud-libs",
                       "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
                       "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
                       "-o  /var/log/onboard.log",

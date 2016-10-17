@@ -268,7 +268,7 @@ def main():
                               ],
             ))
 
-        if license_type == "hourly":
+        if license_type == "hourly" and 'waf' not in components:
             BigipPerformanceType = t.add_parameter(Parameter(
                 "BigipPerformanceType",
                 Default="Best1000Mbps",
@@ -287,7 +287,19 @@ def main():
                                 "Best1000Mbps",
                               ],
             ))
-
+        if license_type == "hourly" and 'waf' in components:
+            BigipPerformanceType = t.add_parameter(Parameter(
+                "BigipPerformanceType",
+                Default="Best1000Mbps",
+                ConstraintDescription="Must be a valid F5 Big-IP performance type",
+                Type="String",
+                Description="F5 Bigip Performance Type",
+                AllowedValues=[                     
+                                "Best25Mbps",
+                                "Best200Mbps",
+                                "Best1000Mbps",
+                              ],
+            ))
         if license_type != "hourly":
             BigipPerformanceType = t.add_parameter(Parameter(
                 "BigipPerformanceType",
@@ -1608,9 +1620,28 @@ def main():
                                     } 
                                 ),
                                 commands={
-                                           "b-configure-Bigip" : {
-                                                "command" : "/tmp/firstrun.sh\n"
+                                            "002-onboard-BIG-IP": {
+                                                "command": { "Fn::Join" : [ " ", [
+                                                                                    "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                                                                    "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+                                                                                    "-o  /var/log/onboard.log",
+                                                                                    "--background",
+                                                                                    "--no-reboot",
+                                                                                    "--host localhost",
+                                                                                    "--user admin",
+                                                                                    "--password '", { "Ref": "BigipAdminPassword" },"'",
+                                                                                    "--set-password admin:'", { "Ref": "BigipAdminPassword" },"'",
+                                                                                    "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                                                                                    "--ntp 0.us.pool.ntp.org",
+                                                                                    "--ntp 1.us.pool.ntp.org",
+                                                                                    "--tz UTC",
+                                                                                    "--dns ${NAME_SERVER}",
+                                                                                    "--module ltm:nominal"
+                                                                                 ]
+                                                                          ]
+                                                }
                                             }
+
                                 }
                             ) 
                         })
@@ -1642,9 +1673,31 @@ def main():
                                     } 
                                 ),
                                 commands={
-                                           "b-configure-Bigip" : {
-                                                "command" : "/tmp/firstrun.sh\n"
+                                            "001-onboard-BIG-IP": {
+                                                "command": { "Fn::Join" : [ " ", [
+                                                                                    "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                                                                    "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+                                                                                    "-o  /var/log/onboard.log",
+                                                                                    "--background",
+                                                                                    "--no-reboot",
+                                                                                    "--host localhost",
+                                                                                    "--user admin",
+                                                                                    "--password '", { "Ref": "BigipAdminPassword" },"'",
+                                                                                    "--set-password admin:'", { "Ref": "BigipAdminPassword" },"'",
+                                                                                    "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                                                                                    "--ntp 0.us.pool.ntp.org",
+                                                                                    "--ntp 1.us.pool.ntp.org",
+                                                                                    "--tz UTC",
+                                                                                    "--dns ${NAME_SERVER}",
+                                                                                    "--module ltm:nominal"
+                                                                                 ]
+                                                                          ]
+                                                }
+                                            },
+                                            "b-configure-Bigip": {
+                                                "command": "/tmp/firstrun.sh\n"
                                             }
+
                                 }
                             ) 
                         })

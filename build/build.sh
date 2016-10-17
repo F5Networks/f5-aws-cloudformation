@@ -1,8 +1,8 @@
 #/bin/bash
 
-BUILD_DIR_1NIC="../experimental/1NIC Deployments"
-BUILD_DIR_2NIC="../experimental/2NIC Deployments"
-BUILD_DIR_3NIC="../experimental/3NIC Deployments"
+BUILD_DIR_1NIC="../experimental/1NIC_Deployments"
+BUILD_DIR_2NIC="../experimental/2NIC_Deployments"
+BUILD_DIR_3NIC="../experimental/3NIC_Deployments"
 HOURLY_DIR="/hourly"
 BYOL_DIR="/byol"
 POOL_DIR="/pool"

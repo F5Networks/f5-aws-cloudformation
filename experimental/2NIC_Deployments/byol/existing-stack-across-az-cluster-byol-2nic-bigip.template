@@ -597,15 +597,8 @@
                       "date\n",
                       "checkF5Ready\n",
                       "echo 'starting tmsh config'\n",
-                      "tmsh modify sys ntp timezone ${TZ}\n",
-                      "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
-                      "tmsh modify sys dns name-servers add { ${NAME_SERVER} }\n",
-                      "tmsh modify sys global-settings gui-setup disabled\n",
-                      "tmsh modify sys global-settings hostname ${HOSTNAME}\n",
                       "tmsh modify sys global-settings aws-access-key ${IAM_ACCESS_KEY}\n",
                       "tmsh modify sys global-settings aws-secret-key ${IAM_SECRET_KEY}\n",
-                      "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
-                      "tmsh save /sys config\n",
                       "tmsh create net vlan external interfaces add { 1.1 } \n",
                       "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
                       "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
@@ -658,6 +651,9 @@
                 "owner": "root",
                 "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
               }
+            },
+            "sources": {
+              "/shared": "https://f5-cloud-libs.s3.amazonaws.com/f5-cloud-libs.tar.gz"
             }
           }
         }
@@ -1001,15 +997,8 @@
                       "date\n",
                       "checkF5Ready\n",
                       "echo 'starting tmsh config'\n",
-                      "tmsh modify sys ntp timezone ${TZ}\n",
-                      "tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }\n",
-                      "tmsh modify sys dns name-servers add { ${NAME_SERVER} }\n",
-                      "tmsh modify sys global-settings gui-setup disabled\n",
-                      "tmsh modify sys global-settings hostname ${HOSTNAME}\n",
                       "tmsh modify sys global-settings aws-access-key ${IAM_ACCESS_KEY}\n",
                       "tmsh modify sys global-settings aws-secret-key ${IAM_SECRET_KEY}\n",
-                      "tmsh modify auth user admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
-                      "tmsh save /sys config\n",
                       "tmsh create net vlan external interfaces add { 1.1 } \n",
                       "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
                       "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
@@ -1041,6 +1030,9 @@
                 "owner": "root",
                 "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
               }
+            },
+            "sources": {
+              "/shared": "https://f5-cloud-libs.s3.amazonaws.com/f5-cloud-libs.tar.gz"
             }
           }
         }

@@ -641,7 +641,6 @@
            "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
            "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
            "if [[ \"${MANAGEMENT_GUI_PORT}\" != \"443\" ]]; then tmsh modify net self-allow defaults delete { tcp:443 }; fi \n",
-           "tmsh mv cm device bigip1 ${HOSTNAME}\n",
            "tmsh save /sys config\n",
            "echo 'start install biqiq license'\n",
            ". /tmp/license_from_bigiq.sh\n",

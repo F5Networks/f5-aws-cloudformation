@@ -445,7 +445,6 @@
                       "tmsh create net vlan external interfaces add { 1.1 } \n",
                       "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
                       "tmsh create net route default gw ${GATEWAY}\n",
-                      "tmsh mv cm device bigip1 ${HOSTNAME}\n",
                       "tmsh save /sys config\n",
                       "echo 'start install byol license'\n",
                       "networkUp 120 \n",

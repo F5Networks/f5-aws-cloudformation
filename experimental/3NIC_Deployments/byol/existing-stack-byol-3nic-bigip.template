@@ -481,7 +481,6 @@
                       "tmsh create net vlan internal interfaces add { 1.2 } \n",
                       "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
                       "tmsh create net route default gw ${GATEWAY}\n",
-                      "tmsh mv cm device bigip1 ${HOSTNAME}\n",
                       "tmsh save /sys config\n",
                       "echo 'start install byol license'\n",
                       "networkUp 120 \n",

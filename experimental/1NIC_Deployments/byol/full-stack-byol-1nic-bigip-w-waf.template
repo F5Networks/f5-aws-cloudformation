@@ -603,7 +603,6 @@
            "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
            "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
            "if [[ \"${MANAGEMENT_GUI_PORT}\" != \"443\" ]]; then tmsh modify net self-allow defaults delete { tcp:443 }; fi \n",
-           "tmsh mv cm device bigip1 ${HOSTNAME}\n",
            "tmsh save /sys config\n",
            "echo 'start install byol license'\n",
            "networkUp 120 \n",

@@ -1409,11 +1409,6 @@ def main():
                                         "tmsh create net route default gw ${GATEWAY}\n",
                                     ]
 
-
-            firstrun_sh +=  [
-                                "tmsh mv cm device bigip1 ${HOSTNAME}\n",
-                            ]  
-
             # Disable DHCP if clustering. 
             if ha_type != "standalone":
 

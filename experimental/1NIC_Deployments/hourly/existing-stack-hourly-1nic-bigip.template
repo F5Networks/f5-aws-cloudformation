@@ -441,7 +441,6 @@
                       "exec 1<>$FILE\n",
                       "exec 2>&1\n",
                       "date\n",
-                      "checkF5Ready\n",
                       "echo 'starting tmsh config'\n",
                       "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
                       "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",

@@ -1323,7 +1323,6 @@ def main():
                                 "exec 1<>$FILE\n",
                                 "exec 2>&1\n",
                                 "date\n",
-                                "checkF5Ready\n",
                             ]
 
 

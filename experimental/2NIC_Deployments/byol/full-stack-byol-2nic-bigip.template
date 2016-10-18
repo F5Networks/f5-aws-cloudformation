@@ -703,7 +703,6 @@
            "exec 1<>$FILE\n",
            "exec 2>&1\n",
            "date\n",
-           "checkF5Ready\n",
            "echo 'starting tmsh config'\n",
            "tmsh create net vlan external interfaces add { 1.1 } \n",
            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",

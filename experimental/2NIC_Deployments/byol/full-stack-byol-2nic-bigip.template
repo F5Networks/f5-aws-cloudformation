@@ -580,7 +580,18 @@
            "--ntp 1.us.pool.ntp.org",
            "--tz UTC",
            "--dns ${NAME_SERVER}",
-           "--module ltm:nominal",
+           "--module ltm:nominal"
+          ]
+         ]
+        }
+       },
+       "firstrun-BIG-IP": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+           "--wait-for ONBOARD_DONE",
            "--file /tmp/firstrun.sh"
           ]
          ]

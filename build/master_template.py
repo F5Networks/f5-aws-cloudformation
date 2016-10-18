@@ -1291,11 +1291,16 @@ def main():
 }'
 
             # begin building firstrun.sh and cloud lib calls
-            firstrun_sh = [
-                                "#!/bin/bash\n",
-                          ] 
-            onboard_BIG_IP = [
-                             ]
+            firstrun_sh =       [
+                                    "#!/bin/bash\n",
+                                ] 
+            onboard_BIG_IP =    [
+                                ]
+            firstrun_BIG_IP =   [
+                                    "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+                                    "--wait-for ONBOARD_DONE",
+                                    "--file /tmp/firstrun.sh",
+                                ]                 
             if num_nics == 1:
                 if ha_type != "standalone":
                     firstrun_sh += [
@@ -1340,8 +1345,7 @@ def main():
                                "--tz UTC",
                                "--dns ${NAME_SERVER}",
                                "--module ltm:nominal",
-                               "--file /tmp/firstrun.sh"
-                              ]               
+                               ]               
 
             if aws_creds:
                 firstrun_sh += [
@@ -1664,6 +1668,12 @@ def main():
                                             "001-onboard-BIG-IP": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", onboard_BIG_IP
+                                                                 ]
+                                                }
+                                            },
+                                            "firstrun-BIG-IP": {
+                                                "command": { 
+                                                    "Fn::Join" : [ " ", firstrun_BIG_IP
                                                                  ]
                                                 }
                                             },

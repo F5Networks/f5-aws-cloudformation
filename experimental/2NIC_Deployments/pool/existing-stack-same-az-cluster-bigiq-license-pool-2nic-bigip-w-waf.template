@@ -445,8 +445,7 @@
                       "--ntp 1.us.pool.ntp.org",
                       "--tz UTC",
                       "--dns ${NAME_SERVER}",
-                      "--module ltm:nominal",
-                      "--file /tmp/firstrun.sh"
+                      "--module ltm:nominal"
                     ]
                   ]
                 }
@@ -912,8 +911,7 @@
                       "--ntp 1.us.pool.ntp.org",
                       "--tz UTC",
                       "--dns ${NAME_SERVER}",
-                      "--module ltm:nominal",
-                      "--file /tmp/firstrun.sh"
+                      "--module ltm:nominal"
                     ]
                   ]
                 }

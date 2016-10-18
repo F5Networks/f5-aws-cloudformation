@@ -1295,17 +1295,15 @@ def main():
                                 "#!/bin/bash\n",
                           ] 
             onboard_BIG_IP = [
-                                "# f5-cloud-libs"
                              ]
             if num_nics == 1:
                 if ha_type != "standalone":
                     firstrun_sh += [
                                         "/usr/bin/setdb provision.1nicautoconfig disable\n",
                                    ]
-
             firstrun_sh +=  [ 
-                                ". /tmp/firstrun.config\n",
-                                ". /tmp/firstrun.utils\n",
+                                ". /shared/f5-cloud-libs/scripts/aws/firstrun.config\n",
+                                ". /shared/f5-cloud-libs/scripts/aws/firstrun.utils\n",
                                 "FILE=/tmp/firstrun.log\n",
                                 "if [ ! -e $FILE ]\n",
                                 " then\n",
@@ -1341,7 +1339,8 @@ def main():
                                "--ntp 1.us.pool.ntp.org",
                                "--tz UTC",
                                "--dns ${NAME_SERVER}",
-                               "--module ltm:nominal"
+                               "--module ltm:nominal",
+                               "--file /shared/f5-cloud-libs/scripts/aws/firstrun.sh"
                               ]               
 
             if aws_creds:
@@ -1571,14 +1570,14 @@ def main():
                                     "tmsh save /sys config\n",
                                     "date\n",
                                     "# for security purposes, remove firstrun.config\n",
-                                    "# rm /tmp/firstrun.config\n"
+                                    "# rm /shared/f5-cloud-libs/scripts/aws/firstrun.config\n"
                                ]
             else:
                 firstrun_sh += [
                                     "tmsh save /sys config\n",
                                     "date\n",
                                     "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
-                                    "# rm /tmp/firstrun.config\n"
+                                    "# rm /shared/f5-cloud-libs/scripts/aws/firstrun.config\n"
                                ]             
 
 
@@ -1589,13 +1588,13 @@ def main():
                             'config': InitConfig(
                                 files=InitFiles(
                                     {
-                                        '/tmp/firstrun.config': InitFile(
+                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.config': InitFile(
                                             content=Join('', firstrun_config ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun.utils': InitFile(
+                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.utils': InitFile(
                                             source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
                                             mode='000755',
                                             owner='root',
@@ -1613,7 +1612,7 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun.sh': InitFile(
+                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.sh': InitFile(
                                             content=Join('', firstrun_sh ),
                                             mode='000755',
                                             owner='root',
@@ -1638,19 +1637,19 @@ def main():
                             'config': InitConfig(
                                 files=InitFiles(
                                     {
-                                        '/tmp/firstrun.config': InitFile(
+                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.config': InitFile(
                                             content=Join('', firstrun_config ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun.utils': InitFile(
+                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.utils': InitFile(
                                             source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun.sh': InitFile(
+                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.sh': InitFile(
                                             content=Join('', firstrun_sh ),
                                             mode='000755',
                                             owner='root',
@@ -1668,10 +1667,6 @@ def main():
                                                                  ]
                                                 }
                                             },
-                                            "b-configure-Bigip": {
-                                                "command": "/tmp/firstrun.sh\n"
-                                            }
-
                                 }
                             ) 
                         })

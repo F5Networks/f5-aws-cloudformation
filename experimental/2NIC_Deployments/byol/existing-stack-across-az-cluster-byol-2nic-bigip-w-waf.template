@@ -442,17 +442,15 @@
                       "--ntp 1.us.pool.ntp.org",
                       "--tz UTC",
                       "--dns ${NAME_SERVER}",
-                      "--module ltm:nominal"
+                      "--module ltm:nominal",
+                      "--file /shared/f5-cloud-libs/scripts/aws/firstrun.sh"
                     ]
                   ]
                 }
-              },
-              "b-configure-Bigip": {
-                "command": "/tmp/firstrun.sh\n"
               }
             },
             "files": {
-              "/tmp/firstrun.config": {
+              "/shared/f5-cloud-libs/scripts/aws/firstrun.config": {
                 "content": {
                   "Fn::Join": [
                     "",
@@ -575,14 +573,14 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/tmp/firstrun.sh": {
+              "/shared/f5-cloud-libs/scripts/aws/firstrun.sh": {
                 "content": {
                   "Fn::Join": [
                     "",
                     [
                       "#!/bin/bash\n",
-                      ". /tmp/firstrun.config\n",
-                      ". /tmp/firstrun.utils\n",
+                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.config\n",
+                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.utils\n",
                       "FILE=/tmp/firstrun.log\n",
                       "if [ ! -e $FILE ]\n",
                       " then\n",
@@ -655,7 +653,7 @@
                       "tmsh save /sys config\n",
                       "date\n",
                       "# for security purposes, remove firstrun.config\n",
-                      "# rm /tmp/firstrun.config\n"
+                      "# rm /shared/f5-cloud-libs/scripts/aws/firstrun.config\n"
                     ]
                   ]
                 },
@@ -663,7 +661,7 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/tmp/firstrun.utils": {
+              "/shared/f5-cloud-libs/scripts/aws/firstrun.utils": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",
@@ -894,17 +892,15 @@
                       "--ntp 1.us.pool.ntp.org",
                       "--tz UTC",
                       "--dns ${NAME_SERVER}",
-                      "--module ltm:nominal"
+                      "--module ltm:nominal",
+                      "--file /shared/f5-cloud-libs/scripts/aws/firstrun.sh"
                     ]
                   ]
                 }
-              },
-              "b-configure-Bigip": {
-                "command": "/tmp/firstrun.sh\n"
               }
             },
             "files": {
-              "/tmp/firstrun.config": {
+              "/shared/f5-cloud-libs/scripts/aws/firstrun.config": {
                 "content": {
                   "Fn::Join": [
                     "",
@@ -993,14 +989,14 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/tmp/firstrun.sh": {
+              "/shared/f5-cloud-libs/scripts/aws/firstrun.sh": {
                 "content": {
                   "Fn::Join": [
                     "",
                     [
                       "#!/bin/bash\n",
-                      ". /tmp/firstrun.config\n",
-                      ". /tmp/firstrun.utils\n",
+                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.config\n",
+                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.utils\n",
                       "FILE=/tmp/firstrun.log\n",
                       "if [ ! -e $FILE ]\n",
                       " then\n",
@@ -1047,7 +1043,7 @@
                       "tmsh save /sys config\n",
                       "date\n",
                       "# for security purposes, remove firstrun.config\n",
-                      "# rm /tmp/firstrun.config\n"
+                      "# rm /shared/f5-cloud-libs/scripts/aws/firstrun.config\n"
                     ]
                   ]
                 },
@@ -1055,7 +1051,7 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/tmp/firstrun.utils": {
+              "/shared/f5-cloud-libs/scripts/aws/firstrun.utils": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",

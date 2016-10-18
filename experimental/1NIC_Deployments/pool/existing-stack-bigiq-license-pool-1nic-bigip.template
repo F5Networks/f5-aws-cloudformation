@@ -321,14 +321,62 @@
                       "--tz UTC",
                       "--dns ${NAME_SERVER}",
                       "--module ltm:nominal",
-                      "--file /shared/f5-cloud-libs/scripts/aws/firstrun.sh"
+                      "--file /tmp/firstrun.sh"
                     ]
                   ]
                 }
               }
             },
             "files": {
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.config": {
+              "/shared/f5-cloud-libs/scripts/aws/firstrun.sh": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "#!/bin/bash\n",
+                      ". /tmp/firstrun.config\n",
+                      ". /tmp/firstrun.utils\n",
+                      "FILE=/tmp/firstrun.log\n",
+                      "if [ ! -e $FILE ]\n",
+                      " then\n",
+                      "     touch $FILE\n",
+                      "     nohup $0 0<&- &>/dev/null &\n",
+                      "     exit\n",
+                      "fi\n",
+                      "exec 1<&-\n",
+                      "exec 2<&-\n",
+                      "exec 1<>$FILE\n",
+                      "exec 2>&1\n",
+                      "date\n",
+                      "checkF5Ready\n",
+                      "echo 'starting tmsh config'\n",
+                      "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
+                      "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
+                      "if [[ \"${MANAGEMENT_GUI_PORT}\" != \"443\" ]]; then tmsh modify net self-allow defaults delete { tcp:443 }; fi \n",
+                      "tmsh save /sys config\n",
+                      "echo 'start install biqiq license'\n",
+                      ". /tmp/license_from_bigiq.sh\n",
+                      "checkStatusnoret\n",
+                      "sleep 20 \n",
+                      "tmsh save /sys config\n",
+                      "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                      "tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\n",
+                      "tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\n",
+                      "tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\n",
+                      "tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\n",
+                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                      "tmsh save /sys config\n",
+                      "date\n",
+                      "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
+                      "# rm /tmp/firstrun.config\n"
+                    ]
+                  ]
+                },
+                "group": "root",
+                "mode": "000755",
+                "owner": "root"
+              },
+              "/tmp/firstrun.config": {
                 "content": {
                   "Fn::Join": [
                     "",
@@ -402,55 +450,7 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.sh": {
-                "content": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "#!/bin/bash\n",
-                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.config\n",
-                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.utils\n",
-                      "FILE=/tmp/firstrun.log\n",
-                      "if [ ! -e $FILE ]\n",
-                      " then\n",
-                      "     touch $FILE\n",
-                      "     nohup $0 0<&- &>/dev/null &\n",
-                      "     exit\n",
-                      "fi\n",
-                      "exec 1<&-\n",
-                      "exec 2<&-\n",
-                      "exec 1<>$FILE\n",
-                      "exec 2>&1\n",
-                      "date\n",
-                      "checkF5Ready\n",
-                      "echo 'starting tmsh config'\n",
-                      "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
-                      "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
-                      "if [[ \"${MANAGEMENT_GUI_PORT}\" != \"443\" ]]; then tmsh modify net self-allow defaults delete { tcp:443 }; fi \n",
-                      "tmsh save /sys config\n",
-                      "echo 'start install biqiq license'\n",
-                      ". /tmp/license_from_bigiq.sh\n",
-                      "checkStatusnoret\n",
-                      "sleep 20 \n",
-                      "tmsh save /sys config\n",
-                      "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-                      "tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\n",
-                      "tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\n",
-                      "tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\n",
-                      "tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\n",
-                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                      "tmsh save /sys config\n",
-                      "date\n",
-                      "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
-                      "# rm /shared/f5-cloud-libs/scripts/aws/firstrun.config\n"
-                    ]
-                  ]
-                },
-                "group": "root",
-                "mode": "000755",
-                "owner": "root"
-              },
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.utils": {
+              "/tmp/firstrun.utils": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",

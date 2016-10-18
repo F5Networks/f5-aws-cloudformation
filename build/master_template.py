@@ -1302,8 +1302,8 @@ def main():
                                         "/usr/bin/setdb provision.1nicautoconfig disable\n",
                                    ]
             firstrun_sh +=  [ 
-                                ". /shared/f5-cloud-libs/scripts/aws/firstrun.config\n",
-                                ". /shared/f5-cloud-libs/scripts/aws/firstrun.utils\n",
+                                ". /tmp/firstrun.config\n",
+                                ". /tmp/firstrun.utils\n",
                                 "FILE=/tmp/firstrun.log\n",
                                 "if [ ! -e $FILE ]\n",
                                 " then\n",
@@ -1340,7 +1340,7 @@ def main():
                                "--tz UTC",
                                "--dns ${NAME_SERVER}",
                                "--module ltm:nominal",
-                               "--file /shared/f5-cloud-libs/scripts/aws/firstrun.sh"
+                               "--file /tmp/firstrun.sh"
                               ]               
 
             if aws_creds:
@@ -1570,14 +1570,14 @@ def main():
                                     "tmsh save /sys config\n",
                                     "date\n",
                                     "# for security purposes, remove firstrun.config\n",
-                                    "# rm /shared/f5-cloud-libs/scripts/aws/firstrun.config\n"
+                                    "# rm /tmp/firstrun.config\n"
                                ]
             else:
                 firstrun_sh += [
                                     "tmsh save /sys config\n",
                                     "date\n",
                                     "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
-                                    "# rm /shared/f5-cloud-libs/scripts/aws/firstrun.config\n"
+                                    "# rm /tmp/firstrun.config\n"
                                ]             
 
 
@@ -1588,13 +1588,13 @@ def main():
                             'config': InitConfig(
                                 files=InitFiles(
                                     {
-                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.config': InitFile(
+                                        '/tmp/firstrun.config': InitFile(
                                             content=Join('', firstrun_config ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.utils': InitFile(
+                                        '/tmp/firstrun.utils': InitFile(
                                             source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
                                             mode='000755',
                                             owner='root',
@@ -1637,19 +1637,19 @@ def main():
                             'config': InitConfig(
                                 files=InitFiles(
                                     {
-                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.config': InitFile(
+                                        '/tmp/firstrun.config': InitFile(
                                             content=Join('', firstrun_config ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.utils': InitFile(
+                                        '/tmp/firstrun.utils': InitFile(
                                             source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/shared/f5-cloud-libs/scripts/aws/firstrun.sh': InitFile(
+                                        '/tmp/firstrun.sh': InitFile(
                                             content=Join('', firstrun_sh ),
                                             mode='000755',
                                             owner='root',

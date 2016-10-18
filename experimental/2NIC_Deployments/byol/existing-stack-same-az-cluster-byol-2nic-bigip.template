@@ -433,14 +433,14 @@
                       "--tz UTC",
                       "--dns ${NAME_SERVER}",
                       "--module ltm:nominal",
-                      "--file /shared/f5-cloud-libs/scripts/aws/firstrun.sh"
+                      "--file /tmp/firstrun.sh"
                     ]
                   ]
                 }
               }
             },
             "files": {
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.config": {
+              "/tmp/firstrun.config": {
                 "content": {
                   "Fn::Join": [
                     "",
@@ -563,14 +563,14 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.sh": {
+              "/tmp/firstrun.sh": {
                 "content": {
                   "Fn::Join": [
                     "",
                     [
                       "#!/bin/bash\n",
-                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.config\n",
-                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.utils\n",
+                      ". /tmp/firstrun.config\n",
+                      ". /tmp/firstrun.utils\n",
                       "FILE=/tmp/firstrun.log\n",
                       "if [ ! -e $FILE ]\n",
                       " then\n",
@@ -613,7 +613,7 @@
                       "tmsh save /sys config\n",
                       "date\n",
                       "# for security purposes, remove firstrun.config\n",
-                      "# rm /shared/f5-cloud-libs/scripts/aws/firstrun.config\n"
+                      "# rm /tmp/firstrun.config\n"
                     ]
                   ]
                 },
@@ -621,7 +621,7 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.utils": {
+              "/tmp/firstrun.utils": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",
@@ -853,14 +853,14 @@
                       "--tz UTC",
                       "--dns ${NAME_SERVER}",
                       "--module ltm:nominal",
-                      "--file /shared/f5-cloud-libs/scripts/aws/firstrun.sh"
+                      "--file /tmp/firstrun.sh"
                     ]
                   ]
                 }
               }
             },
             "files": {
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.config": {
+              "/tmp/firstrun.config": {
                 "content": {
                   "Fn::Join": [
                     "",
@@ -949,14 +949,14 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.sh": {
+              "/tmp/firstrun.sh": {
                 "content": {
                   "Fn::Join": [
                     "",
                     [
                       "#!/bin/bash\n",
-                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.config\n",
-                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.utils\n",
+                      ". /tmp/firstrun.config\n",
+                      ". /tmp/firstrun.utils\n",
                       "FILE=/tmp/firstrun.log\n",
                       "if [ ! -e $FILE ]\n",
                       " then\n",
@@ -988,7 +988,7 @@
                       "tmsh save /sys config\n",
                       "date\n",
                       "# for security purposes, remove firstrun.config\n",
-                      "# rm /shared/f5-cloud-libs/scripts/aws/firstrun.config\n"
+                      "# rm /tmp/firstrun.config\n"
                     ]
                   ]
                 },
@@ -996,7 +996,7 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.utils": {
+              "/tmp/firstrun.utils": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",

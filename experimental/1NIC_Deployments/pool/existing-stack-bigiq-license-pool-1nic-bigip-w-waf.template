@@ -321,14 +321,79 @@
                       "--tz UTC",
                       "--dns ${NAME_SERVER}",
                       "--module ltm:nominal",
-                      "--file /shared/f5-cloud-libs/scripts/aws/firstrun.sh"
+                      "--file /tmp/firstrun.sh"
                     ]
                   ]
                 }
               }
             },
             "files": {
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.config": {
+              "/shared/f5-cloud-libs/scripts/aws/firstrun.sh": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "#!/bin/bash\n",
+                      ". /tmp/firstrun.config\n",
+                      ". /tmp/firstrun.utils\n",
+                      "FILE=/tmp/firstrun.log\n",
+                      "if [ ! -e $FILE ]\n",
+                      " then\n",
+                      "     touch $FILE\n",
+                      "     nohup $0 0<&- &>/dev/null &\n",
+                      "     exit\n",
+                      "fi\n",
+                      "exec 1<&-\n",
+                      "exec 2<&-\n",
+                      "exec 1<>$FILE\n",
+                      "exec 2>&1\n",
+                      "date\n",
+                      "checkF5Ready\n",
+                      "echo 'starting tmsh config'\n",
+                      "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
+                      "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                      "if [[ \"${MANAGEMENT_GUI_PORT}\" != \"443\" ]]; then tmsh modify net self-allow defaults delete { tcp:443 }; fi \n",
+                      "tmsh save /sys config\n",
+                      "echo 'start install biqiq license'\n",
+                      ". /tmp/license_from_bigiq.sh\n",
+                      "checkStatusnoret\n",
+                      "sleep 20 \n",
+                      "tmsh save /sys config\n",
+                      "echo 'provisioning asm'\n",
+                      "tmsh modify /sys provision asm level nominal\n",
+                      "checkretstatus='stop'\n",
+                      "while [[ $checkretstatus != \"run\" ]]; do\n",
+                      "     checkStatus\n",
+                      "     if [[ $checkretstatus == \"restart\" ]]; then\n",
+                      "         echo restarting\n",
+                      "         tmsh modify /sys provision asm level none\n",
+                      "         checkStatusnoret\n",
+                      "         checkretstatus='stop'\n",
+                      "         tmsh modify /sys provision asm level nominal\n",
+                      "     fi\n",
+                      "done\n",
+                      "echo 'done provisioning asm'\n",
+                      "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                      "curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
+                      "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
+                      "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
+                      "tmsh modify asm policy /Common/linux-high active\n",
+                      "tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
+                      "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
+                      "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
+                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                      "tmsh save /sys config\n",
+                      "date\n",
+                      "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
+                      "# rm /tmp/firstrun.config\n"
+                    ]
+                  ]
+                },
+                "group": "root",
+                "mode": "000755",
+                "owner": "root"
+              },
+              "/tmp/firstrun.config": {
                 "content": {
                   "Fn::Join": [
                     "",
@@ -402,72 +467,7 @@
                 "mode": "000755",
                 "owner": "root"
               },
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.sh": {
-                "content": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "#!/bin/bash\n",
-                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.config\n",
-                      ". /shared/f5-cloud-libs/scripts/aws/firstrun.utils\n",
-                      "FILE=/tmp/firstrun.log\n",
-                      "if [ ! -e $FILE ]\n",
-                      " then\n",
-                      "     touch $FILE\n",
-                      "     nohup $0 0<&- &>/dev/null &\n",
-                      "     exit\n",
-                      "fi\n",
-                      "exec 1<&-\n",
-                      "exec 2<&-\n",
-                      "exec 1<>$FILE\n",
-                      "exec 2>&1\n",
-                      "date\n",
-                      "checkF5Ready\n",
-                      "echo 'starting tmsh config'\n",
-                      "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
-                      "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
-                      "if [[ \"${MANAGEMENT_GUI_PORT}\" != \"443\" ]]; then tmsh modify net self-allow defaults delete { tcp:443 }; fi \n",
-                      "tmsh save /sys config\n",
-                      "echo 'start install biqiq license'\n",
-                      ". /tmp/license_from_bigiq.sh\n",
-                      "checkStatusnoret\n",
-                      "sleep 20 \n",
-                      "tmsh save /sys config\n",
-                      "echo 'provisioning asm'\n",
-                      "tmsh modify /sys provision asm level nominal\n",
-                      "checkretstatus='stop'\n",
-                      "while [[ $checkretstatus != \"run\" ]]; do\n",
-                      "     checkStatus\n",
-                      "     if [[ $checkretstatus == \"restart\" ]]; then\n",
-                      "         echo restarting\n",
-                      "         tmsh modify /sys provision asm level none\n",
-                      "         checkStatusnoret\n",
-                      "         checkretstatus='stop'\n",
-                      "         tmsh modify /sys provision asm level nominal\n",
-                      "     fi\n",
-                      "done\n",
-                      "echo 'done provisioning asm'\n",
-                      "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-                      "curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
-                      "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
-                      "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
-                      "tmsh modify asm policy /Common/linux-high active\n",
-                      "tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
-                      "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
-                      "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
-                      "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
-                      "tmsh save /sys config\n",
-                      "date\n",
-                      "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
-                      "# rm /shared/f5-cloud-libs/scripts/aws/firstrun.config\n"
-                    ]
-                  ]
-                },
-                "group": "root",
-                "mode": "000755",
-                "owner": "root"
-              },
-              "/shared/f5-cloud-libs/scripts/aws/firstrun.utils": {
+              "/tmp/firstrun.utils": {
                 "group": "root",
                 "mode": "000755",
                 "owner": "root",

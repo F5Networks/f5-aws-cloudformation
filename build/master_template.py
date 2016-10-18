@@ -1300,6 +1300,8 @@ def main():
                                     "f5-rest-node /shared/f5-cloud-libs/scripts/runScript.js",
                                     "--wait-for ONBOARD_DONE",
                                     "--file /tmp/firstrun.sh",
+                                    "-o /var/log/firstrun_1.log",
+                                    "--background",
                                 ]                 
             if num_nics == 1:
                 if ha_type != "standalone":

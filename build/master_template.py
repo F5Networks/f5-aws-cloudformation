@@ -1297,7 +1297,7 @@ def main():
             onboard_BIG_IP =    [
                                 ]
             firstrun_BIG_IP =   [
-                                    "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+                                    "f5-rest-node /shared/f5-cloud-libs/scripts/runScript.js",
                                     "--wait-for ONBOARD_DONE",
                                     "--file /tmp/firstrun.sh",
                                 ]                 

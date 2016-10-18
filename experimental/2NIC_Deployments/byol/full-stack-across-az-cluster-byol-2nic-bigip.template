@@ -818,7 +818,7 @@
          "Fn::Join": [
           " ",
           [
-           "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+           "f5-rest-node /shared/f5-cloud-libs/scripts/runScript.js",
            "--wait-for ONBOARD_DONE",
            "--file /tmp/firstrun.sh"
           ]
@@ -1269,7 +1269,7 @@
          "Fn::Join": [
           " ",
           [
-           "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+           "f5-rest-node /shared/f5-cloud-libs/scripts/runScript.js",
            "--wait-for ONBOARD_DONE",
            "--file /tmp/firstrun.sh"
           ]

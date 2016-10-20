@@ -223,21 +223,15 @@ def main():
                 Type="String",
                 Description="F5 BIG-IP Virtual Instance Type",
                 AllowedValues=[
-                                "t2.medium",
-                                "t2.large",
-                                "m3.xlarge",
                                 "m3.2xlarge",
-                                "m4.large",
-                                "m4.xlarge",
                                 "m4.2xlarge",
                                 "m4.4xlarge",
                                 "m4.10xlarge",
-                                "c3.2xlarge",
                                 "c3.4xlarge",
                                 "c3.8xlarge",
-                                "c4.xlarge",
-                                "c4.2xlarge",
-                                "c4.4xlarge",       
+                                "c4.4xlarge",
+                                "c4.8xlarge",
+                                "cc2.8xlarge",
                               ],
             ))
 
@@ -1330,8 +1324,15 @@ def main():
             firstrun_sh += [
                                 "echo 'starting tmsh config'\n",
                             ]
+            if num_nics == 1:
+                onboard_BIG_IP += [
+                                    "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
+                                  ]
+            if num_nics > 1:
+                onboard_BIG_IP += [
+                                    "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                  ]            
             onboard_BIG_IP += [
-                               "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
                                "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
                                "-o  /var/log/onboard.log",
                                "--background",

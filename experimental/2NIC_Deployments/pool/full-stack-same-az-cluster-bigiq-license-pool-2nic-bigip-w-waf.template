@@ -694,7 +694,8 @@
            "--ntp 1.us.pool.ntp.org",
            "--tz UTC",
            "--dns ${NAME_SERVER}",
-           "--module ltm:nominal"
+           "--module ltm:nominal",
+           "--module asm:nominal"
           ]
          ]
         }
@@ -735,20 +736,6 @@
            "checkStatusnoret\n",
            "sleep 20 \n",
            "tmsh save /sys config\n",
-           "echo 'provisioning asm'\n",
-           "tmsh modify /sys provision asm level nominal\n",
-           "checkretstatus='stop'\n",
-           "while [[ $checkretstatus != \"run\" ]]; do\n",
-           "     checkStatus\n",
-           "     if [[ $checkretstatus == \"restart\" ]]; then\n",
-           "         echo restarting\n",
-           "         tmsh modify /sys provision asm level none\n",
-           "         checkStatusnoret\n",
-           "         checkretstatus='stop'\n",
-           "         tmsh modify /sys provision asm level nominal\n",
-           "     fi\n",
-           "done\n",
-           "echo 'done provisioning asm'\n",
            "echo 'sleeping additional 120 secs to wait for peer to boot'\n",
            "sleep 120\n",
            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
@@ -1168,7 +1155,8 @@
            "--ntp 1.us.pool.ntp.org",
            "--tz UTC",
            "--dns ${NAME_SERVER}",
-           "--module ltm:nominal"
+           "--module ltm:nominal",
+           "--module asm:nominal"
           ]
          ]
         }
@@ -1209,20 +1197,6 @@
            "checkStatusnoret\n",
            "sleep 20 \n",
            "tmsh save /sys config\n",
-           "echo 'provisioning asm'\n",
-           "tmsh modify /sys provision asm level nominal\n",
-           "checkretstatus='stop'\n",
-           "while [[ $checkretstatus != \"run\" ]]; do\n",
-           "     checkStatus\n",
-           "     if [[ $checkretstatus == \"restart\" ]]; then\n",
-           "         echo restarting\n",
-           "         tmsh modify /sys provision asm level none\n",
-           "         checkStatusnoret\n",
-           "         checkretstatus='stop'\n",
-           "         tmsh modify /sys provision asm level nominal\n",
-           "     fi\n",
-           "done\n",
-           "echo 'done provisioning asm'\n",
            "tmsh save /sys config\n",
            "date\n",
            "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",

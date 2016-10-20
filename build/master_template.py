@@ -1468,7 +1468,11 @@ def main():
 
             # Provision Modules
             if 'waf' in components:
-                firstrun_sh += provision_asm
+               # firstrun_sh += provision_asm
+               onboard_BIG_IP += [ 
+                                    "--module asm:nominal",
+                                 ]
+               
 
 
             # Cluster Devices if Cluster Seed

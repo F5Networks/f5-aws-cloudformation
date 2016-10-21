@@ -511,6 +511,7 @@
           " ",
           [
            "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
+           "--ssl-port ${MANAGEMENT_GUI_PORT}",
            "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
            "-o  /var/log/onboard.log",
            "--background",
@@ -561,8 +562,6 @@
            "date\n",
            "echo 'starting tmsh config'\n",
            "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
-           "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
-           "if [[ \"${MANAGEMENT_GUI_PORT}\" != \"443\" ]]; then tmsh modify net self-allow defaults delete { tcp:443 }; fi \n",
            "tmsh save /sys config\n",
            "echo 'start install biqiq license'\n",
            ". /tmp/license_from_bigiq.sh\n",

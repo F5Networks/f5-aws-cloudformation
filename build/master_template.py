@@ -1327,6 +1327,7 @@ def main():
             if num_nics == 1:
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
+                                    "--ssl-port ${MANAGEMENT_GUI_PORT}",
                                   ]
             if num_nics > 1:
                 onboard_BIG_IP += [
@@ -1363,31 +1364,16 @@ def main():
                                 ] 
 
                 # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
-                if 'waf' not in components:
-                    firstrun_sh +=  [ 
-                                    "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} }\n",
-
-                                    ]
-
                 if 'waf' in components:
                     firstrun_sh +=  [ 
-                                    "tmsh modify net self-allow defaults add { tcp:${MANAGEMENT_GUI_PORT} tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                    "tmsh modify net self-allow defaults add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
                                     ]
-
-                firstrun_sh +=  [
-                                    "if [[ \"${MANAGEMENT_GUI_PORT}\" != \"443\" ]]; then tmsh modify net self-allow defaults delete { tcp:443 }; fi \n",
-                                ] 
-
-
             # Network Settings
             if num_nics > 1:
-
                 firstrun_sh +=  [ 
                                 "tmsh create net vlan external interfaces add { 1.1 } \n",
                                 ]
-
                 if ha_type == "standalone":
-
                     if 'waf' not in components:
                         firstrun_sh +=  [ 
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
@@ -1397,30 +1383,21 @@ def main():
                         firstrun_sh +=  [ 
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
                                         ]
-
-
                 if ha_type != "standalone":
-
                     if 'waf' not in components:
                         firstrun_sh +=  [ 
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
                                         ]
-
                     if 'waf' in components:
                         firstrun_sh +=  [ 
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
                                         ]
-
-
-                                
             if num_nics > 2:
                 firstrun_sh +=  [ 
                                 "tmsh create net vlan internal interfaces add { 1.2 } \n",
                                 "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
                                 ]
-
             # Set Gateway
-
             if ha_type == "across-az":
                 firstrun_sh +=  [                  
                                     "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
@@ -1453,7 +1430,6 @@ def main():
                                    ]
 
             firstrun_sh +=  [ "tmsh save /sys config\n", ]
-
             # License Device
             if license_type == "byol":
                 firstrun_sh += license_byol
@@ -1466,16 +1442,12 @@ def main():
                               "sleep 20 \n",
                               "tmsh save /sys config\n",
                            ]
-
             # Provision Modules
             if 'waf' in components:
                # firstrun_sh += provision_asm
                onboard_BIG_IP += [ 
                                     "--module asm:nominal",
                                  ]
-               
-
-
             # Cluster Devices if Cluster Seed
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 firstrun_sh +=  [
@@ -1485,33 +1457,24 @@ def main():
                                 "tmsh create cm device-group my_sync_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
                                 "tmsh run cm config-sync to-group my_sync_failover_group\n", 
                                 ]
-
-
             if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
-
                 #Add Pool
                 firstrun_sh +=  [
                                     "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
                                 ]
-
                 # Add virtual service with simple URI-Routing ltm policy
                 if 'waf' not in components:
-
                     firstrun_sh +=  [
                       "tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\n",
                       "tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\n",
                       "tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\n",
                       "tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\n",
                     ]
-
                     if ha_type != "across-az":
-
                         if num_nics == 1:
                             firstrun_sh +=  [
-
                                             "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             ]
-
                         if num_nics > 1:
                             firstrun_sh +=  [
                                             "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
@@ -1523,7 +1486,6 @@ def main():
                                             "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
                                             "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
                                         ]
-
                 if 'waf' in components:
                     # 12.1.0 requires "first match legacy"
                     firstrun_sh += [
@@ -1535,14 +1497,11 @@ def main():
                                       "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
                                       "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
                                     ]
-
                     if ha_type != "across-az":
-
                         if num_nics == 1:
                             firstrun_sh +=  [
                                               "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
                                             ]
-
                         if num_nics > 1:
                             firstrun_sh +=  [
                                               "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
@@ -1554,7 +1513,6 @@ def main():
                                             "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
                                             "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
                                         ]
-
                 if ha_type == "across-az":
                     firstrun_sh += [
                                             "curl -sSk -o /tmp/f5.aws_advanced_ha.v1.2.0rc1.tmpl --max-time 15 https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
@@ -1565,16 +1523,13 @@ def main():
                                             "sleep 15\n",
                                             "curl -sSk -u admin:\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
                                     ]
-
             # If ASM, Need to use overwite Config (SOL16509 / BZID: 487538 )
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 if 'waf' in components:
-
                     firstrun_sh += [
                                             "tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\n", 
                                             "tmsh run cm config-sync to-group datasync-global-dg\n",
                                     ]
-
             if license_type == "byol":                
                 firstrun_sh += [
                                     "tmsh save /sys config\n",
@@ -1589,10 +1544,7 @@ def main():
                                     "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
                                     "# rm /tmp/firstrun.config\n"
                                ]             
-
-
             if license_type == "bigiq":
-
                 metadata = Metadata(
                         Init({
                             'config': InitConfig(
@@ -1687,9 +1639,7 @@ def main():
                             ) 
                         })
                     )
-
             NetworkInterfaces = []
-
             if num_nics == 1:
                 NetworkInterfaces = [
                     NetworkInterfaceProperty(
@@ -1698,7 +1648,6 @@ def main():
                         Description="Public or External Interface",
                     ),
                 ]
-
             if num_nics == 2:  
                 NetworkInterfaces = [
                     NetworkInterfaceProperty(
@@ -1712,7 +1661,6 @@ def main():
                         Description="Public or External Interface",
                     ),    
                 ]
-
             if num_nics == 3:  
                 NetworkInterfaces = [
                     NetworkInterfaceProperty(
@@ -1731,7 +1679,6 @@ def main():
                         Description="Private or Internal Interface",
                     ), 
                 ]
-
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 RESOURCES[BigipInstance] = t.add_resource(Instance(
                     BigipInstance,
@@ -1761,22 +1708,18 @@ def main():
                     InstanceType=Ref(BigipInstanceType),
                     NetworkInterfaces=NetworkInterfaces
                 ))
-
     ### BEGIN OUTPUT
-
     if network == True:
         Vpc = t.add_output(Output(
             "Vpc",
             Description="VPC ID",
             Value=Ref(Vpc),
         ))
-
         DnsServers = t.add_output(Output(
             "DnsServers",
             Description="DNS server for VPC",
             Value="10.0.0.2",
         ))
-
         for INDEX in range(num_azs):
             ApplicationSubnet = "Az" + str(INDEX + 1) + "ApplicationSubnet"
             OUTPUTS[ApplicationSubnet] = t.add_output(Output(
@@ -1784,7 +1727,6 @@ def main():
                 Description="Az" + str(INDEX + 1) +  "Application Subnet Id",
                 Value=Ref(ApplicationSubnet),
             ))
-
         for INDEX in range(num_azs):
             ExternalSubnet = "Az" + str(INDEX + 1) + "ExternalSubnet"
             OUTPUTS[ExternalSubnet] = t.add_output(Output(
@@ -1792,7 +1734,6 @@ def main():
                 Description="Az" + str(INDEX + 1) +  "External Subnet Id",
                 Value=Ref(ExternalSubnet),
             ))
-
         if num_nics > 1:
             for INDEX in range(num_azs):
                 ManagementSubnet = "Az" + str(INDEX + 1) + "ManagementSubnet"
@@ -1801,7 +1742,6 @@ def main():
                     Description="Az" + str(INDEX + 1) +  "Management Subnet Id",
                     Value=Ref(ManagementSubnet),
                 ))
-
         if num_nics > 2:
             for INDEX in range(num_azs):
                 InternalSubnet = "Az" + str(INDEX + 1) + "InternalSubnet"
@@ -1810,34 +1750,26 @@ def main():
                     Description="Az" + str(INDEX + 1) +  "Internal Subnet Id",
                     Value=Ref(InternalSubnet),
                 ))
-
     if security_groups == True:
-
         BigipExternalSecurityGroup = t.add_output(Output(
             "BigipExternalSecurityGroup",
             Description="Public or External Security Group",
             Value=Ref(BigipExternalSecurityGroup),
         ))
-
         if num_nics > 1:
             BigipManagementSecurityGroup = t.add_output(Output(
                 "BigipManagementSecurityGroup",
                 Description="Management Security Group",
                 Value=Ref(BigipManagementSecurityGroup),
             ))
-
         if num_nics > 2:
             BigipInternalSecurityGroup = t.add_output(Output(
                 "BigipInternalSecurityGroup",
                 Description="Private or Internal Security Group",
                 Value=Ref(BigipInternalSecurityGroup),
             ))
-
-
     if bigip == True:
-
         for BIGIP_INDEX in range(num_bigips): 
-
             ExternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "ExternalInterface"
             ExternalInterfacePrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "ExternalInterfacePrivateIp"
             ExternalSelfEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "ExternalSelfEipAddress"
@@ -1847,94 +1779,75 @@ def main():
             BigipInstanceId = "Bigip" + str(BIGIP_INDEX + 1) + "InstanceId"
             BigipUrl = "Bigip" + str(BIGIP_INDEX + 1) + "Url"
             AvailabilityZone = "AvailabilityZone" + str(BIGIP_INDEX + 1)
-
             OUTPUTS[BigipInstanceId] = t.add_output(Output(
                 BigipInstanceId,
                 Description="Instance Id of Big-IP in Amazon",
                 Value=Ref(BigipInstance),
             ))
-
             OUTPUTS[AvailabilityZone] = t.add_output(Output(
                 AvailabilityZone,
                 Description="Availability Zone",
                 Value=GetAtt(BigipInstance, "AvailabilityZone"),
             ))
-
             OUTPUTS[ExternalInterface] = t.add_output(Output(
                 ExternalInterface,
                 Description="External interface Id on Big-IP",
                 Value=Ref(ExternalInterface),
             ))
-
             OUTPUTS[ExternalInterfacePrivateIp] = t.add_output(Output(
                 ExternalInterfacePrivateIp,
                 Description="Internally routable Ip of public interface on BIG-IP",
                 Value=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
             ))
-
             OUTPUTS[ExternalSelfEipAddress] = t.add_output(Output(
                 ExternalSelfEipAddress,
                 Description="IP Address of External interface attached to BIG-IP",
                 Value=Ref(ExternalSelfEipAddress),
             ))
-
             if num_nics == 1:
-
                 VipEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAddress"
-
                 OUTPUTS[BigipUrl] = t.add_output(Output(
                     BigipUrl,
                     Description="Big-IP Management GUI",
                     Value=Join("", [ "https://", GetAtt(BigipInstance, "PublicIp"), ":", Ref(BigipManagementGuiPort) ]),
                 ))
-
                 OUTPUTS[VipEipAddress] = t.add_output(Output(
                     VipEipAddress,
                     Description="EIP address for VIP",
                     Value=Join("", ["http://", GetAtt(BigipInstance, "PublicIp") , ":80"]),
                 ))
-
-
             if num_nics > 1:
-
-
                 ManagementInterface = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementInterface"
                 ManagementInterfacePrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementInterfacePrivateIp"
                 ManagementEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementEipAddress"
                 VipPrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "VipPrivateIp"
                 VipEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAddress"
-
                 OUTPUTS[BigipUrl] = t.add_output(Output(
                     BigipUrl,
                     Description="Big-IP Management GUI",
                     Value=Join("", ["https://", GetAtt(BigipInstance, "PublicIp")]),
                 ))
-
                 OUTPUTS[ManagementInterface] = t.add_output(Output(
                     ManagementInterface,
                     Description="Management interface Id on BIG-IP",
                     Value=Ref(ManagementInterface),
                 ))
-
                 OUTPUTS[ManagementInterfacePrivateIp] = t.add_output(Output(
                     ManagementInterfacePrivateIp,
                     Description="Internally routable Ip of management interface on BIG-IP",
                     Value=GetAtt(ManagementInterface, "PrimaryPrivateIpAddress"),
                 ))
-
                 OUTPUTS[ManagementEipAddress] = t.add_output(Output(
                     ManagementEipAddress,
                     Description="Ip address of management port on BIG-IP",
                     Value=Ref(ManagementEipAddress),
                 ))
-
                 if ha_type == "standalone":
                     OUTPUTS[VipPrivateIp] = t.add_output(Output(
                         VipPrivateIp,
                         Description="VIP on External Interface Secondary IP 1",
                         Value=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
                     ))
-
                     OUTPUTS[VipEipAddress] = t.add_output(Output(
                         VipEipAddress,
                         Description="EIP address for VIP",
@@ -1948,30 +1861,24 @@ def main():
                             Description="VIP on External Interface Secondary IP 1",
                             Value=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
                         ))
-
                         OUTPUTS[VipEipAddress] = t.add_output(Output(
                             VipEipAddress,
                             Description="EIP address for VIP",
                             Value=Join("", ["http://", Ref(VipEipAddress), ":80"]),
                         ))
-
             if num_nics > 2:
-
                 InternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterface"
                 InternalInterfacePrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterfacePrivateIp"
-
                 OUTPUTS[InternalInterface] = t.add_output(Output(
                     InternalInterface,
                     Description="Internal interface ID on BIG-IP",
                     Value=Ref(InternalInterface),
                 ))
-
                 OUTPUTS[InternalInterfacePrivateIp] = t.add_output(Output(
                     InternalInterfacePrivateIp,
                     Description="Internally routable IP of internal interface on BIG-IP",
                     Value=GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),
                 ))
-
     if webserver == True:
         WebserverPrivateIp = t.add_output(Output(
             "WebserverPrivateIp",
@@ -1990,12 +1897,9 @@ def main():
             Description="Public Url for Webserver",
             Value=Join("", ["http://", GetAtt(Webserver, "PublicIp")]),
         ))
-
-
     if stack == "full":
         print(t.to_json(indent=1))
     else:
         print(t.to_json(indent=2))  
-
 if __name__ == "__main__":
     main()

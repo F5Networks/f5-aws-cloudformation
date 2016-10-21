@@ -1327,7 +1327,7 @@ def main():
             if num_nics == 1:
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
-                                    "--ssl-port ${MANAGEMENT_GUI_PORT}",
+                                    "--ssl-port '", { "Ref": "BigipManagementGuiPort" }, "'",
                                   ]
             if num_nics > 1:
                 onboard_BIG_IP += [

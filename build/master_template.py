@@ -1327,14 +1327,15 @@ def main():
             if num_nics == 1:
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
+                                    "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
                                     "--ssl-port '", { "Ref": "BigipManagementGuiPort" }, "'",
                                   ]
             if num_nics > 1:
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                    "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
                                   ]            
             onboard_BIG_IP += [
-                               "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
                                "-o  /var/log/onboard.log",
                                "--background",
                                "--no-reboot",

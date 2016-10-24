@@ -305,6 +305,7 @@
                         "Ref": "BigipManagementGuiPort"
                       },
                       "'",
+                      "--log-level verbose",
                       "-o  /var/log/onboard.log",
                       "--background",
                       "--no-reboot",

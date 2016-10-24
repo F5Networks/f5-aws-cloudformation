@@ -1294,6 +1294,7 @@ def main():
                                     "f5-rest-node /shared/f5-cloud-libs/scripts/runScript.js",
                                     "--wait-for ONBOARD_DONE",
                                     "--file /tmp/firstrun.sh",
+                                    "--log-level verbose",
                                     "-o /var/log/firstrun_1.log",
                                     "--background",
                                 ]                 
@@ -1336,6 +1337,7 @@ def main():
                                     "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
                                   ]            
             onboard_BIG_IP += [
+                               "--log-level verbose",
                                "-o  /var/log/onboard.log",
                                "--background",
                                "--no-reboot",

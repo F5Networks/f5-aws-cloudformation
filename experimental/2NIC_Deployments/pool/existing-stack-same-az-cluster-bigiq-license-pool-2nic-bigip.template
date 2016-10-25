@@ -269,10 +269,6 @@
       "MinLength": "1",
       "Type": "String"
     },
-    "KeyName": {
-      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
-      "Type": "AWS::EC2::KeyPair::KeyName"
-    },
     "Vpc": {
       "ConstraintDescription": "Must be an existing VPC within working region.",
       "Type": "AWS::EC2::VPC::Id"
@@ -359,6 +355,10 @@
       "Default": "m3.xlarge",
       "Description": "F5 BIG-IP Virtual Instance Type",
       "Type": "String"
+    },
+    "sshKey": {
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "Type": "AWS::EC2::KeyPair::KeyName"
     },
     "sshLocation": {
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
@@ -690,7 +690,7 @@
           "Ref": "instanceType"
         },
         "KeyName": {
-          "Ref": "KeyName"
+          "Ref": "sshKey"
         },
         "NetworkInterfaces": [
           {
@@ -1092,7 +1092,7 @@
           "Ref": "instanceType"
         },
         "KeyName": {
-          "Ref": "KeyName"
+          "Ref": "sshKey"
         },
         "NetworkInterfaces": [
           {

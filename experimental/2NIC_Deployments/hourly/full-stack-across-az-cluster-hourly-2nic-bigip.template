@@ -406,10 +406,6 @@
   }
  },
  "Parameters": {
-  "KeyName": {
-   "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
-   "Type": "AWS::EC2::KeyPair::KeyName"
-  },
   "adminPassword": {
    "ConstraintDescription": "Please verify your BIG-IP Admin Password",
    "Description": "Please enter your BIG-IP Admin Password",
@@ -506,6 +502,10 @@
    "Default": "m3.xlarge",
    "Description": "F5 BIG-IP Virtual Instance Type",
    "Type": "String"
+  },
+  "sshKey": {
+   "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+   "Type": "AWS::EC2::KeyPair::KeyName"
   },
   "sshLocation": {
    "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
@@ -1090,7 +1090,7 @@
      "Ref": "instanceType"
     },
     "KeyName": {
-     "Ref": "KeyName"
+     "Ref": "sshKey"
     },
     "NetworkInterfaces": [
      {
@@ -1481,7 +1481,7 @@
      "Ref": "instanceType"
     },
     "KeyName": {
-     "Ref": "KeyName"
+     "Ref": "sshKey"
     },
     "NetworkInterfaces": [
      {
@@ -1705,7 +1705,7 @@
      "Ref": "applicationInstanceType"
     },
     "KeyName": {
-     "Ref": "KeyName"
+     "Ref": "sshKey"
     },
     "NetworkInterfaces": [
      {

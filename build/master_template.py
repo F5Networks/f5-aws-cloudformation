@@ -174,7 +174,7 @@ def main():
 
     if stack != "network" and stack != "security_groups":
         sshKey = t.add_parameter(Parameter(
-            "KeyName",
+            "sshKey",
             Type="AWS::EC2::KeyPair::KeyName",
             Description="Name of an existing EC2 KeyPair to enable SSH access to the instance",
         ))

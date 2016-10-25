@@ -361,7 +361,7 @@
    "Value": {
     "Fn::GetAtt": [
      "Bigip1Instance",
-     "availabilityZone"
+     "AvailabilityZone"
     ]
    }
   },
@@ -370,7 +370,7 @@
    "Value": {
     "Fn::GetAtt": [
      "Bigip2Instance",
-     "availabilityZone"
+     "AvailabilityZone"
     ]
    }
   },

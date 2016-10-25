@@ -1790,7 +1790,7 @@ def main():
             OUTPUTS[availabilityZone] = t.add_output(Output(
                 availabilityZone,
                 Description="Availability Zone",
-                Value=GetAtt(BigipInstance, "availabilityZone"),
+                Value=GetAtt(BigipInstance, "AvailabilityZone"),
             ))
             OUTPUTS[ExternalInterface] = t.add_output(Output(
                 ExternalInterface,

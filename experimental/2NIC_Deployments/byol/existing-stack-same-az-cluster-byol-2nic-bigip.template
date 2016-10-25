@@ -51,24 +51,6 @@
     }
   },
   "Outputs": {
-    "AvailabilityZone1": {
-      "Description": "Availability Zone",
-      "Value": {
-        "Fn::GetAtt": [
-          "Bigip1Instance",
-          "AvailabilityZone"
-        ]
-      }
-    },
-    "AvailabilityZone2": {
-      "Description": "Availability Zone",
-      "Value": {
-        "Fn::GetAtt": [
-          "Bigip2Instance",
-          "AvailabilityZone"
-        ]
-      }
-    },
     "Bigip1ExternalInterface": {
       "Description": "External interface Id on Big-IP",
       "Value": {
@@ -227,17 +209,35 @@
           ]
         ]
       }
+    },
+    "availabilityZone1": {
+      "Description": "Availability Zone",
+      "Value": {
+        "Fn::GetAtt": [
+          "Bigip1Instance",
+          "availabilityZone"
+        ]
+      }
+    },
+    "availabilityZone2": {
+      "Description": "Availability Zone",
+      "Value": {
+        "Fn::GetAtt": [
+          "Bigip2Instance",
+          "availabilityZone"
+        ]
+      }
     }
   },
   "Parameters": {
-    "Az1ExternalSubnet": {
-      "ConstraintDescription": "Must be subnet ID within existing VPC",
-      "Description": "Public or External subnet ID",
-      "Type": "AWS::EC2::Subnet::Id"
-    },
-    "Az1ManagementSubnet": {
+    "Az1managementSubnet": {
       "ConstraintDescription": "Must be subnet ID within existing VPC",
       "Description": "Management Subnet ID",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "Az1subnet": {
+      "ConstraintDescription": "Must be subnet ID within existing VPC",
+      "Description": "Public or External subnet ID",
       "Type": "AWS::EC2::Subnet::Id"
     },
     "Bigip1LicenseKey": {
@@ -255,11 +255,6 @@
       "MaxLength": "255",
       "MinLength": "1",
       "Type": "String"
-    },
-    "BigipManagementSecurityGroup": {
-      "ConstraintDescription": "Must be security group ID within existing VPC",
-      "Description": "Bigip Management Security Group",
-      "Type": "AWS::EC2::SecurityGroup::Id"
     },
     "KeyName": {
       "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
@@ -293,6 +288,11 @@
     "bigipExternalSecurityGroup": {
       "ConstraintDescription": "Must be security group ID within existing VPC",
       "Description": "Public or External Security Group ID",
+      "Type": "AWS::EC2::SecurityGroup::Id"
+    },
+    "bigipManagementSecurityGroup": {
+      "ConstraintDescription": "Must be security group ID within existing VPC",
+      "Description": "Bigip Management Security Group",
       "Type": "AWS::EC2::SecurityGroup::Id"
     },
     "iamAccessKey": {
@@ -368,7 +368,7 @@
         ],
         "SecondaryPrivateIpAddressCount": "1",
         "SubnetId": {
-          "Ref": "Az1ExternalSubnet"
+          "Ref": "Az1subnet"
         }
       },
       "Type": "AWS::EC2::NetworkInterface"
@@ -753,11 +753,11 @@
         "Description": "Management Interface for the Bigip",
         "GroupSet": [
           {
-            "Ref": "BigipManagementSecurityGroup"
+            "Ref": "bigipManagementSecurityGroup"
           }
         ],
         "SubnetId": {
-          "Ref": "Az1ManagementSubnet"
+          "Ref": "Az1managementSubnet"
         }
       },
       "Type": "AWS::EC2::NetworkInterface"
@@ -803,7 +803,7 @@
         ],
         "SecondaryPrivateIpAddressCount": "1",
         "SubnetId": {
-          "Ref": "Az1ExternalSubnet"
+          "Ref": "Az1subnet"
         }
       },
       "Type": "AWS::EC2::NetworkInterface"
@@ -1142,11 +1142,11 @@
         "Description": "Management Interface for the Bigip",
         "GroupSet": [
           {
-            "Ref": "BigipManagementSecurityGroup"
+            "Ref": "bigipManagementSecurityGroup"
           }
         ],
         "SubnetId": {
-          "Ref": "Az1ManagementSubnet"
+          "Ref": "Az1managementSubnet"
         }
       },
       "Type": "AWS::EC2::NetworkInterface"

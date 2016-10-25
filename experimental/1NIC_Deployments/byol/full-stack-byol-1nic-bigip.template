@@ -80,25 +80,16 @@
   }
  },
  "Outputs": {
-  "AvailabilityZone1": {
-   "Description": "Availability Zone",
-   "Value": {
-    "Fn::GetAtt": [
-     "Bigip1Instance",
-     "AvailabilityZone"
-    ]
-   }
-  },
   "Az1ApplicationSubnet": {
    "Description": "Az1Application Subnet Id",
    "Value": {
     "Ref": "Az1ApplicationSubnet"
    }
   },
-  "Az1ExternalSubnet": {
+  "Az1subnet": {
    "Description": "Az1External Subnet Id",
    "Value": {
-    "Ref": "Az1ExternalSubnet"
+    "Ref": "Az1subnet"
    }
   },
   "Bigip1ExternalInterface": {
@@ -212,6 +203,15 @@
     ]
    }
   },
+  "availabilityZone1": {
+   "Description": "Availability Zone",
+   "Value": {
+    "Fn::GetAtt": [
+     "Bigip1Instance",
+     "availabilityZone"
+    ]
+   }
+  },
   "bigipExternalSecurityGroup": {
    "Description": "Public or External Security Group",
    "Value": {
@@ -220,10 +220,6 @@
   }
  },
  "Parameters": {
-  "AvailabilityZone1": {
-   "Description": "Name of an Availability Zone in this Region",
-   "Type": "AWS::EC2::AvailabilityZone::Name"
-  },
   "Bigip1LicenseKey": {
    "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
    "ConstraintDescription": "Please verify your F5 BYOL regkey.",
@@ -266,6 +262,10 @@
    "Default": "t1.micro",
    "Description": "Webserver EC2 instance type",
    "Type": "String"
+  },
+  "availabilityZone1": {
+   "Description": "Name of an Availability Zone in this Region",
+   "Type": "AWS::EC2::availabilityZone::Name"
   },
   "instanceName": {
    "AllowedValues": [
@@ -369,7 +369,7 @@
   "Az1ApplicationSubnet": {
    "Properties": {
     "AvailabilityZone": {
-     "Ref": "AvailabilityZone1"
+     "Ref": "availabilityZone1"
     },
     "CidrBlock": "10.0.3.0/24",
     "Tags": [
@@ -401,10 +401,10 @@
    },
    "Type": "AWS::EC2::SubnetRouteTableAssociation"
   },
-  "Az1ExternalSubnet": {
+  "Az1subnet": {
    "Properties": {
     "AvailabilityZone": {
-     "Ref": "AvailabilityZone1"
+     "Ref": "availabilityZone1"
     },
     "CidrBlock": "10.0.1.0/24",
     "Tags": [
@@ -425,13 +425,13 @@
    },
    "Type": "AWS::EC2::Subnet"
   },
-  "Az1ExternalSubnetRouteTableAssociation": {
+  "Az1subnetRouteTableAssociation": {
    "Properties": {
     "RouteTableId": {
      "Ref": "ExternalRouteTable"
     },
     "SubnetId": {
-     "Ref": "Az1ExternalSubnet"
+     "Ref": "Az1subnet"
     }
    },
    "Type": "AWS::EC2::SubnetRouteTableAssociation"
@@ -446,7 +446,7 @@
     ],
     "SecondaryPrivateIpAddressCount": "1",
     "SubnetId": {
-     "Ref": "Az1ExternalSubnet"
+     "Ref": "Az1subnet"
     }
    },
    "Type": "AWS::EC2::NetworkInterface"

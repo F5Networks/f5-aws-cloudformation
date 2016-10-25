@@ -134,25 +134,10 @@
   }
  },
  "Outputs": {
-  "AvailabilityZone1": {
-   "Description": "Availability Zone",
-   "Value": {
-    "Fn::GetAtt": [
-     "Bigip1Instance",
-     "AvailabilityZone"
-    ]
-   }
-  },
   "Az1ApplicationSubnet": {
    "Description": "Az1Application Subnet Id",
    "Value": {
     "Ref": "Az1ApplicationSubnet"
-   }
-  },
-  "Az1ExternalSubnet": {
-   "Description": "Az1External Subnet Id",
-   "Value": {
-    "Ref": "Az1ExternalSubnet"
    }
   },
   "Az1InternalSubnet": {
@@ -161,10 +146,16 @@
     "Ref": "Az1InternalSubnet"
    }
   },
-  "Az1ManagementSubnet": {
+  "Az1managementSubnet": {
    "Description": "Az1Management Subnet Id",
    "Value": {
-    "Ref": "Az1ManagementSubnet"
+    "Ref": "Az1managementSubnet"
+   }
+  },
+  "Az1subnet": {
+   "Description": "Az1External Subnet Id",
+   "Value": {
+    "Ref": "Az1subnet"
    }
   },
   "Bigip1ExternalInterface": {
@@ -282,12 +273,6 @@
     "Ref": "BigipInternalSecurityGroup"
    }
   },
-  "BigipManagementSecurityGroup": {
-   "Description": "Management Security Group",
-   "Value": {
-    "Ref": "BigipManagementSecurityGroup"
-   }
-  },
   "DnsServers": {
    "Description": "DNS server for VPC",
    "Value": "10.0.0.2"
@@ -333,18 +318,29 @@
     ]
    }
   },
+  "availabilityZone1": {
+   "Description": "Availability Zone",
+   "Value": {
+    "Fn::GetAtt": [
+     "Bigip1Instance",
+     "availabilityZone"
+    ]
+   }
+  },
   "bigipExternalSecurityGroup": {
    "Description": "Public or External Security Group",
    "Value": {
     "Ref": "bigipExternalSecurityGroup"
    }
+  },
+  "bigipManagementSecurityGroup": {
+   "Description": "Management Security Group",
+   "Value": {
+    "Ref": "bigipManagementSecurityGroup"
+   }
   }
  },
  "Parameters": {
-  "AvailabilityZone1": {
-   "Description": "Name of an Availability Zone in this Region",
-   "Type": "AWS::EC2::AvailabilityZone::Name"
-  },
   "KeyName": {
    "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
    "Type": "AWS::EC2::KeyPair::KeyName"
@@ -379,6 +375,10 @@
    "Default": "t1.micro",
    "Description": "Webserver EC2 instance type",
    "Type": "String"
+  },
+  "availabilityZone1": {
+   "Description": "Name of an Availability Zone in this Region",
+   "Type": "AWS::EC2::availabilityZone::Name"
   },
   "instanceName": {
    "AllowedValues": [
@@ -482,7 +482,7 @@
   "Az1ApplicationSubnet": {
    "Properties": {
     "AvailabilityZone": {
-     "Ref": "AvailabilityZone1"
+     "Ref": "availabilityZone1"
     },
     "CidrBlock": "10.0.3.0/24",
     "Tags": [
@@ -514,45 +514,10 @@
    },
    "Type": "AWS::EC2::SubnetRouteTableAssociation"
   },
-  "Az1ExternalSubnet": {
-   "Properties": {
-    "AvailabilityZone": {
-     "Ref": "AvailabilityZone1"
-    },
-    "CidrBlock": "10.0.1.0/24",
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "AWS::StackId"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": "Az1 External Subnet"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::Subnet"
-  },
-  "Az1ExternalSubnetRouteTableAssociation": {
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "ExternalRouteTable"
-    },
-    "SubnetId": {
-     "Ref": "Az1ExternalSubnet"
-    }
-   },
-   "Type": "AWS::EC2::SubnetRouteTableAssociation"
-  },
   "Az1InternalSubnet": {
    "Properties": {
     "AvailabilityZone": {
-     "Ref": "AvailabilityZone1"
+     "Ref": "availabilityZone1"
     },
     "CidrBlock": "10.0.2.0/24",
     "Tags": [
@@ -584,10 +549,10 @@
    },
    "Type": "AWS::EC2::SubnetRouteTableAssociation"
   },
-  "Az1ManagementSubnet": {
+  "Az1managementSubnet": {
    "Properties": {
     "AvailabilityZone": {
-     "Ref": "AvailabilityZone1"
+     "Ref": "availabilityZone1"
     },
     "CidrBlock": "10.0.0.0/24",
     "Tags": [
@@ -608,13 +573,48 @@
    },
    "Type": "AWS::EC2::Subnet"
   },
-  "Az1ManagementSubnetRouteTableAssociation": {
+  "Az1managementSubnetRouteTableAssociation": {
    "Properties": {
     "RouteTableId": {
      "Ref": "ManagementRouteTable"
     },
     "SubnetId": {
-     "Ref": "Az1ManagementSubnet"
+     "Ref": "Az1managementSubnet"
+    }
+   },
+   "Type": "AWS::EC2::SubnetRouteTableAssociation"
+  },
+  "Az1subnet": {
+   "Properties": {
+    "AvailabilityZone": {
+     "Ref": "availabilityZone1"
+    },
+    "CidrBlock": "10.0.1.0/24",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "AWS::StackId"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": "Az1 External Subnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::Subnet"
+  },
+  "Az1subnetRouteTableAssociation": {
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ExternalRouteTable"
+    },
+    "SubnetId": {
+     "Ref": "Az1subnet"
     }
    },
    "Type": "AWS::EC2::SubnetRouteTableAssociation"
@@ -629,7 +629,7 @@
     ],
     "SecondaryPrivateIpAddressCount": "1",
     "SubnetId": {
-     "Ref": "Az1ExternalSubnet"
+     "Ref": "Az1subnet"
     }
    },
    "Type": "AWS::EC2::NetworkInterface"
@@ -991,11 +991,11 @@
     "Description": "Management Interface for the Bigip",
     "GroupSet": [
      {
-      "Ref": "BigipManagementSecurityGroup"
+      "Ref": "bigipManagementSecurityGroup"
      }
     ],
     "SubnetId": {
-     "Ref": "Az1ManagementSubnet"
+     "Ref": "Az1managementSubnet"
     }
    },
    "Type": "AWS::EC2::NetworkInterface"
@@ -1054,65 +1054,6 @@
      {
       "Key": "Name",
       "Value": "Bigip Internal Security Group"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::SecurityGroup"
-  },
-  "BigipManagementSecurityGroup": {
-   "Properties": {
-    "GroupDescription": "Big-IP Management UI rules",
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": {
-       "Ref": "sshLocation"
-      },
-      "FromPort": "22",
-      "IpProtocol": "tcp",
-      "ToPort": "22"
-     },
-     {
-      "CidrIp": {
-       "Ref": "sshLocation"
-      },
-      "FromPort": "443",
-      "IpProtocol": "tcp",
-      "ToPort": "443"
-     },
-     {
-      "CidrIp": {
-       "Ref": "sshLocation"
-      },
-      "FromPort": "-1",
-      "IpProtocol": "icmp",
-      "ToPort": "-1"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "22",
-      "IpProtocol": "tcp",
-      "ToPort": "22"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "443",
-      "IpProtocol": "tcp",
-      "ToPort": "443"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "AWS::StackName"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": "Bigip Management Security Group"
      }
     ],
     "VpcId": {
@@ -1428,6 +1369,65 @@
      {
       "Key": "Name",
       "Value": "Bigip External Security Group"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::SecurityGroup"
+  },
+  "bigipManagementSecurityGroup": {
+   "Properties": {
+    "GroupDescription": "Big-IP Management UI rules",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Ref": "sshLocation"
+      },
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
+     },
+     {
+      "CidrIp": {
+       "Ref": "sshLocation"
+      },
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
+     },
+     {
+      "CidrIp": {
+       "Ref": "sshLocation"
+      },
+      "FromPort": "-1",
+      "IpProtocol": "icmp",
+      "ToPort": "-1"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "AWS::StackName"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": "Bigip Management Security Group"
      }
     ],
     "VpcId": {

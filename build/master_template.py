@@ -183,10 +183,10 @@ def main():
     if network == True:
 
         for INDEX in range(num_azs):
-            AvailabilityZone = "AvailabilityZone" + str(INDEX + 1)
-            PARAMETERS[AvailabilityZone] = t.add_parameter(Parameter(
-                AvailabilityZone,
-            Type="AWS::EC2::AvailabilityZone::Name",
+            availabilityZone = "availabilityZone" + str(INDEX + 1)
+            PARAMETERS[availabilityZone] = t.add_parameter(Parameter(
+                availabilityZone,
+            Type="AWS::EC2::availabilityZone::Name",
             Description="Name of an Availability Zone in this Region",
         ))
 
@@ -410,9 +410,9 @@ def main():
     if stack == "existing":
 
         for INDEX in range(num_azs):
-            ExternalSubnet = "Az" + str(INDEX + 1) + "ExternalSubnet"
-            PARAMETERS[ExternalSubnet] = t.add_parameter(Parameter(
-                ExternalSubnet,
+            subnet = "Az" + str(INDEX + 1) + "subnet"
+            PARAMETERS[subnet] = t.add_parameter(Parameter(
+                subnet,
                 ConstraintDescription="Must be subnet ID within existing VPC",
                 Type="AWS::EC2::Subnet::Id",
                 Description="Public or External subnet ID",
@@ -427,16 +427,16 @@ def main():
 
         if num_nics > 1:
             for INDEX in range(num_azs):
-                ManagementSubnet = "Az" + str(INDEX + 1) + "ManagementSubnet"
-                PARAMETERS[ManagementSubnet] = t.add_parameter(Parameter(
-                    ManagementSubnet,
+                managementSubnet = "Az" + str(INDEX + 1) + "managementSubnet"
+                PARAMETERS[managementSubnet] = t.add_parameter(Parameter(
+                    managementSubnet,
                     ConstraintDescription="Must be subnet ID within existing VPC",
                     Type="AWS::EC2::Subnet::Id",
                     Description="Management Subnet ID",
                 ))
 
-            BigipManagementSecurityGroup = t.add_parameter(Parameter(
-                "BigipManagementSecurityGroup",
+            bigipManagementSecurityGroup = t.add_parameter(Parameter(
+                "bigipManagementSecurityGroup",
                 ConstraintDescription="Must be security group ID within existing VPC",
                 Type="AWS::EC2::SecurityGroup::Id",
                 Description="Bigip Management Security Group",
@@ -515,16 +515,16 @@ def main():
 
         octet = 1
         for INDEX in range(num_azs):
-            ExternalSubnet = "Az" + str(INDEX + 1) + "ExternalSubnet"
-            RESOURCES[ExternalSubnet] = t.add_resource(Subnet(
-                ExternalSubnet,
+            subnet = "Az" + str(INDEX + 1) + "subnet"
+            RESOURCES[subnet] = t.add_resource(Subnet(
+                subnet,
                 Tags=Tags(
                     Name="Az" + str(INDEX + 1) +  " External Subnet",
                     Application=Ref("AWS::StackId"),
                 ),
                 VpcId=Ref(Vpc),
                 CidrBlock="10.0." + str(octet) + ".0/24",
-                AvailabilityZone=Ref("AvailabilityZone" + str(INDEX + 1) ),
+                AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
             ))
             octet += 10
 
@@ -547,10 +547,10 @@ def main():
         ))
 
         for INDEX in range(num_azs):
-            ExternalSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "ExternalSubnetRouteTableAssociation"
-            RESOURCES[ExternalSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
-                ExternalSubnetRouteTableAssociation,
-                SubnetId=Ref("Az" + str(INDEX + 1) + "ExternalSubnet"),
+            subnetRouteTableAssociation = "Az" + str(INDEX + 1) + "subnetRouteTableAssociation"
+            RESOURCES[subnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
+                subnetRouteTableAssociation,
+                SubnetId=Ref("Az" + str(INDEX + 1) + "subnet"),
                 RouteTableId=Ref(ExternalRouteTable),
             ))
            
@@ -559,16 +559,16 @@ def main():
             octet = 0
 
             for INDEX in range(num_azs):
-                ManagementSubnet = "Az" + str(INDEX + 1) + "ManagementSubnet"
-                RESOURCES[ManagementSubnet] = t.add_resource(Subnet(
-                    ManagementSubnet,
+                managementSubnet = "Az" + str(INDEX + 1) + "managementSubnet"
+                RESOURCES[managementSubnet] = t.add_resource(Subnet(
+                    managementSubnet,
                     Tags=Tags(
                         Name="Az" + str(INDEX + 1) +  " Management Subnet",
                         Application=Ref("AWS::StackId"),
                     ),
                     VpcId=Ref(Vpc),
                     CidrBlock="10.0." + str(octet) + ".0/24",
-                    AvailabilityZone=Ref("AvailabilityZone" + str(INDEX + 1) ),
+                    AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
                 ))
                 octet += 10
 
@@ -593,10 +593,10 @@ def main():
             ))
     
             for INDEX in range(num_azs):
-                ManagementSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "ManagementSubnetRouteTableAssociation"
-                RESOURCES[ManagementSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
-                    ManagementSubnetRouteTableAssociation,
-                    SubnetId=Ref("Az" + str(INDEX + 1) + "ManagementSubnet"),
+                managementSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "managementSubnetRouteTableAssociation"
+                RESOURCES[managementSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
+                    managementSubnetRouteTableAssociation,
+                    SubnetId=Ref("Az" + str(INDEX + 1) + "managementSubnet"),
                     RouteTableId=Ref(ManagementRouteTable),
                 ))
 
@@ -613,7 +613,7 @@ def main():
                     ),
                     VpcId=Ref(Vpc),
                     CidrBlock="10.0." + str(octet) + ".0/24",
-                    AvailabilityZone=Ref("AvailabilityZone" + str(INDEX + 1) ),
+                    AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
                 ))
                 octet += 10
 
@@ -655,7 +655,7 @@ def main():
                 ),
                 VpcId=Ref(Vpc),
                 CidrBlock="10.0." + str(octet) + ".0/24",
-                AvailabilityZone=Ref("AvailabilityZone" + str(INDEX + 1) ),
+                AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
             ))
             octet += 10
 
@@ -819,8 +819,8 @@ def main():
             ))
             
 
-            BigipManagementSecurityGroup = t.add_resource(SecurityGroup(
-                "BigipManagementSecurityGroup",
+            bigipManagementSecurityGroup = t.add_resource(SecurityGroup(
+                "bigipManagementSecurityGroup",
                 SecurityGroupIngress=[
                     SecurityGroupRule(
                                 IpProtocol="tcp",
@@ -962,18 +962,18 @@ def main():
             BigipInstance = "Bigip" + str(BIGIP_INDEX + 1) + "Instance"
 
             if num_azs > 1:
-                ExternalSubnet = "Az" + str(BIGIP_INDEX + 1) + "ExternalSubnet"
-                ManagementSubnet = "Az" + str(BIGIP_INDEX + 1) + "ManagementSubnet"
+                subnet = "Az" + str(BIGIP_INDEX + 1) + "subnet"
+                managementSubnet = "Az" + str(BIGIP_INDEX + 1) + "managementSubnet"
                 InternalSubnet = "Az" + str(BIGIP_INDEX + 1) + "InternalSubnet"              
             else:
-                ExternalSubnet = "Az1ExternalSubnet"
-                ManagementSubnet = "Az1ManagementSubnet"
+                subnet = "Az1subnet"
+                managementSubnet = "Az1managementSubnet"
                 InternalSubnet = "Az1InternalSubnet"
 
 
             RESOURCES[ExternalInterface] = t.add_resource(NetworkInterface(
                 ExternalInterface,
-                SubnetId=Ref(ExternalSubnet),
+                SubnetId=Ref(subnet),
                 GroupSet=[Ref(bigipExternalSecurityGroup)],
                 Description="Public External Interface for the Bigip",
                 SecondaryPrivateIpAddressCount="1",
@@ -1044,8 +1044,8 @@ def main():
 
                 RESOURCES[ManagementInterface] = t.add_resource(NetworkInterface(
                     ManagementInterface,
-                    SubnetId=Ref(ManagementSubnet),
-                    GroupSet=[Ref(BigipManagementSecurityGroup)],
+                    SubnetId=Ref(managementSubnet),
+                    GroupSet=[Ref(bigipManagementSecurityGroup)],
                     Description="Management Interface for the Bigip",
                 ))
 
@@ -1731,19 +1731,19 @@ def main():
                 Value=Ref(ApplicationSubnet),
             ))
         for INDEX in range(num_azs):
-            ExternalSubnet = "Az" + str(INDEX + 1) + "ExternalSubnet"
-            OUTPUTS[ExternalSubnet] = t.add_output(Output(
-                ExternalSubnet,
+            subnet = "Az" + str(INDEX + 1) + "subnet"
+            OUTPUTS[subnet] = t.add_output(Output(
+                subnet,
                 Description="Az" + str(INDEX + 1) +  "External Subnet Id",
-                Value=Ref(ExternalSubnet),
+                Value=Ref(subnet),
             ))
         if num_nics > 1:
             for INDEX in range(num_azs):
-                ManagementSubnet = "Az" + str(INDEX + 1) + "ManagementSubnet"
-                OUTPUTS[ManagementSubnet] = t.add_output(Output(
-                    ManagementSubnet,
+                managementSubnet = "Az" + str(INDEX + 1) + "managementSubnet"
+                OUTPUTS[managementSubnet] = t.add_output(Output(
+                    managementSubnet,
                     Description="Az" + str(INDEX + 1) +  "Management Subnet Id",
-                    Value=Ref(ManagementSubnet),
+                    Value=Ref(managementSubnet),
                 ))
         if num_nics > 2:
             for INDEX in range(num_azs):
@@ -1760,10 +1760,10 @@ def main():
             Value=Ref(bigipExternalSecurityGroup),
         ))
         if num_nics > 1:
-            BigipManagementSecurityGroup = t.add_output(Output(
-                "BigipManagementSecurityGroup",
+            bigipManagementSecurityGroup = t.add_output(Output(
+                "bigipManagementSecurityGroup",
                 Description="Management Security Group",
-                Value=Ref(BigipManagementSecurityGroup),
+                Value=Ref(bigipManagementSecurityGroup),
             ))
         if num_nics > 2:
             BigipInternalSecurityGroup = t.add_output(Output(
@@ -1781,16 +1781,16 @@ def main():
             BigipInstance = "Bigip" + str(BIGIP_INDEX + 1) + "Instance"
             BigipInstanceId = "Bigip" + str(BIGIP_INDEX + 1) + "InstanceId"
             BigipUrl = "Bigip" + str(BIGIP_INDEX + 1) + "Url"
-            AvailabilityZone = "AvailabilityZone" + str(BIGIP_INDEX + 1)
+            availabilityZone = "availabilityZone" + str(BIGIP_INDEX + 1)
             OUTPUTS[BigipInstanceId] = t.add_output(Output(
                 BigipInstanceId,
                 Description="Instance Id of Big-IP in Amazon",
                 Value=Ref(BigipInstance),
             ))
-            OUTPUTS[AvailabilityZone] = t.add_output(Output(
-                AvailabilityZone,
+            OUTPUTS[availabilityZone] = t.add_output(Output(
+                availabilityZone,
                 Description="Availability Zone",
-                Value=GetAtt(BigipInstance, "AvailabilityZone"),
+                Value=GetAtt(BigipInstance, "availabilityZone"),
             ))
             OUTPUTS[ExternalInterface] = t.add_output(Output(
                 ExternalInterface,

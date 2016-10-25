@@ -51,15 +51,6 @@
     }
   },
   "Outputs": {
-    "AvailabilityZone1": {
-      "Description": "Availability Zone",
-      "Value": {
-        "Fn::GetAtt": [
-          "Bigip1Instance",
-          "AvailabilityZone"
-        ]
-      }
-    },
     "Bigip1ExternalInterface": {
       "Description": "External interface Id on Big-IP",
       "Value": {
@@ -125,10 +116,19 @@
           ]
         ]
       }
+    },
+    "availabilityZone1": {
+      "Description": "Availability Zone",
+      "Value": {
+        "Fn::GetAtt": [
+          "Bigip1Instance",
+          "availabilityZone"
+        ]
+      }
     }
   },
   "Parameters": {
-    "Az1ExternalSubnet": {
+    "Az1subnet": {
       "ConstraintDescription": "Must be subnet ID within existing VPC",
       "Description": "Public or External subnet ID",
       "Type": "AWS::EC2::Subnet::Id"
@@ -230,7 +230,7 @@
         ],
         "SecondaryPrivateIpAddressCount": "1",
         "SubnetId": {
-          "Ref": "Az1ExternalSubnet"
+          "Ref": "Az1subnet"
         }
       },
       "Type": "AWS::EC2::NetworkInterface"

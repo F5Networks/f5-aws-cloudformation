@@ -8,16 +8,16 @@
         "Ref": "Az1ApplicationSubnet"
       }
     },
-    "Az1ExternalSubnet": {
-      "Description": "Az1External Subnet Id",
-      "Value": {
-        "Ref": "Az1ExternalSubnet"
-      }
-    },
-    "Az1ManagementSubnet": {
+    "Az1managementSubnet": {
       "Description": "Az1Management Subnet Id",
       "Value": {
-        "Ref": "Az1ManagementSubnet"
+        "Ref": "Az1managementSubnet"
+      }
+    },
+    "Az1subnet": {
+      "Description": "Az1External Subnet Id",
+      "Value": {
+        "Ref": "Az1subnet"
       }
     },
     "Az2ApplicationSubnet": {
@@ -26,16 +26,16 @@
         "Ref": "Az2ApplicationSubnet"
       }
     },
-    "Az2ExternalSubnet": {
-      "Description": "Az2External Subnet Id",
-      "Value": {
-        "Ref": "Az2ExternalSubnet"
-      }
-    },
-    "Az2ManagementSubnet": {
+    "Az2managementSubnet": {
       "Description": "Az2Management Subnet Id",
       "Value": {
-        "Ref": "Az2ManagementSubnet"
+        "Ref": "Az2managementSubnet"
+      }
+    },
+    "Az2subnet": {
+      "Description": "Az2External Subnet Id",
+      "Value": {
+        "Ref": "Az2subnet"
       }
     },
     "DnsServers": {
@@ -50,13 +50,13 @@
     }
   },
   "Parameters": {
-    "AvailabilityZone1": {
+    "availabilityZone1": {
       "Description": "Name of an Availability Zone in this Region",
-      "Type": "AWS::EC2::AvailabilityZone::Name"
+      "Type": "AWS::EC2::availabilityZone::Name"
     },
-    "AvailabilityZone2": {
+    "availabilityZone2": {
       "Description": "Name of an Availability Zone in this Region",
-      "Type": "AWS::EC2::AvailabilityZone::Name"
+      "Type": "AWS::EC2::availabilityZone::Name"
     }
   },
   "Resources": {
@@ -111,7 +111,7 @@
     "Az1ApplicationSubnet": {
       "Properties": {
         "AvailabilityZone": {
-          "Ref": "AvailabilityZone1"
+          "Ref": "availabilityZone1"
         },
         "CidrBlock": "10.0.3.0/24",
         "Tags": [
@@ -143,45 +143,10 @@
       },
       "Type": "AWS::EC2::SubnetRouteTableAssociation"
     },
-    "Az1ExternalSubnet": {
+    "Az1managementSubnet": {
       "Properties": {
         "AvailabilityZone": {
-          "Ref": "AvailabilityZone1"
-        },
-        "CidrBlock": "10.0.1.0/24",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Az1 External Subnet"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::Subnet"
-    },
-    "Az1ExternalSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "ExternalRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az1ExternalSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
-    },
-    "Az1ManagementSubnet": {
-      "Properties": {
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone1"
+          "Ref": "availabilityZone1"
         },
         "CidrBlock": "10.0.0.0/24",
         "Tags": [
@@ -202,13 +167,48 @@
       },
       "Type": "AWS::EC2::Subnet"
     },
-    "Az1ManagementSubnetRouteTableAssociation": {
+    "Az1managementSubnetRouteTableAssociation": {
       "Properties": {
         "RouteTableId": {
           "Ref": "ManagementRouteTable"
         },
         "SubnetId": {
-          "Ref": "Az1ManagementSubnet"
+          "Ref": "Az1managementSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "Az1subnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "availabilityZone1"
+        },
+        "CidrBlock": "10.0.1.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Az1 External Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "Az1subnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ExternalRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Az1subnet"
         }
       },
       "Type": "AWS::EC2::SubnetRouteTableAssociation"
@@ -216,7 +216,7 @@
     "Az2ApplicationSubnet": {
       "Properties": {
         "AvailabilityZone": {
-          "Ref": "AvailabilityZone2"
+          "Ref": "availabilityZone2"
         },
         "CidrBlock": "10.0.13.0/24",
         "Tags": [
@@ -248,45 +248,10 @@
       },
       "Type": "AWS::EC2::SubnetRouteTableAssociation"
     },
-    "Az2ExternalSubnet": {
+    "Az2managementSubnet": {
       "Properties": {
         "AvailabilityZone": {
-          "Ref": "AvailabilityZone2"
-        },
-        "CidrBlock": "10.0.11.0/24",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Az2 External Subnet"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::Subnet"
-    },
-    "Az2ExternalSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "ExternalRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az2ExternalSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
-    },
-    "Az2ManagementSubnet": {
-      "Properties": {
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone2"
+          "Ref": "availabilityZone2"
         },
         "CidrBlock": "10.0.10.0/24",
         "Tags": [
@@ -307,13 +272,48 @@
       },
       "Type": "AWS::EC2::Subnet"
     },
-    "Az2ManagementSubnetRouteTableAssociation": {
+    "Az2managementSubnetRouteTableAssociation": {
       "Properties": {
         "RouteTableId": {
           "Ref": "ManagementRouteTable"
         },
         "SubnetId": {
-          "Ref": "Az2ManagementSubnet"
+          "Ref": "Az2managementSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "Az2subnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "availabilityZone2"
+        },
+        "CidrBlock": "10.0.11.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Az2 External Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "Az2subnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ExternalRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Az2subnet"
         }
       },
       "Type": "AWS::EC2::SubnetRouteTableAssociation"

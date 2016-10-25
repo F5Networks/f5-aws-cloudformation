@@ -186,7 +186,7 @@ def main():
             availabilityZone = "availabilityZone" + str(INDEX + 1)
             PARAMETERS[availabilityZone] = t.add_parameter(Parameter(
                 availabilityZone,
-            Type="AWS::EC2::availabilityZone::Name",
+            Type="AWS::EC2::AvailabilityZone::Name",
             Description="Name of an Availability Zone in this Region",
         ))
 

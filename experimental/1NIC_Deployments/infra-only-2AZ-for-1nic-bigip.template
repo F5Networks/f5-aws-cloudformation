@@ -131,11 +131,11 @@
     },
     "availabilityZone1": {
       "Description": "Name of an Availability Zone in this Region",
-      "Type": "AWS::EC2::availabilityZone::Name"
+      "Type": "AWS::EC2::AvailabilityZone::Name"
     },
     "availabilityZone2": {
       "Description": "Name of an Availability Zone in this Region",
-      "Type": "AWS::EC2::availabilityZone::Name"
+      "Type": "AWS::EC2::AvailabilityZone::Name"
     },
     "managementGuiPort": {
       "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",

@@ -515,7 +515,7 @@ def main():
 
         octet = 1
         for INDEX in range(num_azs):
-            subnet = "Az" + str(INDEX + 1) + "subnet"
+            subnet = "az" + str(INDEX + 1) + "subnet"
             RESOURCES[subnet] = t.add_resource(Subnet(
                 subnet,
                 Tags=Tags(
@@ -547,7 +547,7 @@ def main():
         ))
 
         for INDEX in range(num_azs):
-            subnetRouteTableAssociation = "Az" + str(INDEX + 1) + "subnetRouteTableAssociation"
+            subnetRouteTableAssociation = "az" + str(INDEX + 1) + "subnetRouteTableAssociation"
             RESOURCES[subnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
                 subnetRouteTableAssociation,
                 SubnetId=Ref("az" + str(INDEX + 1) + "subnet"),
@@ -559,7 +559,7 @@ def main():
             octet = 0
 
             for INDEX in range(num_azs):
-                managementSubnet = "Az" + str(INDEX + 1) + "managementSubnet"
+                managementSubnet = "az" + str(INDEX + 1) + "managementSubnet"
                 RESOURCES[managementSubnet] = t.add_resource(Subnet(
                     managementSubnet,
                     Tags=Tags(

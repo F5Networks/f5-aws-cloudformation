@@ -313,7 +313,7 @@
    "Description": "Name of an Availability Zone in this Region",
    "Type": "AWS::EC2::AvailabilityZone::Name"
   },
-  "instanceName": {
+  "imageName": {
    "AllowedValues": [
     "Best25Mbps",
     "Best200Mbps",
@@ -700,7 +700,7 @@
        "Ref": "AWS::Region"
       },
       {
-       "Ref": "instanceName"
+       "Ref": "imageName"
       }
      ]
     },

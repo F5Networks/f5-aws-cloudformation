@@ -263,8 +263,8 @@ def main():
             ))
 
         if license_type == "hourly" and 'waf' not in components:
-            instanceName = t.add_parameter(Parameter(
-                "instanceName",
+            imageName = t.add_parameter(Parameter(
+                "imageName",
                 Default="Best1000Mbps",
                 ConstraintDescription="Must be a valid F5 Big-IP performance type",
                 Type="String",
@@ -282,8 +282,8 @@ def main():
                               ],
             ))
         if license_type == "hourly" and 'waf' in components:
-            instanceName = t.add_parameter(Parameter(
-                "instanceName",
+            imageName = t.add_parameter(Parameter(
+                "imageName",
                 Default="Best1000Mbps",
                 ConstraintDescription="Must be a valid F5 Big-IP performance type",
                 Type="String",
@@ -295,8 +295,8 @@ def main():
                               ],
             ))
         if license_type != "hourly":
-            instanceName = t.add_parameter(Parameter(
-                "instanceName",
+            imageName = t.add_parameter(Parameter(
+                "imageName",
                 Default="Best",
                 ConstraintDescription="Must be a valid F5 Big-IP performance type",
                 Type="String",
@@ -1692,7 +1692,7 @@ def main():
                         Name=Join("", ["Big-IP: ", Ref("AWS::StackName")] ),
                         Application=Ref("AWS::StackName"),
                     ),
-                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(instanceName)),
+                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces
@@ -1706,7 +1706,7 @@ def main():
                         Name=Join("", ["Big-IP: ", Ref("AWS::StackName")] ),
                         Application=Ref("AWS::StackName"),
                     ),
-                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(instanceName)),
+                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces

@@ -445,7 +445,7 @@
    "NoEcho": true,
    "Type": "String"
   },
-  "instanceName": {
+  "imageName": {
    "AllowedValues": [
     "Good25Mbps",
     "Good200Mbps",
@@ -944,7 +944,7 @@
        "Ref": "AWS::Region"
       },
       {
-       "Ref": "instanceName"
+       "Ref": "imageName"
       }
      ]
     },
@@ -1334,7 +1334,7 @@
        "Ref": "AWS::Region"
       },
       {
-       "Ref": "instanceName"
+       "Ref": "imageName"
       }
      ]
     },

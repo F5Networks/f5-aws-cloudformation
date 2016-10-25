@@ -442,7 +442,7 @@
    "NoEcho": true,
    "Type": "String"
   },
-  "instanceName": {
+  "imageName": {
    "AllowedValues": [
     "Good",
     "Better",
@@ -1072,7 +1072,7 @@
        "Ref": "AWS::Region"
       },
       {
-       "Ref": "instanceName"
+       "Ref": "imageName"
       }
      ]
     },
@@ -1484,7 +1484,7 @@
        "Ref": "AWS::Region"
       },
       {
-       "Ref": "instanceName"
+       "Ref": "imageName"
       }
      ]
     },

@@ -284,7 +284,7 @@
       "Description": "Bigip Management Security Group",
       "Type": "AWS::EC2::SecurityGroup::Id"
     },
-    "instanceName": {
+    "imageName": {
       "AllowedValues": [
         "Good25Mbps",
         "Good200Mbps",
@@ -582,7 +582,7 @@
               "Ref": "AWS::Region"
             },
             {
-              "Ref": "instanceName"
+              "Ref": "imageName"
             }
           ]
         },

@@ -259,7 +259,7 @@
       "Description": "Bigip Management Security Group",
       "Type": "AWS::EC2::SecurityGroup::Id"
     },
-    "instanceName": {
+    "imageName": {
       "AllowedValues": [
         "Good",
         "Better",
@@ -572,7 +572,7 @@
               "Ref": "AWS::Region"
             },
             {
-              "Ref": "instanceName"
+              "Ref": "imageName"
             }
           ]
         },

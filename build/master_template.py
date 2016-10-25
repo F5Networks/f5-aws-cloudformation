@@ -161,8 +161,8 @@ def main():
     ### BEGIN PARAMETERS
 
     if stack != "network": 
-        SSHLocation = t.add_parameter(Parameter(
-            "SSHLocation",
+        sshLocation = t.add_parameter(Parameter(
+            "sshLocation",
             ConstraintDescription="must be a valid IP CIDR range of the form x.x.x.x/x.",
             Description=" The IP address range that can be used to SSH to the EC2 instances",
             Default="0.0.0.0/0",
@@ -173,7 +173,7 @@ def main():
         ))
 
     if stack != "network" and stack != "security_groups":
-        KeyName = t.add_parameter(Parameter(
+        sshKey = t.add_parameter(Parameter(
             "KeyName",
             Type="AWS::EC2::KeyPair::KeyName",
             Description="Name of an existing EC2 KeyPair to enable SSH access to the instance",
@@ -191,8 +191,8 @@ def main():
         ))
 
     if webserver == True:
-        WebserverInstanceType = t.add_parameter(Parameter(
-            "WebserverInstanceType",
+        applicationInstanceType = t.add_parameter(Parameter(
+            "applicationInstanceType",
             Default="t1.micro",
             ConstraintDescription="must be a valid EC2 instance type",
             Type="String",
@@ -203,8 +203,8 @@ def main():
 
     if bigip == True or security_groups == True:
         if num_nics == 1:
-            BigipManagementGuiPort = t.add_parameter(Parameter(
-                "BigipManagementGuiPort",
+            managementGuiPort = t.add_parameter(Parameter(
+                "managementGuiPort",
                 Default="443",
                 ConstraintDescription="Must be a valid, unusued port on BIG-IP.",
                 Type="Number",
@@ -216,8 +216,8 @@ def main():
 
         if 'waf' in components:
             # Default to 2xlarge
-            BigipInstanceType = t.add_parameter(Parameter(
-                "BigipInstanceType",
+            instanceType = t.add_parameter(Parameter(
+                "instanceType",
                 Default="m3.2xlarge",
                 ConstraintDescription="must be a valid Big-IP EC2 instance type",
                 Type="String",
@@ -237,8 +237,8 @@ def main():
 
         else:
 
-            BigipInstanceType = t.add_parameter(Parameter(
-                "BigipInstanceType",
+            instanceType = t.add_parameter(Parameter(
+                "instanceType",
                 Default="m3.xlarge",
                 ConstraintDescription="must be a valid Big-IP EC2 instance type",
                 Type="String",
@@ -263,8 +263,8 @@ def main():
             ))
 
         if license_type == "hourly" and 'waf' not in components:
-            BigipPerformanceType = t.add_parameter(Parameter(
-                "BigipPerformanceType",
+            instanceName = t.add_parameter(Parameter(
+                "instanceName",
                 Default="Best1000Mbps",
                 ConstraintDescription="Must be a valid F5 Big-IP performance type",
                 Type="String",
@@ -282,8 +282,8 @@ def main():
                               ],
             ))
         if license_type == "hourly" and 'waf' in components:
-            BigipPerformanceType = t.add_parameter(Parameter(
-                "BigipPerformanceType",
+            instanceName = t.add_parameter(Parameter(
+                "instanceName",
                 Default="Best1000Mbps",
                 ConstraintDescription="Must be a valid F5 Big-IP performance type",
                 Type="String",
@@ -295,8 +295,8 @@ def main():
                               ],
             ))
         if license_type != "hourly":
-            BigipPerformanceType = t.add_parameter(Parameter(
-                "BigipPerformanceType",
+            instanceName = t.add_parameter(Parameter(
+                "instanceName",
                 Default="Best",
                 ConstraintDescription="Must be a valid F5 Big-IP performance type",
                 Type="String",
@@ -304,8 +304,8 @@ def main():
                 AllowedValues=["Good", "Better", "Best"],
             ))
 
-        BigipAdminUsername = t.add_parameter(Parameter(
-            "BigipAdminUsername",
+        adminUsername = t.add_parameter(Parameter(
+            "adminUsername",
             Type="String",
             Description="Please enter your BIG-IP Admin Username",
             Default="admin",
@@ -314,8 +314,8 @@ def main():
             ConstraintDescription="Please verify your BIG-IP Admin Username",
         ))
 
-        BigipAdminPassword = t.add_parameter(Parameter(
-            "BigipAdminPassword",
+        adminPassword = t.add_parameter(Parameter(
+            "adminPassword",
             Type="String",
             Description="Please enter your BIG-IP Admin Password",
             MinLength="1",
@@ -326,8 +326,8 @@ def main():
 
         if aws_creds == True:
 
-            IamAccessKey = t.add_parameter(Parameter(
-                "IamAccessKey",
+            iamAccessKey = t.add_parameter(Parameter(
+                "iamAccessKey",
                 Description="IAM Access Key",
                 Type="String",
                 MinLength="16",
@@ -337,8 +337,8 @@ def main():
                 ConstraintDescription="can contain only ASCII characters.",
             ))
 
-            IamSecretKey = t.add_parameter(Parameter(
-                "IamSecretKey",
+            iamSecretKey = t.add_parameter(Parameter(
+                "iamSecretKey",
                 Description="IAM Secret Key for Big-IP",
                 Type="String",
                 MinLength="1",
@@ -351,9 +351,9 @@ def main():
         if license_type == "byol":
 
             for BIGIP_INDEX in range(num_bigips): 
-                BigipLicenseKey = "Bigip" + str(BIGIP_INDEX + 1) + "LicenseKey"
-                PARAMETERS[BigipLicenseKey] = t.add_parameter(Parameter(
-                    BigipLicenseKey,
+                licenseKey1 = "Bigip" + str(BIGIP_INDEX + 1) + "LicenseKey"
+                PARAMETERS[licenseKey1] = t.add_parameter(Parameter(
+                    licenseKey1,
                     Type="String",
                     Description="Please enter your F5 BYOL regkey here:",
                     MinLength="1",
@@ -418,8 +418,8 @@ def main():
                 Description="Public or External subnet ID",
             ))
 
-        BigipExternalSecurityGroup = t.add_parameter(Parameter(
-            "BigipExternalSecurityGroup",
+        bigipExternalSecurityGroup = t.add_parameter(Parameter(
+            "bigipExternalSecurityGroup",
             ConstraintDescription="Must be security group ID within existing VPC",
             Type="AWS::EC2::SecurityGroup::Id",
             Description="Public or External Security Group ID",
@@ -697,26 +697,26 @@ def main():
         # 1 Nic has consolidated rules
         if num_nics == 1:
 
-            BigipExternalSecurityGroup = t.add_resource(SecurityGroup(
-                "BigipExternalSecurityGroup",
+            bigipExternalSecurityGroup = t.add_resource(SecurityGroup(
+                "bigipExternalSecurityGroup",
                 SecurityGroupIngress=[
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort="22",
                                 ToPort="22",
-                                CidrIp=Ref(SSHLocation),
+                                CidrIp=Ref(sshLocation),
                     ),
                     SecurityGroupRule(
                                 IpProtocol="tcp",
-                                FromPort=Ref(BigipManagementGuiPort),
-                                ToPort=Ref(BigipManagementGuiPort),
-                                CidrIp=Ref(SSHLocation),
+                                FromPort=Ref(managementGuiPort),
+                                ToPort=Ref(managementGuiPort),
+                                CidrIp=Ref(sshLocation),
                     ),
                     SecurityGroupRule(
                                 IpProtocol="icmp",
                                 FromPort="-1",
                                 ToPort="-1",
-                                CidrIp=Ref(SSHLocation),
+                                CidrIp=Ref(sshLocation),
                     ),         
                     SecurityGroupRule(
                                 IpProtocol="tcp",
@@ -770,8 +770,8 @@ def main():
 
         if num_nics > 1:
 
-            BigipExternalSecurityGroup = t.add_resource(SecurityGroup(
-                "BigipExternalSecurityGroup",
+            bigipExternalSecurityGroup = t.add_resource(SecurityGroup(
+                "bigipExternalSecurityGroup",
                 SecurityGroupIngress=[
                     # Example port for Virtual Server
                     SecurityGroupRule(
@@ -826,19 +826,19 @@ def main():
                                 IpProtocol="tcp",
                                 FromPort="22",
                                 ToPort="22",
-                                CidrIp=Ref(SSHLocation),
+                                CidrIp=Ref(sshLocation),
                     ),
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort="443",
                                 ToPort="443",
-                                CidrIp=Ref(SSHLocation),
+                                CidrIp=Ref(sshLocation),
                     ),
                     SecurityGroupRule(
                                 IpProtocol="icmp",
                                 FromPort="-1",
                                 ToPort="-1",
-                                CidrIp=Ref(SSHLocation),
+                                CidrIp=Ref(sshLocation),
                     ),
                     # Required for DSC Initial Sync
                     SecurityGroupRule(
@@ -936,8 +936,8 @@ def main():
                 Application=Ref("AWS::StackName"),
             ),
             ImageId=FindInMap("WebserverRegionMap", Ref("AWS::Region"), "AMI"),
-            KeyName=Ref(KeyName),
-            InstanceType=Ref(WebserverInstanceType),
+            KeyName=Ref(sshKey),
+            InstanceType=Ref(applicationInstanceType),
             NetworkInterfaces=[
             NetworkInterfaceProperty(
                 SubnetId=Ref("Az1ApplicationSubnet"),
@@ -954,7 +954,7 @@ def main():
 
         for BIGIP_INDEX in range(num_bigips): 
 
-            BigipLicenseKey = "Bigip" + str(BIGIP_INDEX + 1) + "LicenseKey"
+            licenseKey1 = "Bigip" + str(BIGIP_INDEX + 1) + "LicenseKey"
             ExternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "ExternalInterface" 
             ExternalSelfEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "ExternalSelfEipAddress"
             ExternalSelfEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + "ExternalSelfEipAssociation"
@@ -974,7 +974,7 @@ def main():
             RESOURCES[ExternalInterface] = t.add_resource(NetworkInterface(
                 ExternalInterface,
                 SubnetId=Ref(ExternalSubnet),
-                GroupSet=[Ref(BigipExternalSecurityGroup)],
+                GroupSet=[Ref(bigipExternalSecurityGroup)],
                 Description="Public External Interface for the Bigip",
                 SecondaryPrivateIpAddressCount="1",
             ))
@@ -1091,12 +1091,12 @@ def main():
                                     "#!/bin/bash\n", 
                                     "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n", 
                                     "TZ='UTC'\n",
-                                    "BIGIP_ADMIN_USERNAME='", Ref(BigipAdminUsername), "'\n", 
-                                    "BIGIP_ADMIN_PASSWORD='", Ref(BigipAdminPassword), "'\n",
+                                    "BIGIP_ADMIN_USERNAME='", Ref(adminUsername), "'\n", 
+                                    "BIGIP_ADMIN_PASSWORD='", Ref(adminPassword), "'\n",
                                 ]
 
             if license_type == "byol":
-                firstrun_config += [ "REGKEY=", Ref(BigipLicenseKey), "\n" ]
+                firstrun_config += [ "REGKEY=", Ref(licenseKey1), "\n" ]
             elif license_type == "bigiq":
                 firstrun_config += [ 
                                     "BIGIQ_ADDRESS='", Ref(BigiqAddress), "'\n",
@@ -1113,7 +1113,7 @@ def main():
 
             if num_nics == 1:
                 firstrun_config += [ 
-                                    "MANAGEMENT_GUI_PORT='", Ref(BigipManagementGuiPort), "'\n",  
+                                    "MANAGEMENT_GUI_PORT='", Ref(managementGuiPort), "'\n",  
                                     "GATEWAY_MAC=`ifconfig eth0 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                                    ]
 
@@ -1180,8 +1180,8 @@ def main():
 
             if aws_creds == True:
                 firstrun_config +=  [
-                                      "IAM_ACCESS_KEY='", Ref(IamAccessKey), "'\n",
-                                      "IAM_SECRET_KEY='", Ref(IamSecretKey), "'\n",
+                                      "IAM_ACCESS_KEY='", Ref(iamAccessKey), "'\n",
+                                      "IAM_SECRET_KEY='", Ref(iamSecretKey), "'\n",
                                     ]
             # build firstrun.sh vars
 
@@ -1329,7 +1329,7 @@ def main():
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
                                     "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
-                                    "--ssl-port '", { "Ref": "BigipManagementGuiPort" }, "'",
+                                    "--ssl-port '", { "Ref": "managementGuiPort" }, "'",
                                   ]
             if num_nics > 1:
                 onboard_BIG_IP += [
@@ -1343,8 +1343,8 @@ def main():
                                "--no-reboot",
                                "--host localhost",
                                "--user admin",
-                               "--password '", { "Ref": "BigipAdminPassword" }, "'",
-                               "--set-password admin:'", { "Ref": "BigipAdminPassword" }, "'",
+                               "--password '", { "Ref": "adminPassword" }, "'",
+                               "--set-password admin:'", { "Ref": "adminPassword" }, "'",
                                "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
                                "--ntp 0.us.pool.ntp.org",
                                "--ntp 1.us.pool.ntp.org",
@@ -1692,9 +1692,9 @@ def main():
                         Name=Join("", ["Big-IP: ", Ref("AWS::StackName")] ),
                         Application=Ref("AWS::StackName"),
                     ),
-                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(BigipPerformanceType)),
-                    KeyName=Ref(KeyName),
-                    InstanceType=Ref(BigipInstanceType),
+                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(instanceName)),
+                    KeyName=Ref(sshKey),
+                    InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces
                 ))
             else:
@@ -1706,9 +1706,9 @@ def main():
                         Name=Join("", ["Big-IP: ", Ref("AWS::StackName")] ),
                         Application=Ref("AWS::StackName"),
                     ),
-                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(BigipPerformanceType)),
-                    KeyName=Ref(KeyName),
-                    InstanceType=Ref(BigipInstanceType),
+                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(instanceName)),
+                    KeyName=Ref(sshKey),
+                    InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces
                 ))
     ### BEGIN OUTPUT
@@ -1754,10 +1754,10 @@ def main():
                     Value=Ref(InternalSubnet),
                 ))
     if security_groups == True:
-        BigipExternalSecurityGroup = t.add_output(Output(
-            "BigipExternalSecurityGroup",
+        bigipExternalSecurityGroup = t.add_output(Output(
+            "bigipExternalSecurityGroup",
             Description="Public or External Security Group",
-            Value=Ref(BigipExternalSecurityGroup),
+            Value=Ref(bigipExternalSecurityGroup),
         ))
         if num_nics > 1:
             BigipManagementSecurityGroup = t.add_output(Output(
@@ -1812,7 +1812,7 @@ def main():
                 OUTPUTS[BigipUrl] = t.add_output(Output(
                     BigipUrl,
                     Description="Big-IP Management GUI",
-                    Value=Join("", [ "https://", GetAtt(BigipInstance, "PublicIp"), ":", Ref(BigipManagementGuiPort) ]),
+                    Value=Join("", [ "https://", GetAtt(BigipInstance, "PublicIp"), ":", Ref(managementGuiPort) ]),
                 ))
                 OUTPUTS[VipEipAddress] = t.add_output(Output(
                     VipEipAddress,

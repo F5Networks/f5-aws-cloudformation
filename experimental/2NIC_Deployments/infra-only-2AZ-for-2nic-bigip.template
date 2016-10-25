@@ -69,12 +69,6 @@
         "Ref": "Az2ManagementSubnet"
       }
     },
-    "BigipExternalSecurityGroup": {
-      "Description": "Public or External Security Group",
-      "Value": {
-        "Ref": "BigipExternalSecurityGroup"
-      }
-    },
     "BigipManagementSecurityGroup": {
       "Description": "Management Security Group",
       "Value": {
@@ -125,6 +119,12 @@
           ]
         ]
       }
+    },
+    "bigipExternalSecurityGroup": {
+      "Description": "Public or External Security Group",
+      "Value": {
+        "Ref": "bigipExternalSecurityGroup"
+      }
     }
   },
   "Parameters": {
@@ -140,16 +140,7 @@
       "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
       "Type": "AWS::EC2::KeyPair::KeyName"
     },
-    "SSHLocation": {
-      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
-      "Default": "0.0.0.0/0",
-      "Description": " The IP address range that can be used to SSH to the EC2 instances",
-      "MaxLength": "18",
-      "MinLength": "9",
-      "Type": "String"
-    },
-    "WebserverInstanceType": {
+    "applicationInstanceType": {
       "AllowedValues": [
         "t1.micro",
         "m3.medium",
@@ -162,6 +153,15 @@
       "ConstraintDescription": "must be a valid EC2 instance type",
       "Default": "t1.micro",
       "Description": "Webserver EC2 instance type",
+      "Type": "String"
+    },
+    "sshLocation": {
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+      "Default": "0.0.0.0/0",
+      "Description": " The IP address range that can be used to SSH to the EC2 instances",
+      "MaxLength": "18",
+      "MinLength": "9",
       "Type": "String"
     }
   },
@@ -424,66 +424,13 @@
       },
       "Type": "AWS::EC2::SubnetRouteTableAssociation"
     },
-    "BigipExternalSecurityGroup": {
-      "Properties": {
-        "GroupDescription": "Public or External interface rules",
-        "SecurityGroupIngress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "FromPort": "80",
-            "IpProtocol": "tcp",
-            "ToPort": "80"
-          },
-          {
-            "CidrIp": "0.0.0.0/0",
-            "FromPort": "443",
-            "IpProtocol": "tcp",
-            "ToPort": "443"
-          },
-          {
-            "CidrIp": "0.0.0.0/0",
-            "FromPort": "4353",
-            "IpProtocol": "tcp",
-            "ToPort": "4353"
-          },
-          {
-            "CidrIp": "10.0.0.0/16",
-            "FromPort": "1026",
-            "IpProtocol": "udp",
-            "ToPort": "1026"
-          },
-          {
-            "CidrIp": "10.0.0.0/16",
-            "FromPort": "6123",
-            "IpProtocol": "tcp",
-            "ToPort": "6128"
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackName"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Bigip External Security Group"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::SecurityGroup"
-    },
     "BigipManagementSecurityGroup": {
       "Properties": {
         "GroupDescription": "Big-IP Management UI rules",
         "SecurityGroupIngress": [
           {
             "CidrIp": {
-              "Ref": "SSHLocation"
+              "Ref": "sshLocation"
             },
             "FromPort": "22",
             "IpProtocol": "tcp",
@@ -491,7 +438,7 @@
           },
           {
             "CidrIp": {
-              "Ref": "SSHLocation"
+              "Ref": "sshLocation"
             },
             "FromPort": "443",
             "IpProtocol": "tcp",
@@ -499,7 +446,7 @@
           },
           {
             "CidrIp": {
-              "Ref": "SSHLocation"
+              "Ref": "sshLocation"
             },
             "FromPort": "-1",
             "IpProtocol": "icmp",
@@ -657,7 +604,7 @@
           ]
         },
         "InstanceType": {
-          "Ref": "WebserverInstanceType"
+          "Ref": "applicationInstanceType"
         },
         "KeyName": {
           "Ref": "KeyName"
@@ -753,6 +700,59 @@
           {
             "Key": "Name",
             "Value": "Webserver Security Group"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "bigipExternalSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Public or External interface rules",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "80",
+            "IpProtocol": "tcp",
+            "ToPort": "80"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "443",
+            "IpProtocol": "tcp",
+            "ToPort": "443"
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": "4353",
+            "IpProtocol": "tcp",
+            "ToPort": "4353"
+          },
+          {
+            "CidrIp": "10.0.0.0/16",
+            "FromPort": "1026",
+            "IpProtocol": "udp",
+            "ToPort": "1026"
+          },
+          {
+            "CidrIp": "10.0.0.0/16",
+            "FromPort": "6123",
+            "IpProtocol": "tcp",
+            "ToPort": "6128"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "Bigip External Security Group"
           }
         ],
         "VpcId": {

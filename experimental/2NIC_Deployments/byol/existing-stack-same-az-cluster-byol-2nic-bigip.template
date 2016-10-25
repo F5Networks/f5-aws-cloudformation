@@ -256,7 +256,25 @@
       "MinLength": "1",
       "Type": "String"
     },
-    "BigipAdminPassword": {
+    "BigipManagementSecurityGroup": {
+      "ConstraintDescription": "Must be security group ID within existing VPC",
+      "Description": "Bigip Management Security Group",
+      "Type": "AWS::EC2::SecurityGroup::Id"
+    },
+    "KeyName": {
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "Vpc": {
+      "ConstraintDescription": "Must be an existing VPC within working region.",
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "WebserverPrivateIp": {
+      "ConstraintDescription": "Web Server IP used for Big-IP pool Member",
+      "Description": "Web Server IP used for Big-IP pool member",
+      "Type": "String"
+    },
+    "adminPassword": {
       "ConstraintDescription": "Please verify your BIG-IP Admin Password",
       "Description": "Please enter your BIG-IP Admin Password",
       "MaxLength": "255",
@@ -264,7 +282,7 @@
       "NoEcho": true,
       "Type": "String"
     },
-    "BigipAdminUsername": {
+    "adminUsername": {
       "ConstraintDescription": "Please verify your BIG-IP Admin Username",
       "Default": "admin",
       "Description": "Please enter your BIG-IP Admin Username",
@@ -272,12 +290,41 @@
       "MinLength": "1",
       "Type": "String"
     },
-    "BigipExternalSecurityGroup": {
+    "bigipExternalSecurityGroup": {
       "ConstraintDescription": "Must be security group ID within existing VPC",
       "Description": "Public or External Security Group ID",
       "Type": "AWS::EC2::SecurityGroup::Id"
     },
-    "BigipInstanceType": {
+    "iamAccessKey": {
+      "AllowedPattern": "[\\w]*",
+      "ConstraintDescription": "can contain only ASCII characters.",
+      "Description": "IAM Access Key",
+      "MaxLength": "32",
+      "MinLength": "16",
+      "NoEcho": true,
+      "Type": "String"
+    },
+    "iamSecretKey": {
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "can contain only ASCII characters.",
+      "Description": "IAM Secret Key for Big-IP",
+      "MaxLength": "255",
+      "MinLength": "1",
+      "NoEcho": true,
+      "Type": "String"
+    },
+    "instanceName": {
+      "AllowedValues": [
+        "Good",
+        "Better",
+        "Best"
+      ],
+      "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
+      "Default": "Best",
+      "Description": "F5 Bigip Performance Type",
+      "Type": "String"
+    },
+    "instanceType": {
       "AllowedValues": [
         "t2.medium",
         "t2.large",
@@ -300,60 +347,13 @@
       "Description": "F5 BIG-IP Virtual Instance Type",
       "Type": "String"
     },
-    "BigipManagementSecurityGroup": {
-      "ConstraintDescription": "Must be security group ID within existing VPC",
-      "Description": "Bigip Management Security Group",
-      "Type": "AWS::EC2::SecurityGroup::Id"
-    },
-    "BigipPerformanceType": {
-      "AllowedValues": [
-        "Good",
-        "Better",
-        "Best"
-      ],
-      "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
-      "Default": "Best",
-      "Description": "F5 Bigip Performance Type",
-      "Type": "String"
-    },
-    "IamAccessKey": {
-      "AllowedPattern": "[\\w]*",
-      "ConstraintDescription": "can contain only ASCII characters.",
-      "Description": "IAM Access Key",
-      "MaxLength": "32",
-      "MinLength": "16",
-      "NoEcho": true,
-      "Type": "String"
-    },
-    "IamSecretKey": {
-      "AllowedPattern": "[\\x20-\\x7E]*",
-      "ConstraintDescription": "can contain only ASCII characters.",
-      "Description": "IAM Secret Key for Big-IP",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "NoEcho": true,
-      "Type": "String"
-    },
-    "KeyName": {
-      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
-      "Type": "AWS::EC2::KeyPair::KeyName"
-    },
-    "SSHLocation": {
+    "sshLocation": {
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
       "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
       "Default": "0.0.0.0/0",
       "Description": " The IP address range that can be used to SSH to the EC2 instances",
       "MaxLength": "18",
       "MinLength": "9",
-      "Type": "String"
-    },
-    "Vpc": {
-      "ConstraintDescription": "Must be an existing VPC within working region.",
-      "Type": "AWS::EC2::VPC::Id"
-    },
-    "WebserverPrivateIp": {
-      "ConstraintDescription": "Web Server IP used for Big-IP pool Member",
-      "Description": "Web Server IP used for Big-IP pool member",
       "Type": "String"
     }
   },
@@ -363,7 +363,7 @@
         "Description": "Public External Interface for the Bigip",
         "GroupSet": [
           {
-            "Ref": "BigipExternalSecurityGroup"
+            "Ref": "bigipExternalSecurityGroup"
           }
         ],
         "SecondaryPrivateIpAddressCount": "1",
@@ -420,12 +420,12 @@
                       "--user admin",
                       "--password '",
                       {
-                        "Ref": "BigipAdminPassword"
+                        "Ref": "adminPassword"
                       },
                       "'",
                       "--set-password admin:'",
                       {
-                        "Ref": "BigipAdminPassword"
+                        "Ref": "adminPassword"
                       },
                       "'",
                       "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
@@ -465,12 +465,12 @@
                       "TZ='UTC'\n",
                       "BIGIP_ADMIN_USERNAME='",
                       {
-                        "Ref": "BigipAdminUsername"
+                        "Ref": "adminUsername"
                       },
                       "'\n",
                       "BIGIP_ADMIN_PASSWORD='",
                       {
-                        "Ref": "BigipAdminPassword"
+                        "Ref": "adminPassword"
                       },
                       "'\n",
                       "REGKEY=",
@@ -563,12 +563,12 @@
                       "'\n",
                       "IAM_ACCESS_KEY='",
                       {
-                        "Ref": "IamAccessKey"
+                        "Ref": "iamAccessKey"
                       },
                       "'\n",
                       "IAM_SECRET_KEY='",
                       {
-                        "Ref": "IamSecretKey"
+                        "Ref": "iamSecretKey"
                       },
                       "'\n"
                     ]
@@ -656,12 +656,12 @@
               "Ref": "AWS::Region"
             },
             {
-              "Ref": "BigipPerformanceType"
+              "Ref": "instanceName"
             }
           ]
         },
         "InstanceType": {
-          "Ref": "BigipInstanceType"
+          "Ref": "instanceType"
         },
         "KeyName": {
           "Ref": "KeyName"
@@ -798,7 +798,7 @@
         "Description": "Public External Interface for the Bigip",
         "GroupSet": [
           {
-            "Ref": "BigipExternalSecurityGroup"
+            "Ref": "bigipExternalSecurityGroup"
           }
         ],
         "SecondaryPrivateIpAddressCount": "1",
@@ -854,12 +854,12 @@
                       "--user admin",
                       "--password '",
                       {
-                        "Ref": "BigipAdminPassword"
+                        "Ref": "adminPassword"
                       },
                       "'",
                       "--set-password admin:'",
                       {
-                        "Ref": "BigipAdminPassword"
+                        "Ref": "adminPassword"
                       },
                       "'",
                       "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
@@ -899,12 +899,12 @@
                       "TZ='UTC'\n",
                       "BIGIP_ADMIN_USERNAME='",
                       {
-                        "Ref": "BigipAdminUsername"
+                        "Ref": "adminUsername"
                       },
                       "'\n",
                       "BIGIP_ADMIN_PASSWORD='",
                       {
-                        "Ref": "BigipAdminPassword"
+                        "Ref": "adminPassword"
                       },
                       "'\n",
                       "REGKEY=",
@@ -963,12 +963,12 @@
                       "KEY='default.key'\n",
                       "IAM_ACCESS_KEY='",
                       {
-                        "Ref": "IamAccessKey"
+                        "Ref": "iamAccessKey"
                       },
                       "'\n",
                       "IAM_SECRET_KEY='",
                       {
-                        "Ref": "IamSecretKey"
+                        "Ref": "iamSecretKey"
                       },
                       "'\n"
                     ]
@@ -1045,12 +1045,12 @@
               "Ref": "AWS::Region"
             },
             {
-              "Ref": "BigipPerformanceType"
+              "Ref": "instanceName"
             }
           ]
         },
         "InstanceType": {
-          "Ref": "BigipInstanceType"
+          "Ref": "instanceType"
         },
         "KeyName": {
           "Ref": "KeyName"

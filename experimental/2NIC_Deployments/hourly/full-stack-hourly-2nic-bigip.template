@@ -255,12 +255,6 @@
     ]
    }
   },
-  "BigipExternalSecurityGroup": {
-   "Description": "Public or External Security Group",
-   "Value": {
-    "Ref": "BigipExternalSecurityGroup"
-   }
-  },
   "BigipManagementSecurityGroup": {
    "Description": "Management Security Group",
    "Value": {
@@ -311,6 +305,12 @@
      ]
     ]
    }
+  },
+  "bigipExternalSecurityGroup": {
+   "Description": "Public or External Security Group",
+   "Value": {
+    "Ref": "bigipExternalSecurityGroup"
+   }
   }
  },
  "Parameters": {
@@ -318,7 +318,11 @@
    "Description": "Name of an Availability Zone in this Region",
    "Type": "AWS::EC2::AvailabilityZone::Name"
   },
-  "BigipAdminPassword": {
+  "KeyName": {
+   "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+   "Type": "AWS::EC2::KeyPair::KeyName"
+  },
+  "adminPassword": {
    "ConstraintDescription": "Please verify your BIG-IP Admin Password",
    "Description": "Please enter your BIG-IP Admin Password",
    "MaxLength": "255",
@@ -326,7 +330,7 @@
    "NoEcho": true,
    "Type": "String"
   },
-  "BigipAdminUsername": {
+  "adminUsername": {
    "ConstraintDescription": "Please verify your BIG-IP Admin Username",
    "Default": "admin",
    "Description": "Please enter your BIG-IP Admin Username",
@@ -334,7 +338,39 @@
    "MinLength": "1",
    "Type": "String"
   },
-  "BigipInstanceType": {
+  "applicationInstanceType": {
+   "AllowedValues": [
+    "t1.micro",
+    "m3.medium",
+    "m3.xlarge",
+    "m2.xlarge",
+    "m3.2xlarge",
+    "c3.large",
+    "c3.xlarge"
+   ],
+   "ConstraintDescription": "must be a valid EC2 instance type",
+   "Default": "t1.micro",
+   "Description": "Webserver EC2 instance type",
+   "Type": "String"
+  },
+  "instanceName": {
+   "AllowedValues": [
+    "Good25Mbps",
+    "Good200Mbps",
+    "Good1000Mbps",
+    "Better25Mbps",
+    "Better200Mbps",
+    "Better1000Mbps",
+    "Best25Mbps",
+    "Best200Mbps",
+    "Best1000Mbps"
+   ],
+   "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
+   "Default": "Best1000Mbps",
+   "Description": "F5 Bigip Performance Type",
+   "Type": "String"
+  },
+  "instanceType": {
    "AllowedValues": [
     "t2.medium",
     "t2.large",
@@ -357,49 +393,13 @@
    "Description": "F5 BIG-IP Virtual Instance Type",
    "Type": "String"
   },
-  "BigipPerformanceType": {
-   "AllowedValues": [
-    "Good25Mbps",
-    "Good200Mbps",
-    "Good1000Mbps",
-    "Better25Mbps",
-    "Better200Mbps",
-    "Better1000Mbps",
-    "Best25Mbps",
-    "Best200Mbps",
-    "Best1000Mbps"
-   ],
-   "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
-   "Default": "Best1000Mbps",
-   "Description": "F5 Bigip Performance Type",
-   "Type": "String"
-  },
-  "KeyName": {
-   "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
-   "Type": "AWS::EC2::KeyPair::KeyName"
-  },
-  "SSHLocation": {
+  "sshLocation": {
    "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
    "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
    "Default": "0.0.0.0/0",
    "Description": " The IP address range that can be used to SSH to the EC2 instances",
    "MaxLength": "18",
    "MinLength": "9",
-   "Type": "String"
-  },
-  "WebserverInstanceType": {
-   "AllowedValues": [
-    "t1.micro",
-    "m3.medium",
-    "m3.xlarge",
-    "m2.xlarge",
-    "m3.2xlarge",
-    "c3.large",
-    "c3.xlarge"
-   ],
-   "ConstraintDescription": "must be a valid EC2 instance type",
-   "Default": "t1.micro",
-   "Description": "Webserver EC2 instance type",
    "Type": "String"
   }
  },
@@ -562,7 +562,7 @@
     "Description": "Public External Interface for the Bigip",
     "GroupSet": [
      {
-      "Ref": "BigipExternalSecurityGroup"
+      "Ref": "bigipExternalSecurityGroup"
      }
     ],
     "SecondaryPrivateIpAddressCount": "1",
@@ -620,12 +620,12 @@
            "--user admin",
            "--password '",
            {
-            "Ref": "BigipAdminPassword"
+            "Ref": "adminPassword"
            },
            "'",
            "--set-password admin:'",
            {
-            "Ref": "BigipAdminPassword"
+            "Ref": "adminPassword"
            },
            "'",
            "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
@@ -665,12 +665,12 @@
            "TZ='UTC'\n",
            "BIGIP_ADMIN_USERNAME='",
            {
-            "Ref": "BigipAdminUsername"
+            "Ref": "adminUsername"
            },
            "'\n",
            "BIGIP_ADMIN_PASSWORD='",
            {
-            "Ref": "BigipAdminPassword"
+            "Ref": "adminPassword"
            },
            "'\n",
            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
@@ -798,12 +798,12 @@
        "Ref": "AWS::Region"
       },
       {
-       "Ref": "BigipPerformanceType"
+       "Ref": "instanceName"
       }
      ]
     },
     "InstanceType": {
-     "Ref": "BigipInstanceType"
+     "Ref": "instanceType"
     },
     "KeyName": {
      "Ref": "KeyName"
@@ -939,66 +939,13 @@
    },
    "Type": "AWS::EC2::EIPAssociation"
   },
-  "BigipExternalSecurityGroup": {
-   "Properties": {
-    "GroupDescription": "Public or External interface rules",
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "80",
-      "IpProtocol": "tcp",
-      "ToPort": "80"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "443",
-      "IpProtocol": "tcp",
-      "ToPort": "443"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "4353",
-      "IpProtocol": "tcp",
-      "ToPort": "4353"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "1026",
-      "IpProtocol": "udp",
-      "ToPort": "1026"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "6123",
-      "IpProtocol": "tcp",
-      "ToPort": "6128"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "AWS::StackName"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": "Bigip External Security Group"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::SecurityGroup"
-  },
   "BigipManagementSecurityGroup": {
    "Properties": {
     "GroupDescription": "Big-IP Management UI rules",
     "SecurityGroupIngress": [
      {
       "CidrIp": {
-       "Ref": "SSHLocation"
+       "Ref": "sshLocation"
       },
       "FromPort": "22",
       "IpProtocol": "tcp",
@@ -1006,7 +953,7 @@
      },
      {
       "CidrIp": {
-       "Ref": "SSHLocation"
+       "Ref": "sshLocation"
       },
       "FromPort": "443",
       "IpProtocol": "tcp",
@@ -1014,7 +961,7 @@
      },
      {
       "CidrIp": {
-       "Ref": "SSHLocation"
+       "Ref": "sshLocation"
       },
       "FromPort": "-1",
       "IpProtocol": "icmp",
@@ -1172,7 +1119,7 @@
      ]
     },
     "InstanceType": {
-     "Ref": "WebserverInstanceType"
+     "Ref": "applicationInstanceType"
     },
     "KeyName": {
      "Ref": "KeyName"
@@ -1268,6 +1215,59 @@
      {
       "Key": "Name",
       "Value": "Webserver Security Group"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::SecurityGroup"
+  },
+  "bigipExternalSecurityGroup": {
+   "Properties": {
+    "GroupDescription": "Public or External interface rules",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "FromPort": "80",
+      "IpProtocol": "tcp",
+      "ToPort": "80"
+     },
+     {
+      "CidrIp": "0.0.0.0/0",
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
+     },
+     {
+      "CidrIp": "0.0.0.0/0",
+      "FromPort": "4353",
+      "IpProtocol": "tcp",
+      "ToPort": "4353"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "1026",
+      "IpProtocol": "udp",
+      "ToPort": "1026"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "6123",
+      "IpProtocol": "tcp",
+      "ToPort": "6128"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "AWS::StackName"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": "Bigip External Security Group"
      }
     ],
     "VpcId": {

@@ -230,26 +230,6 @@
     }
   },
   "Parameters": {
-    "Az1managementSubnet": {
-      "ConstraintDescription": "Must be subnet ID within existing VPC",
-      "Description": "Management Subnet ID",
-      "Type": "AWS::EC2::Subnet::Id"
-    },
-    "Az1subnet": {
-      "ConstraintDescription": "Must be subnet ID within existing VPC",
-      "Description": "Public or External subnet ID",
-      "Type": "AWS::EC2::Subnet::Id"
-    },
-    "Az2managementSubnet": {
-      "ConstraintDescription": "Must be subnet ID within existing VPC",
-      "Description": "Management Subnet ID",
-      "Type": "AWS::EC2::Subnet::Id"
-    },
-    "Az2subnet": {
-      "ConstraintDescription": "Must be subnet ID within existing VPC",
-      "Description": "Public or External subnet ID",
-      "Type": "AWS::EC2::Subnet::Id"
-    },
     "Bigip1LicenseKey": {
       "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
       "ConstraintDescription": "Please verify your F5 BYOL regkey.",
@@ -265,10 +245,6 @@
       "MaxLength": "255",
       "MinLength": "1",
       "Type": "String"
-    },
-    "Vpc": {
-      "ConstraintDescription": "Must be an existing VPC within working region.",
-      "Type": "AWS::EC2::VPC::Id"
     },
     "WebserverPrivateIp": {
       "ConstraintDescription": "Web Server IP used for Big-IP pool Member",
@@ -290,6 +266,26 @@
       "MaxLength": "255",
       "MinLength": "1",
       "Type": "String"
+    },
+    "az1managementSubnet": {
+      "ConstraintDescription": "Must be subnet ID within existing VPC",
+      "Description": "Management Subnet ID",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "az1subnet1": {
+      "ConstraintDescription": "Must be subnet ID within existing VPC",
+      "Description": "Public or External subnet ID",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "az2managementSubnet": {
+      "ConstraintDescription": "Must be subnet ID within existing VPC",
+      "Description": "Management Subnet ID",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "az2subnet1": {
+      "ConstraintDescription": "Must be subnet ID within existing VPC",
+      "Description": "Public or External subnet ID",
+      "Type": "AWS::EC2::Subnet::Id"
     },
     "bigipExternalSecurityGroup": {
       "ConstraintDescription": "Must be security group ID within existing VPC",
@@ -365,6 +361,10 @@
       "MaxLength": "18",
       "MinLength": "9",
       "Type": "String"
+    },
+    "vpc": {
+      "ConstraintDescription": "Must be an existing VPC within working region.",
+      "Type": "AWS::EC2::VPC::Id"
     }
   },
   "Resources": {
@@ -378,7 +378,7 @@
         ],
         "SecondaryPrivateIpAddressCount": "1",
         "SubnetId": {
-          "Ref": "Az1subnet"
+          "Ref": "az1subnet"
         }
       },
       "Type": "AWS::EC2::NetworkInterface"
@@ -778,7 +778,7 @@
           }
         ],
         "SubnetId": {
-          "Ref": "Az1managementSubnet"
+          "Ref": "az1managementSubnet"
         }
       },
       "Type": "AWS::EC2::NetworkInterface"
@@ -824,7 +824,7 @@
         ],
         "SecondaryPrivateIpAddressCount": "1",
         "SubnetId": {
-          "Ref": "Az2subnet"
+          "Ref": "az2subnet"
         }
       },
       "Type": "AWS::EC2::NetworkInterface"
@@ -1168,7 +1168,7 @@
           }
         ],
         "SubnetId": {
-          "Ref": "Az2managementSubnet"
+          "Ref": "az2managementSubnet"
         }
       },
       "Type": "AWS::EC2::NetworkInterface"

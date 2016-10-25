@@ -401,8 +401,8 @@ def main():
             ))
 
     if stack == "existing" or stack == "security_groups":
-            Vpc = t.add_parameter(Parameter(
-                "Vpc",
+            vpc = t.add_parameter(Parameter(
+                "vpc",
                 ConstraintDescription="Must be an existing VPC within working region.",
                 Type="AWS::EC2::VPC::Id",
             ))
@@ -410,7 +410,7 @@ def main():
     if stack == "existing":
 
         for INDEX in range(num_azs):
-            subnet = "Az" + str(INDEX + 1) + "subnet"
+            subnet = "az" + str(INDEX + 1) + "subnet1"
             PARAMETERS[subnet] = t.add_parameter(Parameter(
                 subnet,
                 ConstraintDescription="Must be subnet ID within existing VPC",
@@ -427,7 +427,7 @@ def main():
 
         if num_nics > 1:
             for INDEX in range(num_azs):
-                managementSubnet = "Az" + str(INDEX + 1) + "managementSubnet"
+                managementSubnet = "az" + str(INDEX + 1) + "managementSubnet"
                 PARAMETERS[managementSubnet] = t.add_parameter(Parameter(
                     managementSubnet,
                     ConstraintDescription="Must be subnet ID within existing VPC",
@@ -443,7 +443,7 @@ def main():
             ))
         if num_nics > 2:
             for INDEX in range(num_azs):
-                InternalSubnet = "Az" + str(INDEX + 1) + "InternalSubnet"
+                InternalSubnet = "az" + str(INDEX + 1) + "InternalSubnet"
                 PARAMETERS[InternalSubnet] = t.add_parameter(Parameter(
                     InternalSubnet,
                     ConstraintDescription="Must be subnet ID within existing VPC",
@@ -489,8 +489,8 @@ def main():
 
     ### BEGIN RESOURCES
     if network == True:
-        Vpc = t.add_resource(VPC(
-            "Vpc",
+        vpc = t.add_resource(VPC(
+            "vpc",
             EnableDnsSupport="true",
             CidrBlock="10.0.0.0/16",
             EnableDnsHostnames="true",
@@ -507,9 +507,9 @@ def main():
             ),
         ))
 
-        AttachGateway = t.add_resource(VPCGatewayAttachment(
-            "AttachGateway",
-            VpcId=Ref(Vpc),
+        attachGateway = t.add_resource(VPCGatewayAttachment(
+            "attachGateway",
+            VpcId=Ref(vpc),
             InternetGatewayId=Ref(Igw),
         ))
 
@@ -519,10 +519,10 @@ def main():
             RESOURCES[subnet] = t.add_resource(Subnet(
                 subnet,
                 Tags=Tags(
-                    Name="Az" + str(INDEX + 1) +  " External Subnet",
+                    Name="az" + str(INDEX + 1) +  " External Subnet",
                     Application=Ref("AWS::StackId"),
                 ),
-                VpcId=Ref(Vpc),
+                VpcId=Ref(vpc),
                 CidrBlock="10.0." + str(octet) + ".0/24",
                 AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
             ))
@@ -530,7 +530,7 @@ def main():
 
         ExternalRouteTable = t.add_resource(RouteTable(
             "ExternalRouteTable",
-            VpcId=Ref(Vpc),
+            VpcId=Ref(vpc),
             Tags=Tags(
                 Name="External Route Table",
                 Application=Ref("AWS::StackName"),
@@ -540,7 +540,7 @@ def main():
 
         ExternalDefaultRoute = t.add_resource(Route(
             "ExternalDefaultRoute",
-            DependsOn="AttachGateway",
+            DependsOn="attachGateway",
             GatewayId=Ref(Igw),
             DestinationCidrBlock="0.0.0.0/0",
             RouteTableId=Ref(ExternalRouteTable),
@@ -550,7 +550,7 @@ def main():
             subnetRouteTableAssociation = "Az" + str(INDEX + 1) + "subnetRouteTableAssociation"
             RESOURCES[subnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
                 subnetRouteTableAssociation,
-                SubnetId=Ref("Az" + str(INDEX + 1) + "subnet"),
+                SubnetId=Ref("az" + str(INDEX + 1) + "subnet"),
                 RouteTableId=Ref(ExternalRouteTable),
             ))
            
@@ -563,10 +563,10 @@ def main():
                 RESOURCES[managementSubnet] = t.add_resource(Subnet(
                     managementSubnet,
                     Tags=Tags(
-                        Name="Az" + str(INDEX + 1) +  " Management Subnet",
+                        Name="az" + str(INDEX + 1) +  " Management Subnet",
                         Application=Ref("AWS::StackId"),
                     ),
-                    VpcId=Ref(Vpc),
+                    VpcId=Ref(vpc),
                     CidrBlock="10.0." + str(octet) + ".0/24",
                     AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
                 ))
@@ -574,7 +574,7 @@ def main():
 
             ManagementRouteTable = t.add_resource(RouteTable(
                 "ManagementRouteTable",
-                VpcId=Ref(Vpc),
+                VpcId=Ref(vpc),
                 Tags=Tags(
                     Name="Management Route Table",
                     Application=Ref("AWS::StackName"),
@@ -586,17 +586,17 @@ def main():
             #https://forums.aws.amazon.com/thread.jspa?threadID=100750
             ManagementDefaultRoute = t.add_resource(Route(
                 "ManagementDefaultRoute",
-                DependsOn="AttachGateway",
+                DependsOn="attachGateway",
                 GatewayId=Ref(Igw),
                 DestinationCidrBlock="0.0.0.0/0",
                 RouteTableId=Ref(ManagementRouteTable),
             ))
     
             for INDEX in range(num_azs):
-                managementSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "managementSubnetRouteTableAssociation"
+                managementSubnetRouteTableAssociation = "az" + str(INDEX + 1) + "managementSubnetRouteTableAssociation"
                 RESOURCES[managementSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
                     managementSubnetRouteTableAssociation,
-                    SubnetId=Ref("Az" + str(INDEX + 1) + "managementSubnet"),
+                    SubnetId=Ref("az" + str(INDEX + 1) + "managementSubnet"),
                     RouteTableId=Ref(ManagementRouteTable),
                 ))
 
@@ -604,14 +604,14 @@ def main():
         if num_nics > 2:
             octet = 2
             for INDEX in range(num_azs):
-                InternalSubnet = "Az" + str(INDEX + 1) + "InternalSubnet"
+                InternalSubnet = "az" + str(INDEX + 1) + "InternalSubnet"
                 RESOURCES[InternalSubnet] = t.add_resource(Subnet(
                     InternalSubnet,
                     Tags=Tags(
-                        Name="Az" + str(INDEX + 1) +  " Internal Subnet",
+                        Name="az" + str(INDEX + 1) +  " Internal Subnet",
                         Application=Ref("AWS::StackId"),
                     ),
-                    VpcId=Ref(Vpc),
+                    VpcId=Ref(vpc),
                     CidrBlock="10.0." + str(octet) + ".0/24",
                     AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
                 ))
@@ -620,7 +620,7 @@ def main():
 
             InternalRouteTable = t.add_resource(RouteTable(
                 "InternalRouteTable",
-                VpcId=Ref(Vpc),
+                VpcId=Ref(vpc),
                 Tags=Tags(
                     Name="Internal Route Table",
                     Application=Ref("AWS::StackName"),
@@ -630,30 +630,30 @@ def main():
 
             InternalDefaultRoute = t.add_resource(Route(
                 "InternalDefaultRoute",
-                DependsOn="AttachGateway",
+                DependsOn="attachGateway",
                 GatewayId=Ref(Igw),
                 DestinationCidrBlock="0.0.0.0/0",
                 RouteTableId=Ref(InternalRouteTable),
             ))
 
             for INDEX in range(num_azs):
-                InternalSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "InternalSubnetRouteTableAssociation"
+                InternalSubnetRouteTableAssociation = "az" + str(INDEX + 1) + "InternalSubnetRouteTableAssociation"
                 RESOURCES[InternalSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
                     InternalSubnetRouteTableAssociation,
-                    SubnetId=Ref("Az" + str(INDEX + 1) + "InternalSubnet"),
+                    SubnetId=Ref("az" + str(INDEX + 1) + "InternalSubnet"),
                     RouteTableId=Ref(InternalRouteTable),
                 ))
 
         octet = 3
         for INDEX in range(num_azs):
-            ApplicationSubnet = "Az" + str(INDEX + 1) + "ApplicationSubnet"
+            ApplicationSubnet = "az" + str(INDEX + 1) + "ApplicationSubnet"
             RESOURCES[ApplicationSubnet] = t.add_resource(Subnet(
                 ApplicationSubnet,
                 Tags=Tags(
-                    Name="Az" + str(INDEX + 1) +  " Application Subnet",
+                    Name="az" + str(INDEX + 1) +  " Application Subnet",
                     Application=Ref("AWS::StackId"),
                 ),
-                VpcId=Ref(Vpc),
+                VpcId=Ref(vpc),
                 CidrBlock="10.0." + str(octet) + ".0/24",
                 AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
             ))
@@ -661,7 +661,7 @@ def main():
 
         ApplicationRouteTable = t.add_resource(RouteTable(
             "ApplicationRouteTable",
-            VpcId=Ref(Vpc),
+            VpcId=Ref(vpc),
             Tags=Tags(
                 Name="Application Route Table",
                 Application=Ref("AWS::StackName"),
@@ -669,9 +669,9 @@ def main():
             ),
         ))
 
-        ApplicationDefaultRoute = t.add_resource(Route(
-            "ApplicationDefaultRoute",
-            DependsOn="AttachGateway",
+        applicationDefaultRoute = t.add_resource(Route(
+            "applicationDefaultRoute",
+            DependsOn="attachGateway",
             GatewayId=Ref(Igw),
             DestinationCidrBlock="0.0.0.0/0",
             RouteTableId=Ref(ApplicationRouteTable),
@@ -679,10 +679,10 @@ def main():
 
 
         for INDEX in range(num_azs):
-            ApplicationSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "ApplicationSubnetRouteTableAssociation"
+            ApplicationSubnetRouteTableAssociation = "az" + str(INDEX + 1) + "ApplicationSubnetRouteTableAssociation"
             RESOURCES[ApplicationSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
                 ApplicationSubnetRouteTableAssociation,
-                SubnetId=Ref("Az" + str(INDEX + 1) + "ApplicationSubnet"),
+                SubnetId=Ref("az" + str(INDEX + 1) + "ApplicationSubnet"),
                 RouteTableId=Ref(ApplicationRouteTable),
             ))
 
@@ -759,7 +759,7 @@ def main():
                                 CidrIp="10.0.0.0/16",
                     ),
                 ],
-                VpcId=Ref(Vpc),
+                VpcId=Ref(vpc),
                 GroupDescription="Public or External interface rules",
                 Tags=Tags(
                     Name=Join("", ["Bigip Security Group: ", Ref("AWS::StackName")] ),
@@ -810,7 +810,7 @@ def main():
                     ),
 
                 ],
-                VpcId=Ref(Vpc),
+                VpcId=Ref(vpc),
                 GroupDescription="Public or External interface rules",
                 Tags=Tags(
                     Name="Bigip External Security Group",
@@ -855,7 +855,7 @@ def main():
                                 CidrIp="10.0.0.0/16",
                     ),  
                 ],
-                VpcId=Ref(Vpc),
+                VpcId=Ref(vpc),
                 GroupDescription="Big-IP Management UI rules",
                 Tags=Tags(
                     Name="Bigip Management Security Group",
@@ -876,7 +876,7 @@ def main():
                                 CidrIp="10.0.0.0/16",
                     ),
                 ],
-                VpcId=Ref(Vpc),
+                VpcId=Ref(vpc),
                 GroupDescription="Allow All from Intra-VPC only",
                 Tags=Tags(
                     Name="Bigip Internal Security Group",
@@ -914,7 +914,7 @@ def main():
                                 CidrIp="0.0.0.0/0",
                     ),
                 ],
-                VpcId=Ref(Vpc),
+                VpcId=Ref(vpc),
                 GroupDescription="Enable Access to Webserver",
                 Tags=Tags(
                     Name="Webserver Security Group",
@@ -940,7 +940,7 @@ def main():
             InstanceType=Ref(applicationInstanceType),
             NetworkInterfaces=[
             NetworkInterfaceProperty(
-                SubnetId=Ref("Az1ApplicationSubnet"),
+                SubnetId=Ref("az1ApplicationSubnet"),
                 DeviceIndex="0",
                 GroupSet=[Ref(WebserverSecurityGroup)],
                 Description=Join("", [Ref("AWS::StackName"), " Webserver Network Interface"]),
@@ -962,13 +962,13 @@ def main():
             BigipInstance = "Bigip" + str(BIGIP_INDEX + 1) + "Instance"
 
             if num_azs > 1:
-                subnet = "Az" + str(BIGIP_INDEX + 1) + "subnet"
-                managementSubnet = "Az" + str(BIGIP_INDEX + 1) + "managementSubnet"
-                InternalSubnet = "Az" + str(BIGIP_INDEX + 1) + "InternalSubnet"              
+                subnet = "az" + str(BIGIP_INDEX + 1) + "subnet"
+                managementSubnet = "az" + str(BIGIP_INDEX + 1) + "managementSubnet"
+                InternalSubnet = "az" + str(BIGIP_INDEX + 1) + "InternalSubnet"              
             else:
-                subnet = "Az1subnet"
-                managementSubnet = "Az1managementSubnet"
-                InternalSubnet = "Az1InternalSubnet"
+                subnet = "az1subnet"
+                managementSubnet = "az1managementSubnet"
+                InternalSubnet = "az1InternalSubnet"
 
 
             RESOURCES[ExternalInterface] = t.add_resource(NetworkInterface(
@@ -983,13 +983,13 @@ def main():
                 # External Interface is true on 1nic,2nic,3nic,etc.
                 RESOURCES[ExternalSelfEipAddress] = t.add_resource(EIP(    
                     ExternalSelfEipAddress,
-                    DependsOn="AttachGateway",
+                    DependsOn="attachGateway",
                     Domain="vpc",
                 ))
 
                 RESOURCES[ExternalSelfEipAssociation] = t.add_resource(EIPAssociation(
                     ExternalSelfEipAssociation,
-                    DependsOn="AttachGateway",
+                    DependsOn="attachGateway",
                     NetworkInterfaceId=Ref(ExternalInterface),
                     AllocationId=GetAtt(ExternalSelfEipAddress, "AllocationId"),
                     PrivateIpAddress=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
@@ -1020,12 +1020,12 @@ def main():
                     if stack == "full":
                         RESOURCES[VipEipAddress] = t.add_resource(EIP(
                             VipEipAddress,
-                            DependsOn="AttachGateway",
+                            DependsOn="attachGateway",
                             Domain="vpc",
                         ))
                         RESOURCES[VipEipAssociation] = t.add_resource(EIPAssociation(
                             VipEipAssociation,
-                            DependsOn="AttachGateway",
+                            DependsOn="attachGateway",
                             NetworkInterfaceId=Ref(ExternalInterface),
                             AllocationId=GetAtt(VipEipAddress, "AllocationId"),
                             PrivateIpAddress=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
@@ -1052,12 +1052,12 @@ def main():
                 if stack == "full":
                     RESOURCES[ManagementEipAddress] = t.add_resource(EIP(
                         ManagementEipAddress,
-                        DependsOn="AttachGateway",
+                        DependsOn="attachGateway",
                         Domain="vpc",
                     ))
                     RESOURCES[ManagementEipAssociation] = t.add_resource(EIPAssociation(
                         ManagementEipAssociation,
-                        DependsOn="AttachGateway",
+                        DependsOn="attachGateway",
                         NetworkInterfaceId=Ref(ManagementInterface),
                         AllocationId=GetAtt(ManagementEipAddress, "AllocationId"),
                     ))
@@ -1713,10 +1713,10 @@ def main():
                 ))
     ### BEGIN OUTPUT
     if network == True:
-        Vpc = t.add_output(Output(
-            "Vpc",
+        vpc = t.add_output(Output(
+            "vpc",
             Description="VPC ID",
-            Value=Ref(Vpc),
+            Value=Ref(vpc),
         ))
         DnsServers = t.add_output(Output(
             "DnsServers",
@@ -1724,33 +1724,33 @@ def main():
             Value="10.0.0.2",
         ))
         for INDEX in range(num_azs):
-            ApplicationSubnet = "Az" + str(INDEX + 1) + "ApplicationSubnet"
-            OUTPUTS[ApplicationSubnet] = t.add_output(Output(
-                ApplicationSubnet,
-                Description="Az" + str(INDEX + 1) +  "Application Subnet Id",
-                Value=Ref(ApplicationSubnet),
+            applicationSubnet = "az" + str(INDEX + 1) + "ApplicationSubnet"
+            OUTPUTS[applicationSubnet] = t.add_output(Output(
+                applicationSubnet,
+                Description="az" + str(INDEX + 1) +  "Application Subnet Id",
+                Value=Ref(applicationSubnet),
             ))
         for INDEX in range(num_azs):
-            subnet = "Az" + str(INDEX + 1) + "subnet"
+            subnet = "az" + str(INDEX + 1) + "subnet"
             OUTPUTS[subnet] = t.add_output(Output(
                 subnet,
-                Description="Az" + str(INDEX + 1) +  "External Subnet Id",
+                Description="az" + str(INDEX + 1) +  "External Subnet Id",
                 Value=Ref(subnet),
             ))
         if num_nics > 1:
             for INDEX in range(num_azs):
-                managementSubnet = "Az" + str(INDEX + 1) + "managementSubnet"
+                managementSubnet = "az" + str(INDEX + 1) + "managementSubnet"
                 OUTPUTS[managementSubnet] = t.add_output(Output(
                     managementSubnet,
-                    Description="Az" + str(INDEX + 1) +  "Management Subnet Id",
+                    Description="az" + str(INDEX + 1) +  "Management Subnet Id",
                     Value=Ref(managementSubnet),
                 ))
         if num_nics > 2:
             for INDEX in range(num_azs):
-                InternalSubnet = "Az" + str(INDEX + 1) + "InternalSubnet"
+                InternalSubnet = "az" + str(INDEX + 1) + "InternalSubnet"
                 OUTPUTS[InternalSubnet] = t.add_output(Output(
                     InternalSubnet,
-                    Description="Az" + str(INDEX + 1) +  "Internal Subnet Id",
+                    Description="az" + str(INDEX + 1) +  "Internal Subnet Id",
                     Value=Ref(InternalSubnet),
                 ))
     if security_groups == True:

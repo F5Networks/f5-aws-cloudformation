@@ -33,30 +33,6 @@
     }
   },
   "Outputs": {
-    "Az1ApplicationSubnet": {
-      "Description": "Az1Application Subnet Id",
-      "Value": {
-        "Ref": "Az1ApplicationSubnet"
-      }
-    },
-    "Az1InternalSubnet": {
-      "Description": "Az1Internal Subnet Id",
-      "Value": {
-        "Ref": "Az1InternalSubnet"
-      }
-    },
-    "Az1managementSubnet": {
-      "Description": "Az1Management Subnet Id",
-      "Value": {
-        "Ref": "Az1managementSubnet"
-      }
-    },
-    "Az1subnet": {
-      "Description": "Az1External Subnet Id",
-      "Value": {
-        "Ref": "Az1subnet"
-      }
-    },
     "BigipInternalSecurityGroup": {
       "Description": "Private or Internal Security Group",
       "Value": {
@@ -66,12 +42,6 @@
     "DnsServers": {
       "Description": "DNS server for VPC",
       "Value": "10.0.0.2"
-    },
-    "Vpc": {
-      "Description": "VPC ID",
-      "Value": {
-        "Ref": "Vpc"
-      }
     },
     "WebserverPrivateIp": {
       "Description": "Private Ip for Webserver",
@@ -108,6 +78,30 @@
         ]
       }
     },
+    "az1ApplicationSubnet": {
+      "Description": "az1Application Subnet Id",
+      "Value": {
+        "Ref": "az1ApplicationSubnet"
+      }
+    },
+    "az1InternalSubnet": {
+      "Description": "az1Internal Subnet Id",
+      "Value": {
+        "Ref": "az1InternalSubnet"
+      }
+    },
+    "az1managementSubnet": {
+      "Description": "az1Management Subnet Id",
+      "Value": {
+        "Ref": "az1managementSubnet"
+      }
+    },
+    "az1subnet": {
+      "Description": "az1External Subnet Id",
+      "Value": {
+        "Ref": "az1subnet"
+      }
+    },
     "bigipExternalSecurityGroup": {
       "Description": "Public or External Security Group",
       "Value": {
@@ -118,6 +112,12 @@
       "Description": "Management Security Group",
       "Value": {
         "Ref": "bigipManagementSecurityGroup"
+      }
+    },
+    "vpc": {
+      "Description": "VPC ID",
+      "Value": {
+        "Ref": "vpc"
       }
     }
   },
@@ -156,19 +156,6 @@
     }
   },
   "Resources": {
-    "ApplicationDefaultRoute": {
-      "DependsOn": "AttachGateway",
-      "Properties": {
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "InternetGateway"
-        },
-        "RouteTableId": {
-          "Ref": "ApplicationRouteTable"
-        }
-      },
-      "Type": "AWS::EC2::Route"
-    },
     "ApplicationRouteTable": {
       "Properties": {
         "Tags": [
@@ -188,91 +175,10 @@
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::RouteTable"
-    },
-    "AttachGateway": {
-      "Properties": {
-        "InternetGatewayId": {
-          "Ref": "InternetGateway"
-        },
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::VPCGatewayAttachment"
-    },
-    "Az1ApplicationSubnet": {
-      "Properties": {
-        "AvailabilityZone": {
-          "Ref": "availabilityZone1"
-        },
-        "CidrBlock": "10.0.3.0/24",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Az1 Application Subnet"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::Subnet"
-    },
-    "Az1ApplicationSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "ApplicationRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az1ApplicationSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
-    },
-    "Az1InternalSubnet": {
-      "Properties": {
-        "AvailabilityZone": {
-          "Ref": "availabilityZone1"
-        },
-        "CidrBlock": "10.0.2.0/24",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": "Az1 Internal Subnet"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc"
-        }
-      },
-      "Type": "AWS::EC2::Subnet"
-    },
-    "Az1InternalSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "InternalRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az1InternalSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
     },
     "Az1managementSubnet": {
       "Properties": {
@@ -289,25 +195,14 @@
           },
           {
             "Key": "Name",
-            "Value": "Az1 Management Subnet"
+            "Value": "az1 Management Subnet"
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::Subnet"
-    },
-    "Az1managementSubnetRouteTableAssociation": {
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "ManagementRouteTable"
-        },
-        "SubnetId": {
-          "Ref": "Az1managementSubnet"
-        }
-      },
-      "Type": "AWS::EC2::SubnetRouteTableAssociation"
     },
     "Az1subnet": {
       "Properties": {
@@ -324,11 +219,11 @@
           },
           {
             "Key": "Name",
-            "Value": "Az1 External Subnet"
+            "Value": "az1 External Subnet"
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::Subnet"
@@ -339,7 +234,7 @@
           "Ref": "ExternalRouteTable"
         },
         "SubnetId": {
-          "Ref": "Az1subnet"
+          "Ref": "az1subnet"
         }
       },
       "Type": "AWS::EC2::SubnetRouteTableAssociation"
@@ -368,13 +263,13 @@
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::SecurityGroup"
     },
     "ExternalDefaultRoute": {
-      "DependsOn": "AttachGateway",
+      "DependsOn": "attachGateway",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
@@ -405,13 +300,13 @@
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::RouteTable"
     },
     "InternalDefaultRoute": {
-      "DependsOn": "AttachGateway",
+      "DependsOn": "attachGateway",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
@@ -442,7 +337,7 @@
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::RouteTable"
@@ -461,7 +356,7 @@
       "Type": "AWS::EC2::InternetGateway"
     },
     "ManagementDefaultRoute": {
-      "DependsOn": "AttachGateway",
+      "DependsOn": "attachGateway",
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
@@ -492,32 +387,10 @@
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::RouteTable"
-    },
-    "Vpc": {
-      "Properties": {
-        "CidrBlock": "10.0.0.0/16",
-        "EnableDnsHostnames": "true",
-        "EnableDnsSupport": "true",
-        "Tags": [
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          },
-          {
-            "Key": "Name",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          }
-        ]
-      },
-      "Type": "AWS::EC2::VPC"
     },
     "Webserver": {
       "Properties": {
@@ -557,7 +430,7 @@
               }
             ],
             "SubnetId": {
-              "Ref": "Az1ApplicationSubnet"
+              "Ref": "az1ApplicationSubnet"
             }
           }
         ],
@@ -630,10 +503,115 @@
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::SecurityGroup"
+    },
+    "applicationDefaultRoute": {
+      "DependsOn": "attachGateway",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "ApplicationRouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "attachGateway": {
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "VpcId": {
+          "Ref": "vpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment"
+    },
+    "az1ApplicationSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "availabilityZone1"
+        },
+        "CidrBlock": "10.0.3.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "az1 Application Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "az1ApplicationSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ApplicationRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "az1ApplicationSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "az1InternalSubnet": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Ref": "availabilityZone1"
+        },
+        "CidrBlock": "10.0.2.0/24",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": "az1 Internal Subnet"
+          }
+        ],
+        "VpcId": {
+          "Ref": "vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "az1InternalSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "InternalRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "az1InternalSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "az1managementSubnetRouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "ManagementRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "az1managementSubnet"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
     },
     "bigipExternalSecurityGroup": {
       "Properties": {
@@ -683,7 +661,7 @@
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::SecurityGroup"
@@ -742,10 +720,32 @@
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::SecurityGroup"
+    },
+    "vpc": {
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": "true",
+        "EnableDnsSupport": "true",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          }
+        ]
+      },
+      "Type": "AWS::EC2::VPC"
     }
   }
 }

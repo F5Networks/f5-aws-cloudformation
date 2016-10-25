@@ -182,15 +182,6 @@
     }
   },
   "Parameters": {
-    "Az1subnet": {
-      "ConstraintDescription": "Must be subnet ID within existing VPC",
-      "Description": "Public or External subnet ID",
-      "Type": "AWS::EC2::Subnet::Id"
-    },
-    "Vpc": {
-      "ConstraintDescription": "Must be an existing VPC within working region.",
-      "Type": "AWS::EC2::VPC::Id"
-    },
     "WebserverPrivateIp": {
       "ConstraintDescription": "Web Server IP used for Big-IP pool Member",
       "Description": "Web Server IP used for Big-IP pool member",
@@ -211,6 +202,11 @@
       "MaxLength": "255",
       "MinLength": "1",
       "Type": "String"
+    },
+    "az1subnet1": {
+      "ConstraintDescription": "Must be subnet ID within existing VPC",
+      "Description": "Public or External subnet ID",
+      "Type": "AWS::EC2::Subnet::Id"
     },
     "bigipExternalSecurityGroup": {
       "ConstraintDescription": "Must be security group ID within existing VPC",
@@ -275,6 +271,10 @@
       "MaxLength": "18",
       "MinLength": "9",
       "Type": "String"
+    },
+    "vpc": {
+      "ConstraintDescription": "Must be an existing VPC within working region.",
+      "Type": "AWS::EC2::VPC::Id"
     }
   },
   "Resources": {
@@ -288,7 +288,7 @@
         ],
         "SecondaryPrivateIpAddressCount": "1",
         "SubnetId": {
-          "Ref": "Az1subnet"
+          "Ref": "az1subnet"
         }
       },
       "Type": "AWS::EC2::NetworkInterface"

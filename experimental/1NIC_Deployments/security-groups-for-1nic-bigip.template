@@ -10,10 +10,6 @@
     }
   },
   "Parameters": {
-    "Vpc": {
-      "ConstraintDescription": "Must be an existing VPC within working region.",
-      "Type": "AWS::EC2::VPC::Id"
-    },
     "managementGuiPort": {
       "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
       "Default": "443",
@@ -28,6 +24,10 @@
       "MaxLength": "18",
       "MinLength": "9",
       "Type": "String"
+    },
+    "vpc": {
+      "ConstraintDescription": "Must be an existing VPC within working region.",
+      "Type": "AWS::EC2::VPC::Id"
     }
   },
   "Resources": {
@@ -123,7 +123,7 @@
           }
         ],
         "VpcId": {
-          "Ref": "Vpc"
+          "Ref": "vpc"
         }
       },
       "Type": "AWS::EC2::SecurityGroup"

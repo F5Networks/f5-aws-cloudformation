@@ -5,16 +5,31 @@
 
 ## Introduction
 
+<<<<<<< HEAD
 This solution implements a Cloud Formation Template to deploy a base example of F5 in a two NIC deployment. In a two NIC implementation, interface #1 is for management and data-plane 
 traffic from the Internet, and interface #2 is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. There are two templates, 
 BYOL edition allows you to input an existing BIG-IP license, or hourly which utilizes pay as you go hourly billing. The “existing stack” cft incorporates existing Amazon Vpc. Check out 
 our templates located in the “learning-stacks” folder if you would like to run a “full stack” which creates and configures Big-Ip, AWS Vpc,  as well as a backend Webserver.
+=======
+This solution implements an ARM Template to deploy a base example of F5 in a cloud-focused single NIC deployment.  This is the standard Cloud design where the compute instance of
+F5 is running with a single interface, where both management and data plane traffic is processed.  This is a traditional model in the cloud where the deployment is considered one-armed.
+
+This solution provides two different template options:
+  - **BYOL**<br>
+  The BYOL (bring your own license) template allows you to input an existing BIG-IP license.
+  - **Hourly**<br>
+  The Hourly template which uses pay-as-you-go hourly billing
+  
+  The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
+  
+>>>>>>> b0b67c578de7f6be8d0993d60b14d41b1b711f1e
 ## Documentation
 
 Please see the project documentation - This is still being created
 
 ## Installation
 
+<<<<<<< HEAD
 You have 2 options for deploying this template:
   - Using the  Amazon Web Service deploy button
   - Using AWS Command Line Interface
@@ -24,85 +39,37 @@ You have 2 options for deploying this template:
 Use this button to deploy the hourly template: 
 
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-Hourly&templateURL=https://s3-us-west-2.amazonaws.com/f5-dev/existing-stack-hourly-2nic-bigip.template" target="_blank">
+=======
+You have two options for deploying this template: 
+  - Using the Hourly deploy button 
+  - Using BYOL deploy button
+
+### Hourly deploy button
+
+Use this button to deploy the **hourly** template: 
+
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-Hourly&templateURL=https://s3-us-west-2.amazonaws.com/f5-dev/existing-stack-hourly-1nic-bigip.template">
+>>>>>>> b0b67c578de7f6be8d0993d60b14d41b1b711f1e
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
+<br>
+<br>
+### BYOL deploy button
 
+<<<<<<< HEAD
 Use this button to deploy the BYOL template: 
 
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BYOL&templateURL=https://s3-us-west-2.amazonaws.com/f5-dev/existing-stack-byol-2nic-bigip.template" target="_blank">
+=======
+Use this button to deploy the **BYOL** template: 
+
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-BYOL&templateURL=https://s3-us-west-2.amazonaws.com/f5-dev/existing-stack-byol-1nic-bigip.template">
+>>>>>>> b0b67c578de7f6be8d0993d60b14d41b1b711f1e
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 
-### <a name="powershell"></a>PowerShell
 
-```powershell
-    # Params below match to parameters in the azuredeploy.json that are gen-unique, otherwise pointing to
-    # the azuredeploy.parameters.json file for default values.  Some options below are mandatory, some(such as deployment password for BIG IP)
-<<<<<<< HEAD
-    # can be supplied inline when running this script but if they arent then the default will be used as specificed in below param arguments
-    # Example Command: .\Deploy_via_PS.ps1 -adminUsername azureuser -adminPassword yourpassword -dnsLabel f51nicdeploy01 -instanceName f51nic -licenseKey1 XXXXX-XXXXX-XXXXX-XXXXX-XXXXX -resourceGroupName f51nicdeploy01 -EmailTo user@f5.com
-=======
-    # can be supplied inline when running this script but if they are not then the default will be used as specified in the param arguments
-    # Example Command: .\Deploy_via_PS.ps1 -adminUsername azureuser -adminPassword yourpassword -dnsLabelPrefix f51nicdeploy01 -vmName f51nic -licenseToken XXXXX-XXXXX-XXXXX-XXXXX-XXXXX -resourceGroupName f51nicdeploy01
->>>>>>> 9934511c811cb92072596a2cf05c8259c87c244f
 
-    param(
-    [Parameter(Mandatory=$True)]
-    [string]
-    $adminUsername,
-
-    [Parameter(Mandatory=$True)]
-    [string]
-    $adminPassword,
-
-    [Parameter(Mandatory=$True)]
-    [string]
-    $dnsLabel,
-
-    [Parameter(Mandatory=$True)]
-    [string]
-    $instanceName,
-
-    [string]
-    $instanceType = "Standard_D2_v2",
-
-    [string]
-    $f5Sku = "Best",
-
-    [Parameter(Mandatory=$True)]
-    [string]
-    $licenseKey1,
-
-    [string]
-    $restrictedSrcAddress  = "*",
-
-    [Parameter(Mandatory=$True)]
-    [string]
-    $resourceGroupName,
-
-    [string]
-    $region = "West US",
-
-    [string]
-    $templateFilePath = "azuredeploy.json",
-
-    [string]
-    $parametersFilePath = "azuredeploy.parameters.json"
-    )
-
-    # Connect to Azure, right now it is only interactive login
-    Login-AzureRmAccount
-
-    # Create Resource Group for ARM Deployment
-    New-AzureRmResourceGroup -Name $resourceGroupName -Location "$region"
-
-    # Create Arm Deployment
-    $pwd = ConvertTo-SecureString -String $adminPassword -AsPlainText -Force
-    $deployment = New-AzureRmResourceGroupDeployment -Name $resourceGroupName -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose -adminUsername "$adminUsername" -adminPassword $pwd -dnsLabel "$dnsLabel" -instanceName "$instanceName" -instanceType "$instanceType" -licenseKey1 "$licenseKey1" -restrictedSrcAddress "$restrictedSrcAddress" -f5Sku "$f5Sku"
-
-    # Print Output of Deployment to Console
-    $deployment
-```
 
 
 ### <a name="cli"></a>Azure CLI(1.0) Usage

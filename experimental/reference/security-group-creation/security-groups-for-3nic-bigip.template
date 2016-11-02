@@ -1,0 +1,182 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS CloudFormation Template for creating security groups for a 3nic BIG-IP",
+    "Outputs": {
+        "bigipExternalSecurityGroup": {
+            "Description": "Public or External Security Group",
+            "Value": {
+                "Ref": "bigipExternalSecurityGroup"
+            }
+        },
+        "bigipInternalSecurityGroup": {
+            "Description": "Private or Internal Security Group",
+            "Value": {
+                "Ref": "bigipInternalSecurityGroup"
+            }
+        },
+        "bigipManagementSecurityGroup": {
+            "Description": "Management Security Group",
+            "Value": {
+                "Ref": "bigipManagementSecurityGroup"
+            }
+        }
+    },
+    "Parameters": {
+        "Vpc": {
+            "ConstraintDescription": "Must be an existing VPC within working region.",
+            "Type": "AWS::EC2::VPC::Id"
+        },
+        "restrictedSrcAddress": {
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+            "Default": "0.0.0.0/0",
+            "Description": " The IP address range that can be used to SSH to the EC2 instances",
+            "MaxLength": "18",
+            "MinLength": "9",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "bigipExternalSecurityGroup": {
+            "Properties": {
+                "GroupDescription": "Public or External interface rules",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": "80",
+                        "IpProtocol": "tcp",
+                        "ToPort": "80"
+                    },
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": "443",
+                        "IpProtocol": "tcp",
+                        "ToPort": "443"
+                    },
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": "4353",
+                        "IpProtocol": "tcp",
+                        "ToPort": "4353"
+                    },
+                    {
+                        "CidrIp": "10.0.0.0/16",
+                        "FromPort": "1026",
+                        "IpProtocol": "udp",
+                        "ToPort": "1026"
+                    },
+                    {
+                        "CidrIp": "10.0.0.0/16",
+                        "FromPort": "6123",
+                        "IpProtocol": "tcp",
+                        "ToPort": "6128"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "Bigip External Security Group"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "Vpc"
+                }
+            },
+            "Type": "AWS::EC2::SecurityGroup"
+        },
+        "bigipInternalSecurityGroup": {
+            "Properties": {
+                "GroupDescription": "Allow All from Intra-VPC only",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "10.0.0.0/16",
+                        "FromPort": "-1",
+                        "IpProtocol": "-1",
+                        "ToPort": "-1"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "Bigip Internal Security Group"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "Vpc"
+                }
+            },
+            "Type": "AWS::EC2::SecurityGroup"
+        },
+        "bigipManagementSecurityGroup": {
+            "Properties": {
+                "GroupDescription": "Big-IP Management UI rules",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": {
+                            "Ref": "restrictedSrcAddress"
+                        },
+                        "FromPort": "22",
+                        "IpProtocol": "tcp",
+                        "ToPort": "22"
+                    },
+                    {
+                        "CidrIp": {
+                            "Ref": "restrictedSrcAddress"
+                        },
+                        "FromPort": "443",
+                        "IpProtocol": "tcp",
+                        "ToPort": "443"
+                    },
+                    {
+                        "CidrIp": {
+                            "Ref": "restrictedSrcAddress"
+                        },
+                        "FromPort": "-1",
+                        "IpProtocol": "icmp",
+                        "ToPort": "-1"
+                    },
+                    {
+                        "CidrIp": "10.0.0.0/16",
+                        "FromPort": "22",
+                        "IpProtocol": "tcp",
+                        "ToPort": "22"
+                    },
+                    {
+                        "CidrIp": "10.0.0.0/16",
+                        "FromPort": "443",
+                        "IpProtocol": "tcp",
+                        "ToPort": "443"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "Bigip Management Security Group"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "Vpc"
+                }
+            },
+            "Type": "AWS::EC2::SecurityGroup"
+        }
+    }
+}

@@ -1,0 +1,1178 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS CloudFormation Template for creating a Across-AZs cluster of 2nic Big-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Mappings": {
+        "BigipRegionMap": {
+            "ap-northeast-1": {
+                "Best": "ami-e801d089",
+                "Better": "ami-2903d248",
+                "Good": "ami-1402d375"
+            },
+            "ap-southeast-1": {
+                "Best": "ami-f3439990",
+                "Better": "ami-50419b33",
+                "Good": "ami-f6439995"
+            },
+            "ap-southeast-2": {
+                "Best": "ami-b58bbad6",
+                "Better": "ami-d289b8b1",
+                "Good": "ami-6489b807"
+            },
+            "eu-central-1": {
+                "Best": "ami-1eb14c71",
+                "Better": "ami-29b64b46",
+                "Good": "ami-69b04d06"
+            },
+            "eu-west-1": {
+                "Best": "ami-32c5bc41",
+                "Better": "ami-f2394181",
+                "Good": "ami-c2c7beb1"
+            },
+            "sa-east-1": {
+                "Best": "ami-69c15205",
+                "Better": "ami-73c2511f",
+                "Good": "ami-94dd4ef8"
+            },
+            "us-east-1": {
+                "Best": "ami-83cab794",
+                "Better": "ami-3fc4b928",
+                "Good": "ami-e2c9b4f5"
+            },
+            "us-west-1": {
+                "Best": "ami-257c3345",
+                "Better": "ami-3f7c335f",
+                "Good": "ami-7d7c331d"
+            },
+            "us-west-2": {
+                "Best": "ami-8b76a4eb",
+                "Better": "ami-a977a5c9",
+                "Good": "ami-2370a243"
+            }
+        }
+    },
+    "Outputs": {
+        "Bigip1ExternalInterfacePrivateIp": {
+            "Description": "Internally routable Ip of public interface on BIG-IP",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Bigip1subnet1Az1Interface",
+                    "PrimaryPrivateIpAddress"
+                ]
+            }
+        },
+        "Bigip1InstanceId": {
+            "Description": "Instance Id of Big-IP in Amazon",
+            "Value": {
+                "Ref": "Bigip1Instance"
+            }
+        },
+        "Bigip1ManagementEipAddress": {
+            "Description": "Ip address of management port on BIG-IP",
+            "Value": {
+                "Ref": "Bigip1ManagementEipAddress"
+            }
+        },
+        "Bigip1ManagementInterface": {
+            "Description": "Management interface Id on BIG-IP",
+            "Value": {
+                "Ref": "Bigip1ManagementInterface"
+            }
+        },
+        "Bigip1ManagementInterfacePrivateIp": {
+            "Description": "Internally routable Ip of management interface on BIG-IP",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Bigip1ManagementInterface",
+                    "PrimaryPrivateIpAddress"
+                ]
+            }
+        },
+        "Bigip1Url": {
+            "Description": "Big-IP Management GUI",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://",
+                        {
+                            "Fn::GetAtt": [
+                                "Bigip1Instance",
+                                "PublicIp"
+                            ]
+                        }
+                    ]
+                ]
+            }
+        },
+        "Bigip1VipEipAddress": {
+            "Description": "EIP address for VIP",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "http://",
+                        {
+                            "Ref": "Bigip1VipEipAddress"
+                        },
+                        ":80"
+                    ]
+                ]
+            }
+        },
+        "Bigip1VipPrivateIp": {
+            "Description": "VIP on External Interface Secondary IP 1",
+            "Value": {
+                "Fn::Select": [
+                    "0",
+                    {
+                        "Fn::GetAtt": [
+                            "Bigip1subnet1Az1Interface",
+                            "SecondaryPrivateIpAddresses"
+                        ]
+                    }
+                ]
+            }
+        },
+        "Bigip1subnet1Az1Interface": {
+            "Description": "External interface Id on Big-IP",
+            "Value": {
+                "Ref": "Bigip1subnet1Az1Interface"
+            }
+        },
+        "Bigip1subnet1Az1SelfEipAddress": {
+            "Description": "IP Address of External interface attached to BIG-IP",
+            "Value": {
+                "Ref": "Bigip1subnet1Az1SelfEipAddress"
+            }
+        },
+        "Bigip2ExternalInterfacePrivateIp": {
+            "Description": "Internally routable Ip of public interface on BIG-IP",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Bigip2subnet1Az2Interface",
+                    "PrimaryPrivateIpAddress"
+                ]
+            }
+        },
+        "Bigip2InstanceId": {
+            "Description": "Instance Id of Big-IP in Amazon",
+            "Value": {
+                "Ref": "Bigip2Instance"
+            }
+        },
+        "Bigip2ManagementEipAddress": {
+            "Description": "Ip address of management port on BIG-IP",
+            "Value": {
+                "Ref": "Bigip2ManagementEipAddress"
+            }
+        },
+        "Bigip2ManagementInterface": {
+            "Description": "Management interface Id on BIG-IP",
+            "Value": {
+                "Ref": "Bigip2ManagementInterface"
+            }
+        },
+        "Bigip2ManagementInterfacePrivateIp": {
+            "Description": "Internally routable Ip of management interface on BIG-IP",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Bigip2ManagementInterface",
+                    "PrimaryPrivateIpAddress"
+                ]
+            }
+        },
+        "Bigip2Url": {
+            "Description": "Big-IP Management GUI",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://",
+                        {
+                            "Fn::GetAtt": [
+                                "Bigip2Instance",
+                                "PublicIp"
+                            ]
+                        }
+                    ]
+                ]
+            }
+        },
+        "Bigip2subnet1Az2Interface": {
+            "Description": "External interface Id on Big-IP",
+            "Value": {
+                "Ref": "Bigip2subnet1Az2Interface"
+            }
+        },
+        "Bigip2subnet1Az2SelfEipAddress": {
+            "Description": "IP Address of External interface attached to BIG-IP",
+            "Value": {
+                "Ref": "Bigip2subnet1Az2SelfEipAddress"
+            }
+        },
+        "availabilityZone1": {
+            "Description": "Availability Zone",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Bigip1Instance",
+                    "AvailabilityZone"
+                ]
+            }
+        },
+        "availabilityZone2": {
+            "Description": "Availability Zone",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Bigip2Instance",
+                    "AvailabilityZone"
+                ]
+            }
+        }
+    },
+    "Parameters": {
+        "Vpc": {
+            "ConstraintDescription": "Must be an existing VPC within working region.",
+            "Type": "AWS::EC2::VPC::Id"
+        },
+        "adminPassword": {
+            "ConstraintDescription": "Please verify your BIG-IP Admin Password",
+            "Description": "Please enter your BIG-IP Admin Password",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "NoEcho": true,
+            "Type": "String"
+        },
+        "adminUsername": {
+            "ConstraintDescription": "Please verify your BIG-IP Admin Username",
+            "Default": "admin",
+            "Description": "Please enter your BIG-IP Admin Username",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "bigipExternalSecurityGroup": {
+            "ConstraintDescription": "Must be security group ID within existing VPC",
+            "Description": "Public or External Security Group ID",
+            "Type": "AWS::EC2::SecurityGroup::Id"
+        },
+        "bigipManagementSecurityGroup": {
+            "ConstraintDescription": "Must be security group ID within existing VPC",
+            "Description": "Bigip Management Security Group",
+            "Type": "AWS::EC2::SecurityGroup::Id"
+        },
+        "iamAccessKey": {
+            "AllowedPattern": "[\\w]*",
+            "ConstraintDescription": "can contain only ASCII characters.",
+            "Description": "IAM Access Key",
+            "MaxLength": "32",
+            "MinLength": "16",
+            "NoEcho": true,
+            "Type": "String"
+        },
+        "iamSecretKey": {
+            "AllowedPattern": "[\\x20-\\x7E]*",
+            "ConstraintDescription": "can contain only ASCII characters.",
+            "Description": "IAM Secret Key for Big-IP",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "NoEcho": true,
+            "Type": "String"
+        },
+        "imageName": {
+            "AllowedValues": [
+                "Good",
+                "Better",
+                "Best"
+            ],
+            "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
+            "Default": "Best",
+            "Description": "F5 Bigip Performance Type",
+            "Type": "String"
+        },
+        "instanceType": {
+            "AllowedValues": [
+                "m3.2xlarge",
+                "m4.2xlarge",
+                "m4.4xlarge",
+                "m4.10xlarge",
+                "c3.4xlarge",
+                "c3.8xlarge",
+                "c4.4xlarge",
+                "c4.8xlarge",
+                "cc2.8xlarge"
+            ],
+            "ConstraintDescription": "must be a valid Big-IP EC2 instance type",
+            "Default": "m3.2xlarge",
+            "Description": "F5 BIG-IP Virtual Instance Type",
+            "Type": "String"
+        },
+        "licenseKey1": {
+            "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
+            "ConstraintDescription": "Please verify your F5 BYOL regkey.",
+            "Description": "Please enter your F5 BYOL regkey here:",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "licenseKey2": {
+            "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
+            "ConstraintDescription": "Please verify your F5 BYOL regkey.",
+            "Description": "Please enter your F5 BYOL regkey here:",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "managementSubnetAz1": {
+            "ConstraintDescription": "Must be subnet ID within existing VPC",
+            "Description": "Management Subnet ID",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "managementSubnetAz2": {
+            "ConstraintDescription": "Must be subnet ID within existing VPC",
+            "Description": "Management Subnet ID",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "restrictedSrcAddress": {
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+            "Default": "0.0.0.0/0",
+            "Description": " The IP address range that can be used to SSH to the EC2 instances",
+            "MaxLength": "18",
+            "MinLength": "9",
+            "Type": "String"
+        },
+        "sshKey": {
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "subnet1Az1": {
+            "ConstraintDescription": "Must be subnet ID within existing VPC",
+            "Description": "Public or External subnet ID",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "subnet1Az2": {
+            "ConstraintDescription": "Must be subnet ID within existing VPC",
+            "Description": "Public or External subnet ID",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "webserverPrivateIp": {
+            "ConstraintDescription": "Web Server IP used for Big-IP pool Member",
+            "Description": "Web Server IP used for Big-IP pool member",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "Bigip1Instance": {
+            "DependsOn": "Bigip2Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "commands": {
+                            "001-onboard-BIG-IP": {
+                                "command": {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                            "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+                                            "--log-level verbose",
+                                            "-o  /var/log/onboard.log",
+                                            "--background",
+                                            "--no-reboot",
+                                            "--host localhost",
+                                            "--user admin",
+                                            "--password '",
+                                            {
+                                                "Ref": "adminPassword"
+                                            },
+                                            "'",
+                                            "--set-password admin:'",
+                                            {
+                                                "Ref": "adminPassword"
+                                            },
+                                            "'",
+                                            "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                                            "--ntp 0.us.pool.ntp.org",
+                                            "--ntp 1.us.pool.ntp.org",
+                                            "--tz UTC",
+                                            "--dns ${NAME_SERVER}",
+                                            "--module ltm:nominal",
+                                            "--module asm:nominal"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "firstrun-BIG-IP": {
+                                "command": {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "f5-rest-node /shared/f5-cloud-libs/scripts/runScript.js",
+                                            "--wait-for ONBOARD_DONE",
+                                            "--file /tmp/firstrun.sh",
+                                            "--log-level verbose",
+                                            "-o /var/log/firstrun_1.log",
+                                            "--background"
+                                        ]
+                                    ]
+                                }
+                            }
+                        },
+                        "files": {
+                            "/tmp/firstrun.config": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/bash\n",
+                                            "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+                                            "TZ='UTC'\n",
+                                            "BIGIP_ADMIN_USERNAME='",
+                                            {
+                                                "Ref": "adminUsername"
+                                            },
+                                            "'\n",
+                                            "BIGIP_ADMIN_PASSWORD='",
+                                            {
+                                                "Ref": "adminPassword"
+                                            },
+                                            "'\n",
+                                            "REGKEY=",
+                                            {
+                                                "Ref": "licenseKey1"
+                                            },
+                                            "\n",
+                                            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                                            "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                                            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                                            "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                                            "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                                            "VPC_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-block`\n",
+                                            "VPC_NET=${VPC_CIDR_BLOCK%/*}\n",
+                                            "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
+                                            "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n",
+                                            "MGMTIP='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "Bigip1ManagementInterface",
+                                                    "PrimaryPrivateIpAddress"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTIP='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "Bigip1subnet1Az1Interface",
+                                                    "PrimaryPrivateIpAddress"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTPRIVIP='",
+                                            {
+                                                "Fn::Select": [
+                                                    "0",
+                                                    {
+                                                        "Fn::GetAtt": [
+                                                            "Bigip1subnet1Az1Interface",
+                                                            "SecondaryPrivateIpAddresses"
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTMASK='24'\n",
+                                            "POOLMEM='",
+                                            {
+                                                "Ref": "webserverPrivateIp"
+                                            },
+                                            "'\n",
+                                            "POOLMEMPORT=80\n",
+                                            "APPNAME='demo-app-1'\n",
+                                            "VIRTUALSERVERPORT=80\n",
+                                            "CRT='default.crt'\n",
+                                            "KEY='default.key'\n",
+                                            "PEER_HOSTNAME='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "Bigip2Instance",
+                                                    "PrivateDnsName"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "PEER_MGMTIP='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "Bigip2ManagementInterface",
+                                                    "PrimaryPrivateIpAddress"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "PEER_EXTPRIVIP='",
+                                            {
+                                                "Fn::Select": [
+                                                    "0",
+                                                    {
+                                                        "Fn::GetAtt": [
+                                                            "Bigip2subnet1Az2Interface",
+                                                            "SecondaryPrivateIpAddresses"
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "'\n",
+                                            "VIPEIP='",
+                                            {
+                                                "Ref": "Bigip1VipEipAddress"
+                                            },
+                                            "'\n",
+                                            "IAM_ACCESS_KEY='",
+                                            {
+                                                "Ref": "iamAccessKey"
+                                            },
+                                            "'\n",
+                                            "IAM_SECRET_KEY='",
+                                            {
+                                                "Ref": "iamSecretKey"
+                                            },
+                                            "'\n"
+                                        ]
+                                    ]
+                                },
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root"
+                            },
+                            "/tmp/firstrun.sh": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/bash\n",
+                                            ". /tmp/firstrun.config\n",
+                                            ". /tmp/firstrun.utils\n",
+                                            "FILE=/tmp/firstrun.log\n",
+                                            "if [ ! -e $FILE ]\n",
+                                            " then\n",
+                                            "     touch $FILE\n",
+                                            "     nohup $0 0<&- &>/dev/null &\n",
+                                            "     exit\n",
+                                            "fi\n",
+                                            "exec 1<&-\n",
+                                            "exec 2<&-\n",
+                                            "exec 1<>$FILE\n",
+                                            "exec 2>&1\n",
+                                            "date\n",
+                                            "echo 'starting tmsh config'\n",
+                                            "tmsh modify sys global-settings aws-access-key ${IAM_ACCESS_KEY}\n",
+                                            "tmsh modify sys global-settings aws-secret-key ${IAM_SECRET_KEY}\n",
+                                            "tmsh create net vlan external interfaces add { 1.1 } \n",
+                                            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                            "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
+                                            "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
+                                            "tmsh modify sys db dhclient.mgmt { value disable }\n",
+                                            "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
+                                            "tmsh save /sys config\n",
+                                            "echo 'start install byol license'\n",
+                                            "networkUp 120 \n",
+                                            "LicenseBigIP ${REGKEY}\n",
+                                            "checkStatusnoret\n",
+                                            "sleep 20 \n",
+                                            "tmsh save /sys config\n",
+                                            "echo 'sleeping additional 120 secs to wait for peer to boot'\n",
+                                            "sleep 120\n",
+                                            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",
+                                            "tmsh create cm device-group my_sync_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
+                                            "tmsh run cm config-sync to-group my_sync_failover_group\n",
+                                            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                                            "curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
+                                            "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
+                                            "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
+                                            "tmsh modify asm policy /Common/linux-high active\n",
+                                            "tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
+                                            "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
+                                            "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
+                                            "tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                                            "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                                            "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
+                                            "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
+                                            "curl -sSk -o /tmp/f5.aws_advanced_ha.v1.2.0rc1.tmpl --max-time 15 https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
+                                            "tmsh load sys application template /tmp/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
+                                            "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.2.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
+                                            "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
+                                            "tmsh run cm config-sync to-group my_sync_failover_group\n",
+                                            "sleep 15\n",
+                                            "curl -sSk -u admin:\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
+                                            "tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\n",
+                                            "tmsh run cm config-sync to-group datasync-global-dg\n",
+                                            "tmsh save /sys config\n",
+                                            "date\n",
+                                            "# for security purposes, remove firstrun.config\n",
+                                            "# rm /tmp/firstrun.config\n"
+                                        ]
+                                    ]
+                                },
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root"
+                            },
+                            "/tmp/firstrun.utils": {
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root",
+                                "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
+                            }
+                        },
+                        "sources": {
+                            "/shared": "https://f5-cloud-libs.s3.amazonaws.com/f5-cloud-libs.tar.gz"
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "BigipRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Ref": "imageName"
+                        }
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "instanceType"
+                },
+                "KeyName": {
+                    "Ref": "sshKey"
+                },
+                "NetworkInterfaces": [
+                    {
+                        "Description": "Management Interface",
+                        "DeviceIndex": "0",
+                        "NetworkInterfaceId": {
+                            "Ref": "Bigip1ManagementInterface"
+                        }
+                    },
+                    {
+                        "Description": "Public or External Interface",
+                        "DeviceIndex": "1",
+                        "NetworkInterfaceId": {
+                            "Ref": "Bigip1subnet1Az1Interface"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Big-IP: ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash\n",
+                                "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " -r ",
+                                "Bigip1Instance",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "Type": "AWS::EC2::Instance"
+        },
+        "Bigip1ManagementEipAddress": {
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "Bigip1ManagementEipAssociation": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "Bigip1ManagementEipAddress",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "Bigip1ManagementInterface"
+                }
+            },
+            "Type": "AWS::EC2::EIPAssociation"
+        },
+        "Bigip1ManagementInterface": {
+            "Properties": {
+                "Description": "Management Interface for the Bigip",
+                "GroupSet": [
+                    {
+                        "Ref": "bigipManagementSecurityGroup"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "managementSubnetAz1"
+                }
+            },
+            "Type": "AWS::EC2::NetworkInterface"
+        },
+        "Bigip1VipEipAddress": {
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "Bigip1VipEipAssociation": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "Bigip1VipEipAddress",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "Bigip1subnet1Az1Interface"
+                },
+                "PrivateIpAddress": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Fn::GetAtt": [
+                                "Bigip1subnet1Az1Interface",
+                                "SecondaryPrivateIpAddresses"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "Type": "AWS::EC2::EIPAssociation"
+        },
+        "Bigip1subnet1Az1Interface": {
+            "Properties": {
+                "Description": "Public External Interface for the Bigip",
+                "GroupSet": [
+                    {
+                        "Ref": "bigipExternalSecurityGroup"
+                    }
+                ],
+                "SecondaryPrivateIpAddressCount": "1",
+                "SubnetId": {
+                    "Ref": "subnet1Az1"
+                }
+            },
+            "Type": "AWS::EC2::NetworkInterface"
+        },
+        "Bigip1subnet1Az1SelfEipAddress": {
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "Bigip1subnet1Az1SelfEipAssociation": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "Bigip1subnet1Az1SelfEipAddress",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "Bigip1subnet1Az1Interface"
+                },
+                "PrivateIpAddress": {
+                    "Fn::GetAtt": [
+                        "Bigip1subnet1Az1Interface",
+                        "PrimaryPrivateIpAddress"
+                    ]
+                }
+            },
+            "Type": "AWS::EC2::EIPAssociation"
+        },
+        "Bigip2Instance": {
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "commands": {
+                            "001-onboard-BIG-IP": {
+                                "command": {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                            "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+                                            "--log-level verbose",
+                                            "-o  /var/log/onboard.log",
+                                            "--background",
+                                            "--no-reboot",
+                                            "--host localhost",
+                                            "--user admin",
+                                            "--password '",
+                                            {
+                                                "Ref": "adminPassword"
+                                            },
+                                            "'",
+                                            "--set-password admin:'",
+                                            {
+                                                "Ref": "adminPassword"
+                                            },
+                                            "'",
+                                            "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                                            "--ntp 0.us.pool.ntp.org",
+                                            "--ntp 1.us.pool.ntp.org",
+                                            "--tz UTC",
+                                            "--dns ${NAME_SERVER}",
+                                            "--module ltm:nominal",
+                                            "--module asm:nominal"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "firstrun-BIG-IP": {
+                                "command": {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "f5-rest-node /shared/f5-cloud-libs/scripts/runScript.js",
+                                            "--wait-for ONBOARD_DONE",
+                                            "--file /tmp/firstrun.sh",
+                                            "--log-level verbose",
+                                            "-o /var/log/firstrun_1.log",
+                                            "--background"
+                                        ]
+                                    ]
+                                }
+                            }
+                        },
+                        "files": {
+                            "/tmp/firstrun.config": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/bash\n",
+                                            "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+                                            "TZ='UTC'\n",
+                                            "BIGIP_ADMIN_USERNAME='",
+                                            {
+                                                "Ref": "adminUsername"
+                                            },
+                                            "'\n",
+                                            "BIGIP_ADMIN_PASSWORD='",
+                                            {
+                                                "Ref": "adminPassword"
+                                            },
+                                            "'\n",
+                                            "REGKEY=",
+                                            {
+                                                "Ref": "licenseKey2"
+                                            },
+                                            "\n",
+                                            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                                            "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                                            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                                            "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                                            "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                                            "VPC_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-block`\n",
+                                            "VPC_NET=${VPC_CIDR_BLOCK%/*}\n",
+                                            "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
+                                            "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n",
+                                            "MGMTIP='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "Bigip2ManagementInterface",
+                                                    "PrimaryPrivateIpAddress"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTIP='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "Bigip2subnet1Az2Interface",
+                                                    "PrimaryPrivateIpAddress"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTPRIVIP='",
+                                            {
+                                                "Fn::Select": [
+                                                    "0",
+                                                    {
+                                                        "Fn::GetAtt": [
+                                                            "Bigip2subnet1Az2Interface",
+                                                            "SecondaryPrivateIpAddresses"
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTMASK='24'\n",
+                                            "POOLMEM='",
+                                            {
+                                                "Ref": "webserverPrivateIp"
+                                            },
+                                            "'\n",
+                                            "POOLMEMPORT=80\n",
+                                            "APPNAME='demo-app-1'\n",
+                                            "VIRTUALSERVERPORT=80\n",
+                                            "CRT='default.crt'\n",
+                                            "KEY='default.key'\n",
+                                            "IAM_ACCESS_KEY='",
+                                            {
+                                                "Ref": "iamAccessKey"
+                                            },
+                                            "'\n",
+                                            "IAM_SECRET_KEY='",
+                                            {
+                                                "Ref": "iamSecretKey"
+                                            },
+                                            "'\n"
+                                        ]
+                                    ]
+                                },
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root"
+                            },
+                            "/tmp/firstrun.sh": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/bash\n",
+                                            ". /tmp/firstrun.config\n",
+                                            ". /tmp/firstrun.utils\n",
+                                            "FILE=/tmp/firstrun.log\n",
+                                            "if [ ! -e $FILE ]\n",
+                                            " then\n",
+                                            "     touch $FILE\n",
+                                            "     nohup $0 0<&- &>/dev/null &\n",
+                                            "     exit\n",
+                                            "fi\n",
+                                            "exec 1<&-\n",
+                                            "exec 2<&-\n",
+                                            "exec 1<>$FILE\n",
+                                            "exec 2>&1\n",
+                                            "date\n",
+                                            "echo 'starting tmsh config'\n",
+                                            "tmsh modify sys global-settings aws-access-key ${IAM_ACCESS_KEY}\n",
+                                            "tmsh modify sys global-settings aws-secret-key ${IAM_SECRET_KEY}\n",
+                                            "tmsh create net vlan external interfaces add { 1.1 } \n",
+                                            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                            "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
+                                            "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
+                                            "tmsh modify sys db dhclient.mgmt { value disable }\n",
+                                            "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
+                                            "tmsh save /sys config\n",
+                                            "echo 'start install byol license'\n",
+                                            "networkUp 120 \n",
+                                            "LicenseBigIP ${REGKEY}\n",
+                                            "checkStatusnoret\n",
+                                            "sleep 20 \n",
+                                            "tmsh save /sys config\n",
+                                            "tmsh save /sys config\n",
+                                            "date\n",
+                                            "# for security purposes, remove firstrun.config\n",
+                                            "# rm /tmp/firstrun.config\n"
+                                        ]
+                                    ]
+                                },
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root"
+                            },
+                            "/tmp/firstrun.utils": {
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root",
+                                "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
+                            }
+                        },
+                        "sources": {
+                            "/shared": "https://f5-cloud-libs.s3.amazonaws.com/f5-cloud-libs.tar.gz"
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "BigipRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Ref": "imageName"
+                        }
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "instanceType"
+                },
+                "KeyName": {
+                    "Ref": "sshKey"
+                },
+                "NetworkInterfaces": [
+                    {
+                        "Description": "Management Interface",
+                        "DeviceIndex": "0",
+                        "NetworkInterfaceId": {
+                            "Ref": "Bigip2ManagementInterface"
+                        }
+                    },
+                    {
+                        "Description": "Public or External Interface",
+                        "DeviceIndex": "1",
+                        "NetworkInterfaceId": {
+                            "Ref": "Bigip2subnet1Az2Interface"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Big-IP: ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash\n",
+                                "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " -r ",
+                                "Bigip2Instance",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "Type": "AWS::EC2::Instance"
+        },
+        "Bigip2ManagementEipAddress": {
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "Bigip2ManagementEipAssociation": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "Bigip2ManagementEipAddress",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "Bigip2ManagementInterface"
+                }
+            },
+            "Type": "AWS::EC2::EIPAssociation"
+        },
+        "Bigip2ManagementInterface": {
+            "Properties": {
+                "Description": "Management Interface for the Bigip",
+                "GroupSet": [
+                    {
+                        "Ref": "bigipManagementSecurityGroup"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "managementSubnetAz2"
+                }
+            },
+            "Type": "AWS::EC2::NetworkInterface"
+        },
+        "Bigip2subnet1Az2Interface": {
+            "Properties": {
+                "Description": "Public External Interface for the Bigip",
+                "GroupSet": [
+                    {
+                        "Ref": "bigipExternalSecurityGroup"
+                    }
+                ],
+                "SecondaryPrivateIpAddressCount": "1",
+                "SubnetId": {
+                    "Ref": "subnet1Az2"
+                }
+            },
+            "Type": "AWS::EC2::NetworkInterface"
+        },
+        "Bigip2subnet1Az2SelfEipAddress": {
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "Bigip2subnet1Az2SelfEipAssociation": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "Bigip2subnet1Az2SelfEipAddress",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "Bigip2subnet1Az2Interface"
+                },
+                "PrivateIpAddress": {
+                    "Fn::GetAtt": [
+                        "Bigip2subnet1Az2Interface",
+                        "PrimaryPrivateIpAddress"
+                    ]
+                }
+            },
+            "Type": "AWS::EC2::EIPAssociation"
+        }
+    }
+}

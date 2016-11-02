@@ -5,29 +5,33 @@
 
 ## Introduction
 
-This solution implements an ARM Template to deploy a base example of F5 in a cloud-focused single NIC deployment.  This is the standard Cloud design where the compute instance of
-F5 is running with a single interface, where both management and data plane traffic is processed.  This is a traditional model in the cloud where the deployment is considered one-armed.
-
+This solution implements a Cloud Formation Template to deploy a base example of F5 in a two NIC deployment. In a two NIC implementation, interface #1 is for management and data-plane 
+traffic from the Internet, and interface #2 is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. There are two templates, 
+BYOL edition allows you to input an existing BIG-IP license, or hourly which utilizes pay as you go hourly billing. The “existing stack” cft incorporates existing Amazon Vpc. Check out 
+our templates located in the “learning-stacks” folder if you would like to run a “full stack” which creates and configures Big-Ip, AWS Vpc,  as well as a backend Webserver.
 ## Documentation
 
 Please see the project documentation - This is still being created
 
 ## Installation
 
-You have three options for deploying this template: 
-  - Using the Azure deploy button 
-  - Using [PowerShell](#powershell)
-  - Using [CLI Tools](#cli)
+You have 2 options for deploying this template:
+  - Using the  Amazon Web Service deploy button
+  - Using AWS Command Line Interface
 
-### <a name="azure"></a>Azure deploy button
+### <a name="aws"></a>Amazon Web Services deploy button
 
-Use this button to deploy the template: 
+Use this button to deploy the hourly template: 
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsevedge%2Ff5-azure-arm-templates%2Fmaster%2Fazure-arm-1nic%2Fazuredeploy.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-Hourly&templateURL=https://s3-us-west-2.amazonaws.com/f5-dev/existing-stack-hourly-2nic-bigip.template" target="_blank">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 
+Use this button to deploy the BYOL template: 
 
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BYOL&templateURL=https://s3-us-west-2.amazonaws.com/f5-dev/existing-stack-byol-2nic-bigip.template" target="_blank">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
+</a>
 
 ### <a name="powershell"></a>PowerShell
 

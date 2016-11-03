@@ -70,6 +70,20 @@ Use this button to deploy the **BYOL** template:
 <br>
 <br>
 
+| Parameter | Required | Description |
+| --- | --- | --- |
+| adminPassword | x | Type the BIG-IP admin password |
+| adminUsername | x | Common VPC for whole deployment |
+| bigipExternalSecurityGroup | x | Public or External Security Group ID |
+| imageName | x | F5 BIG-IP Performance Type |
+| instanceType | x | BIG-IP virtual instance type |
+| licenseKey1 | x | Type or paste your F5 BYOL regkey here |
+| managementGuiPort | x | Port to use for the management port GUI |
+| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| subnet1Az1 | x | Public or External subnet ID |
+| Vpc | x | Common VPC for the deployment |
+| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
 
 
 ### <a name="cli"></a>AWS CLI Usage

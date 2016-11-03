@@ -27,7 +27,9 @@ You have two options for deploying this template:
   - Using [CLI Tools](#cli)
 
 ### Using the AWS deploy buttons
-The easiest way to deploy of the of CloudFormation templates is to use the appropriate Launch button below.
+The easiest way to deploy of the of CloudFormation templates is to use the appropriate Launch button.
+ - Hourly
+ - [BYOL](#byol)
 
 **Hourly deploy button**
 
@@ -37,8 +39,27 @@ Use this button to deploy the **hourly** template:
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 <br>
+**Hourly Parameters**
+### Usage ###
+Use this template to automate the autoscale implementation by providing the parameter values. You can use or change the default parameter values, which are defined in the AWS CloudFormation template on the AWS Console.  If using the AWS CLI, use the following JSON format parameter file
+
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| adminPassword | x | Type the BIG-IP admin password |
+| adminUsername | x | Common VPC for whole deployment |
+| bigipExternalSecurityGroup | x | Public or External Security Group ID |
+| imageName | x | F5 BIG-IP Performance Type |
+| instanceType | x | BIG-IP virtual instance type |
+| managementGuiPort | x | Port to use for the management port GUI |
+| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| subnet1Az1 | x | Public or External subnet ID |
+| Vpc | x | Common VPC for the deployment |
+| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
+
 <br>
-  **BYOL deploy button**
+<a name="byol"></a>**BYOL deploy button**
 
 Use this button to deploy the **BYOL** template: 
 

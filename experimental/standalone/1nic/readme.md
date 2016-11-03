@@ -40,6 +40,8 @@ Use this button to deploy the **hourly** template:
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 <br>
+<br>
+
 **Hourly Parameters**
 After clicking the Launch button, you must specify the following parameters.
 

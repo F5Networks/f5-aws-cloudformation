@@ -30,6 +30,7 @@ You have two options for deploying this template:
 The easiest way to deploy of the of CloudFormation templates is to use the appropriate Launch button.
  - Hourly
  - [BYOL](#byol)
+<br><br>
 
 **Hourly deploy button**
 

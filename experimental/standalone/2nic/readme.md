@@ -5,8 +5,7 @@
 
 ## Introduction
 
-This solution implements an CloudFormation Template to deploy a base example of F5 in a cloud-focused single NIC deployment.  This is the standard Cloud design where the compute instance of
-F5 is running with a single interface, where both management and data plane traffic is processed.  This is a traditional model in the cloud where the deployment is considered one-armed.
+This solution implements a Cloud Formation Template to deploy a base example of F5 in a two NIC deployment. In a two NIC implementation, interface #1 is for management and data-plane traffic from the Internet, and interface #2 is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. 
 
 This solution provides two different template options:
   - **BYOL**<br>
@@ -37,7 +36,23 @@ Use this button to deploy the **hourly** template:
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 <br>
-<br>
+After clicking the Launch button, you must specify the following parameters.
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| adminPassword | x | Type the BIG-IP admin password |
+| adminUsername | x | Type the BIG_IP user name |
+| bigipExternalSecurityGroup | x | Public or External Security Group ID |
+| bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
+| imageName | x | F5 BIG-IP Performance Type |
+| instanceType | x | BIG-IP virtual instance type |
+| managementSubnetAz1 | x | Management subnet ID |
+| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| subnet1Az1 | x | Public or External subnet ID |
+| Vpc | x | Common VPC for the deployment |
+| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
+
   **BYOL deploy button**
 
 Use this button to deploy the **BYOL** template: 
@@ -47,8 +62,28 @@ Use this button to deploy the **BYOL** template:
 </a>
 
 <br>
-<br>
+After clicking the Launch button, you must specify the following parameters.
 
+| Parameter | Required | Description |
+| --- | --- | --- |
+| adminPassword | x | Type the BIG-IP admin password |
+| adminUsername | x | Type the BIG_IP user name |
+| bigipExternalSecurityGroup | x | Public or External Security Group ID |
+| bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
+| iamAccessKey | x | Type the IAM Access Key |
+| iamSecretKey | x | Type the IAM Secret Key for BIG-IP |
+| imageName | x | F5 BIG-IP Performance Type |
+| instanceType | x | BIG-IP virtual instance type |
+| licenseKey1 | x | Type or paste your F5 BYOL regkey here |
+| licenseKey1 | x | Type or paste your F5 BYOL regkey here |
+| managementSubnetAz1 | x | Management subnet ID |
+| managementSubnetAz2 | x | Management subnet ID |
+| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| subnet1Az1 | x | Public or External subnet ID |
+| subnet1Az2 | x | Public or External subnet ID |
+| Vpc | x | Common VPC for the deployment |
+| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
 
 
 ### <a name="cli"></a>AWS CLI Usage

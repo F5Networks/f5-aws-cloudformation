@@ -46,7 +46,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Parameter | Required | Description |
 | --- | --- | --- |
 | adminPassword | x | Type the BIG-IP admin password |
-| adminUsername | x | Common VPC for whole deployment |
+| adminUsername | x | Type the BIG_IP user name |
 | bigipExternalSecurityGroup | x | Public or External Security Group ID |
 | imageName | x | F5 BIG-IP Performance Type |
 | instanceType | x | BIG-IP virtual instance type |
@@ -74,7 +74,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Parameter | Required | Description |
 | --- | --- | --- |
 | adminPassword | x | Type the BIG-IP admin password |
-| adminUsername | x | Common VPC for whole deployment |
+| adminUsername | x | Type the BIG-IP user name |
 | bigipExternalSecurityGroup | x | Public or External Security Group ID |
 | imageName | x | F5 BIG-IP Performance Type |
 | instanceType | x | BIG-IP virtual instance type |

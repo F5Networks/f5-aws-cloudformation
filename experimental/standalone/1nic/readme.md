@@ -40,8 +40,7 @@ Use this button to deploy the **hourly** template:
 </a>
 <br>
 **Hourly Parameters**
-### Usage ###
-Use this template to automate the autoscale implementation by providing the parameter values. You can use or change the default parameter values, which are defined in the AWS CloudFormation template on the AWS Console.  If using the AWS CLI, use the following JSON format parameter file
+After clicking the Launch button, you must specify the following parameters.
 
 
 | Parameter | Required | Description |
@@ -69,6 +68,8 @@ Use this button to deploy the **BYOL** template:
 
 <br>
 <br>
+**BYOL Parameters**
+After clicking the Launch button, you must specify the following parameters.
 
 | Parameter | Required | Description |
 | --- | --- | --- |

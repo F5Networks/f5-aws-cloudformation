@@ -38,6 +38,28 @@ Use this button to deploy the **hourly** template:
 </a>
 <br>
 <br>
+
+After clicking the Launch button, you must specify the following parameters.
+<br>
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| adminPassword | x | Type the BIG-IP admin password |
+| adminUsername | x | Type the BIG_IP user name |
+| bigipExternalSecurityGroup | x | Public or External Security Group ID |
+| bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
+| imageName | x | F5 BIG-IP Performance Type |
+| instanceType | x | BIG-IP virtual instance type |
+| managementSubnetAz1 | x | Management subnet ID |
+| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| subnet1Az1 | x | Public or External subnet ID |
+| Vpc | x | Common VPC for the deployment |
+| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
+
+
+<br>
+<br>
   **BYOL deploy button**
 
 Use this button to deploy the **BYOL** template: 
@@ -47,7 +69,29 @@ Use this button to deploy the **BYOL** template:
 </a>
 
 <br>
-<br>
+After clicking the Launch button, you must specify the following parameters.
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| adminPassword | x | Type the BIG-IP admin password |
+| adminUsername | x | Type the BIG_IP user name |
+| bigipExternalSecurityGroup | x | Public or External Security Group ID |
+| bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
+| iamAccessKey | x | Type the IAM Access Key |
+| iamSecretKey | x | Type the IAM Secret Key for BIG-IP |
+| imageName | x | F5 BIG-IP Performance Type |
+| instanceType | x | BIG-IP virtual instance type |
+| licenseKey1 | x | Type or paste your F5 BYOL regkey here |
+| licenseKey2 | x | Type or paste your F5 BYOL regkey here |
+| managementSubnetAz1 | x | Management subnet ID |
+| managementSubnetAz2 | x | Management subnet ID |
+| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| subnet1Az1 | x | Public or External subnet ID |
+| subnet1Az2 | x | Public or External subnet ID |
+| Vpc | x | Common VPC for the deployment |
+| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
+
 
 
 

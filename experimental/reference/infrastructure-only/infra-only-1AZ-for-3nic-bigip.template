@@ -50,7 +50,7 @@
             }
         },
         "WebserverPublicIp": {
-            "Description": "Public Ip for Webserver",
+            "Description": "Public IP for Webserver",
             "Value": {
                 "Fn::GetAtt": [
                     "Webserver",
@@ -59,7 +59,7 @@
             }
         },
         "WebserverPublicUrl": {
-            "Description": "Public Url for Webserver",
+            "Description": "Public URL for the Webserver",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -112,7 +112,7 @@
             }
         },
         "webserverPrivateIp": {
-            "Description": "Private Ip for Webserver",
+            "Description": "Private IP for Webserver",
             "Value": {
                 "Fn::GetAtt": [
                     "Webserver",
@@ -618,7 +618,7 @@
         },
         "bigipManagementSecurityGroup": {
             "Properties": {
-                "GroupDescription": "Big-IP Management UI rules",
+                "GroupDescription": "BIG-IP Management UI rules",
                 "SecurityGroupIngress": [
                     {
                         "CidrIp": {

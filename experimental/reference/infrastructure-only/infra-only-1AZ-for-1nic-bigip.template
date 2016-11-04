@@ -50,7 +50,7 @@
             }
         },
         "WebserverPublicIp": {
-            "Description": "Public Ip for Webserver",
+            "Description": "Public IP for Webserver",
             "Value": {
                 "Fn::GetAtt": [
                     "Webserver",
@@ -59,7 +59,7 @@
             }
         },
         "WebserverPublicUrl": {
-            "Description": "Public Url for Webserver",
+            "Description": "Public URL for the Webserver",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -88,7 +88,7 @@
             }
         },
         "webserverPrivateIp": {
-            "Description": "Private Ip for Webserver",
+            "Description": "Private IP for Webserver",
             "Value": {
                 "Fn::GetAtt": [
                     "Webserver",
@@ -120,7 +120,7 @@
         "managementGuiPort": {
             "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
             "Default": "443",
-            "Description": "Port to use for the managment GUI",
+            "Description": "Port to use for the management GUI",
             "Type": "Number"
         },
         "restrictedSrcAddress": {

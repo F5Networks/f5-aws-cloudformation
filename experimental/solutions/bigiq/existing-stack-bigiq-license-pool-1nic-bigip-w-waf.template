@@ -52,7 +52,7 @@
     },
     "Outputs": {
         "Bigip1ExternalInterfacePrivateIp": {
-            "Description": "Internally routable Ip of public interface on BIG-IP",
+            "Description": "Internally routable IP of the public interface on BIG-IP",
             "Value": {
                 "Fn::GetAtt": [
                     "Bigip1subnet1Az1Interface",
@@ -61,13 +61,13 @@
             }
         },
         "Bigip1InstanceId": {
-            "Description": "Instance Id of Big-IP in Amazon",
+            "Description": "Instance Id of BIG-IP in Amazon",
             "Value": {
                 "Ref": "Bigip1Instance"
             }
         },
         "Bigip1Url": {
-            "Description": "Big-IP Management GUI",
+            "Description": "BIG-IP Management GUI",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -106,13 +106,13 @@
             }
         },
         "Bigip1subnet1Az1Interface": {
-            "Description": "External interface Id on Big-IP",
+            "Description": "External interface Id on BIG-IP",
             "Value": {
                 "Ref": "Bigip1subnet1Az1Interface"
             }
         },
         "Bigip1subnet1Az1SelfEipAddress": {
-            "Description": "IP Address of External interface attached to BIG-IP",
+            "Description": "IP Address of teh External interface attached to BIG-IP",
             "Value": {
                 "Ref": "Bigip1subnet1Az1SelfEipAddress"
             }
@@ -129,55 +129,55 @@
     },
     "Parameters": {
         "Vpc": {
-            "ConstraintDescription": "Must be an existing VPC within working region.",
+            "ConstraintDescription": "This must be an existing VPC within the working region.",
             "Type": "AWS::EC2::VPC::Id"
         },
         "adminPassword": {
-            "ConstraintDescription": "Please verify your BIG-IP Admin Password",
-            "Description": "Please enter your BIG-IP Admin Password",
+            "ConstraintDescription": "Verify your BIG-IP Admin Password",
+            "Description": "Type your BIG-IP Admin Password",
             "MaxLength": "255",
             "MinLength": "1",
             "NoEcho": true,
             "Type": "String"
         },
         "adminUsername": {
-            "ConstraintDescription": "Please verify your BIG-IP Admin Username",
+            "ConstraintDescription": "Verify your BIG-IP Admin Username",
             "Default": "admin",
-            "Description": "Please enter your BIG-IP Admin Username",
+            "Description": "Type your BIG-IP Admin Username",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
         },
         "bigipExternalSecurityGroup": {
-            "ConstraintDescription": "Must be security group ID within existing VPC",
+            "ConstraintDescription": "The security group ID must be within an existing VPC",
             "Description": "Public or External Security Group ID",
             "Type": "AWS::EC2::SecurityGroup::Id"
         },
         "bigiqAddress": {
-            "ConstraintDescription": "Please verify your BIG-IQ Hostname or IP",
-            "Description": "Please enter your BIG-IQ Hostname or IP",
+            "ConstraintDescription": "Verify your BIG-IQ Hostname or IP",
+            "Description": "Type your BIG-IQ Hostname or IP",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
         },
         "bigiqLicensePoolUUID": {
-            "ConstraintDescription": "Please verify your BIG-IQ License Pool UUID",
-            "Description": "Please enter your BIG-IQ License Pool UUID",
+            "ConstraintDescription": "Verify your BIG-IQ License Pool UUID",
+            "Description": "Type or paste your BIG-IQ License Pool UUID",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
         },
         "bigiqPassword": {
-            "ConstraintDescription": "Please verify your BIG-IQ Password",
-            "Description": "Please enter your BIG-IQ Password",
+            "ConstraintDescription": "Verify your BIG-IQ Password",
+            "Description": "Type your BIG-IQ Password",
             "MaxLength": "255",
             "MinLength": "1",
             "NoEcho": true,
             "Type": "String"
         },
         "bigiqUsername": {
-            "ConstraintDescription": "Please verify your BIG-IQ Username.",
-            "Description": "Please enter your BIG-IQ Username",
+            "ConstraintDescription": "Verify your BIG-IQ Username.",
+            "Description": "Type your BIG-IQ Username",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
@@ -188,9 +188,9 @@
                 "Better",
                 "Best"
             ],
-            "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
+            "ConstraintDescription": "Must be a valid F5 BIG-IP performance type",
             "Default": "Best",
-            "Description": "F5 Bigip Performance Type",
+            "Description": "F5 BIG-IP Performance Type",
             "Type": "String"
         },
         "instanceType": {
@@ -205,7 +205,7 @@
                 "c4.8xlarge",
                 "cc2.8xlarge"
             ],
-            "ConstraintDescription": "must be a valid Big-IP EC2 instance type",
+            "ConstraintDescription": "must be a valid BIG-IP EC2 instance type",
             "Default": "m3.2xlarge",
             "Description": "F5 BIG-IP Virtual Instance Type",
             "Type": "String"
@@ -213,7 +213,7 @@
         "managementGuiPort": {
             "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
             "Default": "443",
-            "Description": "Port to use for the managment GUI",
+            "Description": "Port to use for the management GUI",
             "Type": "Number"
         },
         "restrictedSrcAddress": {
@@ -230,13 +230,13 @@
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "subnet1Az1": {
-            "ConstraintDescription": "Must be subnet ID within existing VPC",
+            "ConstraintDescription": "The subnet ID must be within an existing VPC",
             "Description": "Public or External subnet ID",
             "Type": "AWS::EC2::Subnet::Id"
         },
         "webserverPrivateIp": {
-            "ConstraintDescription": "Web Server IP used for Big-IP pool Member",
-            "Description": "Web Server IP used for Big-IP pool member",
+            "ConstraintDescription": "Web Server IP used for the BIG-IP pool Member",
+            "Description": "Web Server IP used for BIG-IP pool member",
             "Type": "String"
         }
     },
@@ -507,7 +507,7 @@
         },
         "Bigip1subnet1Az1Interface": {
             "Properties": {
-                "Description": "Public External Interface for the Bigip",
+                "Description": "Public External Interface for the BIG-IP",
                 "GroupSet": [
                     {
                         "Ref": "bigipExternalSecurityGroup"

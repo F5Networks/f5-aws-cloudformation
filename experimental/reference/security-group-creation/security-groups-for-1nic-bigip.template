@@ -11,13 +11,13 @@
     },
     "Parameters": {
         "Vpc": {
-            "ConstraintDescription": "Must be an existing VPC within working region.",
+            "ConstraintDescription": "This must be an existing VPC within the working region.",
             "Type": "AWS::EC2::VPC::Id"
         },
         "managementGuiPort": {
             "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
             "Default": "443",
-            "Description": "Port to use for the managment GUI",
+            "Description": "Port to use for the management GUI",
             "Type": "Number"
         },
         "restrictedSrcAddress": {

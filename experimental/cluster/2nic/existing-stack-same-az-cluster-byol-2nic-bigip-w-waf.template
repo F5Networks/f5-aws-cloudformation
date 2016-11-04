@@ -52,7 +52,7 @@
     },
     "Outputs": {
         "Bigip1ExternalInterfacePrivateIp": {
-            "Description": "Internally routable Ip of public interface on BIG-IP",
+            "Description": "Internally routable IP of the public interface on BIG-IP",
             "Value": {
                 "Fn::GetAtt": [
                     "Bigip1subnet1Az1Interface",
@@ -61,25 +61,25 @@
             }
         },
         "Bigip1InstanceId": {
-            "Description": "Instance Id of Big-IP in Amazon",
+            "Description": "Instance Id of BIG-IP in Amazon",
             "Value": {
                 "Ref": "Bigip1Instance"
             }
         },
         "Bigip1ManagementEipAddress": {
-            "Description": "Ip address of management port on BIG-IP",
+            "Description": "IP address of the management port on BIG-IP",
             "Value": {
                 "Ref": "Bigip1ManagementEipAddress"
             }
         },
         "Bigip1ManagementInterface": {
-            "Description": "Management interface Id on BIG-IP",
+            "Description": "Management interface ID on BIG-IP",
             "Value": {
                 "Ref": "Bigip1ManagementInterface"
             }
         },
         "Bigip1ManagementInterfacePrivateIp": {
-            "Description": "Internally routable Ip of management interface on BIG-IP",
+            "Description": "Internally routable IP of the management interface on BIG-IP",
             "Value": {
                 "Fn::GetAtt": [
                     "Bigip1ManagementInterface",
@@ -88,7 +88,7 @@
             }
         },
         "Bigip1Url": {
-            "Description": "Big-IP Management GUI",
+            "Description": "BIG-IP Management GUI",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -134,19 +134,19 @@
             }
         },
         "Bigip1subnet1Az1Interface": {
-            "Description": "External interface Id on Big-IP",
+            "Description": "External interface Id on BIG-IP",
             "Value": {
                 "Ref": "Bigip1subnet1Az1Interface"
             }
         },
         "Bigip1subnet1Az1SelfEipAddress": {
-            "Description": "IP Address of External interface attached to BIG-IP",
+            "Description": "IP Address of teh External interface attached to BIG-IP",
             "Value": {
                 "Ref": "Bigip1subnet1Az1SelfEipAddress"
             }
         },
         "Bigip2ExternalInterfacePrivateIp": {
-            "Description": "Internally routable Ip of public interface on BIG-IP",
+            "Description": "Internally routable IP of the public interface on BIG-IP",
             "Value": {
                 "Fn::GetAtt": [
                     "Bigip2subnet1Az2Interface",
@@ -155,25 +155,25 @@
             }
         },
         "Bigip2InstanceId": {
-            "Description": "Instance Id of Big-IP in Amazon",
+            "Description": "Instance Id of BIG-IP in Amazon",
             "Value": {
                 "Ref": "Bigip2Instance"
             }
         },
         "Bigip2ManagementEipAddress": {
-            "Description": "Ip address of management port on BIG-IP",
+            "Description": "IP address of the management port on BIG-IP",
             "Value": {
                 "Ref": "Bigip2ManagementEipAddress"
             }
         },
         "Bigip2ManagementInterface": {
-            "Description": "Management interface Id on BIG-IP",
+            "Description": "Management interface ID on BIG-IP",
             "Value": {
                 "Ref": "Bigip2ManagementInterface"
             }
         },
         "Bigip2ManagementInterfacePrivateIp": {
-            "Description": "Internally routable Ip of management interface on BIG-IP",
+            "Description": "Internally routable IP of the management interface on BIG-IP",
             "Value": {
                 "Fn::GetAtt": [
                     "Bigip2ManagementInterface",
@@ -182,7 +182,7 @@
             }
         },
         "Bigip2Url": {
-            "Description": "Big-IP Management GUI",
+            "Description": "BIG-IP Management GUI",
             "Value": {
                 "Fn::Join": [
                     "",
@@ -199,13 +199,13 @@
             }
         },
         "Bigip2subnet1Az2Interface": {
-            "Description": "External interface Id on Big-IP",
+            "Description": "External interface Id on BIG-IP",
             "Value": {
                 "Ref": "Bigip2subnet1Az2Interface"
             }
         },
         "Bigip2subnet1Az2SelfEipAddress": {
-            "Description": "IP Address of External interface attached to BIG-IP",
+            "Description": "IP Address of teh External interface attached to BIG-IP",
             "Value": {
                 "Ref": "Bigip2subnet1Az2SelfEipAddress"
             }
@@ -231,33 +231,33 @@
     },
     "Parameters": {
         "Vpc": {
-            "ConstraintDescription": "Must be an existing VPC within working region.",
+            "ConstraintDescription": "This must be an existing VPC within the working region.",
             "Type": "AWS::EC2::VPC::Id"
         },
         "adminPassword": {
-            "ConstraintDescription": "Please verify your BIG-IP Admin Password",
-            "Description": "Please enter your BIG-IP Admin Password",
+            "ConstraintDescription": "Verify your BIG-IP Admin Password",
+            "Description": "Type your BIG-IP Admin Password",
             "MaxLength": "255",
             "MinLength": "1",
             "NoEcho": true,
             "Type": "String"
         },
         "adminUsername": {
-            "ConstraintDescription": "Please verify your BIG-IP Admin Username",
+            "ConstraintDescription": "Verify your BIG-IP Admin Username",
             "Default": "admin",
-            "Description": "Please enter your BIG-IP Admin Username",
+            "Description": "Type your BIG-IP Admin Username",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
         },
         "bigipExternalSecurityGroup": {
-            "ConstraintDescription": "Must be security group ID within existing VPC",
+            "ConstraintDescription": "The security group ID must be within an existing VPC",
             "Description": "Public or External Security Group ID",
             "Type": "AWS::EC2::SecurityGroup::Id"
         },
         "bigipManagementSecurityGroup": {
-            "ConstraintDescription": "Must be security group ID within existing VPC",
-            "Description": "Bigip Management Security Group",
+            "ConstraintDescription": "The security group ID must be within an existing VPC",
+            "Description": "BIG-IP Management Security Group",
             "Type": "AWS::EC2::SecurityGroup::Id"
         },
         "iamAccessKey": {
@@ -272,7 +272,7 @@
         "iamSecretKey": {
             "AllowedPattern": "[\\x20-\\x7E]*",
             "ConstraintDescription": "can contain only ASCII characters.",
-            "Description": "IAM Secret Key for Big-IP",
+            "Description": "IAM Secret Key for BIG-IP",
             "MaxLength": "255",
             "MinLength": "1",
             "NoEcho": true,
@@ -284,9 +284,9 @@
                 "Better",
                 "Best"
             ],
-            "ConstraintDescription": "Must be a valid F5 Big-IP performance type",
+            "ConstraintDescription": "Must be a valid F5 BIG-IP performance type",
             "Default": "Best",
-            "Description": "F5 Bigip Performance Type",
+            "Description": "F5 BIG-IP Performance Type",
             "Type": "String"
         },
         "instanceType": {
@@ -301,29 +301,29 @@
                 "c4.8xlarge",
                 "cc2.8xlarge"
             ],
-            "ConstraintDescription": "must be a valid Big-IP EC2 instance type",
+            "ConstraintDescription": "must be a valid BIG-IP EC2 instance type",
             "Default": "m3.2xlarge",
             "Description": "F5 BIG-IP Virtual Instance Type",
             "Type": "String"
         },
         "licenseKey1": {
             "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
-            "ConstraintDescription": "Please verify your F5 BYOL regkey.",
-            "Description": "Please enter your F5 BYOL regkey here:",
+            "ConstraintDescription": "Verify your F5 BYOL regkey.",
+            "Description": "Paste or type your F5 BYOL regkey here:",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
         },
         "licenseKey2": {
             "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
-            "ConstraintDescription": "Please verify your F5 BYOL regkey.",
-            "Description": "Please enter your F5 BYOL regkey here:",
+            "ConstraintDescription": "Verify your F5 BYOL regkey.",
+            "Description": "Paste or type your F5 BYOL regkey here:",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
         },
         "managementSubnetAz1": {
-            "ConstraintDescription": "Must be subnet ID within existing VPC",
+            "ConstraintDescription": "The subnet ID must be within an existing VPC",
             "Description": "Management Subnet ID",
             "Type": "AWS::EC2::Subnet::Id"
         },
@@ -341,13 +341,13 @@
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "subnet1Az1": {
-            "ConstraintDescription": "Must be subnet ID within existing VPC",
+            "ConstraintDescription": "The subnet ID must be within an existing VPC",
             "Description": "Public or External subnet ID",
             "Type": "AWS::EC2::Subnet::Id"
         },
         "webserverPrivateIp": {
-            "ConstraintDescription": "Web Server IP used for Big-IP pool Member",
-            "Description": "Web Server IP used for Big-IP pool member",
+            "ConstraintDescription": "Web Server IP used for the BIG-IP pool Member",
+            "Description": "Web Server IP used for BIG-IP pool member",
             "Type": "String"
         }
     },
@@ -709,7 +709,7 @@
         },
         "Bigip1ManagementInterface": {
             "Properties": {
-                "Description": "Management Interface for the Bigip",
+                "Description": "Management Interface for the BIG-IP",
                 "GroupSet": [
                     {
                         "Ref": "bigipManagementSecurityGroup"
@@ -754,7 +754,7 @@
         },
         "Bigip1subnet1Az1Interface": {
             "Properties": {
-                "Description": "Public External Interface for the Bigip",
+                "Description": "Public External Interface for the BIG-IP",
                 "GroupSet": [
                     {
                         "Ref": "bigipExternalSecurityGroup"
@@ -1099,7 +1099,7 @@
         },
         "Bigip2ManagementInterface": {
             "Properties": {
-                "Description": "Management Interface for the Bigip",
+                "Description": "Management Interface for the BIG-IP",
                 "GroupSet": [
                     {
                         "Ref": "bigipManagementSecurityGroup"
@@ -1113,7 +1113,7 @@
         },
         "Bigip2subnet1Az1Interface": {
             "Properties": {
-                "Description": "Public External Interface for the Bigip",
+                "Description": "Public External Interface for the BIG-IP",
                 "GroupSet": [
                     {
                         "Ref": "bigipExternalSecurityGroup"

@@ -23,7 +23,7 @@
     },
     "Parameters": {
         "Vpc": {
-            "ConstraintDescription": "Must be an existing VPC within working region.",
+            "ConstraintDescription": "This must be an existing VPC within the working region.",
             "Type": "AWS::EC2::VPC::Id"
         },
         "restrictedSrcAddress": {
@@ -121,7 +121,7 @@
         },
         "bigipManagementSecurityGroup": {
             "Properties": {
-                "GroupDescription": "Big-IP Management UI rules",
+                "GroupDescription": "BIG-IP Management UI rules",
                 "SecurityGroupIngress": [
                     {
                         "CidrIp": {

@@ -26,7 +26,9 @@ You have two options for deploying this template:
   - Using [CLI Tools](#cli)
 
 ### Using the AWS deploy buttons
-The easiest way to deploy of the of CloudFormation templates is to use the appropriate Launch button below.
+The easiest way to deploy of the of CloudFormation templates is to use the appropriate Launch button.
+<br>
+<br>
 
 **Hourly deploy button**
 
@@ -36,7 +38,10 @@ Use this button to deploy the **hourly** template:
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 <br>
+<br>
+
 After clicking the Launch button, you must specify the following parameters.
+<br>
 
 | Parameter | Required | Description |
 | --- | --- | --- |
@@ -52,6 +57,9 @@ After clicking the Launch button, you must specify the following parameters.
 | subnet1Az1 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |
 | webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
+
+<br>
+<br>
 
   **BYOL deploy button**
 

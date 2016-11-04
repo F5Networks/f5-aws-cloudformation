@@ -37,7 +37,7 @@
             "adminPassword",
             "managementGuiPort",
             "timezone",
-            "ntpServers"
+            "ntpServer"
           ]
         },
         {
@@ -107,8 +107,8 @@
         "timezone":{
           "default": "Timezone (Olson)"
         },
-        "ntpServers":{
-          "default": "NTP Servers - space seperated"
+        "ntpServer":{
+          "default": "NTP Server"
         },
         "scalingMinSize": {
           "default": "Minimum Instances"
@@ -135,7 +135,7 @@
           "default": "Elastic Load Balancer for Apps"
         },
         "policyLevel": {
-          "default": "ASM Policy Level"
+          "default": "WAF Policy Level"
         }
       }
     }
@@ -245,8 +245,8 @@
       "Default": "UTC",
       "Type": "String"
     },
-    "ntpServers": {
-      "Description": "Enter a space list of NTP servers. ex. 0.pool.ntp.org 1.pool.ntp.org",
+    "ntpServer": {
+      "Description": "Enter a NTP server. Default to 0.pool.ntp.org",
       "Default": "0.pool.ntp.org",
       "Type": "String"
     },
@@ -303,15 +303,15 @@
       "Default": "XXXXXXX.region.elb.amazonaws.com"
     },
     "policyLevel": {
-      "Description": "ASM Policy Level to protect the application",
+      "Description": "WAF Policy Level to protect the application",
       "Type": "String",
-      "Default": "High",
+      "Default": "high",
       "AllowedValues": [
-        "Low",
-        "Medium",
-        "High"
+        "low",
+        "medium",
+        "high"
       ],
-      "ConstraintDescription": "Please select desired ASM Policy Level"
+      "ConstraintDescription": "Please select desired WAF Policy Level"
     }
   },
   "Mappings": {
@@ -554,6 +554,18 @@
         "AWS::CloudFormation::Init": {
           "config": {
             "files": {
+              "/config/cloud/asm-policy-linux.tar.gz":{
+                "source": "https://s3-us-west-2.amazonaws.com/f5-dev/asm-policy-linux.tar.gz",
+                "mode": "000755",
+                "owner": "root",
+                "group": "root"
+              },
+              "/config/cloud/f5.http.v1.2.0rc4.tmpl":{
+                "source": "http://cdn.f5.com/product/blackbox/staging/azure/f5.http.v1.2.0rc4.tmpl",
+                "mode": "000755",
+                "owner": "root",
+                "group": "root"
+              },                          
               "/config/cloud/f5-cloud-libs.tar.gz":{
                 "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/v1.2.0",
                 "mode": "000755",
@@ -591,6 +603,11 @@
                       "VS_PORT='",
                       {
                         "Ref": "virtualServicePort"
+                      },
+                      "'\n",
+                      "POLICY_LEVEL='",
+                      {
+                        "Ref": "policyLevel"
                       },
                       "'\n",
                       "ADMIN_PASSWORD='",
@@ -637,14 +654,16 @@
                       "   tmsh create ltm node ${APP_NAME} fqdn { name ${POOL_DNS} }\n",
                       "   tmsh create ltm pool ${APP_NAME}_pool members add { ${APP_NAME}:${POOL_MEMBER_PORT} } monitor http\n",
                       "   # BEGIN CUSTOMIZE:  Policy Name/Policy URL, etc. \n",
-                      "   #curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
-                      "   curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/blackbox/aws/asm-policy-linux-high.xml \n",                      
-                      "   tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
-                      "   # modify asm policy names below (ex. /Common/linux-high) to match policy name in the xml file\n",
-                      "   tmsh modify asm policy /Common/linux-high active\n",
+                      "   tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
+                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-high.xml\n",
+                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-medium.xml\n",
+                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-low.xml\n",
+                      "   #tmsh load asm policy file /config/cloud/asm-policy-linux-${POLICY_LEVEL}.xml\n",
+                      "   # modify asm policy names below (ex. /Common/linux-${POLICY_LEVEL}) to match policy name in the xml file\n",
+                      "   tmsh modify asm policy /Common/linux-${POLICY_LEVEL} active\n",
                       "   tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
                       "   tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
-                      "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
+                      "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${POLICY_LEVEL} } } } }\n",
                       "   tmsh create ltm virtual ${APP_NAME}_vs_${VS_PORT} { destination 0.0.0.0:${VS_PORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool ${APP_NAME}_pool profiles replace-all-with { tcp { } http { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
                       "  tmsh save /sys config\n",
                       "fi\n",
@@ -662,6 +681,7 @@
               "001-upack-libs": {
                 "command": { "Fn::Join" : [ " ", [
                                                   "tar xvfz /config/cloud/f5-aws-autoscale-cluster.tar.gz -C /config/cloud;",
+                                                  "tar xvfz /config/cloud/asm-policy-linux.tar.gz -C /config/cloud;",
                                                   "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules;",
                                                   "mv /config/cloud/aws/node_modules/F5Networks-f5-cloud-libs-* /config/cloud/aws/node_modules/f5-cloud-libs;",
                                                   "cd /config/cloud/aws/node_modules/f5-cloud-libs;",
@@ -695,9 +715,8 @@
                                                   "--password '", { "Ref": "adminPassword" },"'",
                                                   "--set-password admin:'", { "Ref": "adminPassword" },"'",
                                                   "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
-                                                  "--ntp 0.us.pool.ntp.org",
-                                                  "--ntp 1.us.pool.ntp.org",
-                                                  "--tz UTC",
+                                                  "--ntp ", { "Ref": "ntpServer" },
+                                                  "--tz ", { "Ref": "timezone" },
                                                   "--dns ${NAME_SERVER}",
                                                   "--module ltm:nominal",
                                                   "--module asm:nominal",
@@ -783,13 +802,13 @@
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "VPCZoneIdentifier": { "Ref": "subnets" },
-        "Cooldown": "1860",
+        "Cooldown": "2400",
         "LoadBalancerNames": [
           {
             "Ref": "bigipElasticLoadBalancer"
           }
         ],
-        "HealthCheckGracePeriod": "1860",
+        "HealthCheckGracePeriod": "2400",
         "HealthCheckType": "ELB",
         "LaunchConfigurationName": {
           "Ref": "BigipLaunchConfig"

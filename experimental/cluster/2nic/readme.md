@@ -1,24 +1,24 @@
-# Deploying the BIG-IP in AWS - 1 NIC
+# Deploying the BIG-IP in AWS - 2 NIC
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
-[![Doc Status](http://readthedocs.org/projects/f5-sdk/badge/?version=latest)](https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-msft-azure-12-1-0.html)
+[![Doc Status](http://readthedocs.org/projects/f5-sdk/badge/?version=latest)](https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html)
 
 ## Introduction
 
-This solution implements an CloudFormation Template to deploy a base example of F5 in a cloud-focused single NIC deployment.  This is the standard Cloud design where the compute instance of
-F5 is running with a single interface, where both management and data plane traffic is processed.  This is a traditional model in the cloud where the deployment is considered one-armed.
+This solution implements a Cloud Formation Template to deploy a base example of F5 in a clustered, highly available configuration across availability zones using a two NIC deployment. In a two NIC implementation, interface #1 is for management and data-plane traffic from the Internet, and interface #2 is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. 
 
-This solution provides two different template options:
+This template deploys and configures two BIG-IPs in a clustered configuration across specified availability zones. The F5 solution provides two different template options:
   - **BYOL**<br>
   The BYOL (bring your own license) template allows you to input an existing BIG-IP license.
   - **Hourly**<br>
   The Hourly template which uses pay-as-you-go hourly billing
   
-  The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
+The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
   
 ## Documentation
 
-Please see the project documentation - This is still being created
+The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.
+
 
 ## Installation
 
@@ -33,21 +33,65 @@ The easiest way to deploy of the of CloudFormation templates is to use the appro
 
 Use this button to deploy the **hourly** template: 
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-Hourly&templateURL=https://s3-us-west-2.amazonaws.com/f5-dev/existing-stack-hourly-1nic-bigip.template">
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-Across-Az-Cluster-2nic-Hourly&templateURL=https://s3-us-west-2.amazonaws.com/f5-dev/existing-stack-across-az-cluster-hourly-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
+<br>
+<br>
+
+After clicking the Launch button, you must specify the following parameters.
+<br>
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| adminPassword | x | Type the BIG-IP admin password |
+| adminUsername | x | Type the BIG_IP user name |
+| bigipExternalSecurityGroup | x | Public or External Security Group ID |
+| bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
+| imageName | x | F5 BIG-IP Performance Type |
+| instanceType | x | BIG-IP virtual instance type |
+| managementSubnetAz1 | x | Management subnet ID |
+| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| subnet1Az1 | x | Public or External subnet ID |
+| Vpc | x | Common VPC for the deployment |
+| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
+
+
 <br>
 <br>
   **BYOL deploy button**
 
 Use this button to deploy the **BYOL** template: 
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-BYOL&templateURL=https://s3-us-west-2.amazonaws.com/f5-dev/existing-stack-byol-1nic-bigip.template">
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-Across-Az-Cluster-2nic-byol&templateURL=https://s3-us-west-2.amazonaws.com/f5-dev/existing-stack-across-az-cluster-byol-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 
 <br>
-<br>
+After clicking the Launch button, you must specify the following parameters.
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| adminPassword | x | Type the BIG-IP admin password |
+| adminUsername | x | Type the BIG_IP user name |
+| bigipExternalSecurityGroup | x | Public or External Security Group ID |
+| bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
+| iamAccessKey | x | Type the IAM Access Key |
+| iamSecretKey | x | Type the IAM Secret Key for BIG-IP |
+| imageName | x | F5 BIG-IP Performance Type |
+| instanceType | x | BIG-IP virtual instance type |
+| licenseKey1 | x | Type or paste your F5 BYOL regkey here |
+| licenseKey2 | x | Type or paste your F5 BYOL regkey here |
+| managementSubnetAz1 | x | Management subnet ID |
+| managementSubnetAz2 | x | Management subnet ID |
+| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| subnet1Az1 | x | Public or External subnet ID |
+| subnet1Az2 | x | Public or External subnet ID |
+| Vpc | x | Common VPC for the deployment |
+| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
+
 
 
 

@@ -211,7 +211,7 @@ def main():
                 Default="443",
                 ConstraintDescription="Must be a valid, unusued port on BIG-IP.",
                 Type="Number",
-                Description="Port to use for the managment GUI",
+                Description="Port to use for the management GUI",
             ))
 
     if bigip == True:
@@ -223,7 +223,7 @@ def main():
                 "instanceType",
 
                 Default="m3.2xlarge",
-                ConstraintDescription="must be a valid Big-IP EC2 instance type",
+                ConstraintDescription="must be a valid BIG-IP EC2 instance type",
                 Type="String",
                 Description="F5 BIG-IP Virtual Instance Type",
                 AllowedValues=[
@@ -247,7 +247,7 @@ def main():
                 "instanceType",
 
                 Default="m3.xlarge",
-                ConstraintDescription="must be a valid Big-IP EC2 instance type",
+                ConstraintDescription="must be a valid BIG-IP EC2 instance type",
                 Type="String",
                 Description="F5 BIG-IP Virtual Instance Type",
                 AllowedValues=[
@@ -274,9 +274,9 @@ def main():
                 "imageName",
 
                 Default="Best1000Mbps",
-                ConstraintDescription="Must be a valid F5 Big-IP performance type",
+                ConstraintDescription="Must be a valid F5 BIG-IP performance type",
                 Type="String",
-                Description="F5 Bigip Performance Type",
+                Description="F5 BIG-IP Performance Type",
                 AllowedValues=[
                                 "Good25Mbps",
                                 "Good200Mbps",
@@ -293,9 +293,9 @@ def main():
             imageName = t.add_parameter(Parameter(
                 "imageName",
                 Default="Best1000Mbps",
-                ConstraintDescription="Must be a valid F5 Big-IP performance type",
+                ConstraintDescription="Must be a valid F5 BIG-IP performance type",
                 Type="String",
-                Description="F5 Bigip Performance Type",
+                Description="F5 BIG-IP Performance Type",
                 AllowedValues=[                     
                                 "Best25Mbps",
                                 "Best200Mbps",
@@ -321,9 +321,9 @@ def main():
                 "imageName",
 
                 Default="Best",
-                ConstraintDescription="Must be a valid F5 Big-IP performance type",
+                ConstraintDescription="Must be a valid F5 BIG-IP performance type",
                 Type="String",
-                Description="F5 Bigip Performance Type",
+                Description="F5 BIG-IP Performance Type",
                 AllowedValues=["Good", "Better", "Best"],
             ))
 
@@ -331,22 +331,22 @@ def main():
             "adminUsername",
 
             Type="String",
-            Description="Please enter your BIG-IP Admin Username",
+            Description="Type your BIG-IP Admin Username",
             Default="admin",
             MinLength="1",
             MaxLength="255",
-            ConstraintDescription="Please verify your BIG-IP Admin Username",
+            ConstraintDescription="Verify your BIG-IP Admin Username",
         ))
 
         adminPassword = t.add_parameter(Parameter(
             "adminPassword",
 
             Type="String",
-            Description="Please enter your BIG-IP Admin Password",
+            Description="Type your BIG-IP Admin Password",
             MinLength="1",
             NoEcho=True,
             MaxLength="255",
-            ConstraintDescription="Please verify your BIG-IP Admin Password",
+            ConstraintDescription="Verify your BIG-IP Admin Password",
         ))
 
         if aws_creds == True:
@@ -366,7 +366,7 @@ def main():
             iamSecretKey = t.add_parameter(Parameter(
                 "iamSecretKey",
 
-                Description="IAM Secret Key for Big-IP",
+                Description="IAM Secret Key for BIG-IP",
                 Type="String",
                 MinLength="1",
                 MaxLength="255",
@@ -383,11 +383,11 @@ def main():
                     licenseKey,
 
                     Type="String",
-                    Description="Please enter your F5 BYOL regkey here:",
+                    Description="Paste or type your F5 BYOL regkey here:",
                     MinLength="1",
                     AllowedPattern="([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
                     MaxLength="255",
-                    ConstraintDescription="Please verify your F5 BYOL regkey.",
+                    ConstraintDescription="Verify your F5 BYOL regkey.",
                 ))
 
         if license_type == "bigiq":
@@ -395,38 +395,38 @@ def main():
                 "bigiqAddress",
 
                 MinLength="1",
-                ConstraintDescription="Please verify your BIG-IQ Hostname or IP",
+                ConstraintDescription="Verify your BIG-IQ Hostname or IP",
                 Type="String",
-                Description="Please enter your BIG-IQ Hostname or IP",
+                Description="Type your BIG-IQ Hostname or IP",
                 MaxLength="255",
             ))
 
             bigiqUsername = t.add_parameter(Parameter(
                 "bigiqUsername",
                 MinLength="1",
-                ConstraintDescription="Please verify your BIG-IQ Username.",
+                ConstraintDescription="Verify your BIG-IQ Username.",
                 Type="String",
-                Description="Please enter your BIG-IQ Username",
+                Description="Type your BIG-IQ Username",
                 MaxLength="255",
             ))
 
             bigiqPassword = t.add_parameter(Parameter(
                 "bigiqPassword",
                 Type="String",
-                Description="Please enter your BIG-IQ Password",
+                Description="Type your BIG-IQ Password",
                 MinLength="1",
                 NoEcho=True,
                 MaxLength="255",
-                ConstraintDescription="Please verify your BIG-IQ Password",
+                ConstraintDescription="Verify your BIG-IQ Password",
             ))
 
             bigiqLicensePoolUUID = t.add_parameter(Parameter(
                 "bigiqLicensePoolUUID",
 
                 MinLength="1",
-                ConstraintDescription="Please verify your BIG-IQ License Pool UUID",
+                ConstraintDescription="Verify your BIG-IQ License Pool UUID",
                 Type="String",
-                Description="Please enter your BIG-IQ License Pool UUID",
+                Description="Type or paste your BIG-IQ License Pool UUID",
                 MaxLength="255",
             ))
 
@@ -434,7 +434,7 @@ def main():
             Vpc = t.add_parameter(Parameter(
                 "Vpc",
 
-                ConstraintDescription="Must be an existing VPC within working region.",
+                ConstraintDescription="This must be an existing VPC within the working region.",
                 Type="AWS::EC2::VPC::Id",
             ))
 
@@ -446,7 +446,7 @@ def main():
             PARAMETERS[ExternalSubnet] = t.add_parameter(Parameter(
                 ExternalSubnet,
 
-                ConstraintDescription="Must be subnet ID within existing VPC",
+                ConstraintDescription="The subnet ID must be within an existing VPC",
                 Type="AWS::EC2::Subnet::Id",
                 Description="Public or External subnet ID",
             ))
@@ -454,7 +454,7 @@ def main():
         bigipExternalSecurityGroup = t.add_parameter(Parameter(
             "bigipExternalSecurityGroup",
 
-            ConstraintDescription="Must be security group ID within existing VPC",
+            ConstraintDescription="The security group ID must be within an existing VPC",
             Type="AWS::EC2::SecurityGroup::Id",
             Description="Public or External Security Group ID",
         ))
@@ -466,7 +466,7 @@ def main():
                 PARAMETERS[managementSubnet] = t.add_parameter(Parameter(
                     managementSubnet,
 
-                    ConstraintDescription="Must be subnet ID within existing VPC",
+                    ConstraintDescription="The subnet ID must be within an existing VPC",
                     Type="AWS::EC2::Subnet::Id",
                     Description="Management Subnet ID",
                 ))
@@ -474,9 +474,9 @@ def main():
             bigipManagementSecurityGroup = t.add_parameter(Parameter(
                 "bigipManagementSecurityGroup",
 
-                ConstraintDescription="Must be security group ID within existing VPC",
+                ConstraintDescription="The security group ID must be within an existing VPC",
                 Type="AWS::EC2::SecurityGroup::Id",
-                Description="Bigip Management Security Group",
+                Description="BIG-IP Management Security Group",
             ))
         if num_nics > 2:
             for INDEX in range(num_azs):
@@ -485,14 +485,14 @@ def main():
                 PARAMETERS[InternalSubnet] = t.add_parameter(Parameter(
                     InternalSubnet,
 
-                    ConstraintDescription="Must be subnet ID within existing VPC",
+                    ConstraintDescription="The subnet ID must be within an existing VPC",
                     Type="AWS::EC2::Subnet::Id",
                     Description="Private or Internal subnet ID",
                 ))
             bigipInternalSecurityGroup = t.add_parameter(Parameter(
                 "bigipInternalSecurityGroup",
 
-                ConstraintDescription="Must be security group ID within existing VPC",
+                ConstraintDescription="The security group ID must be within an existing VPC",
                 Type="AWS::EC2::SecurityGroup::Id",
                 Description="Private or Internal Security Group ID",
             ))
@@ -500,9 +500,9 @@ def main():
         webserverPrivateIp = t.add_parameter(Parameter(
             "webserverPrivateIp",
 
-            ConstraintDescription="Web Server IP used for Big-IP pool Member",
+            ConstraintDescription="Web Server IP used for the BIG-IP pool Member",
             Type="String",
-            Description="Web Server IP used for Big-IP pool member",
+            Description="Web Server IP used for BIG-IP pool member",
         ))
 
 
@@ -934,7 +934,7 @@ def main():
                     ),  
                 ],
                 VpcId=Ref(Vpc),
-                GroupDescription="Big-IP Management UI rules",
+                GroupDescription="BIG-IP Management UI rules",
                 Tags=Tags(
                     Name="Bigip Management Security Group",
                     Application=Ref("AWS::StackName"),
@@ -1057,7 +1057,7 @@ def main():
 
 
 
-                Description="Public External Interface for the Bigip",
+                Description="Public External Interface for the BIG-IP",
                 SecondaryPrivateIpAddressCount="1",
             ))
 
@@ -1143,7 +1143,7 @@ def main():
 
 
 
-                    Description="Management Interface for the Bigip",
+                    Description="Management Interface for the BIG-IP",
                 ))
 
                 if stack == "full":
@@ -1186,7 +1186,7 @@ def main():
 
 
 
-                        Description="Internal Interface for the Bigip",
+                        Description="Internal Interface for the BIG-IP",
                     ))
 
 
@@ -1989,7 +1989,7 @@ def main():
             OUTPUTS[BigipInstanceId] = t.add_output(Output(
                 BigipInstanceId,
 
-                Description="Instance Id of Big-IP in Amazon",
+                Description="Instance Id of BIG-IP in Amazon",
                 Value=Ref(BigipInstance),
 
             ))
@@ -2003,7 +2003,7 @@ def main():
             OUTPUTS[ExternalInterface] = t.add_output(Output(
                 ExternalInterface,
 
-                Description="External interface Id on Big-IP",
+                Description="External interface Id on BIG-IP",
                 Value=Ref(ExternalInterface),
 
             ))
@@ -2011,14 +2011,14 @@ def main():
             OUTPUTS[ExternalInterfacePrivateIp] = t.add_output(Output(
                 ExternalInterfacePrivateIp,
 
-                Description="Internally routable Ip of public interface on BIG-IP",
+                Description="Internally routable IP of the public interface on BIG-IP",
                 Value=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
             ))
 
             OUTPUTS[ExternalSelfEipAddress] = t.add_output(Output(
                 ExternalSelfEipAddress,
 
-                Description="IP Address of External interface attached to BIG-IP",
+                Description="IP Address of teh External interface attached to BIG-IP",
                 Value=Ref(ExternalSelfEipAddress),
 
             ))
@@ -2030,7 +2030,7 @@ def main():
                 OUTPUTS[BigipUrl] = t.add_output(Output(
                     BigipUrl,
 
-                    Description="Big-IP Management GUI",
+                    Description="BIG-IP Management GUI",
                     Value=Join("", [ "https://", GetAtt(BigipInstance, "PublicIp"), ":", Ref(managementGuiPort) ]),
                 ))
 
@@ -2054,14 +2054,14 @@ def main():
                 OUTPUTS[BigipUrl] = t.add_output(Output(
                     BigipUrl,
 
-                    Description="Big-IP Management GUI",
+                    Description="BIG-IP Management GUI",
                     Value=Join("", ["https://", GetAtt(BigipInstance, "PublicIp")]),
                 ))
 
                 OUTPUTS[ManagementInterface] = t.add_output(Output(
                     ManagementInterface,
 
-                    Description="Management interface Id on BIG-IP",
+                    Description="Management interface ID on BIG-IP",
                     Value=Ref(ManagementInterface),
 
                 ))
@@ -2069,14 +2069,14 @@ def main():
                 OUTPUTS[ManagementInterfacePrivateIp] = t.add_output(Output(
                     ManagementInterfacePrivateIp,
 
-                    Description="Internally routable Ip of management interface on BIG-IP",
+                    Description="Internally routable IP of the management interface on BIG-IP",
                     Value=GetAtt(ManagementInterface, "PrimaryPrivateIpAddress"),
                 ))
 
                 OUTPUTS[ManagementEipAddress] = t.add_output(Output(
                     ManagementEipAddress,
 
-                    Description="Ip address of management port on BIG-IP",
+                    Description="IP address of the management port on BIG-IP",
                     Value=Ref(ManagementEipAddress),
 
                 ))
@@ -2135,19 +2135,19 @@ def main():
     if webserver == True:
         webserverPrivateIp = t.add_output(Output(
             "webserverPrivateIp",
-            Description="Private Ip for Webserver",
+            Description="Private IP for Webserver",
             Value=GetAtt(Webserver, "PrivateIp"),
         ))
 
         WebserverPublicIp = t.add_output(Output(
             "WebserverPublicIp",
-            Description="Public Ip for Webserver",
+            Description="Public IP for Webserver",
             Value=GetAtt(Webserver, "PublicIp"),
         ))
 
         WebserverPublicUrl = t.add_output(Output(
             "WebserverPublicUrl",
-            Description="Public Url for Webserver",
+            Description="Public URL for the Webserver",
             Value=Join("", ["http://", GetAtt(Webserver, "PublicIp")]),
         ))
 

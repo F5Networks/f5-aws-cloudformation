@@ -160,6 +160,36 @@ def main():
 
     ### BEGIN PARAMETERS
 
+    applicationTag = t.add_parameter (Parameter(
+        "applicationTag",
+            Description="Enter tag value to be used for application tag",
+            Default="f5app",
+            Type="String",
+    ))
+    environmentTag = t.add_parameter (Parameter(
+        "environmentTag",
+            Description="Enter tag value to be used for environment tag",
+            Default="f5env",
+            Type="String",
+    ))
+    groupTag = t.add_parameter (Parameter(
+        "groupTag",
+            Description="Enter tag value to be used for group tag",
+            Default="f5group",
+            Type="String",
+    ))
+    ownerTag = t.add_parameter (Parameter(
+        "ownerTag",
+            Description="Enter tag value to be used for application tag",
+            Default="f5owner",
+            Type="String",
+    ))
+    costcenterTag = t.add_parameter (Parameter(
+        "costcenterTag",
+            Description="Enter tag value to be used for application tag",
+            Default="f5costcenter",
+            Type="String",
+    ))    
     if stack != "network": 
         restrictedSrcAddress = t.add_parameter(Parameter(
             "restrictedSrcAddress",
@@ -532,21 +562,27 @@ def main():
     if network == True:
         Vpc = t.add_resource(VPC(
             "Vpc",
-
             EnableDnsSupport="true",
             CidrBlock="10.0.0.0/16",
             EnableDnsHostnames="true",
             Tags=Tags(
                 Name=Ref("AWS::StackName"),
-                Application=Ref("AWS::StackId"),
+                Application=Ref("applicationTag"),
+                Environment=Ref("environmentTag"),
+                Group=Ref("groupTag"),
+                Owner=Ref("ownerTag"),
+                Costcenter=Ref("costcenterTag"),
             ),
         ))
 
         defaultGateway = t.add_resource(InternetGateway(
             "InternetGateway",
-
             Tags=Tags(
-                Application=Ref("AWS::StackId"),
+                        Application=Ref(applicationTag),
+                        Environment=Ref(environmentTag),
+                        Group=Ref(groupTag),
+                        Owner=Ref(ownerTag),
+                        Costcenter=Ref(costcenterTag),
             ),
         ))
 
@@ -566,7 +602,11 @@ def main():
 
                 Tags=Tags(
                     Name="Az" + str(INDEX + 1) +  " External Subnet",
-                    Application=Ref("AWS::StackId"),
+                    Application=Ref("applicationTag"),
+                    Environment=Ref("environmentTag"),
+                    Group=Ref("groupTag"),
+                    Owner=Ref("ownerTag"),
+                    Costcenter=Ref("costcenterTag"),
                 ),
                 VpcId=Ref(Vpc),
                 CidrBlock="10.0." + str(octet) + ".0/24",
@@ -580,7 +620,11 @@ def main():
             VpcId=Ref(Vpc),
             Tags=Tags(
                 Name="External Route Table",
-                Application=Ref("AWS::StackName"),
+                Application=Ref("applicationTag"),
+                Environment=Ref("environmentTag"),
+                Group=Ref("groupTag"),
+                Owner=Ref("ownerTag"),
+                Costcenter=Ref("costcenterTag"),
                 Network="External",
             ),
         ))
@@ -616,7 +660,11 @@ def main():
 
                     Tags=Tags(
                         Name="Az" + str(INDEX + 1) +  " Management Subnet",
-                        Application=Ref("AWS::StackId"),
+                        Application=Ref("applicationTag"),
+                        Environment=Ref("environmentTag"),
+                        Group=Ref("groupTag"),
+                        Owner=Ref("ownerTag"),
+                        Costcenter=Ref("costcenterTag"),
                     ),
                     VpcId=Ref(Vpc),
                     CidrBlock="10.0." + str(octet) + ".0/24",
@@ -630,7 +678,11 @@ def main():
                 VpcId=Ref(Vpc),
                 Tags=Tags(
                     Name="Management Route Table",
-                    Application=Ref("AWS::StackName"),
+                    Application=Ref("applicationTag"),
+                    Environment=Ref("environmentTag"),
+                    Group=Ref("groupTag"),
+                    Owner=Ref("ownerTag"),
+                    Costcenter=Ref("costcenterTag"),
                     Network="Mgmt",
                 ),
             ))
@@ -669,8 +721,11 @@ def main():
 
                     Tags=Tags(
                         Name="Az" + str(INDEX + 1) +  " Internal Subnet",
-
-                        Application=Ref("AWS::StackId"),
+                        Application=Ref("applicationTag"),
+                        Environment=Ref("environmentTag"),
+                        Group=Ref("groupTag"),
+                        Owner=Ref("ownerTag"),
+                        Costcenter=Ref("costcenterTag"),
                     ),
                     VpcId=Ref(Vpc),
                     CidrBlock="10.0." + str(octet) + ".0/24",
@@ -685,7 +740,11 @@ def main():
                 VpcId=Ref(Vpc),
                 Tags=Tags(
                     Name="Internal Route Table",
-                    Application=Ref("AWS::StackName"),
+                    Application=Ref("applicationTag"),
+                    Environment=Ref("environmentTag"),
+                    Group=Ref("groupTag"),
+                    Owner=Ref("ownerTag"),
+                    Costcenter=Ref("costcenterTag"),
                     Network="Internal",
                 ),
             ))
@@ -718,7 +777,11 @@ def main():
                 ApplicationSubnet,
                 Tags=Tags(
                     Name="Az" + str(INDEX + 1) +  " Application Subnet",
-                    Application=Ref("AWS::StackId"),
+                    Application=Ref("applicationTag"),
+                    Environment=Ref("environmentTag"),
+                    Group=Ref("groupTag"),
+                    Owner=Ref("ownerTag"),
+                    Costcenter=Ref("costcenterTag"),
                 ),
                 VpcId=Ref(Vpc),
                 CidrBlock="10.0." + str(octet) + ".0/24",
@@ -731,7 +794,11 @@ def main():
             VpcId=Ref(Vpc),
             Tags=Tags(
                 Name="Application Route Table",
-                Application=Ref("AWS::StackName"),
+                Application=Ref("applicationTag"),
+                Environment=Ref("environmentTag"),
+                Group=Ref("groupTag"),
+                Owner=Ref("ownerTag"),
+                Costcenter=Ref("costcenterTag"),
                 Network="Application",
             ),
         ))
@@ -836,7 +903,11 @@ def main():
                 GroupDescription="Public or External interface rules",
                 Tags=Tags(
                     Name=Join("", ["Bigip Security Group: ", Ref("AWS::StackName")] ),
-                    Application=Ref("AWS::StackName"),
+                    Application=Ref("applicationTag"),
+                    Environment=Ref("environmentTag"),
+                    Group=Ref("groupTag"),
+                    Owner=Ref("ownerTag"),
+                    Costcenter=Ref("costcenterTag"),
                 ),
             ))
 
@@ -888,7 +959,11 @@ def main():
                 GroupDescription="Public or External interface rules",
                 Tags=Tags(
                     Name="Bigip External Security Group",
-                    Application=Ref("AWS::StackName"),
+                    Application=Ref("applicationTag"),
+                    Environment=Ref("environmentTag"),
+                    Group=Ref("groupTag"),
+                    Owner=Ref("ownerTag"),
+                    Costcenter=Ref("costcenterTag"),
                 ),
             ))
             
@@ -937,7 +1012,11 @@ def main():
                 GroupDescription="BIG-IP Management UI rules",
                 Tags=Tags(
                     Name="Bigip Management Security Group",
-                    Application=Ref("AWS::StackName"),
+                    Application=Ref("applicationTag"),
+                    Environment=Ref("environmentTag"),
+                    Group=Ref("groupTag"),
+                    Owner=Ref("ownerTag"),
+                    Costcenter=Ref("costcenterTag"),
                 ),
             ))
 
@@ -959,7 +1038,11 @@ def main():
                 GroupDescription="Allow All from Intra-VPC only",
                 Tags=Tags(
                     Name="Bigip Internal Security Group",
-                    Application=Ref("AWS::StackName"),
+                    Application=Ref("applicationTag"),
+                    Environment=Ref("environmentTag"),
+                    Group=Ref("groupTag"),
+                    Owner=Ref("ownerTag"),
+                    Costcenter=Ref("costcenterTag"),
                 ),
             ))
 
@@ -997,7 +1080,11 @@ def main():
                 GroupDescription="Enable Access to Webserver",
                 Tags=Tags(
                     Name="Webserver Security Group",
-                    Application=Ref("AWS::StackName"),
+                    Application=Ref("applicationTag"),
+                    Environment=Ref("environmentTag"),
+                    Group=Ref("groupTag"),
+                    Owner=Ref("ownerTag"),
+                    Costcenter=Ref("costcenterTag"),
                 ),
             ))
 
@@ -1012,7 +1099,11 @@ def main():
                 ])),
             Tags=Tags(
                 Name="Webserver",
-                Application=Ref("AWS::StackName"),
+                Application=Ref("applicationTag"),
+                Environment=Ref("environmentTag"),
+                Group=Ref("groupTag"),
+                Owner=Ref("ownerTag"),
+                Costcenter=Ref("costcenterTag"),
             ),
             ImageId=FindInMap("WebserverRegionMap", Ref("AWS::Region"), "AMI"),
             KeyName=Ref(sshKey),
@@ -1854,13 +1945,16 @@ def main():
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 RESOURCES[BigipInstance] = t.add_resource(Instance(
                     BigipInstance,
-
                     DependsOn="Bigip" + str(BIGIP_INDEX + 2) + "Instance",
                     Metadata=metadata,
                     UserData=Base64(Join("", ["#!/bin/bash\n", "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance , " --region ", Ref("AWS::Region"), "\n"])),
                     Tags=Tags(
                         Name=Join("", ["Big-IP: ", Ref("AWS::StackName")] ),
-                        Application=Ref("AWS::StackName"),
+                        Application=Ref(applicationTag),
+                        Environment=Ref(environmentTag),
+                        Group=Ref(groupTag),
+                        Owner=Ref(ownerTag),
+                        Costcenter=Ref(costcenterTag),
                     ),
                     ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
                     KeyName=Ref(sshKey),
@@ -1870,12 +1964,15 @@ def main():
             else:
                 RESOURCES[BigipInstance] = t.add_resource(Instance(
                     BigipInstance,
-
                     Metadata=metadata,
                     UserData=Base64(Join("", ["#!/bin/bash\n", "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance , " --region ", Ref("AWS::Region"), "\n"])),
                     Tags=Tags(
                         Name=Join("", ["Big-IP: ", Ref("AWS::StackName")] ),
-                        Application=Ref("AWS::StackName"),
+                        Application=Ref(applicationTag),
+                        Environment=Ref(environmentTag),
+                        Group=Ref(groupTag),
+                        Owner=Ref(ownerTag),
+                        Costcenter=Ref(costcenterTag),
                     ),
                     ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
                     KeyName=Ref(sshKey),

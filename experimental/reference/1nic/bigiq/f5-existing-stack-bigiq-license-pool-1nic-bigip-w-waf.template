@@ -148,6 +148,11 @@
             "MinLength": "1",
             "Type": "String"
         },
+        "applicationTag": {
+            "Default": "f5app",
+            "Description": "Enter tag value to be used for application tag",
+            "Type": "String"
+        },
         "bigipExternalSecurityGroup": {
             "ConstraintDescription": "The security group ID must be within an existing VPC",
             "Description": "Public or External Security Group ID",
@@ -180,6 +185,21 @@
             "Description": "Type your BIG-IQ Username",
             "MaxLength": "255",
             "MinLength": "1",
+            "Type": "String"
+        },
+        "costcenterTag": {
+            "Default": "f5costcenter",
+            "Description": "Enter tag value to be used for application tag",
+            "Type": "String"
+        },
+        "environmentTag": {
+            "Default": "f5env",
+            "Description": "Enter tag value to be used for environment tag",
+            "Type": "String"
+        },
+        "groupTag": {
+            "Default": "f5group",
+            "Description": "Enter tag value to be used for group tag",
             "Type": "String"
         },
         "imageName": {
@@ -215,6 +235,11 @@
             "Default": "443",
             "Description": "Port to use for the management GUI",
             "Type": "Number"
+        },
+        "ownerTag": {
+            "Default": "f5owner",
+            "Description": "Enter tag value to be used for application tag",
+            "Type": "String"
         },
         "restrictedSrcAddress": {
             "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
@@ -463,7 +488,25 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackName"
+                            "Ref": "applicationTag"
+                        }
+                    },
+                    {
+                        "Key": "Costcenter",
+                        "Value": {
+                            "Ref": "costcenterTag"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentTag"
+                        }
+                    },
+                    {
+                        "Key": "Group",
+                        "Value": {
+                            "Ref": "groupTag"
                         }
                     },
                     {
@@ -478,6 +521,12 @@
                                     }
                                 ]
                             ]
+                        }
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "ownerTag"
                         }
                     }
                 ],

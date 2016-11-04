@@ -32,9 +32,34 @@
         }
     },
     "Parameters": {
+        "applicationTag": {
+            "Default": "f5app",
+            "Description": "Enter tag value to be used for application tag",
+            "Type": "String"
+        },
         "availabilityZone1": {
             "Description": "Name of an Availability Zone in this Region",
             "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        "costcenterTag": {
+            "Default": "f5costcenter",
+            "Description": "Enter tag value to be used for application tag",
+            "Type": "String"
+        },
+        "environmentTag": {
+            "Default": "f5env",
+            "Description": "Enter tag value to be used for environment tag",
+            "Type": "String"
+        },
+        "groupTag": {
+            "Default": "f5group",
+            "Description": "Enter tag value to be used for group tag",
+            "Type": "String"
+        },
+        "ownerTag": {
+            "Default": "f5owner",
+            "Description": "Enter tag value to be used for application tag",
+            "Type": "String"
         }
     },
     "Resources": {
@@ -57,7 +82,25 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackName"
+                            "Ref": "applicationTag"
+                        }
+                    },
+                    {
+                        "Key": "Costcenter",
+                        "Value": {
+                            "Ref": "costcenterTag"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentTag"
+                        }
+                    },
+                    {
+                        "Key": "Group",
+                        "Value": {
+                            "Ref": "groupTag"
                         }
                     },
                     {
@@ -67,6 +110,12 @@
                     {
                         "Key": "Network",
                         "Value": "Application"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "ownerTag"
+                        }
                     }
                 ],
                 "VpcId": {
@@ -96,12 +145,36 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackId"
+                            "Ref": "applicationTag"
+                        }
+                    },
+                    {
+                        "Key": "Costcenter",
+                        "Value": {
+                            "Ref": "costcenterTag"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentTag"
+                        }
+                    },
+                    {
+                        "Key": "Group",
+                        "Value": {
+                            "Ref": "groupTag"
                         }
                     },
                     {
                         "Key": "Name",
                         "Value": "Az1 Application Subnet"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "ownerTag"
+                        }
                     }
                 ],
                 "VpcId": {
@@ -162,7 +235,25 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackName"
+                            "Ref": "applicationTag"
+                        }
+                    },
+                    {
+                        "Key": "Costcenter",
+                        "Value": {
+                            "Ref": "costcenterTag"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentTag"
+                        }
+                    },
+                    {
+                        "Key": "Group",
+                        "Value": {
+                            "Ref": "groupTag"
                         }
                     },
                     {
@@ -172,6 +263,12 @@
                     {
                         "Key": "Network",
                         "Value": "External"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "ownerTag"
+                        }
                     }
                 ],
                 "VpcId": {
@@ -186,7 +283,31 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackId"
+                            "Ref": "applicationTag"
+                        }
+                    },
+                    {
+                        "Key": "Costcenter",
+                        "Value": {
+                            "Ref": "costcenterTag"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentTag"
+                        }
+                    },
+                    {
+                        "Key": "Group",
+                        "Value": {
+                            "Ref": "groupTag"
+                        }
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "ownerTag"
                         }
                     }
                 ]
@@ -212,7 +333,25 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackName"
+                            "Ref": "applicationTag"
+                        }
+                    },
+                    {
+                        "Key": "Costcenter",
+                        "Value": {
+                            "Ref": "costcenterTag"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentTag"
+                        }
+                    },
+                    {
+                        "Key": "Group",
+                        "Value": {
+                            "Ref": "groupTag"
                         }
                     },
                     {
@@ -222,6 +361,12 @@
                     {
                         "Key": "Network",
                         "Value": "Mgmt"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "ownerTag"
+                        }
                     }
                 ],
                 "VpcId": {
@@ -239,13 +384,37 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackId"
+                            "Ref": "applicationTag"
+                        }
+                    },
+                    {
+                        "Key": "Costcenter",
+                        "Value": {
+                            "Ref": "costcenterTag"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentTag"
+                        }
+                    },
+                    {
+                        "Key": "Group",
+                        "Value": {
+                            "Ref": "groupTag"
                         }
                     },
                     {
                         "Key": "Name",
                         "Value": {
                             "Ref": "AWS::StackName"
+                        }
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "ownerTag"
                         }
                     }
                 ]
@@ -262,12 +431,36 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackId"
+                            "Ref": "applicationTag"
+                        }
+                    },
+                    {
+                        "Key": "Costcenter",
+                        "Value": {
+                            "Ref": "costcenterTag"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentTag"
+                        }
+                    },
+                    {
+                        "Key": "Group",
+                        "Value": {
+                            "Ref": "groupTag"
                         }
                     },
                     {
                         "Key": "Name",
                         "Value": "Az1 Management Subnet"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "ownerTag"
+                        }
                     }
                 ],
                 "VpcId": {
@@ -286,12 +479,36 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "AWS::StackId"
+                            "Ref": "applicationTag"
+                        }
+                    },
+                    {
+                        "Key": "Costcenter",
+                        "Value": {
+                            "Ref": "costcenterTag"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environmentTag"
+                        }
+                    },
+                    {
+                        "Key": "Group",
+                        "Value": {
+                            "Ref": "groupTag"
                         }
                     },
                     {
                         "Key": "Name",
                         "Value": "Az1 External Subnet"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "ownerTag"
+                        }
                     }
                 ],
                 "VpcId": {

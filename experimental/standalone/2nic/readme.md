@@ -51,6 +51,7 @@ After clicking the Launch button, you must specify the following parameters.
 | bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
 | imageName | x | F5 BIG-IP Performance Type |
 | instanceType | x | BIG-IP virtual instance type |
+| licenseKey1 | x | Type or paste your F5 BYOL regkey |
 | managementSubnetAz1 | x | Management subnet ID |
 | restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
 | sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
@@ -83,7 +84,7 @@ After clicking the Launch button, you must specify the following parameters.
 | imageName | x | F5 BIG-IP Performance Type |
 | instanceType | x | BIG-IP virtual instance type |
 | licenseKey1 | x | Type or paste your F5 BYOL regkey here |
-| licenseKey1 | x | Type or paste your F5 BYOL regkey here |
+| licenseKey2 | x | Type or paste your F5 BYOL regkey here |
 | managementSubnetAz1 | x | Management subnet ID |
 | managementSubnetAz2 | x | Management subnet ID |
 | restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |

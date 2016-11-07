@@ -250,9 +250,9 @@
             "MinLength": "1",
             "Type": "String"
         },
-        "applicationTag": {
+        "application": {
             "Default": "f5app",
-            "Description": "Enter tag value to be used for application tag",
+            "Description": "Application Tag",
             "Type": "String"
         },
         "bigipExternalSecurityGroup": {
@@ -265,19 +265,19 @@
             "Description": "BIG-IP Management Security Group",
             "Type": "AWS::EC2::SecurityGroup::Id"
         },
-        "costcenterTag": {
+        "costcenter": {
             "Default": "f5costcenter",
-            "Description": "Enter tag value to be used for application tag",
+            "Description": "Costcenter Tag",
             "Type": "String"
         },
-        "environmentTag": {
+        "environment": {
             "Default": "f5env",
-            "Description": "Enter tag value to be used for environment tag",
+            "Description": "Environment Name Tag",
             "Type": "String"
         },
-        "groupTag": {
+        "group": {
             "Default": "f5group",
-            "Description": "Enter tag value to be used for group tag",
+            "Description": "Group Tag",
             "Type": "String"
         },
         "iamAccessKey": {
@@ -347,9 +347,9 @@
             "Description": "Management Subnet ID",
             "Type": "AWS::EC2::Subnet::Id"
         },
-        "ownerTag": {
+        "owner": {
             "Default": "f5owner",
-            "Description": "Enter tag value to be used for application tag",
+            "Description": "Owner Tag",
             "Type": "String"
         },
         "restrictedSrcAddress": {
@@ -670,25 +670,25 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "applicationTag"
+                            "Ref": "application"
                         }
                     },
                     {
                         "Key": "Costcenter",
                         "Value": {
-                            "Ref": "costcenterTag"
+                            "Ref": "costcenter"
                         }
                     },
                     {
                         "Key": "Environment",
                         "Value": {
-                            "Ref": "environmentTag"
+                            "Ref": "environment"
                         }
                     },
                     {
                         "Key": "Group",
                         "Value": {
-                            "Ref": "groupTag"
+                            "Ref": "group"
                         }
                     },
                     {
@@ -708,7 +708,7 @@
                     {
                         "Key": "Owner",
                         "Value": {
-                            "Ref": "ownerTag"
+                            "Ref": "owner"
                         }
                     }
                 ],
@@ -1084,25 +1084,25 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "applicationTag"
+                            "Ref": "application"
                         }
                     },
                     {
                         "Key": "Costcenter",
                         "Value": {
-                            "Ref": "costcenterTag"
+                            "Ref": "costcenter"
                         }
                     },
                     {
                         "Key": "Environment",
                         "Value": {
-                            "Ref": "environmentTag"
+                            "Ref": "environment"
                         }
                     },
                     {
                         "Key": "Group",
                         "Value": {
-                            "Ref": "groupTag"
+                            "Ref": "group"
                         }
                     },
                     {
@@ -1122,7 +1122,7 @@
                     {
                         "Key": "Owner",
                         "Value": {
-                            "Ref": "ownerTag"
+                            "Ref": "owner"
                         }
                     }
                 ],

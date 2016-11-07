@@ -181,6 +181,111 @@
             }
         }
     },
+        "Metadata": {
+        "AWS::CloudFormation::Interface": {
+          "ParameterGroups": [
+            {
+              "Label": {
+                "default": "NETWORKING CONFIGURATION"
+              },
+              "Parameters": [
+                "Vpc",
+                "subnet1Az1",
+                "bigipExternalSecurityGroup"
+              ]
+            },
+            {
+              "Label": {
+                  "default": "INSTANCE CONFIGURATION"
+                },
+              "Parameters": [
+                "adminUsername",           
+                "adminPassword",
+                "imageName",
+                "instanceType",
+                "licenseKey1",
+                "managementGuiPort",
+
+                "sshKey",
+                "restrictedSrcAddress"
+              ]
+            },
+            {
+              "Label": {
+                "default": "VIRTUAL SERVICE CONFIGURATION"
+              },
+              "Parameters": [
+                "webserverPrivateIp"
+              ]
+            },
+            {
+              "Label": {
+                "default": "TAGS"
+              },
+              "Parameters": [
+                    "application",
+                    "environment",
+                    "group",
+                    "owner",
+                    "costcenter"
+              ]
+            }
+          ],
+          "ParameterLabels": {
+           "Vpc": {
+                "default": "Vpc"
+            },
+            "subnet1Az1": {
+                "default": "Subnet AZ1"
+            },
+            "bigipExternalSecurityGroup": {
+                "default": "Big-IP External Security Group"
+            },
+            "adminUsername": {
+                "default": "Admin Username"
+            },
+            "adminPassword": {
+                "default": "Admin Password"
+            },
+            "imageName": {
+                "default": "Image Name"
+            },
+            "instanceType": {
+                "default": "Instance Type"
+            },
+            "licenseKey1": {
+                "default": "Licence Key1"
+            },
+            "restrictedSrcAddress": {
+                "default": "Restricted Source Addresses"
+            },
+            "managementGuiPort": {
+                "default": "Management GUI Port"
+            },
+            "sshKey": {
+                "default": "SSH Key"
+            },
+            "webserverPrivateIp": {
+                "default": "Application Address"
+            },
+            "application": {
+                "default": "Application"
+            },
+            "environment": {
+                "default": "Environment"
+            },
+            "group": {
+                "default": "Group"
+            },
+            "owner": {
+                "default": "Owner"
+            },
+            "costcenter": {
+                "default": "Costcenter"
+            }
+          }
+        }
+      },
     "Parameters": {
         "Vpc": {
             "ConstraintDescription": "This must be an existing VPC within the working region.",
@@ -202,9 +307,9 @@
             "MinLength": "1",
             "Type": "String"
         },
-        "applicationTag": {
+        "application": {
             "Default": "f5app",
-            "Description": "Enter tag value to be used for application tag",
+            "Description": "Application Tag",
             "Type": "String"
         },
         "bigipExternalSecurityGroup": {
@@ -212,19 +317,19 @@
             "Description": "Public or External Security Group ID",
             "Type": "AWS::EC2::SecurityGroup::Id"
         },
-        "costcenterTag": {
+        "costcenter": {
             "Default": "f5costcenter",
-            "Description": "Enter tag value to be used for application tag",
+            "Description": "Costcenter Tag",
             "Type": "String"
         },
-        "environmentTag": {
+        "environment": {
             "Default": "f5env",
-            "Description": "Enter tag value to be used for environment tag",
+            "Description": "Environment Name Tag",
             "Type": "String"
         },
-        "groupTag": {
+        "group": {
             "Default": "f5group",
-            "Description": "Enter tag value to be used for group tag",
+            "Description": "Group Tag",
             "Type": "String"
         },
         "imageName": {
@@ -273,9 +378,9 @@
             "Description": "Port to use for the management GUI",
             "Type": "Number"
         },
-        "ownerTag": {
+        "owner": {
             "Default": "f5owner",
-            "Description": "Enter tag value to be used for application tag",
+            "Description": "Owner Tag",
             "Type": "String"
         },
         "restrictedSrcAddress": {
@@ -499,25 +604,25 @@
                     {
                         "Key": "Application",
                         "Value": {
-                            "Ref": "applicationTag"
+                            "Ref": "application"
                         }
                     },
                     {
                         "Key": "Costcenter",
                         "Value": {
-                            "Ref": "costcenterTag"
+                            "Ref": "costcenter"
                         }
                     },
                     {
                         "Key": "Environment",
                         "Value": {
-                            "Ref": "environmentTag"
+                            "Ref": "environment"
                         }
                     },
                     {
                         "Key": "Group",
                         "Value": {
-                            "Ref": "groupTag"
+                            "Ref": "group"
                         }
                     },
                     {
@@ -537,7 +642,7 @@
                     {
                         "Key": "Owner",
                         "Value": {
-                            "Ref": "ownerTag"
+                            "Ref": "owner"
                         }
                     }
                 ],

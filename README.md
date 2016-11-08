@@ -33,7 +33,18 @@ The following is a list of the current F5 Supported CloudFormation templates:
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 
+  - **Clustered BIG-IP VE - 2 NICs**
+    - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-Across-Az-Cluster-2nic-Hourly&templateURL=https://s3-us-west-2.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
+</a>
+    - BYOL<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-Across-Az-Cluster-2nic-byol&templateURL=https://s3.amazonaws.com/f5-dev/existing-stack-across-az-cluster-byol-2nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
+</a>
 
+  - **Autoscaling the BIG-IP Web Application Firewall in AWS**<br>
+  <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/experimental/solutions/autoscale>
+    https://github.com/F5Networks/f5-aws-cloudformation/tree/master/experimental/solutions/autoscale</a>
+   
 ### Copyright
 
 Copyright 2014-2016 F5 Networks Inc.

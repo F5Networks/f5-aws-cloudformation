@@ -157,6 +157,132 @@ def main():
             description = "AWS CloudFormation Template for creating a Across-AZs cluster of " + str(num_nics) + "nic Big-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
 
     t.add_description(description)
+    t.add_metadata({
+        "AWS::CloudFormation::Interface": {
+          "ParameterGroups": [
+            {
+              "Label": {
+                "default": "NETWORKING CONFIGURATION"
+              },
+              "Parameters": [
+                "Vpc",
+                "subnet1Az1",
+                "bigipExternalSecurityGroup",
+                "availabilityZone1",
+                "availabilityZone2"
+              ]
+            },
+            {
+              "Label": {
+                  "default": "INSTANCE CONFIGURATION"
+                },
+              "Parameters": [
+                "adminUsername",           
+                "adminPassword",
+                "imageName",
+                "instanceType",
+                "applicationInstanceType",
+                "licenseKey1",
+                "licenseKey2",
+                "managementGuiPort",
+                "sshKey",
+                "restrictedSrcAddress",
+                "iamAccessKey",
+                "iamSecretKey"
+              ]
+            },
+            {
+              "Label": {
+                "default": "VIRTUAL SERVICE CONFIGURATION"
+              },
+              "Parameters": [
+                "webserverPrivateIp"
+              ]
+            },
+            {
+              "Label": {
+                "default": "TAGS"
+              },
+              "Parameters": [
+                    "application",
+                    "environment",
+                    "group",
+                    "owner",
+                    "costcenter"
+              ]
+            }
+          ],
+          "ParameterLabels": {
+           "Vpc": {
+                "default": "Vpc"
+            },
+            "subnet1Az1": {
+                "default": "Subnet AZ1"
+            },
+            "availabilityZone1": {
+                "default": "Availability Zone 1"
+            },
+            "availabilityZone2": {
+                "default": "Availability Zone 2"
+            },            
+            "bigipExternalSecurityGroup": {
+                "default": "Big-IP External Security Group"
+            },
+            "adminUsername": {
+                "default": "Admin Username"
+            },
+            "adminPassword": {
+                "default": "Admin Password"
+            },
+            "imageName": {
+                "default": "Image Name"
+            },
+            "instanceType": {
+                "default": "Instance Type"
+            },
+            "applicationInstanceType": {
+                "default": "Application Instance Type"
+            },
+            "licenseKey1": {
+                "default": "Licence Key1"
+            },
+            "restrictedSrcAddress": {
+                "default": "Restricted Source Addresses"
+            },
+            "iamAccessKey": {
+                "default": "IAM Access Key"
+            },
+            "iamSecretKey": {
+                "default": "IAM Secret Key"
+            },            
+            "managementGuiPort": {
+                "default": "Management GUI Port"
+            },
+            "sshKey": {
+                "default": "SSH Key"
+            },
+            "webserverPrivateIp": {
+                "default": "Application Address"
+            },
+            "application": {
+                "default": "Application"
+            },
+            "environment": {
+                "default": "Environment"
+            },
+            "group": {
+                "default": "Group"
+            },
+            "owner": {
+                "default": "Owner"
+            },
+            "costcenter": {
+                "default": "Costcenter"
+            }
+          }
+        }
+      },
+    )
 
     ### BEGIN PARAMETERS
 
@@ -1399,7 +1525,7 @@ def main():
             # License file downloaded remotely from https://cdn.f5.com/product/iapp/utils/license-from-bigiq.sh
             license_from_bigiq =  [
                                 "echo 'start install biqiq license'\n",
-                                ". /tmp/license_from_bigiq.sh\n",
+                                ". /config/cloud/aws/license_from_bigiq.sh\n",
                                 ]
 
             provision_asm = [
@@ -1486,12 +1612,20 @@ def main():
             firstrun_sh = [
                                 "#!/bin/bash\n",
                           ] 
+            unpack_libs = [
+                                "tar xvzf /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/;",
+                                "mv /config/cloud/aws/F5Networks-f5-cloud-libs-* /config/cloud/aws/f5-cloud-libs;",
+                                "cd /config/cloud/aws/f5-cloud-libs;",
+                                "npm install --production;",                                
+                          ]
             onboard_BIG_IP =    [
                                 ]
+            nic1_setup =        [
+                                ]                    
             firstrun_BIG_IP =   [
-                                    "f5-rest-node /shared/f5-cloud-libs/scripts/runScript.js",
+                                    "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
                                     "--wait-for ONBOARD_DONE",
-                                    "--file /tmp/firstrun.sh",
+                                    "--file /config/cloud/aws/firstrun.sh",
                                     "--log-level verbose",
                                     "-o /var/log/firstrun_1.log",
                                     "--background",
@@ -1515,9 +1649,9 @@ def main():
                                    ]
 
             firstrun_sh +=  [ 
-                                ". /tmp/firstrun.config\n",
-                                ". /tmp/firstrun.utils\n",
-                                "FILE=/tmp/firstrun.log\n",
+                                ". /config/cloud/aws/firstrun.config\n",
+                                ". /config/cloud/aws/firstrun.utils\n",
+                                "FILE=/config/cloud/aws/firstrun.log\n",
                                 "if [ ! -e $FILE ]\n",
                                 " then\n",
                                 "     touch $FILE\n",
@@ -1538,15 +1672,17 @@ def main():
                             ]
             if num_nics == 1:
                 onboard_BIG_IP += [
-                                    "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
-                                    "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
+                                    "NAME_SERVER=`/config/cloud/aws/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
+                                    "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
                                     "--ssl-port '", { "Ref": "managementGuiPort" }, "'",
+                                    "--wait-for 1_NIC_SETUP_DONE",
                                   ]
             if num_nics > 1:
                 onboard_BIG_IP += [
-                                    "NAME_SERVER=`/shared/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
-                                    "f5-rest-node /shared/f5-cloud-libs/scripts/onboard.js",
-                                  ]            
+                                    "NAME_SERVER=`/config/cloud/aws/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                    "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
+                                  ]
+                                  
             onboard_BIG_IP += [
                                "--log-level verbose",
                                "-o  /var/log/onboard.log",
@@ -1767,8 +1903,8 @@ def main():
 
                 if ha_type == "across-az":
                     firstrun_sh += [
-                                            "curl -sSk -o /tmp/f5.aws_advanced_ha.v1.2.0rc1.tmpl --max-time 15 https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
-                                            "tmsh load sys application template /tmp/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
+                                            "curl -sSk -o /config/cloud/aws/f5.aws_advanced_ha.v1.2.0rc1.tmpl --max-time 15 https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
+                                            "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
                                             "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.2.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                             "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                                             "tmsh run cm config-sync to-group my_sync_failover_group\n",
@@ -1790,14 +1926,14 @@ def main():
                                     "tmsh save /sys config\n",
                                     "date\n",
                                     "# for security purposes, remove firstrun.config\n",
-                                    "# rm /tmp/firstrun.config\n"
+                                    "# rm /config/cloud/aws/firstrun.config\n"
                                ]
             else:
                 firstrun_sh += [
                                     "tmsh save /sys config\n",
                                     "date\n",
                                     "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
-                                    "# rm /tmp/firstrun.config\n"
+                                    "# rm /config/cloud/aws/firstrun.config\n"
                                ]             
 
 
@@ -1808,13 +1944,19 @@ def main():
                             'config': InitConfig(
                                 files=InitFiles(
                                     {
-                                        '/tmp/firstrun.config': InitFile(
+                                        '/config/cloud/f5-cloud-libs.tar.gz': InitFile(
+                                            source='https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/v1.2.0',
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/config/cloud/aws/firstrun.config': InitFile(
                                             content=Join('', firstrun_config ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun.utils': InitFile(
+                                        '/config/cloud/aws/firstrun.utils': InitFile(
                                             source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
                                             mode='000755',
                                             owner='root',
@@ -1832,7 +1974,7 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun.sh': InitFile(
+                                        '/config/cloud/aws/firstrun.sh': InitFile(
                                             content=Join('', firstrun_sh ),
                                             mode='000755',
                                             owner='root',
@@ -1841,6 +1983,11 @@ def main():
                                     } 
                                 ),
                                 commands={
+                                            "001-unpack-libs": {
+                                                "command": { "Fn::Join" : [ " ", unpack_libs
+                                                                          ]
+                                                }
+                                            },
                                             "002-onboard-BIG-IP": {
                                                 "command": { "Fn::Join" : [ " ", onboard_BIG_IP
                                                                           ]
@@ -1857,19 +2004,25 @@ def main():
                             'config': InitConfig(
                                 files=InitFiles(
                                     {
-                                        '/tmp/firstrun.config': InitFile(
+                                        '/config/cloud/f5-cloud-libs.tar.gz': InitFile(
+                                            source='https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/v1.2.0',
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/config/cloud/aws/firstrun.config': InitFile(
                                             content=Join('', firstrun_config ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun.utils': InitFile(
+                                        '/config/cloud/aws/firstrun.utils': InitFile(
                                             source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/firstrun.sh': InitFile(
+                                        '/config/cloud/aws/firstrun.sh': InitFile(
                                             content=Join('', firstrun_sh ),
                                             mode='000755',
                                             owner='root',
@@ -1877,17 +2030,19 @@ def main():
                                         )
                                     } 
                                 ),
-                                sources= {
-                                            "/shared": "https://f5-cloud-libs.s3.amazonaws.com/f5-cloud-libs.tar.gz"
-                                },
-                                commands={
-                                            "001-onboard-BIG-IP": {
+                                commands={  
+                                            "001-unpack-libs": {
+                                                "command": { "Fn::Join" : [ " ", unpack_libs
+                                                                          ]
+                                                }
+                                            },
+                                            "003-onboard-BIG-IP": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", onboard_BIG_IP
                                                                  ]
                                                 }
                                             },
-                                            "firstrun-BIG-IP": {
+                                            "004-custom-config": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", firstrun_BIG_IP
                                                                  ]

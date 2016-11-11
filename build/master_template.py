@@ -162,7 +162,7 @@ def main():
           "ParameterGroups": [
             {
               "Label": {
-                "default": "NETWORKING CONFIGURATION"
+                  "default": "NETWORKING CONFIGURATION"
               },
               "Parameters": [
                 "Vpc",
@@ -214,7 +214,7 @@ def main():
                     "owner",
                     "costcenter"
               ]
-            }
+            },
           ],
           "ParameterLabels": {
            "Vpc": {
@@ -647,7 +647,7 @@ def main():
             CidrBlock="10.0.0.0/16",
             EnableDnsHostnames="true",
             Tags=Tags(
-                Name=Ref("AWS::StackName"),
+                Name=Join("", ["Vpc: ", Ref("AWS::StackName")] ),
                 Application=Ref("application"),
                 Environment=Ref("environment"),
                 Group=Ref("group"),
@@ -659,6 +659,7 @@ def main():
         defaultGateway = t.add_resource(InternetGateway(
             "InternetGateway",
             Tags=Tags(
+                        Name=Join("", ["InternetGateway: ", Ref("AWS::StackName")] ),
                         Application=Ref(application),
                         Environment=Ref(environment),
                         Group=Ref(group),
@@ -682,7 +683,7 @@ def main():
                 ExternalSubnet,
 
                 Tags=Tags(
-                    Name="Az" + str(INDEX + 1) +  " External Subnet",
+                    Name=Join("", ["Az" , str(INDEX + 1) ,  " External Subnet:" , Ref("AWS::StackName")] ),
                     Application=Ref("application"),
                     Environment=Ref("environment"),
                     Group=Ref("group"),
@@ -700,7 +701,7 @@ def main():
 
             VpcId=Ref(Vpc),
             Tags=Tags(
-                Name="External Route Table",
+                Name=Join("", ["External Route Table", Ref("AWS::StackName")] ),
                 Application=Ref("application"),
                 Environment=Ref("environment"),
                 Group=Ref("group"),
@@ -740,7 +741,7 @@ def main():
                     managementSubnet,
 
                     Tags=Tags(
-                        Name="Az" + str(INDEX + 1) +  " Management Subnet",
+                        Name=Join("", ["Az" , str(INDEX + 1) ,  " Management Subnet:" , Ref("AWS::StackName")] ),
                         Application=Ref("application"),
                         Environment=Ref("environment"),
                         Group=Ref("group"),
@@ -758,7 +759,7 @@ def main():
 
                 VpcId=Ref(Vpc),
                 Tags=Tags(
-                    Name="Management Route Table",
+                    Name=Join("", ["Management Route Table", Ref("AWS::StackName")] ),
                     Application=Ref("application"),
                     Environment=Ref("environment"),
                     Group=Ref("group"),
@@ -801,7 +802,7 @@ def main():
                     InternalSubnet,
 
                     Tags=Tags(
-                        Name="Az" + str(INDEX + 1) +  " Internal Subnet",
+                        Name=Join("", ["Az" , str(INDEX + 1) ,  " Internal Subnet:" , Ref("AWS::StackName")] ),
                         Application=Ref("application"),
                         Environment=Ref("environment"),
                         Group=Ref("group"),
@@ -820,7 +821,7 @@ def main():
 
                 VpcId=Ref(Vpc),
                 Tags=Tags(
-                    Name="Internal Route Table",
+                    Name=Join("", ["Internal Route Table:", Ref("AWS::StackName")] ),
                     Application=Ref("application"),
                     Environment=Ref("environment"),
                     Group=Ref("group"),
@@ -857,7 +858,7 @@ def main():
             RESOURCES[ApplicationSubnet] = t.add_resource(Subnet(
                 ApplicationSubnet,
                 Tags=Tags(
-                    Name="Az" + str(INDEX + 1) +  " Application Subnet",
+                    Name=Join("", ["Az" , str(INDEX + 1) ,  " Application Subnet:" , Ref("AWS::StackName")] ),             
                     Application=Ref("application"),
                     Environment=Ref("environment"),
                     Group=Ref("group"),
@@ -874,7 +875,7 @@ def main():
             "ApplicationRouteTable",
             VpcId=Ref(Vpc),
             Tags=Tags(
-                Name="Application Route Table",
+                Name=Join("", ["Application Route Table:", Ref("AWS::StackName")] ),
                 Application=Ref("application"),
                 Environment=Ref("environment"),
                 Group=Ref("group"),
@@ -1039,7 +1040,7 @@ def main():
                 VpcId=Ref(Vpc),
                 GroupDescription="Public or External interface rules",
                 Tags=Tags(
-                    Name="Bigip External Security Group",
+                    Name=Join("", ["Bigip External Security Group:", Ref("AWS::StackName")] ),
                     Application=Ref("application"),
                     Environment=Ref("environment"),
                     Group=Ref("group"),
@@ -1092,7 +1093,7 @@ def main():
                 VpcId=Ref(Vpc),
                 GroupDescription="BIG-IP Management UI rules",
                 Tags=Tags(
-                    Name="Bigip Management Security Group",
+                    Name=Join("", ["Bigip Management Security Group:", Ref("AWS::StackName")] ),
                     Application=Ref("application"),
                     Environment=Ref("environment"),
                     Group=Ref("group"),
@@ -1118,7 +1119,7 @@ def main():
                 VpcId=Ref(Vpc),
                 GroupDescription="Allow All from Intra-VPC only",
                 Tags=Tags(
-                    Name="Bigip Internal Security Group",
+                    Name=Join("", ["Bigip Internal Security Group:", Ref("AWS::StackName")] ),
                     Application=Ref("application"),
                     Environment=Ref("environment"),
                     Group=Ref("group"),
@@ -1160,7 +1161,7 @@ def main():
                 VpcId=Ref(Vpc),
                 GroupDescription="Enable Access to Webserver",
                 Tags=Tags(
-                    Name="Webserver Security Group",
+                    Name=Join("", ["Webserver Security Group:", Ref("AWS::StackName")] ),
                     Application=Ref("application"),
                     Environment=Ref("environment"),
                     Group=Ref("group"),
@@ -1179,7 +1180,7 @@ def main():
                                          " - sudo docker run --name demo -p 80:80 -d f5devcentral/f5-demo-app:latest"
                 ])),
             Tags=Tags(
-                Name="Webserver",
+                Name=Join("", ["Webserver:", Ref("AWS::StackName")] ),
                 Application=Ref("application"),
                 Environment=Ref("environment"),
                 Group=Ref("group"),

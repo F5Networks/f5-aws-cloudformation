@@ -265,7 +265,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Bigip External Security Group"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Bigip External Security Group:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -318,7 +328,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Bigip Internal Security Group"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Bigip Internal Security Group:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -401,7 +421,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Bigip Management Security Group"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Bigip Management Security Group:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",

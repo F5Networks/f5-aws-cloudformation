@@ -3,7 +3,7 @@
 [![Doc Status](http://readthedocs.org/projects/f5-sdk/badge/?version=latest)](https://f5.com/solutions/deployment-guides)
 
 ## Introduction
-This project implements autoscaling of BIG-IP Web Application Firewall (WAF) systems in Amazon Web Services using the AWS CloudFormation template **autoscale-bigip.template**. As traffic increases or decreases, the number of BIG-IP instances automatically increases or decreases accordingly.
+This project implements auto scaling of BIG-IP Web Application Firewall (WAF) systems in Amazon Web Services using the AWS CloudFormation template **autoscale-bigip.template**. As traffic increases or decreases, the number of BIG-IP instances automatically increases or decreases accordingly.
 
 ## Documentation
 See the project documentation on (TBD).

@@ -166,6 +166,10 @@ def main():
               },
               "Parameters": [
                 "Vpc",
+                "managementSubnetAz1",
+                "managementSubnetAz2",
+                "subnet1Az2",
+                "bigipManagementSecurityGroup",
                 "subnet1Az1",
                 "bigipExternalSecurityGroup",
                 "availabilityZone1",
@@ -216,15 +220,27 @@ def main():
            "Vpc": {
                 "default": "Vpc"
             },
+            "managementSubnetAz1": {
+                "default": "Management Subnet AZ1"
+            },
+            "managementSubnetAz2": {
+                "default": "Management Subnet AZ2"
+            },
             "subnet1Az1": {
                 "default": "Subnet AZ1"
+            },
+            "subnet1Az2": {
+                "default": "Subnet AZ2"
             },
             "availabilityZone1": {
                 "default": "Availability Zone 1"
             },
             "availabilityZone2": {
                 "default": "Availability Zone 2"
-            },            
+            },
+            "bigipManagementSecurityGroup": {
+                "default": "Big-IP Management Security Group"
+            },
             "bigipExternalSecurityGroup": {
                 "default": "Big-IP External Security Group"
             },
@@ -281,7 +297,7 @@ def main():
             }
           }
         }
-      },
+    }
     )
 
     ### BEGIN PARAMETERS
@@ -332,7 +348,6 @@ def main():
     if stack != "network" and stack != "security_groups":
         sshKey = t.add_parameter(Parameter(
             "sshKey",
-
             Type="AWS::EC2::KeyPair::KeyName",
             Description="Name of an existing EC2 KeyPair to enable SSH access to the instance",
         ))
@@ -363,7 +378,6 @@ def main():
         if num_nics == 1:
             managementGuiPort = t.add_parameter(Parameter(
                 "managementGuiPort",
-
                 Default="443",
                 ConstraintDescription="Must be a valid, unusued port on BIG-IP.",
                 Type="Number",
@@ -371,13 +385,10 @@ def main():
             ))
 
     if bigip == True:
-
-
         if 'waf' in components:
             # Default to 2xlarge
             instanceType = t.add_parameter(Parameter(
                 "instanceType",
-
                 Default="m3.2xlarge",
                 ConstraintDescription="must be a valid BIG-IP EC2 instance type",
                 Type="String",
@@ -392,17 +403,12 @@ def main():
                                 "c4.4xlarge",       
                                 "c4.8xlarge",
                                 "cc2.8xlarge",
-
-
                               ],
             ))
-
         else:
-
             instanceType = t.add_parameter(Parameter(
                 "instanceType",
-
-                Default="m3.xlarge",
+                Default="m3.2xlarge",
                 ConstraintDescription="must be a valid BIG-IP EC2 instance type",
                 Type="String",
                 Description="F5 BIG-IP Virtual Instance Type",
@@ -428,7 +434,6 @@ def main():
         if license_type == "hourly" and 'waf' not in components:
             imageName = t.add_parameter(Parameter(
                 "imageName",
-
                 Default="Best1000Mbps",
                 ConstraintDescription="Must be a valid F5 BIG-IP performance type",
                 Type="String",
@@ -458,34 +463,17 @@ def main():
                                 "Best1000Mbps",
                               ],
             ))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         if license_type != "hourly":
             imageName = t.add_parameter(Parameter(
                 "imageName",
-
                 Default="Best",
                 ConstraintDescription="Must be a valid F5 BIG-IP performance type",
                 Type="String",
                 Description="F5 BIG-IP Performance Type",
                 AllowedValues=["Good", "Better", "Best"],
             ))
-
         adminUsername = t.add_parameter(Parameter(
             "adminUsername",
-
             Type="String",
             Description="Type your BIG-IP Admin Username",
             Default="admin",
@@ -496,7 +484,6 @@ def main():
 
         adminPassword = t.add_parameter(Parameter(
             "adminPassword",
-
             Type="String",
             Description="Type your BIG-IP Admin Password",
             MinLength="1",
@@ -504,12 +491,9 @@ def main():
             MaxLength="255",
             ConstraintDescription="Verify your BIG-IP Admin Password",
         ))
-
         if aws_creds == True:
-
             iamAccessKey = t.add_parameter(Parameter(
                 "iamAccessKey",
-
                 Description="IAM Access Key",
                 Type="String",
                 MinLength="16",
@@ -518,10 +502,8 @@ def main():
                 NoEcho=True,
                 ConstraintDescription="can contain only ASCII characters.",
             ))
-
             iamSecretKey = t.add_parameter(Parameter(
                 "iamSecretKey",
-
                 Description="IAM Secret Key for BIG-IP",
                 Type="String",
                 MinLength="1",
@@ -530,14 +512,11 @@ def main():
                 NoEcho=True,
                 ConstraintDescription="can contain only ASCII characters.",
             ))
-
         if license_type == "byol":
-
             for BIGIP_INDEX in range(num_bigips): 
                 licenseKey = "licenseKey" + str(BIGIP_INDEX + 1)
                 PARAMETERS[licenseKey] = t.add_parameter(Parameter(
                     licenseKey,
-
                     Type="String",
                     Description="Paste or type your F5 BYOL regkey here:",
                     MinLength="1",
@@ -545,18 +524,15 @@ def main():
                     MaxLength="255",
                     ConstraintDescription="Verify your F5 BYOL regkey.",
                 ))
-
         if license_type == "bigiq":
             bigiqAddress = t.add_parameter(Parameter(
                 "bigiqAddress",
-
                 MinLength="1",
                 ConstraintDescription="Verify your BIG-IQ Hostname or IP",
                 Type="String",
                 Description="Type your BIG-IQ Hostname or IP",
                 MaxLength="255",
             ))
-
             bigiqUsername = t.add_parameter(Parameter(
                 "bigiqUsername",
                 MinLength="1",
@@ -565,7 +541,6 @@ def main():
                 Description="Type your BIG-IQ Username",
                 MaxLength="255",
             ))
-
             bigiqPassword = t.add_parameter(Parameter(
                 "bigiqPassword",
                 Type="String",
@@ -575,61 +550,47 @@ def main():
                 MaxLength="255",
                 ConstraintDescription="Verify your BIG-IQ Password",
             ))
-
             bigiqLicensePoolUUID = t.add_parameter(Parameter(
                 "bigiqLicensePoolUUID",
-
                 MinLength="1",
                 ConstraintDescription="Verify your BIG-IQ License Pool UUID",
                 Type="String",
                 Description="Type or paste your BIG-IQ License Pool UUID",
                 MaxLength="255",
             ))
-
     if stack == "existing" or stack == "security_groups":
             Vpc = t.add_parameter(Parameter(
                 "Vpc",
-
                 ConstraintDescription="This must be an existing VPC within the working region.",
                 Type="AWS::EC2::VPC::Id",
             ))
 
     if stack == "existing":
-
         for INDEX in range(num_azs):
             ExternalSubnet = "subnet1" + "Az" + str(INDEX + 1)
-
             PARAMETERS[ExternalSubnet] = t.add_parameter(Parameter(
                 ExternalSubnet,
-
                 ConstraintDescription="The subnet ID must be within an existing VPC",
                 Type="AWS::EC2::Subnet::Id",
                 Description="Public or External subnet ID",
             ))
-
         bigipExternalSecurityGroup = t.add_parameter(Parameter(
             "bigipExternalSecurityGroup",
-
             ConstraintDescription="The security group ID must be within an existing VPC",
             Type="AWS::EC2::SecurityGroup::Id",
             Description="Public or External Security Group ID",
         ))
-
         if num_nics > 1:
             for INDEX in range(num_azs):
                 managementSubnet = "managementSubnet" + "Az" + str(INDEX + 1)
-
                 PARAMETERS[managementSubnet] = t.add_parameter(Parameter(
                     managementSubnet,
-
                     ConstraintDescription="The subnet ID must be within an existing VPC",
                     Type="AWS::EC2::Subnet::Id",
                     Description="Management Subnet ID",
                 ))
-
             bigipManagementSecurityGroup = t.add_parameter(Parameter(
                 "bigipManagementSecurityGroup",
-
                 ConstraintDescription="The security group ID must be within an existing VPC",
                 Type="AWS::EC2::SecurityGroup::Id",
                 Description="BIG-IP Management Security Group",
@@ -637,30 +598,24 @@ def main():
         if num_nics > 2:
             for INDEX in range(num_azs):
                 InternalSubnet = "subnet2" + "Az" + str(INDEX + 1)
-
                 PARAMETERS[InternalSubnet] = t.add_parameter(Parameter(
                     InternalSubnet,
-
                     ConstraintDescription="The subnet ID must be within an existing VPC",
                     Type="AWS::EC2::Subnet::Id",
                     Description="Private or Internal subnet ID",
                 ))
             bigipInternalSecurityGroup = t.add_parameter(Parameter(
                 "bigipInternalSecurityGroup",
-
                 ConstraintDescription="The security group ID must be within an existing VPC",
                 Type="AWS::EC2::SecurityGroup::Id",
                 Description="Private or Internal Security Group ID",
             ))
-
         webserverPrivateIp = t.add_parameter(Parameter(
             "webserverPrivateIp",
-
             ConstraintDescription="Web Server IP used for the BIG-IP pool Member",
             Type="String",
             Description="Web Server IP used for BIG-IP pool member",
         ))
-
 
     # BEGIN REGION MAPPINGS FOR AMI IDS
     if bigip == True: 
@@ -1405,23 +1360,19 @@ def main():
 
                         Description="Internal Interface for the BIG-IP",
                     ))
+            # Build custom-config
+            custom_config = []
 
-
-            # Build firstrun config
-            firstrun_config = []
-
-            firstrun_config += [
+            custom_config += [
                                     "#!/bin/bash\n", 
-                                    "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n", 
-                                    "TZ='UTC'\n",
+                                    "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                                     "BIGIP_ADMIN_USERNAME='", Ref(adminUsername), "'\n", 
-                                    "BIGIP_ADMIN_PASSWORD='", Ref(adminPassword), "'\n",
+                                    "BIGIP_ADMIN_PASSWORD='", Ref(adminPassword), "'\n",                                    
                                 ]
-
             if license_type == "byol":
-                firstrun_config += [ "REGKEY=", Ref(licenseKey), "\n" ]
+                custom_config += [ "REGKEY=", Ref(licenseKey), "\n" ]
             elif license_type == "bigiq":
-                firstrun_config += [ 
+                custom_config += [ 
                                     "BIGIQ_ADDRESS='", Ref(bigiqAddress), "'\n",
                                     "BIGIQ_USERNAME='", Ref(bigiqUsername), "'\n",
                                     "BIGIQ_PASSWORD='", Ref(bigiqPassword), "'\n",
@@ -1429,23 +1380,23 @@ def main():
                                    ]
 
                 if num_nics == 1:
-                    firstrun_config += [ "BIGIP_DEVICE_ADDRESS='", Ref(ExternalSelfEipAddress),"'\n" ] 
+                    custom_config += [ "BIGIP_DEVICE_ADDRESS='", Ref(ExternalSelfEipAddress),"'\n" ] 
                 if num_nics > 1:
-                    firstrun_config += [ "BIGIP_DEVICE_ADDRESS='", Ref(ManagementEipAddress),"'\n" ] 
+                    custom_config += [ "BIGIP_DEVICE_ADDRESS='", Ref(ManagementEipAddress),"'\n" ] 
 
 
             if num_nics == 1:
-                firstrun_config += [ 
+                custom_config += [ 
                                     "MANAGEMENT_GUI_PORT='", Ref(managementGuiPort), "'\n",  
                                     "GATEWAY_MAC=`ifconfig eth0 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                                    ]
 
             if num_nics > 1:
-                firstrun_config += [ 
+                custom_config += [ 
                                     "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                                    ]
 
-            firstrun_config += [
+            custom_config += [
                                     "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
                                     "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
                                     "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
@@ -1455,59 +1406,57 @@ def main():
                                     "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
                                     "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n", 
                                 ]
-
-
             if num_nics > 1:
-                firstrun_config += [ 
+                custom_config += [ 
                                     "MGMTIP='", GetAtt(ManagementInterface, "PrimaryPrivateIpAddress"), "'\n", 
                                     "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n", 
                                     "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n", 
                                     "EXTMASK='24'\n",
                                     ]
             if num_nics > 2:
-                firstrun_config += [ 
+                custom_config += [ 
                                     "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
                                     "INTMASK='24'\n", 
                                    ]
 
 
             if stack == "full":
-                firstrun_config +=  [              
+                custom_config +=  [              
                                     "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n", 
                                     "POOLMEMPORT=80\n", 
                                     ]
             elif stack == "existing":
-                firstrun_config +=  [
+                custom_config +=  [
                                     "POOLMEM='", Ref(webserverPrivateIp), "'\n", 
                                     "POOLMEMPORT=80\n", 
                                     ]         
 
 
-            firstrun_config +=  [
+            custom_config +=  [
                                     "APPNAME='demo-app-1'\n", 
                                     "VIRTUALSERVERPORT=80\n",
                                     "CRT='default.crt'\n", 
                                     "KEY='default.key'\n",
                                 ]
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
-                firstrun_config +=  [
+                custom_config +=  [
                                     "PEER_HOSTNAME='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "Instance", "PrivateDnsName"), "'\n",
                                     "PEER_MGMTIP='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "ManagementInterface", "PrimaryPrivateIpAddress"), "'\n",
                                     ]
                 
                 if num_nics > 1:
-                    firstrun_config +=  [
+                    custom_config +=  [
                                         "PEER_EXTPRIVIP='", Select("0", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "subnet1" + "Az" + str(BIGIP_INDEX + 2) + "Interface", "SecondaryPrivateIpAddresses")), "'\n", 
                                         "VIPEIP='",Ref(VipEipAddress),"'\n",
 
                                         ]
 
             if aws_creds == True:
-                firstrun_config +=  [
+                custom_config +=  [
                                       "IAM_ACCESS_KEY='", Ref(iamAccessKey), "'\n",
                                       "IAM_SECRET_KEY='", Ref(iamSecretKey), "'\n",
                                     ]
-            # build firstrun.sh vars
+            # build custom-confg.sh vars
 
             license_byol =  [ 
                                 "echo 'start install byol license'\n",
@@ -1608,8 +1557,8 @@ def main():
     ] \
 }'
 
-            # begin building firstrun.sh
-            firstrun_sh = [
+            # begin building custom-config.sh
+            custom_sh = [
                                 "#!/bin/bash\n",
                           ] 
             unpack_libs = [
@@ -1620,56 +1569,36 @@ def main():
                           ]
             onboard_BIG_IP =    [
                                 ]
-            nic1_setup =        [
-                                ]                    
-            firstrun_BIG_IP =   [
+            one_nic_setup =     [
+                                ]
+            cluster_BIG_IP=     [
+                                ]                                
+            custom_command =   [
                                     "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
                                     "--wait-for ONBOARD_DONE",
-                                    "--file /config/cloud/aws/firstrun.sh",
+                                    "--file /config/cloud/aws/custom-config.sh",
+                                    "--cwd /config/cloud/aws",
                                     "--log-level verbose",
-                                    "-o /var/log/firstrun_1.log",
+                                    "-o /var/log/custom-config.log",
                                     "--background",
                                 ]
-
-
-
-
-
-
-
-
-
-
-
-
             if num_nics == 1:
                 if ha_type != "standalone":
-                    firstrun_sh += [
+                    custom_sh += [
                                         "/usr/bin/setdb provision.1nicautoconfig disable\n",
                                    ]
 
-            firstrun_sh +=  [ 
-                                ". /config/cloud/aws/firstrun.config\n",
+            custom_sh +=  [ 
+                                ". /config/cloud/aws/custom.config\n",
                                 ". /config/cloud/aws/firstrun.utils\n",
-                                "FILE=/config/cloud/aws/firstrun.log\n",
-                                "if [ ! -e $FILE ]\n",
-                                " then\n",
-                                "     touch $FILE\n",
-                                "     nohup $0 0<&- &>/dev/null &\n",
-                                "     exit\n",
-                                "fi\n",
-                                "exec 1<&-\n",
-                                "exec 2<&-\n",
-                                "exec 1<>$FILE\n",
-                                "exec 2>&1\n",
-                                "date\n",
                             ]
 
 
             # Global Settings
-            firstrun_sh += [
-                                "echo 'starting tmsh config'\n",
-                            ]
+            custom_sh += [
+                            "date\n",
+                            "echo 'starting tmsh config'\n",
+                         ]
             if num_nics == 1:
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/config/cloud/aws/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
@@ -1682,14 +1611,13 @@ def main():
                                     "NAME_SERVER=`/config/cloud/aws/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
                                     "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
                                   ]
-                                  
             onboard_BIG_IP += [
                                "--log-level verbose",
                                "-o  /var/log/onboard.log",
                                "--background",
                                "--no-reboot",
                                "--host localhost",
-                               "--user admin",
+                               "--user ", { "Ref": "adminUsername" }, " ",
                                "--password '", { "Ref": "adminPassword" }, "'",
                                "--set-password admin:'", { "Ref": "adminPassword" }, "'",
                                "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
@@ -1699,151 +1627,115 @@ def main():
                                "--dns ${NAME_SERVER}",
                                "--module ltm:nominal",
                             ]
-
             if aws_creds:
-                firstrun_sh += [
+                custom_sh += [
                                 "tmsh modify sys global-settings aws-access-key ${IAM_ACCESS_KEY}\n",
                                 "tmsh modify sys global-settings aws-secret-key ${IAM_SECRET_KEY}\n",
                                 ]   
-
-
-
             if num_nics == 1:
-
-                firstrun_sh +=  [
+                custom_sh +=  [
                                 "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
                                 ] 
-
                 # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
-
                 if 'waf' in components:
-                    firstrun_sh +=  [ 
+                    custom_sh +=  [ 
                                     "tmsh modify net self-allow defaults add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
                                     ]
-
-
-
-
             # Network Settings
             if num_nics > 1:
-
-                firstrun_sh +=  [ 
+                custom_sh +=  [ 
                                 "tmsh create net vlan external interfaces add { 1.1 } \n",
                                 ]
-
                 if ha_type == "standalone":
-
                     if 'waf' not in components:
-                        firstrun_sh +=  [ 
+                        custom_sh +=  [ 
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
                                         ]
-
                     if 'waf' in components:                    
-                        firstrun_sh +=  [ 
+                        custom_sh +=  [ 
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
                                         ]
-
-
                 if ha_type != "standalone":
-
                     if 'waf' not in components:
-                        firstrun_sh +=  [ 
+                        custom_sh +=  [ 
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
                                         ]
-
                     if 'waf' in components:
-                        firstrun_sh +=  [ 
+                        custom_sh +=  [ 
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
                                         ]
-
-
-                                
             if num_nics > 2:
-                firstrun_sh +=  [ 
+                custom_sh +=  [ 
                                 "tmsh create net vlan internal interfaces add { 1.2 } \n",
                                 "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
                                 ]
-
             # Set Gateway
-
             if ha_type == "across-az":
-                firstrun_sh +=  [                  
+                cluster_BIG_IP +=   [
+                                 
+                                    ]
+                custom_sh +=  [                  
                                     "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
                                     "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
                                 ]
             else:
                 if num_nics > 1:
-                    firstrun_sh +=  [
+                    custom_sh +=  [
                                         "tmsh create net route default gw ${GATEWAY}\n",
                                     ]
-
-
- 
-
             # Disable DHCP if clustering. 
             if ha_type != "standalone":
-
-                firstrun_sh += [ 
+                custom_sh += [ 
+                                    "tmsh mv cm device bigip1 ${HOSTNAME}\n",
                                     "tmsh modify sys db dhclient.mgmt { value disable }\n",
                                 ] 
-
-
                 if num_nics == 1:
-                    firstrun_sh += [
+                    custom_sh += [
                                     "MGMT_ADDR=$(tmsh list sys management-ip | awk '/management-ip/ {print $3}')\n",
                                     "MGMT_IP=${MGMT_ADDR%/*}\n",
                                     "tmsh modify cm device ${HOSTNAME} configsync-ip ${MGMT_IP} }\n", 
                                    ]
                 else:
                     # For simplicity, putting all clustering endpoints on external subnet
-                    firstrun_sh += [
+                    custom_sh += [
                                     "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n", 
                                    ]
-
-            firstrun_sh +=  [ "tmsh save /sys config\n", ]
-
+            custom_sh +=  [ "tmsh save /sys config\n", ]
             # License Device
             if license_type == "byol":
-                firstrun_sh += license_byol
+                custom_sh += license_byol
             elif license_type == "bigiq":
-                firstrun_sh += license_from_bigiq
-
+                custom_sh += license_from_bigiq
             # Wait until licensing finishes
-            firstrun_sh += [
+            custom_sh += [
                               "checkStatusnoret\n",
                               "sleep 20 \n",
                               "tmsh save /sys config\n",
                            ]
-
             # Provision Modules
             if 'waf' in components:
                onboard_BIG_IP += [ 
                                     "--module asm:nominal",
                                  ]
-
-
             # Cluster Devices if Cluster Seed
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
-                firstrun_sh +=  [
-                                "echo 'sleeping additional 120 secs to wait for peer to boot'\n",
-                                "sleep 120\n",
-                                "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password \"'${BIGIP_ADMIN_PASSWORD}'\"\n",    
-                                "tmsh create cm device-group my_sync_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
-                                "tmsh run cm config-sync to-group my_sync_failover_group\n", 
+                custom_sh +=  [
+                                "echo 'sleeping additional 180 secs to wait for peer to boot'\n",
+                                "sleep 300\n",
+                                "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password \"${BIGIP_ADMIN_PASSWORD}\"\n",    
+                                "tmsh create cm device-group across_az_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
+                                "tmsh run cm config-sync to-group across_az_failover_group\n", 
                                 ]
-
-
             if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
 
                 #Add Pool
-                firstrun_sh +=  [
+                custom_sh +=  [
                                     "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
                                 ]
 
                 # Add virtual service with simple URI-Routing ltm policy
                 if 'waf' not in components:
-
-                    firstrun_sh +=  [
+                    custom_sh +=  [
                       "tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\n",
                       "tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\n",
                       "tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\n",
@@ -1853,26 +1745,24 @@ def main():
                     if ha_type != "across-az":
 
                         if num_nics == 1:
-                            firstrun_sh +=  [
+                            custom_sh +=  [
 
                                             "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             ]
 
                         if num_nics > 1:
-                            firstrun_sh +=  [
+                            custom_sh +=  [
                                             "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             ]
                     if ha_type == "across-az":                      
-                        firstrun_sh +=  [
+                        custom_sh +=  [
                                             "tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                                            "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
-                                            "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
+                                            "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",                                            
                                         ]
-
                 if 'waf' in components:
                     # 12.1.0 requires "first match legacy"
-                    firstrun_sh += [
+                    custom_sh += [
                                       "curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
                                       "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
                                       "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
@@ -1881,20 +1771,18 @@ def main():
                                       "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
                                       "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
                                     ]
-
                     if ha_type != "across-az":
-
                         if num_nics == 1:
-                            firstrun_sh +=  [
+                            custom_sh +=  [
                                               "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
                                             ]
 
                         if num_nics > 1:
-                            firstrun_sh +=  [
+                            custom_sh +=  [
                                               "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
                                             ]
                     if ha_type == "across-az":                      
-                        firstrun_sh +=  [
+                        custom_sh +=  [
                                             "tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
                                             "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
                                             "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
@@ -1902,43 +1790,38 @@ def main():
                                         ]
 
                 if ha_type == "across-az":
-                    firstrun_sh += [
+                    custom_sh += [
                                             "curl -sSk -o /config/cloud/aws/f5.aws_advanced_ha.v1.2.0rc1.tmpl --max-time 15 https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
                                             "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
                                             "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.2.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                             "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
-                                            "tmsh run cm config-sync to-group my_sync_failover_group\n",
+                                            "tmsh run cm config-sync to-group across_az_failover_group\n",
                                             "sleep 15\n",
                                             "curl -sSk -u admin:\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
                                     ]
-
             # If ASM, Need to use overwite Config (SOL16509 / BZID: 487538 )
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 if 'waf' in components:
-
-                    firstrun_sh += [
+                    custom_sh += [
                                             "tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\n", 
                                             "tmsh run cm config-sync to-group datasync-global-dg\n",
                                     ]
-
             if license_type == "byol":                
-                firstrun_sh += [
+                custom_sh += [
                                     "tmsh save /sys config\n",
                                     "date\n",
                                     "# for security purposes, remove firstrun.config\n",
                                     "# rm /config/cloud/aws/firstrun.config\n"
                                ]
             else:
-                firstrun_sh += [
+                custom_sh += [
                                     "tmsh save /sys config\n",
                                     "date\n",
                                     "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
                                     "# rm /config/cloud/aws/firstrun.config\n"
                                ]             
 
-
             if license_type == "bigiq":
-
                 metadata = Metadata(
                         Init({
                             'config': InitConfig(
@@ -1950,8 +1833,8 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/config/cloud/aws/firstrun.config': InitFile(
-                                            content=Join('', firstrun_config ),
+                                        '/config/cloud/aws/custom.config': InitFile(
+                                            content=Join('', custom_config ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -1974,8 +1857,8 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/config/cloud/aws/firstrun.sh': InitFile(
-                                            content=Join('', firstrun_sh ),
+                                        '/config/cloud/aws/custom-config.sh': InitFile(
+                                            content=Join('', custom_sh ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -1988,12 +1871,23 @@ def main():
                                                                           ]
                                                 }
                                             },
-                                            "002-onboard-BIG-IP": {
+                                            "002-1nic-setup": {
+                                                "command": { 
+                                                    "Fn::Join" : [ " ", one_nic_setup
+                                                                 ]
+                                                }
+                                            },
+                                            "003-onboard-BIG-IP": {
                                                 "command": { "Fn::Join" : [ " ", onboard_BIG_IP
                                                                           ]
                                                 }
-                                            }
-
+                                            },
+                                            "005-custom-config": {
+                                                "command": { 
+                                                    "Fn::Join" : [ " ", custom_command
+                                                                 ]
+                                                }
+                                            },
                                 }
                             ) 
                         })
@@ -2010,8 +1904,8 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/config/cloud/aws/firstrun.config': InitFile(
-                                            content=Join('', firstrun_config ),
+                                        '/config/cloud/aws/custom.config': InitFile(
+                                            content=Join('', custom_config ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -2022,8 +1916,8 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/config/cloud/aws/firstrun.sh': InitFile(
-                                            content=Join('', firstrun_sh ),
+                                        '/config/cloud/aws/custom-config.sh': InitFile(
+                                            content=Join('', custom_sh ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -2036,15 +1930,21 @@ def main():
                                                                           ]
                                                 }
                                             },
+                                            "002-1nic-setup": {
+                                                "command": { 
+                                                    "Fn::Join" : [ " ", one_nic_setup
+                                                                 ]
+                                                }
+                                            },
                                             "003-onboard-BIG-IP": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", onboard_BIG_IP
                                                                  ]
                                                 }
                                             },
-                                            "004-custom-config": {
+                                            "005-custom-config": {
                                                 "command": { 
-                                                    "Fn::Join" : [ " ", firstrun_BIG_IP
+                                                    "Fn::Join" : [ " ", custom_command
                                                                  ]
                                                 }
                                             },

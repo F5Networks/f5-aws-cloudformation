@@ -1,6 +1,147 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "AWS CloudFormation Template for creating security groups for a 1nic BIG-IP",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "NETWORKING CONFIGURATION"
+                    },
+                    "Parameters": [
+                        "Vpc",
+                        "managementSubnetAz1",
+                        "managementSubnetAz2",
+                        "subnet1Az2",
+                        "bigipManagementSecurityGroup",
+                        "subnet1Az1",
+                        "bigipExternalSecurityGroup",
+                        "availabilityZone1",
+                        "availabilityZone2"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "INSTANCE CONFIGURATION"
+                    },
+                    "Parameters": [
+                        "adminUsername",
+                        "adminPassword",
+                        "imageName",
+                        "instanceType",
+                        "applicationInstanceType",
+                        "licenseKey1",
+                        "licenseKey2",
+                        "managementGuiPort",
+                        "sshKey",
+                        "restrictedSrcAddress",
+                        "iamAccessKey",
+                        "iamSecretKey"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "VIRTUAL SERVICE CONFIGURATION"
+                    },
+                    "Parameters": [
+                        "webserverPrivateIp"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "TAGS"
+                    },
+                    "Parameters": [
+                        "application",
+                        "environment",
+                        "group",
+                        "owner",
+                        "costcenter"
+                    ]
+                }
+            ],
+            "ParameterLabels": {
+                "Vpc": {
+                    "default": "Vpc"
+                },
+                "adminPassword": {
+                    "default": "Admin Password"
+                },
+                "adminUsername": {
+                    "default": "Admin Username"
+                },
+                "application": {
+                    "default": "Application"
+                },
+                "applicationInstanceType": {
+                    "default": "Application Instance Type"
+                },
+                "availabilityZone1": {
+                    "default": "Availability Zone 1"
+                },
+                "availabilityZone2": {
+                    "default": "Availability Zone 2"
+                },
+                "bigipExternalSecurityGroup": {
+                    "default": "Big-IP External Security Group"
+                },
+                "bigipManagementSecurityGroup": {
+                    "default": "Big-IP Management Security Group"
+                },
+                "costcenter": {
+                    "default": "Costcenter"
+                },
+                "environment": {
+                    "default": "Environment"
+                },
+                "group": {
+                    "default": "Group"
+                },
+                "iamAccessKey": {
+                    "default": "IAM Access Key"
+                },
+                "iamSecretKey": {
+                    "default": "IAM Secret Key"
+                },
+                "imageName": {
+                    "default": "Image Name"
+                },
+                "instanceType": {
+                    "default": "Instance Type"
+                },
+                "licenseKey1": {
+                    "default": "Licence Key1"
+                },
+                "managementGuiPort": {
+                    "default": "Management GUI Port"
+                },
+                "managementSubnetAz1": {
+                    "default": "Management Subnet AZ1"
+                },
+                "managementSubnetAz2": {
+                    "default": "Management Subnet AZ2"
+                },
+                "owner": {
+                    "default": "Owner"
+                },
+                "restrictedSrcAddress": {
+                    "default": "Restricted Source Addresses"
+                },
+                "sshKey": {
+                    "default": "SSH Key"
+                },
+                "subnet1Az1": {
+                    "default": "Subnet AZ1"
+                },
+                "subnet1Az2": {
+                    "default": "Subnet AZ2"
+                },
+                "webserverPrivateIp": {
+                    "default": "Application Address"
+                }
+            }
+        }
+    },
     "Outputs": {
         "bigipExternalSecurityGroup": {
             "Description": "Public or External Security Group",

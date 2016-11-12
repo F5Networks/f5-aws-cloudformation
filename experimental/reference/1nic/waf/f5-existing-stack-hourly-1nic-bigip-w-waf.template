@@ -454,7 +454,14 @@
                                 "command": {
                                     "Fn::Join": [
                                         " ",
-                                        []
+                                        [
+                                            "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
+                                            "--file /config/cloud/aws/f5-cloud-libs/scripts/aws/1nicSetup.sh",
+                                            "--cwd /config/cloud/aws/f5-cloud-libs/scripts/aws",
+                                            "-o /var/log/1nicSetup.log",
+                                            "--background",
+                                            "--signal 1_NIC_SETUP_DONE"
+                                        ]
                                     ]
                                 }
                             },

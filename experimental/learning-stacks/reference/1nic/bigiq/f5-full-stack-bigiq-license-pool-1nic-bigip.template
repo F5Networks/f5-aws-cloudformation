@@ -547,7 +547,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Application Route Table"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Application Route Table:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Network",
@@ -610,7 +620,19 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Az1 Application Subnet"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Az",
+                                    "1",
+                                    " Application Subnet:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -669,7 +691,14 @@
                                 "command": {
                                     "Fn::Join": [
                                         " ",
-                                        []
+                                        [
+                                            "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
+                                            "--file /config/cloud/aws/f5-cloud-libs/scripts/aws/1nicSetup.sh",
+                                            "--cwd /config/cloud/aws/f5-cloud-libs/scripts/aws",
+                                            "-o /var/log/1nicSetup.log",
+                                            "--background",
+                                            "--signal 1_NIC_SETUP_DONE"
+                                        ]
                                     ]
                                 }
                             },
@@ -1054,7 +1083,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "External Route Table"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "External Route Table",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Network",
@@ -1101,6 +1140,20 @@
                         }
                     },
                     {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "InternetGateway: ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
+                    },
+                    {
                         "Key": "Owner",
                         "Value": {
                             "Ref": "owner"
@@ -1143,7 +1196,15 @@
                     {
                         "Key": "Name",
                         "Value": {
-                            "Ref": "AWS::StackName"
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Vpc: ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
                         }
                     },
                     {
@@ -1225,7 +1286,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Webserver"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Webserver:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1305,7 +1376,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Webserver Security Group"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Webserver Security Group:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1474,7 +1555,19 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Az1 External Subnet"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Az",
+                                    "1",
+                                    " External Subnet:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",

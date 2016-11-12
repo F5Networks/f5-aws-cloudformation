@@ -392,7 +392,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Application Route Table"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Application Route Table:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Network",
@@ -455,7 +465,19 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Az1 Application Subnet"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Az",
+                                    "1",
+                                    " Application Subnet:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -547,7 +569,19 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Az2 Application Subnet"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Az",
+                                    "2",
+                                    " Application Subnet:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -648,7 +682,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "External Route Table"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "External Route Table",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Network",
@@ -709,7 +753,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Internal Route Table"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Internal Route Table:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Network",
@@ -753,6 +807,20 @@
                         "Key": "Group",
                         "Value": {
                             "Ref": "group"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "InternetGateway: ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
                         }
                     },
                     {
@@ -807,7 +875,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Management Route Table"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Management Route Table",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Network",
@@ -859,7 +937,15 @@
                     {
                         "Key": "Name",
                         "Value": {
-                            "Ref": "AWS::StackName"
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Vpc: ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
                         }
                     },
                     {
@@ -941,7 +1027,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Webserver"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Webserver:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1021,7 +1117,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Webserver Security Group"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Webserver Security Group:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1098,7 +1204,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Bigip External Security Group"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Bigip External Security Group:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1151,7 +1267,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Bigip Internal Security Group"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Bigip Internal Security Group:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1234,7 +1360,17 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Bigip Management Security Group"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Bigip Management Security Group:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1282,7 +1418,19 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Az1 Management Subnet"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Az",
+                                    "1",
+                                    " Management Subnet:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1330,7 +1478,19 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Az2 Management Subnet"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Az",
+                                    "2",
+                                    " Management Subnet:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1378,7 +1538,19 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Az1 External Subnet"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Az",
+                                    "1",
+                                    " External Subnet:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1426,7 +1598,19 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Az2 External Subnet"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Az",
+                                    "2",
+                                    " External Subnet:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1474,7 +1658,19 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Az1 Internal Subnet"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Az",
+                                    "1",
+                                    " Internal Subnet:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",
@@ -1522,7 +1718,19 @@
                     },
                     {
                         "Key": "Name",
-                        "Value": "Az2 Internal Subnet"
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Az",
+                                    "2",
+                                    " Internal Subnet:",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
                     },
                     {
                         "Key": "Owner",

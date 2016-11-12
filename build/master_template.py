@@ -1566,7 +1566,7 @@ def main():
                                 "tar xvzf /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/;",
                                 "mv /config/cloud/aws/F5Networks-f5-cloud-libs-* /config/cloud/aws/f5-cloud-libs;",
                                 "cd /config/cloud/aws/f5-cloud-libs;",
-                                "npm install --production;",                                
+                                "npm install --production;"
                           ]
             onboard_BIG_IP =    [
                                 ]
@@ -1601,6 +1601,14 @@ def main():
                             "echo 'starting tmsh config'\n",
                          ]
             if num_nics == 1:
+                one_nic_setup += [
+                                  "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
+                                  "--file /config/cloud/aws/f5-cloud-libs/scripts/aws/1nicSetup.sh",
+                                  "--cwd /config/cloud/aws/f5-cloud-libs/scripts/aws",
+                                  "-o /var/log/1nicSetup.log",
+                                  "--background",
+                                  "--signal 1_NIC_SETUP_DONE"
+                                 ]
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/config/cloud/aws/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
                                     "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",

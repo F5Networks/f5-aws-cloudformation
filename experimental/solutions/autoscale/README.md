@@ -85,6 +85,7 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 		"ParameterKey":"deploymentName",
 		"ParameterValue":"Acme"
 	},
+	{
 		"ParameterKey":"vpc",
 		"ParameterValue":"vpc-1ffef478"
 	},
@@ -101,7 +102,7 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 		"ParameterValue":"sg-13ee026e"
 	},
 	{
-		"ParameterKey":bigipElasticLoadBalancer,
+		"ParameterKey":"bigipElasticLoadBalancer",
 		"ParameterValue":"Acme-BigipElb"
 	},
 	{
@@ -116,16 +117,17 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 		"ParameterKey":"adminPassword",
 		"ParameterValue":"strongPassword"
 	},
+	{
 		"ParameterKey":"notificationEmail",
 		"ParameterValue":"user@company.com"
 	},
 	{
-		ParameterKey:"appInternalElbDnsName",
-		ParameterValue:"internal-Acme-AppElb-911355308.us-east-1.elb.amazonaws.com"
+		"ParameterKey":"appInternalElbDnsName",
+		"ParameterValue":"internal-Acme-AppElb-911355308.us-east-1.elb.amazonaws.com"
 	},
 	{
-		ParameterKey:"policyLevel",
-		ParameterValue:"high"
+		"ParameterKey":"policyLevel",
+		"ParameterValue":"high"
 	}
 ]
 ```

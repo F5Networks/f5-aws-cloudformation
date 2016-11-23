@@ -62,11 +62,23 @@
             "appInternalElbDnsName",
             "policyLevel"
           ]
+        },
+        {
+          "Label": {
+            "default": "TAGS"
+          },
+          "Parameters": [
+            "application",
+            "environment",
+            "group",
+            "owner",
+            "costcenter"
+          ]
         }
       ],
       "ParameterLabels": {
         "deploymentName" : {
-          "default": "Deployment Name - used for creating objects"
+          "default": "Deployment Name"
         },
         "vpc": {
           "default": "VPC Id"
@@ -136,44 +148,59 @@
         },
         "policyLevel": {
           "default": "WAF Policy Level"
+        },
+        "application": {
+          "default": "Application"
+        },
+        "environment": {
+          "default": "Environment"
+        },
+        "group": {
+          "default": "Group"
+        },
+        "owner": {
+          "default": "Owner"
+        },
+        "costcenter": {
+          "default": "Costcenter"
         }
       }
     }
   },
   "Parameters": {
     "deploymentName" : {
-      "Description" : "Deployment Name - Used in creating objects",
+      "Description" : "Deployment Name use in creating object names",
       "Type" : "String",
-      "MaxLength": 20,
-      "Default": "my_demo"
+      "MaxLength": 25,
+      "Default": "<replace>Acme<replace>"
     },
     "vpc": {
-      "Description": "Common VPC for whole deployment",
+      "Description": "VPC to deploy BIG-IPs",
       "Type": "AWS::EC2::VPC::Id"
     },
     "availabilityZones": {
-      "Description": "Availability zones in which Bigip is being deployed",
+      "Description": "Availability Zones to deploy BIG-IPs (Recommend at least 2)",
       "Type": "List<AWS::EC2::AvailabilityZone::Name>"
     },
     "subnets": {
-      "Description": "AZ1 Public or External Subnet IDs",
+      "Description": "Public or External Subnet IDs of above Availability Zones",
       "Type": "List<AWS::EC2::Subnet::Id>"
     },
     "bigipSecurityGroup": {
-      "Description": "Pre-existing security group for BIG-IP",
+      "Description": "Existing Security Group for BIG-IPs",
       "Type": "AWS::EC2::SecurityGroup::Id"
     },
     "bigipElasticLoadBalancer": {
-      "Description": "Elastic Load Balancer group for all BIG-IPs",
+      "Description": "Elastic Load Balancer group for BIG-IPs, e.g. AcmeBigipELB",
       "Type": "String",
-      "Default": "bigipElasticLoadBalancer"
+      "Default": "<replace>AcmeBigipELB<replace>"
     },
     "keyName": {
-      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "Description": "Existing EC2 KeyPair to enable SSH access to the BIG-IP instance",
       "Type": "AWS::EC2::KeyPair::KeyName"
     },
     "sshLocation" : {
-      "Description" : " The IP address range that can be used to SSH to the EC2 instances",
+      "Description" : "IP address range that can SSH to the BIG-IP instances (Default 0.0.0.0/0)",
       "Type": "String",
       "MinLength": "9",
       "MaxLength": "18",
@@ -182,7 +209,7 @@
       "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
     },
     "instanceType": {
-      "Description": "F5 BIG-IP Instance Type",
+      "Description": "BIG-IP Instance Type (Default m3.2xlarge)",
       "Type": "String",
       "Default": "m3.2xlarge",
       "AllowedValues": [
@@ -205,7 +232,7 @@
       "ConstraintDescription": "must be a valid Big-IP virtual EC2 instance type."
     },
     "performanceType": {
-      "Description": "F5 Bigip Performance Type",
+      "Description": "BIG-IP Performance Type (Default Best)",
       "Type": "String",
       "Default": "Best",
       "AllowedValues": [
@@ -216,42 +243,42 @@
       "ConstraintDescription": "Must be a valid F5 Big-IP performance type"
     },
     "throughput": {
-      "Description": "F5 Bigip Throughput",
+      "Description": "BIG-IP Throughput (Default 1000Mbps)",
       "Type": "String",
-      "Default": "25-Mbps",
+      "Default": "1000Mbps",
       "AllowedValues": [
-        "25-Mbps",
-        "200-Mbps",
-        "1000-Mbps"
+        "25Mbps",
+        "200Mbps",
+        "1000Mbps"
       ],
       "ConstraintDescription": "Please select your desired throughput"
     },
     "adminPassword": {
         "ConstraintDescription": "Please verify your BIG-IP Admin Password",
-        "Description": "Please enter your BIG-IP Admin Password",
+        "Description": "BIG-IP Admin Password",
         "MaxLength": "255",
         "MinLength": "1",
         "NoEcho": true,
         "Type": "String"
     },
     "managementGuiPort": {
-      "Description": "Port to use for the managment GUI",
+      "Description": "Port of BIG-IP management GUI (Default 8443)",
       "Type": "Number",
-      "Default": 443,
-      "ConstraintDescription": "Must be a valid, unusued port on BIG-IP."
+      "Default": 8443,
+      "ConstraintDescription": "Must be a valid, unused port on BIG-IP."
     },
     "timezone": {
-      "Description": "Enter a Olson timezone string from /usr/share/zoneinfo",
+      "Description": "Olson timezone string from /usr/share/zoneinfo (Default UTC)",
       "Default": "UTC",
       "Type": "String"
     },
     "ntpServer": {
-      "Description": "Enter a NTP server. Default to 0.pool.ntp.org",
+      "Description": "NTP server (Default 0.pool.ntp.org)",
       "Default": "0.pool.ntp.org",
       "Type": "String"
     },
     "scalingMinSize": {
-      "Description": "Enter the minimum number of BIG-IP instances (1-8) to be available in the AutoScale Group",
+      "Description": "Minimum number of BIG-IP instances (1-8) to be available in the AutoScale Group (Default 1)",
       "Default": "1",
       "ConstraintDescription": "Must be a number between 1-8",
       "Type": "Number",
@@ -259,7 +286,7 @@
       "MinValue": "1"
     },
     "scalingMaxSize": {
-      "Description": "Enter the maximum number of BIG-IP instances (2-8) that can be created in the AutoScale Group",
+      "Description": "Maximum number of BIG-IP instances (2-8) that can be created in the AutoScale Group (Default 3)",
       "Default": "3",
       "ConstraintDescription": "Must be a number between 2-8.",
       "Type": "Number",
@@ -267,22 +294,22 @@
       "MinValue": "2"
     },
     "scaleDownBytesThreshold": {
-      "Description": "Enter bytes to begin Scaling Down",
+      "Description": "Incoming Bytes Threshold to begin Scaling Down BIG-IP Instances (Default 10000)",
       "Default": "10000",
       "Type": "Number"
     },
     "scaleUpBytesThreshold": {
-      "Description": "Enter bytes to begin Scaling Up",
+      "Description": "Incoming Bytes Threshold to begin Scaling Up BIG-IP Instances (Default 35000)",
       "Default": "35000",
       "Type": "Number"
     },
     "notificationEmail": {
-      "Description": "Enter a valid email address to send AutoSclaing Event Notifications",
+      "Description": "Valid email address to send AutoScaling Event Notifications (OPTIONAL)",
       "ConstraintDescription": "Must be a valid email address.",
       "Type": "String"
     },
     "virtualServicePort": {
-      "Description": "The port for the Virtual Service on the Big-IP",
+      "Description": "Virtual Service Port on BIG-IP (Default 80)",
       "Default": "80",
       "ConstraintDescription": "Must be a valid port number (1-65535).",
       "Type": "Number",
@@ -290,7 +317,7 @@
       "MinValue": "1"
     },
     "applicationPort": {
-      "Description": "The Pool Member Port",
+      "Description": "Application Pool Member Port on BIG-IP (Default 80)",
       "Default": "80",
       "ConstraintDescription": "Must be a valid port number (1-65535).",
       "Type": "Number",
@@ -298,12 +325,12 @@
       "MinValue": "1"
     },
     "appInternalElbDnsName": {
-      "Description": "DNS of the ELB used for the application",
+      "Description": "DNS of the ELB used for the application, e.g. Acme.region.elb.amazonaws.com",
       "Type": "String",
-      "Default": "XXXXXXX.region.elb.amazonaws.com"
+      "Default": "<replace>Acme.region.elb.amazonaws.com<replace>"
     },
     "policyLevel": {
-      "Description": "WAF Policy Level to protect the application",
+      "Description": "WAF Policy Level to protect the application (Default high)",
       "Type": "String",
       "Default": "high",
       "AllowedValues": [
@@ -312,114 +339,150 @@
         "high"
       ],
       "ConstraintDescription": "Please select desired WAF Policy Level"
+    },
+    "application": {
+      "Default": "f5app",
+      "Description": "Application Tag (Default f5app)",
+      "Type": "String"
+    },
+    "environment": {
+      "Default": "f5env",
+      "Description": "Environment Name Tag (Default f5env)",
+      "Type": "String"
+    },
+    "group": {
+      "Default": "f5group",
+      "Description": "Group Tag (Default f5group)",
+      "Type": "String"
+    },
+    "owner": {
+      "Default": "f5owner",
+      "Description": "Owner Tag (Default f5owner)",
+      "Type": "String"
+    },
+    "costcenter": {
+      "Default": "f5costcenter",
+      "Description": "Costcenter Tag (Default f5costcenter)",
+      "Type": "String"
     }
   },
   "Mappings": {
     "BigipRegionMap": {
       "ap-northeast-1": {
-        "Best1000": "ami-e15eac80", 
-        "Best200": "ami-5f5daf3e", 
-        "Best25": "ami-f25daf93", 
-        "Better1000": "ami-e25eac83", 
-        "Better200": "ami-f05eac91", 
-        "Better25": "ami-815ba9e0", 
-        "Good1000": "ami-8d58aaec", 
-        "Good200": "ami-165cae77", 
-        "Good25": "ami-d95fadb8"
+        "Best1000Mbps": "ami-acf82acd", 
+        "Best200Mbps": "ami-6bfc2e0a", 
+        "Best25Mbps": "ami-a6f92bc7", 
+        "Better1000Mbps": "ami-aff82ace", 
+        "Better200Mbps": "ami-69f92b08", 
+        "Better25Mbps": "ami-1afd2f7b", 
+        "Good1000Mbps": "ami-3ef82a5f", 
+        "Good200Mbps": "ami-62fc2e03", 
+        "Good25Mbps": "ami-3af82a5b"
       }, 
       "ap-southeast-1": {
-        "Best1000": "ami-1416cb77", 
-        "Best200": "ami-1516cb76", 
-        "Best25": "ami-f911cc9a", 
-        "Better1000": "ami-fa11cc99", 
-        "Better200": "ami-4c10cd2f", 
-        "Better25": "ami-8a16cbe9", 
-        "Good1000": "ami-5b10cd38", 
-        "Good200": "ami-8b16cbe8", 
-        "Good25": "ami-1316cb70"
+        "Best1000Mbps": "ami-ab78ddc8", 
+        "Best200Mbps": "ami-d37edbb0", 
+        "Best25Mbps": "ami-4e79dc2d", 
+        "Better1000Mbps": "ami-d47fdab7", 
+        "Better200Mbps": "ami-7f78dd1c", 
+        "Better25Mbps": "ami-4278dd21", 
+        "Good1000Mbps": "ami-d87cd9bb", 
+        "Good200Mbps": "ami-da7cd9b9", 
+        "Good25Mbps": "ami-d47cd9b7"
       }, 
       "ap-southeast-2": {
-        "Best1000": "ami-d9daf1ba", 
-        "Best200": "ami-abd8f3c8", 
-        "Best25": "ami-97daf1f4", 
-        "Better1000": "ami-c5daf1a6", 
-        "Better200": "ami-1adbf079", 
-        "Better25": "ami-1bdbf078", 
-        "Good1000": "ami-18dbf07b", 
-        "Good200": "ami-08d9f26b", 
-        "Good25": "ami-89d9f2ea"
+        "Best1000Mbps": "ami-c2e8d8a1", 
+        "Best200Mbps": "ami-c4e8d8a7", 
+        "Best25Mbps": "ami-bdecdcde", 
+        "Better1000Mbps": "ami-6febdb0c", 
+        "Better200Mbps": "ami-b1ebdbd2", 
+        "Better25Mbps": "ami-42e8d821", 
+        "Good1000Mbps": "ami-bcebdbdf", 
+        "Good200Mbps": "ami-dbebdbb8", 
+        "Good25Mbps": "ami-58e9d93b"
+      }, 
+      "eu-central-1": {
+        "Best1000Mbps": "ami-2157aa4e", 
+        "Best200Mbps": "ami-8055a8ef", 
+        "Best25Mbps": "ami-2c56ab43", 
+        "Better1000Mbps": "ami-2f57aa40", 
+        "Better200Mbps": "ami-2854a947", 
+        "Better25Mbps": "ami-2657aa49", 
+        "Good1000Mbps": "ami-e357aa8c", 
+        "Good200Mbps": "ami-2557aa4a", 
+        "Good25Mbps": "ami-cb55a8a4"
       }, 
       "eu-west-1": {
-        "Best1000": "ami-873552f4", 
-        "Best200": "ami-813552f2", 
-        "Best25": "ami-082a4d7b", 
-        "Better1000": "ami-963651e5", 
-        "Better200": "ami-3e37504d", 
-        "Better25": "ami-b32a4dc0", 
-        "Good1000": "ami-ff35528c", 
-        "Good200": "ami-9b2047e8", 
-        "Good25": "ami-a7294ed4"
+        "Best1000Mbps": "ami-8af48ef9", 
+        "Best200Mbps": "ami-fbeb9188", 
+        "Best25Mbps": "ami-cbf58fb8", 
+        "Better1000Mbps": "ami-c8f58fbb", 
+        "Better200Mbps": "ami-51f18b22", 
+        "Better25Mbps": "ami-7bf38908", 
+        "Good1000Mbps": "ami-b5f68cc6", 
+        "Good200Mbps": "ami-65f58f16", 
+        "Good25Mbps": "ami-91f18be2"
       }, 
       "sa-east-1": {
-        "Best1000": "ami-dcfc68b0", 
-        "Best200": "ami-4bfd6927", 
-        "Best25": "ami-24fe6a48", 
-        "Better1000": "ami-c5fe6aa9", 
-        "Better200": "ami-69f36705", 
-        "Better25": "ami-e8f16584", 
-        "Good1000": "ami-7eff6b12", 
-        "Good200": "ami-c8fe6aa4", 
-        "Good25": "ami-cbfe6aa7"
+        "Best1000Mbps": "ami-7142d11d", 
+        "Best200Mbps": "ami-8b5fcce7", 
+        "Best25Mbps": "ami-8a5ecde6", 
+        "Better1000Mbps": "ami-955fccf9", 
+        "Better200Mbps": "ami-c142d1ad", 
+        "Better25Mbps": "ami-c342d1af", 
+        "Good1000Mbps": "ami-335dce5f", 
+        "Good200Mbps": "ami-1359ca7f", 
+        "Good25Mbps": "ami-1f59ca73"
       }, 
       "us-east-1": {
-        "Best1000": "ami-c9ac2bde", 
-        "Best200": "ami-93ac2b84", 
-        "Best25": "ami-ce047fd9", 
-        "Better1000": "ami-69a92e7e", 
-        "Better200": "ami-c4ab2cd3", 
-        "Better25": "ami-7aa92e6d", 
-        "Good1000": "ami-a4ac2bb3", 
-        "Good200": "ami-38ad2a2f", 
-        "Good25": "ami-69aa2d7e"
+        "Best1000Mbps": "ami-1d057e0a", 
+        "Best200Mbps": "ami-0b7a011c", 
+        "Best25Mbps": "ami-ce047fd9", 
+        "Better1000Mbps": "ami-83047f94", 
+        "Better200Mbps": "ami-84017a93", 
+        "Better25Mbps": "ami-8f007b98", 
+        "Good1000Mbps": "ami-98017a8f", 
+        "Good200Mbps": "ami-a2017ab5", 
+        "Good25Mbps": "ami-130c7704"
       }, 
       "us-west-1": {
-        "Best1000": "ami-8f0244ef", 
-        "Best200": "ami-b40345d4", 
-        "Best25": "ami-01024461", 
-        "Better1000": "ami-00024460", 
-        "Better200": "ami-d10345b1", 
-        "Better25": "ami-d30345b3", 
-        "Good1000": "ami-47024427", 
-        "Good200": "ami-b00345d0", 
-        "Good25": "ami-8b0244eb"
+        "Best1000Mbps": "ami-812668e1", 
+        "Best200Mbps": "ami-05246a65", 
+        "Best25Mbps": "ami-f0256b90", 
+        "Better1000Mbps": "ami-822668e2", 
+        "Better200Mbps": "ami-44226c24", 
+        "Better25Mbps": "ami-8b256beb", 
+        "Good1000Mbps": "ami-49256b29", 
+        "Good200Mbps": "ami-a72769c7", 
+        "Good25Mbps": "ami-e5246a85"
       }, 
       "us-west-2": {
-        "Best1000": "ami-f12eee91", 
-        "Best200": "ami-d333f3b3", 
-        "Best25": "ami-f62eee96", 
-        "Better1000": "ami-a92fefc9", 
-        "Better200": "ami-ba31f1da", 
-        "Better25": "ami-6f33f30f", 
-        "Good1000": "ami-c333f3a3", 
-        "Good200": "ami-f92fef99", 
-        "Good25": "ami-c033f3a0"
+        "Best1000Mbps": "ami-012ef261", 
+        "Best200Mbps": "ami-8633efe6", 
+        "Best25Mbps": "ami-792ff319", 
+        "Better1000Mbps": "ami-5b29f53b", 
+        "Better200Mbps": "ami-a031edc0", 
+        "Better25Mbps": "ami-a731edc7", 
+        "Good1000Mbps": "ami-6a2df10a", 
+        "Good200Mbps": "ami-532ff333", 
+        "Good25Mbps": "ami-dc2ef2bc"
       }
     },
     "AWSBigipThrougput": {
-      "25-Mbps": {
-        "Good": "Good25",
-        "Better": "Better25",
-        "Best": "Best25"
+      "25Mbps": {
+        "Good": "Good25Mbps",
+        "Better": "Better25Mbps",
+        "Best": "Best25Mbps"
       },
-      "200-Mbps": {
-        "Good": "Good200",
-        "Better": "Better200",
-        "Best": "Best200"
+      "200Mbps": {
+        "Good": "Good200Mbps",
+        "Better": "Better200Mbps",
+        "Best": "Best200Mbps"
       },
-      "1000-Mbps": {
-        "Good": "Good1000",
-        "Better": "Better1000",
-        "Best": "Best1000"
+      "1000Mbps": {
+        "Good": "Good1000Mbps",
+        "Better": "Better1000Mbps",
+        "Best": "Best1000Mbps"
       }
     }
   },
@@ -567,7 +630,7 @@
                 "group": "root"
               },                          
               "/config/cloud/f5-cloud-libs.tar.gz":{
-                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/v1.2.0",
+                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/syncFix",
                 "mode": "000755",
                 "owner": "root",
                 "group": "root"
@@ -642,30 +705,31 @@
                       "tmsh modify sys autoscale-group autoscale-group-id ${BIGIP_ASG_NAME} \n",
                       "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/reportMetrics.sh }\n",
                       "tmsh create sys icall handler periodic /Common/metricUploadHandler { first-occurrence now interval 60 script /Common/uploadMetrics }\n",
-                      "echo 'Attempting to Join Autoscale cluster' \n",
+                      "echo 'Attempting to Join or Initiate Autoscale Cluster' \n",
                       "f5-rest-node /config/cloud/aws/autoscale-cluster.js -c join --log-level debug --output /var/log/aws-autoscale-cluster.log\n",
-                      "CLUSTER_OUTPUT=\"$(tmsh list cm device-group autoscale-group devices)\" \n",
-                      "if echo ${CLUSTER_OUTPUT} | grep ${HOSTNAME}; then CLUSTER=TRUE; fi \n",
-                      "if [ ! \"${CLUSTER}\" == \"TRUE\" ]; then \n",
-                      "   echo 'NO CLUSTER FOUND .... Loading default config'\n",
+                      "if [ -f /config/cloud/aws/master ]; then \n",                      
+                      "   echo 'SELF-SELECTED as Master ... Initiated Autoscale Cluster ... Loading default config'\n",
+                      "   tmsh create cm device-group autoscale-group devices add { ${HOSTNAME} } type sync-failover auto-sync enabled network-failover disabled\n",
                       "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/autoscale-cluster.js -c update --log-level debug --output /var/log/aws-autoscale-cluster.log }\n",
                       "   tmsh create sys icall handler periodic /Common/ClusterUpdateHandler { first-occurrence now interval 600 script /Common/ClusterUpdate }\n",
                       "   tmsh save /sys config\n",
+                      "####################\n",
                       "   tmsh create ltm node ${APP_NAME} fqdn { name ${POOL_DNS} }\n",
                       "   tmsh create ltm pool ${APP_NAME}_pool members add { ${APP_NAME}:${POOL_MEMBER_PORT} } monitor http\n",
                       "   # BEGIN CUSTOMIZE:  Policy Name/Policy URL, etc. \n",
                       "   tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
-                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-high.xml\n",
-                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-medium.xml\n",
-                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-low.xml\n",
-                      "   #tmsh load asm policy file /config/cloud/asm-policy-linux-${POLICY_LEVEL}.xml\n",
+                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-${POLICY_LEVEL}.xml\n",
+                      "   #tmsh load asm policy file /config/cloud/asm-policy-linux-high.xml\n",
+                      "   #tmsh load asm policy file /config/cloud/asm-policy-linux-medium.xml\n",
+                      "   #tmsh load asm policy file /config/cloud/asm-policy-linux-low.xml\n",
                       "   # modify asm policy names below (ex. /Common/linux-${POLICY_LEVEL}) to match policy name in the xml file\n",
                       "   tmsh modify asm policy /Common/linux-${POLICY_LEVEL} active\n",
                       "   tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
                       "   tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
                       "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${POLICY_LEVEL} } } } }\n",
                       "   tmsh create ltm virtual ${APP_NAME}_vs_${VS_PORT} { destination 0.0.0.0:${VS_PORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool ${APP_NAME}_pool profiles replace-all-with { tcp { } http { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
-                      "  tmsh save /sys config\n",
+                      "####################\n",
+                      "   tmsh save /sys config\n",
                       "fi\n",
                       "date\n",
                       "echo 'custom-config.sh complete'\n"
@@ -718,9 +782,10 @@
                                                   "--ntp ", { "Ref": "ntpServer" },
                                                   "--tz ", { "Ref": "timezone" },
                                                   "--dns ${NAME_SERVER}",
+                                                  "--ssl-port ", { "Ref": "managementGuiPort" },
                                                   "--module ltm:nominal",
                                                   "--module asm:nominal",
-                                                  "--ping aws.amazon.com"
+                                                  "--ping"
                                                 ]
                                           ]
                           }
@@ -762,6 +827,7 @@
             }
           ]
         },
+        "InstanceMonitoring" : false,
         "InstanceType": {
           "Ref": "instanceType"
         },
@@ -802,13 +868,13 @@
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "VPCZoneIdentifier": { "Ref": "subnets" },
-        "Cooldown": "2400",
+        "Cooldown": "1500",
         "LoadBalancerNames": [
           {
             "Ref": "bigipElasticLoadBalancer"
           }
         ],
-        "HealthCheckGracePeriod": "2400",
+        "HealthCheckGracePeriod": "1500",
         "HealthCheckType": "ELB",
         "LaunchConfigurationName": {
           "Ref": "BigipLaunchConfig"
@@ -819,7 +885,9 @@
         "MinSize": {
           "Ref": "scalingMinSize"
         },
-        "DesiredCapacity" : "1",
+        "DesiredCapacity" : {
+          "Ref": "scalingMinSize"
+        },
         "MetricsCollection": [
           {
             "Granularity": "1Minute"
@@ -841,15 +909,64 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "BIG-IP Autoscale Instance",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "BIG-IP Autoscale Instance: ",
+                  {
+                    "Ref": "deploymentName"
+                  }
+                ]
+              ]
+            },
             "PropagateAtLaunch": true
           },
           {
             "Key": "Application",
-            "Value": "AWS::StackId",
+            "Value": {
+              "Ref": "application"
+            },
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "Environment",
+            "Value": {
+              "Ref": "environment"
+            },
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "Group",
+            "Value": {
+              "Ref": "group"
+            },
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "Owner",
+            "Value": {
+              "Ref": "owner"
+            },
+            "PropagateAtLaunch": true
+          },
+          {
+            "Key": "Costcenter",
+            "Value": {
+              "Ref": "costcenter"
+            },
             "PropagateAtLaunch": true
           }
         ]
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MaxBatchSize": "2",
+          "MinInstancesInService": {
+            "Ref": "scalingMinSize"
+          },
+          "PauseTime": "PT25M"
+        }
       }
     },
     "BigipScaleUpPolicy": {

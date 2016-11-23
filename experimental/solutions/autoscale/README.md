@@ -11,7 +11,7 @@ The ***BIG-IP Virtual Edition and Amazon Web Services: Auto Scaling*** guide (ht
 ## BIG-IP deployment and configuration
 
 All BIG-IP VE instances deploy with a single interface (NIC) attached to a public subnet. This single interface processes both management and data plane traffic.  The <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">BIG-IP Local Traffic Manager</a> (LTM) and <a href="https://f5.com/products/big-ip/application-security-manager-asm">Application Security Manager</a> (ASM) provide advanced traffic management and security functionality. The CloudFormation template uses the default **Best 1000Mbs** image available in the AWS marketplace to license these modules.
-The template performs all of the BIG-IP VE configuration when the device boots using `Cloud-Init`. In general, Cloud-Init is used to:
+The template performs all of the BIG-IP VE configuration and synchronization when the device boots using `Cloud-Init`. In general, Cloud-Init is used to:
 
 - Set the BIG-IP hostname, NTP, and DNS settings
 - Configure an IAM (Identity and Access Management) role with policies allowing the BIG-IP to make authenticated calls to AWS HTTPS endpoints.
@@ -35,7 +35,7 @@ Download the CloudFormation template from https://github.com/f5networks and use 
  
  From the AWS CLI, use the following command syntax:
  ```
- aws cloudformation create-stack --stack-name A1-autoscale-bigip --template-body file:///fullfilepath/autoscale-bigip.template --parameters file:///fullfilepath/autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM`
+ aws cloudformation create-stack --stack-name Acme-autoscale-bigip --template-body file:///fullfilepath/autoscale-bigip.template --parameters file:///fullfilepath/autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM`
 ```
 <br>
 ### Usage ###
@@ -44,30 +44,35 @@ Use this template to automate the autoscale implementation by providing the para
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-| deploymentName | x | Deployment Name - Used in creating objects |
-| vpc | x | Common VPC for whole deployment |
-| availabilityZones | x | Availability zones in which BIG-IP is being deployed |
-| subnets | x | AZ Public or External Subnet IDs |
-| bigipSecurityGroup | x | Pre-existing security group for BIG-IP |
-| bigipElasticLoadBalancer | x | Elastic Load Balancer group for all BIG-IPs. "Default": "enterBigipElasticLoadBalancerName" |
-| keyName | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
-| sshLocation | x | The IP address range that can be used to SSH to the EC2 instances |
-| instanceType | x | F5 BIG-IP Instance Type. "Default": "m3.2xlarge" |
-| performanceType | x | F5 BIG-IP Performance Type. "Default": "Best" |
-| throughput | x | F5 BIG-IP Throughput. "Default": "25-Mbps" |
-| adminPassword | x | Please enter your BIG-IP Admin Password |
-| managementGuiPort | x | Port to use for the managment GUI. "Default": 8443 |
-| timezone | x | Enter a Olson timezone string from /usr/share/zoneinfo. "Default": "UTC" |
-| ntpServer | x | Enter a NTP server. "Default": "0.pool.ntp.org" |
-| scalingMinSize | x | Enter the minimum number of BIG-IP instances (1-8) to be available in the AutoScale Group. "Default": "1" |
-| scalingMaxSize | x | Enter the maximum number of BIG-IP instances (2-8) that can be created in the AutoScale Group. "Default": "3" |
-| scaleDownBytesThreshold | x | Enter bytes to begin Scaling Down. "Default": "10000" |
-| scaleUpBytesThreshold | x | Enter bytes to begin Scaling Up. "Default": "35000" |
-| notificationEmail |  | Enter a valid email address to send AutoScaling Event Notifications |
-| virtualServicePort | x | The port for the Virtual Service on the BIG-IP. "Default": 80 |
-| applicationPort | x | The Pool Member Port. "Default": "80" |
-| appInternalElbDnsName | x | DNS of the ELB used for the application. "Default": "XXXXXXX.region.elb.amazonaws.com" as example to user |
-| policyLevel | x | WAF Policy Level. "Default": "high" |
+| deploymentName | x | Deployment Name use in creating object names |
+| vpc | x | VPC to deploy BIG-IPs |
+| availabilityZones | x | Availability Zones to deploy BIG-IPs (Recommend at least 2) |
+| subnets | x | Public or External Subnet IDs of above Availability Zones |
+| bigipSecurityGroup | x | Existing Security Group for BIG-IPs |
+| bigipElasticLoadBalancer | x | Elastic Load Balancer group for BIG-IPs, e.g. AcmeBigipELB |
+| keyName | x | Existing EC2 KeyPair to enable SSH access to the BIG-IP instance |
+| sshLocation | x | IP address range that can SSH to the BIG-IP instances (Default 0.0.0.0/0) |
+| instanceType | x | BIG-IP Instance Type (Default m3.2xlarge) |
+| performanceType | x | BIG-IP Performance Type (Default Best) |
+| throughput | x | BIG-IP Throughput (Default 1000Mbps) |
+| adminPassword | x | BIG-IP Admin Password |
+| managementGuiPort | x | Port of BIG-IP management GUI (Default 8443) |
+| timezone | x | Olson timezone string from /usr/share/zoneinfo (Default UTC) |
+| ntpServer | x | NTP server (Default 0.pool.ntp.org) |
+| scalingMinSize | x | Minimum number of BIG-IP instances (1-8) to be available in the AutoScale Group (Default 1) |
+| scalingMaxSize | x | Maximum number of BIG-IP instances (2-8) that can be created in the AutoScale Group (Default 3) |
+| scaleDownBytesThreshold | x | Incoming Bytes Threshold to begin Scaling Down BIG-IP Instances (Default 10000) |
+| scaleUpBytesThreshold | x | Incoming Bytes Threshold to begin Scaling Up BIG-IP Instances (Default 35000) |
+| notificationEmail |  | Valid email address to send AutoScaling Event Notifications |
+| virtualServicePort | x | Virtual Service Port on BIG-IP (Default 80) |
+| applicationPort | x | Application Pool Member Port on BIG-IP (Default 80) |
+| appInternalElbDnsName | x | DNS of the ELB used for the application, e.g. Acme.region.elb.amazonaws.com |
+| policyLevel | x | WAF Policy Level to protect the application (Default high) |
+| application |  | Application Tag (Default f5app) |
+| environment |  | Environment Name Tag (Default f5env) |
+| group |  | Group Tag (Default f5group) |
+| owner |  | Owner Tag (Default f5owner) |
+| costcenter |  | Costcenter Tag (Default f5costcenter) |
 <br>
 
 
@@ -77,6 +82,9 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 ```json
 [
 	{
+		"ParameterKey":"deploymentName",
+		"ParameterValue":"Acme"
+	},
 		"ParameterKey":"vpc",
 		"ParameterValue":"vpc-1ffef478"
 	},
@@ -94,7 +102,7 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 	},
 	{
 		"ParameterKey":bigipElasticLoadBalancer,
-		"ParameterValue":"A1-BigipElb"
+		"ParameterValue":"Acme-BigipElb"
 	},
 	{
 		"ParameterKey":"keyName",
@@ -113,7 +121,7 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 	},
 	{
 		ParameterKey:"appInternalElbDnsName",
-		ParameterValue:"internal-A1-AppElb-911355308.us-east-1.elb.amazonaws.com"
+		ParameterValue:"internal-Acme-AppElb-911355308.us-east-1.elb.amazonaws.com"
 	},
 	{
 		ParameterKey:"policyLevel",

@@ -32,8 +32,8 @@
             "keyName",
             "sshLocation",
             "instanceType",
-            "performanceType",
-            "throughput",            
+            "throughput",
+            "adminUser",       
             "adminPassword",
             "managementGuiPort",
             "timezone",
@@ -104,11 +104,11 @@
         "instanceType": {
           "default": "BIG-IP Instance Type"
         },
-        "performanceType": {
-          "default": "BIG-IP Performance Type"
-        },
         "throughput": {
           "default": "BIG-IP Throughput"
+        },
+        "adminUser": {
+          "default": "BIG-IP Admin User"
         },
         "adminPassword": {
           "default": "BIG-IP Admin Password"
@@ -206,41 +206,23 @@
       "MaxLength": "18",
       "Default": "0.0.0.0/0",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+      "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x."
     },
     "instanceType": {
       "Description": "BIG-IP Instance Type (Default m3.2xlarge)",
       "Type": "String",
       "Default": "m3.2xlarge",
       "AllowedValues": [
-        "t2.medium",
-        "t2.large",
-        "m3.xlarge",
         "m3.2xlarge",
-        "m4.large",
-        "m4.xlarge",
         "m4.2xlarge",
         "m4.4xlarge",
         "m4.10xlarge",
-        "c3.2xlarge",
         "c3.4xlarge",
         "c3.8xlarge",
-        "c4.xlarge",
-        "c4.2xlarge",
-        "c4.4xlarge"
+        "c4.4xlarge",
+        "c4.8xlarge"
       ],
-      "ConstraintDescription": "must be a valid Big-IP virtual EC2 instance type."
-    },
-    "performanceType": {
-      "Description": "BIG-IP Performance Type (Default Best)",
-      "Type": "String",
-      "Default": "Best",
-      "AllowedValues": [
-        "Good",
-        "Better",
-        "Best"
-      ],
-      "ConstraintDescription": "Must be a valid F5 Big-IP performance type"
+      "ConstraintDescription": "Must be a valid Big-IP BEST virtual EC2 instance type."
     },
     "throughput": {
       "Description": "BIG-IP Throughput (Default 1000Mbps)",
@@ -251,7 +233,16 @@
         "200Mbps",
         "1000Mbps"
       ],
-      "ConstraintDescription": "Please select your desired throughput"
+      "ConstraintDescription": "Please select a desired throughput"
+    },
+    "adminUser": {
+      "ConstraintDescription": "Please verify your BIG-IP Admin User. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa.",
+      "Description": "BIG-IP Admin User",
+      "MaxLength": "255",
+      "MinLength": "1",
+      "AllowedPattern": "[a-zA-Z0-9._-]+",
+      "Default": "admin",
+      "Type": "String"
     },
     "adminPassword": {
         "ConstraintDescription": "Please verify your BIG-IP Admin Password",
@@ -630,7 +621,7 @@
                 "group": "root"
               },                          
               "/config/cloud/f5-cloud-libs.tar.gz":{
-                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/syncFix",
+                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop",
                 "mode": "000755",
                 "owner": "root",
                 "group": "root"
@@ -673,6 +664,11 @@
                         "Ref": "policyLevel"
                       },
                       "'\n",
+                      "ADMIN_USER='",
+                      {
+                          "Ref": "adminUser"
+                      },
+                      "'\n",             
                       "ADMIN_PASSWORD='",
                       {
                           "Ref": "adminPassword"
@@ -713,22 +709,16 @@
                       "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/autoscale-cluster.js -c update --log-level debug --output /var/log/aws-autoscale-cluster.log }\n",
                       "   tmsh create sys icall handler periodic /Common/ClusterUpdateHandler { first-occurrence now interval 600 script /Common/ClusterUpdate }\n",
                       "   tmsh save /sys config\n",
-                      "####################\n",
                       "   tmsh create ltm node ${APP_NAME} fqdn { name ${POOL_DNS} }\n",
-                      "   tmsh create ltm pool ${APP_NAME}_pool members add { ${APP_NAME}:${POOL_MEMBER_PORT} } monitor http\n",
-                      "   # BEGIN CUSTOMIZE:  Policy Name/Policy URL, etc. \n",
                       "   tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
+                      "   # BEGIN CUSTOMIZE:  Policy Name/Policy URL, etc. \n",
                       "   tmsh load asm policy file /config/cloud/asm-policy-linux-${POLICY_LEVEL}.xml\n",
-                      "   #tmsh load asm policy file /config/cloud/asm-policy-linux-high.xml\n",
-                      "   #tmsh load asm policy file /config/cloud/asm-policy-linux-medium.xml\n",
-                      "   #tmsh load asm policy file /config/cloud/asm-policy-linux-low.xml\n",
                       "   # modify asm policy names below (ex. /Common/linux-${POLICY_LEVEL}) to match policy name in the xml file\n",
                       "   tmsh modify asm policy /Common/linux-${POLICY_LEVEL} active\n",
                       "   tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
                       "   tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
                       "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${POLICY_LEVEL} } } } }\n",
-                      "   tmsh create ltm virtual ${APP_NAME}_vs_${VS_PORT} { destination 0.0.0.0:${VS_PORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool ${APP_NAME}_pool profiles replace-all-with { tcp { } http { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
-                      "####################\n",
+                      "   tmsh create sys application service ${APP_NAME} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${APP_NAME} ${POOL_MEMBER_PORT} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${VS_PORT} } monitor__http_version { value http10 } }}\n",
                       "   tmsh save /sys config\n",
                       "fi\n",
                       "date\n",
@@ -767,25 +757,25 @@
                           }
               },  
               "003-onboard-BIG-IP": {
-                "command": { "Fn::Join" : [ " ", [
+                "command": { "Fn::Join" : [ "", [
                                                   "NAME_SERVER=`/config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
                                                   "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
-                                                  "--wait-for 1_NIC_SETUP_DONE",
-                                                  "-o  /var/log/onboard.log",
-                                                  "--background",
-                                                  "--no-reboot",
-                                                  "--host localhost",
-                                                  "--user admin",
-                                                  "--password '", { "Ref": "adminPassword" },"'",
-                                                  "--set-password admin:'", { "Ref": "adminPassword" },"'",
-                                                  "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
-                                                  "--ntp ", { "Ref": "ntpServer" },
-                                                  "--tz ", { "Ref": "timezone" },
-                                                  "--dns ${NAME_SERVER}",
-                                                  "--ssl-port ", { "Ref": "managementGuiPort" },
-                                                  "--module ltm:nominal",
-                                                  "--module asm:nominal",
-                                                  "--ping"
+                                                  " --wait-for 1_NIC_SETUP_DONE",
+                                                  " -o  /var/log/onboard.log",
+                                                  " --background",
+                                                  " --no-reboot",
+                                                  " --host localhost",
+                                                  " --user admin",
+                                                  " --password xxxxx",
+                                                  " --update-user user:'", { "Ref": "adminUser" },"',password:'", { "Ref": "adminPassword" },"',role:admin",
+                                                  " --hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                                                  " --ntp ", { "Ref": "ntpServer" },
+                                                  " --tz ", { "Ref": "timezone" },
+                                                  " --dns ${NAME_SERVER}",
+                                                  " --ssl-port ", { "Ref": "managementGuiPort" },
+                                                  " --module ltm:nominal",
+                                                  " --module asm:nominal",
+                                                  " --ping"
                                                 ]
                                           ]
                           }
@@ -820,9 +810,7 @@
                 {
                   "Ref": "throughput"
                 },
-                {
-                  "Ref": "performanceType"
-                }
+                  "Best"
               ]
             }
           ]
@@ -1001,7 +989,7 @@
             "Ref": "BigipScaleUpPolicy"
           }
         ],
-        "AlarmDescription": "Server side network out exceeds average threshold",
+        "AlarmDescription": "Server side network out exceeds average threshold after 1 successive intervals of 1 minute",
         "ComparisonOperator": "GreaterThanThreshold",
         "EvaluationPeriods": "1",
         "MetricName": "server_side_traffic.bytes_in-per-sec",
@@ -1025,18 +1013,70 @@
             "Ref": "BigipScaleDownPolicy"
           }
         ],
-        "AlarmDescription": "Server side network out below average threshold",
+        "AlarmDescription": "Server side network out below average threshold for 10 successive intervals of 5 minutes",
         "ComparisonOperator": "LessThanThreshold",
-        "EvaluationPeriods": "5",
+        "EvaluationPeriods": "10",
         "MetricName": "server_side_traffic.bytes_in-per-sec",
         "Namespace": {
           "Ref": "BigipAutoscaleGroup"
         },
-        "Period": "60",
+        "Period": "300",
         "Statistic": "Average",
         "Threshold": {
           "Ref": "scaleDownBytesThreshold"
         }
+      }
+    },
+    "CpuAlarmHigh": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "EvaluationPeriods": "5",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": {
+              "Ref": "BigipAutoscaleGroup"
+            }
+          }
+        ],
+        "AlarmActions": [
+          {
+            "Ref": "BigipScaleUpPolicy"
+          }
+        ],
+        "Statistic": "Average",
+        "Threshold": "75",
+        "AlarmDescription": "Scale out if WAF CPU > 75% after 5 successive intervals of 1 minute",
+        "Namespace": "AWS/EC2",
+        "Period": "60",
+        "MetricName": "CPUUtilization"
+      }
+    },
+    "CpuAlarmLow": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "EvaluationPeriods": "10",
+        "ComparisonOperator": "LessThanThreshold",
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": {
+              "Ref": "BigipAutoscaleGroup"
+            }
+          }
+        ],
+        "AlarmActions": [
+          {
+            "Ref": "BigipScaleDownPolicy"
+          }
+        ],
+        "Statistic": "Average",
+        "Threshold": "10",
+        "AlarmDescription": "CPU < 10% for 10 successive intervals of 5 minutes",
+        "Namespace": "AWS/EC2",
+        "Period": "300",
+        "MetricName": "CPUUtilization"
       }
     }
   },

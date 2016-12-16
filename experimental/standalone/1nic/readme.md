@@ -1,7 +1,6 @@
 # Deploying the BIG-IP in AWS - Single NIC
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
-[![Doc Status](http://readthedocs.org/projects/f5-sdk/badge/?version=latest)](https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0.html)
 
 ## Introduction
 This solution uses a CloudFormation Template to launch a single NIC deployment a BIG-IP VE in an Amazon Virtual Private Cloud. Traffic flows from the BIG-IP VE to the application servers.  This is the standard Cloud design where the compute instance of
@@ -19,9 +18,14 @@ This solution provides two different template options:
   
 ## Prerequisites
 The following are prerequisites for the F5 single NIC CFT:
-  - AWS VPC with one subnet
-  - AWS security group that allows port 22 for SSH access to BIG-IP VE
+  - An AWS VPC with one subnet
+  - An AWS security group that allows port 22 for SSH access to BIG-IP VE
+  - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual server. The default virtual server port created by the template is 80.
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
+
+## Supported instance types and hypervisors
+For a list of supported AWS instance types for this solutions, see the **Amazon EC2 instances for BIG-IP VE** section of https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-0-0/1.html
+For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
 
 ## Installation
@@ -101,6 +105,7 @@ Coming soon
 
 The following is a simple configuration diagram for this single NIC deployment. In this scenario, all access to the BIG-IP VE appliance is through the same IP address and virtual network interface (vNIC).  This interface processes both management and data plane traffic.
 
+![Single NIC configuration example](images/AWS-1nic.png)
 ### Documentation
 The ***BIG-IP Virtual Edition and Amazon Web Services: Single NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.  This document also decribes the configuration in more detail.
 

@@ -15,6 +15,8 @@ This solution provides two different template options:
   
   The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
   
+  See the [Configuration Example](#config) section for a configuration diagram and more information for this solution.
+  
 ## Prerequisites
 The following are prerequisites for the F5 single NIC CFT:
   - AWS VPC with one subnet
@@ -95,7 +97,11 @@ After clicking the Launch button, you must specify the following parameters.
 ### <a name="cli"></a>AWS CLI Usage
 Coming soon
 
-## Documentation
+## Configuration Example <a name="config">
+
+The following is a simple configuration diagram for this single NIC deployment. In this scenario, all access to the BIG-IP VE appliance is through the same IP address and virtual network interface (vNIC).  This interface processes both management and data plane traffic.
+
+### Documentation
 The ***BIG-IP Virtual Edition and Amazon Web Services: Single NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.  This document also decribes the configuration in more detail.
 
 ## Design Patterns

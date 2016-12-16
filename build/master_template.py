@@ -24,10 +24,10 @@ def usage():
     print "OPTIONS:"
     print "     -s  stack  <network, security_groups, infra, full or existing>"
     print "     -a  <number of AvailabilityZones>"
-    print "     -b  <number of Big-IPs>"
-    print "     -n  <number fo nics>. <1, 2, or 3>"
-    print "     -l  license  <byol, hourly or bigiq>"
-    print "     -c  components <waf, autoscale, etc.>"
+    print "     -b  <number of BIG-IPs>"
+    print "     -n  <number of NICs>. <1, 2, or 3>"
+    print "     -l  license  <BYOL, hourly or BIG-IQ>"
+    print "     -c  components <WAF, autoscale, etc.>"
     print "     -H  ha-type <standalone, same-az, across-az>"
     print "USAGE: "
     print " ex. " + sys.argv[0] + " -s network -n 1"
@@ -51,11 +51,11 @@ def main():
     parser = OptionParser()
     parser.add_option("-s", "--stack", action="store", type="string", dest="stack", help="Stack: network, security_groups, infra, full or existing" )
     parser.add_option("-a", "--num-azs", action="store", type="int", dest="num_azs", default=1, help="Number of Availability Zones" )
-    parser.add_option("-b", "--num-bigips", action="store", type="int", dest="num_bigips", default=1, help="Number of Bigips" )
-    parser.add_option("-n", "--nics", action="store", type="int", dest="num_nics", default=1, help="Number of nics: 1,2 or 3")
-    parser.add_option("-l", "--license", action="store", type="string", dest="license_type", default="hourly", help="Type of License: hourly, byol or bigiq" )
-    parser.add_option("-c", "--components", action="store", type="string", dest="components", help="Comma seperated list of components: ex. waf" )
-    parser.add_option("-H", "--ha-type", action="store", type="string", dest="ha_type", default="standalone", help="Ha Type: standalone, same-az, across-az" )
+    parser.add_option("-b", "--num-bigips", action="store", type="int", dest="num_bigips", default=1, help="Number of BIG-IPs" )
+    parser.add_option("-n", "--nics", action="store", type="int", dest="num_nics", default=1, help="Number of NICs: 1,2 or 3")
+    parser.add_option("-l", "--license", action="store", type="string", dest="license_type", default="hourly", help="Type of License: hourly, BYOL, or BIG-IQ" )
+    parser.add_option("-c", "--components", action="store", type="string", dest="components", help="Comma seperated list of components: ex. WAF" )
+    parser.add_option("-H", "--ha-type", action="store", type="string", dest="ha_type", default="standalone", help="HA Type: standalone, same-az, across-az" )
 
     (options, args) = parser.parse_args()
 
@@ -138,23 +138,23 @@ def main():
     if stack == "network":
         description = "AWS CloudFormation Template for creating network components for a " + str(num_azs) + " Availability Zone VPC"
     elif stack == "security_groups":
-        description = "AWS CloudFormation Template for creating security groups for a " + str(num_nics) + "nic BIG-IP"
+        description = "AWS CloudFormation Template for creating security groups for a " + str(num_nics) + "NIC BIG-IP"
     elif stack == "infra":
         description = "AWS CloudFormation Template for creating a " + str(num_azs) + " Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
     elif stack == "full":
         if ha_type == "standalone":
-            description = "AWS CloudFormation Template for creating a full stack with a " + str(num_nics) + "nic BIG-IP, a " + str(num_azs) + " Availability Zone VPC, subnets, security groups and a webeserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
+            description = "AWS CloudFormation Template for creating a full stack with a " + str(num_nics) + "NIC BIG-IP, a " + str(num_azs) + " Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
         if ha_type == "same-az":
-            description = "AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of " + str(num_nics) + "nic BIG-IPs, a " + str(num_azs) + " Availability Zone VPC, subnets, security groups and a webeserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
+            description = "AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of " + str(num_nics) + "NIC BIG-IPs, a " + str(num_azs) + " Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
         if ha_type == "across-az":
-            description = "AWS CloudFormation Template for creating a full stack with a Across-AZs cluster of " + str(num_nics) + "nic BIG-IPs, a " + str(num_azs) + " Availability Zone VPC, subnets, security groups and a webeserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
+            description = "AWS CloudFormation Template for creating a full stack with a Across-AZs cluster of " + str(num_nics) + "NIC BIG-IPs, a " + str(num_azs) + " Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
     elif stack == "existing":
         if ha_type == "standalone":
-            description = "AWS CloudFormation Template for creating a " + str(num_nics) + "nic Big-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
+            description = "AWS CloudFormation Template for creating a " + str(num_nics) + "NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
         if ha_type == "same-az":
-            description = "AWS CloudFormation Template for creating a Same-AZ cluster of " + str(num_nics) + "nic Big-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
+            description = "AWS CloudFormation Template for creating a Same-AZ cluster of " + str(num_nics) + "NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
         if ha_type == "across-az":
-            description = "AWS CloudFormation Template for creating a Across-AZs cluster of " + str(num_nics) + "nic Big-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
+            description = "AWS CloudFormation Template for creating a Across-AZs cluster of " + str(num_nics) + "NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
 
     t.add_description(description)
     t.add_metadata({
@@ -218,7 +218,7 @@ def main():
           ],
           "ParameterLabels": {
            "Vpc": {
-                "default": "Vpc"
+                "default": "VPC"
             },
             "managementSubnetAz1": {
                 "default": "Management Subnet AZ1"
@@ -239,10 +239,10 @@ def main():
                 "default": "Availability Zone 2"
             },
             "bigipManagementSecurityGroup": {
-                "default": "Big-IP Management Security Group"
+                "default": "BIG-IP Management Security Group"
             },
             "bigipExternalSecurityGroup": {
-                "default": "Big-IP External Security Group"
+                "default": "BIG-IP External Security Group"
             },
             "adminUsername": {
                 "default": "Admin Username"
@@ -254,13 +254,13 @@ def main():
                 "default": "Image Name"
             },
             "instanceType": {
-                "default": "Instance Type"
+                "default": "AWS Instance Size"
             },
             "applicationInstanceType": {
                 "default": "Application Instance Type"
             },
             "licenseKey1": {
-                "default": "Licence Key1"
+                "default": "License Key1"
             },
             "restrictedSrcAddress": {
                 "default": "Restricted Source Addresses"
@@ -278,7 +278,7 @@ def main():
                 "default": "SSH Key"
             },
             "webserverPrivateIp": {
-                "default": "Application Address"
+                "default": "Application IP Address"
             },
             "application": {
                 "default": "Application"
@@ -293,7 +293,7 @@ def main():
                 "default": "Owner"
             },
             "costcenter": {
-                "default": "Costcenter"
+                "default": "Cost center"
             }
           }
         }
@@ -304,31 +304,31 @@ def main():
 
     application = t.add_parameter (Parameter(
         "application",
-            Description="Application Tag",
+            Description="Name of the Application Tag",
             Default="f5app",
             Type="String",
     ))
     environment = t.add_parameter (Parameter(
         "environment",
-            Description="Environment Name Tag",
+            Description="Name of the Environment Tag",
             Default="f5env",
             Type="String",
     ))
     group = t.add_parameter (Parameter(
         "group",
-            Description="Group Tag",
+            Description="Name of the Group Tag",
             Default="f5group",
             Type="String",
     ))
     owner = t.add_parameter (Parameter(
         "owner",
-            Description="Owner Tag",
+            Description="Name of the Owner Tag",
             Default="f5owner",
             Type="String",
     ))
     costcenter = t.add_parameter (Parameter(
         "costcenter",
-            Description="Costcenter Tag",
+            Description="Name of the Cost Center Tag",
             Default="f5costcenter",
             Type="String",
     ))    
@@ -336,7 +336,7 @@ def main():
         restrictedSrcAddress = t.add_parameter(Parameter(
             "restrictedSrcAddress",
 
-            ConstraintDescription="must be a valid IP CIDR range of the form x.x.x.x/x.",
+            ConstraintDescription="Must be a valid IP CIDR range of the form x.x.x.x/x.",
             Description=" The IP address range that can be used to SSH to the EC2 instances",
             Default="0.0.0.0/0",
             MinLength="9",
@@ -367,7 +367,7 @@ def main():
         applicationInstanceType = t.add_parameter(Parameter(
             "applicationInstanceType",
             Default="t1.micro",
-            ConstraintDescription="must be a valid EC2 instance type",
+            ConstraintDescription="Must be a valid EC2 instance type",
             Type="String",
             Description="Webserver EC2 instance type",
             AllowedValues=["t1.micro", "m3.medium", "m3.xlarge", "m2.xlarge", "m3.2xlarge", "c3.large", "c3.xlarge"],
@@ -379,9 +379,9 @@ def main():
             managementGuiPort = t.add_parameter(Parameter(
                 "managementGuiPort",
                 Default="443",
-                ConstraintDescription="Must be a valid, unusued port on BIG-IP.",
+                ConstraintDescription="Must be a valid, unused port on the BIG-IP.",
                 Type="Number",
-                Description="Port to use for the management GUI",
+                Description="Port for the management GUI",
             ))
 
     if bigip == True:
@@ -390,9 +390,9 @@ def main():
             instanceType = t.add_parameter(Parameter(
                 "instanceType",
                 Default="m3.2xlarge",
-                ConstraintDescription="must be a valid BIG-IP EC2 instance type",
+                ConstraintDescription="Must be a valid BIG-IP EC2 instance type",
                 Type="String",
-                Description="F5 BIG-IP Virtual Instance Type",
+                Description="Size of the F5 BIG-IP Virtual Instance",
                 AllowedValues=[
                                 "m3.2xlarge",
                                 "m4.2xlarge",
@@ -409,9 +409,9 @@ def main():
             instanceType = t.add_parameter(Parameter(
                 "instanceType",
                 Default="m3.2xlarge",
-                ConstraintDescription="must be a valid BIG-IP EC2 instance type",
+                ConstraintDescription="Must be a valid BIG-IP EC2 instance type",
                 Type="String",
-                Description="F5 BIG-IP Virtual Instance Type",
+                Description="Size of the F5 BIG-IP Virtual Instance",
                 AllowedValues=[
                                 "t2.medium",
                                 "t2.large",
@@ -475,7 +475,7 @@ def main():
         adminUsername = t.add_parameter(Parameter(
             "adminUsername",
             Type="String",
-            Description="Type your BIG-IP Admin Username",
+            Description="BIG-IP Admin Username",
             Default="admin",
             MinLength="1",
             MaxLength="255",
@@ -485,7 +485,7 @@ def main():
         adminPassword = t.add_parameter(Parameter(
             "adminPassword",
             Type="String",
-            Description="Type your BIG-IP Admin Password",
+            Description="BIG-IP Admin Password",
             MinLength="1",
             NoEcho=True,
             MaxLength="255",
@@ -500,7 +500,7 @@ def main():
                 MaxLength="32",
                 AllowedPattern="[\\w]*",
                 NoEcho=True,
-                ConstraintDescription="can contain only ASCII characters.",
+                ConstraintDescription="Can contain only ASCII characters.",
             ))
             iamSecretKey = t.add_parameter(Parameter(
                 "iamSecretKey",
@@ -510,7 +510,7 @@ def main():
                 MaxLength="255",
                 AllowedPattern="[\\x20-\\x7E]*",
                 NoEcho=True,
-                ConstraintDescription="can contain only ASCII characters.",
+                ConstraintDescription="Can contain only ASCII characters.",
             ))
         if license_type == "byol":
             for BIGIP_INDEX in range(num_bigips): 

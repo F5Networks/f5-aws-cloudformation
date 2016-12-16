@@ -17,7 +17,7 @@ For additional information, including how the templates are generated, and assis
 
 
 ## List of F5 CloudFormation templates for AWS deployments
-The following is a list of the current F5 Supported CloudFormation templates:
+The following is a list of the current F5 CloudFormation templates. Click the links below to view the README files which include the Launch buttons, or click the **Launch Stack** buttons to immediately launch the stack.
   - <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/experimental/standalone/1nic">**Standalone BIG-IP VE - Single NIC**</a>
     - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-1nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>

@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template for creating security groups for a 1nic BIG-IP",
+    "Description": "AWS CloudFormation Template for creating security groups for a 1NIC BIG-IP",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -62,7 +62,7 @@
             ],
             "ParameterLabels": {
                 "Vpc": {
-                    "default": "Vpc"
+                    "default": "VPC"
                 },
                 "adminPassword": {
                     "default": "Admin Password"
@@ -83,13 +83,13 @@
                     "default": "Availability Zone 2"
                 },
                 "bigipExternalSecurityGroup": {
-                    "default": "Big-IP External Security Group"
+                    "default": "BIG-IP External Security Group"
                 },
                 "bigipManagementSecurityGroup": {
-                    "default": "Big-IP Management Security Group"
+                    "default": "BIG-IP Management Security Group"
                 },
                 "costcenter": {
-                    "default": "Costcenter"
+                    "default": "Cost center"
                 },
                 "environment": {
                     "default": "Environment"
@@ -107,10 +107,10 @@
                     "default": "Image Name"
                 },
                 "instanceType": {
-                    "default": "Instance Type"
+                    "default": "AWS Instance Size"
                 },
                 "licenseKey1": {
-                    "default": "Licence Key1"
+                    "default": "License Key1"
                 },
                 "managementGuiPort": {
                     "default": "Management GUI Port"
@@ -137,7 +137,7 @@
                     "default": "Subnet AZ2"
                 },
                 "webserverPrivateIp": {
-                    "default": "Application Address"
+                    "default": "Application IP Address"
                 }
             }
         }
@@ -157,38 +157,38 @@
         },
         "application": {
             "Default": "f5app",
-            "Description": "Application Tag",
+            "Description": "Name of the Application Tag",
             "Type": "String"
         },
         "costcenter": {
             "Default": "f5costcenter",
-            "Description": "Costcenter Tag",
+            "Description": "Name of the Cost Center Tag",
             "Type": "String"
         },
         "environment": {
             "Default": "f5env",
-            "Description": "Environment Name Tag",
+            "Description": "Name of the Environment Tag",
             "Type": "String"
         },
         "group": {
             "Default": "f5group",
-            "Description": "Group Tag",
+            "Description": "Name of the Group Tag",
             "Type": "String"
         },
         "managementGuiPort": {
-            "ConstraintDescription": "Must be a valid, unusued port on BIG-IP.",
+            "ConstraintDescription": "Must be a valid, unused port on the BIG-IP.",
             "Default": "443",
-            "Description": "Port to use for the management GUI",
+            "Description": "Port for the management GUI",
             "Type": "Number"
         },
         "owner": {
             "Default": "f5owner",
-            "Description": "Owner Tag",
+            "Description": "Name of the Owner Tag",
             "Type": "String"
         },
         "restrictedSrcAddress": {
             "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
+            "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
             "Default": "0.0.0.0/0",
             "Description": " The IP address range that can be used to SSH to the EC2 instances",
             "MaxLength": "18",

@@ -62,7 +62,7 @@
             ],
             "ParameterLabels": {
                 "Vpc": {
-                    "default": "Vpc"
+                    "default": "VPC"
                 },
                 "adminPassword": {
                     "default": "Admin Password"
@@ -83,13 +83,13 @@
                     "default": "Availability Zone 2"
                 },
                 "bigipExternalSecurityGroup": {
-                    "default": "Big-IP External Security Group"
+                    "default": "BIG-IP External Security Group"
                 },
                 "bigipManagementSecurityGroup": {
-                    "default": "Big-IP Management Security Group"
+                    "default": "BIG-IP Management Security Group"
                 },
                 "costcenter": {
-                    "default": "Costcenter"
+                    "default": "Cost center"
                 },
                 "environment": {
                     "default": "Environment"
@@ -107,10 +107,10 @@
                     "default": "Image Name"
                 },
                 "instanceType": {
-                    "default": "Instance Type"
+                    "default": "AWS Instance Size"
                 },
                 "licenseKey1": {
-                    "default": "Licence Key1"
+                    "default": "License Key1"
                 },
                 "managementGuiPort": {
                     "default": "Management GUI Port"
@@ -137,7 +137,7 @@
                     "default": "Subnet AZ2"
                 },
                 "webserverPrivateIp": {
-                    "default": "Application Address"
+                    "default": "Application IP Address"
                 }
             }
         }
@@ -181,7 +181,7 @@
     "Parameters": {
         "application": {
             "Default": "f5app",
-            "Description": "Application Tag",
+            "Description": "Name of the Application Tag",
             "Type": "String"
         },
         "availabilityZone1": {
@@ -194,22 +194,22 @@
         },
         "costcenter": {
             "Default": "f5costcenter",
-            "Description": "Costcenter Tag",
+            "Description": "Name of the Cost Center Tag",
             "Type": "String"
         },
         "environment": {
             "Default": "f5env",
-            "Description": "Environment Name Tag",
+            "Description": "Name of the Environment Tag",
             "Type": "String"
         },
         "group": {
             "Default": "f5group",
-            "Description": "Group Tag",
+            "Description": "Name of the Group Tag",
             "Type": "String"
         },
         "owner": {
             "Default": "f5owner",
-            "Description": "Owner Tag",
+            "Description": "Name of the Owner Tag",
             "Type": "String"
         }
     },

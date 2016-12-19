@@ -1,14 +1,18 @@
 #/bin/bash
 
-BUILD_DIR_1NIC="../experimental/1NIC_Deployments"
-BUILD_DIR_2NIC="../experimental/2NIC_Deployments"
-BUILD_DIR_3NIC="../experimental/3NIC_Deployments"
-HOURLY_DIR="/hourly"
-BYOL_DIR="/byol"
-POOL_DIR="/pool"
-
 # To populate cache files, run
 # python image_finder.py
+
+# BIGIP Stacks supported - Standalone
+python master_template.py -s existing -n 1 -l hourly > ../supported/standalone/1nic/f5-existing-stack-hourly-1nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly > ../supported/standalone/2nic/f5-existing-stack-hourly-2nic-bigip.template
+
+python master_template.py -s existing -n 1 -l byol > ../supported/standalone/1nic/f5-existing-stack-byol-1nic-bigip.template
+python master_template.py -s existing -n 2 -l byol > ../supported/standalone/2nic/f5-existing-stack-byol-2nic-bigip.template
+
+# Cluster/HA
+python master_template.py -s existing -n 2 -l hourly -H same-az > ../supported/cluster/2nic/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template
+python master_template.py -s existing -n 2 -l byol -H same-az > ../supported/cluster/2nic/f5-existing-stack-same-az-cluster-byol-2nic-bigip.template
 
 # Network Only
 python master_template.py -s network -a 1 -n 1 > ../experimental/reference/1nic/network-only/f5-network-only-1AZ-for-1nic-bigip.template
@@ -34,23 +38,17 @@ python master_template.py -s infra -a 2 -n 1 > ../experimental/reference/1nic/in
 python master_template.py -s infra -a 2 -n 2 > ../experimental/reference/2nic/infrastructure-only/f5-infra-only-2AZ-for-2nic-bigip.template
 python master_template.py -s infra -a 2 -n 3 > ../experimental/reference/3nic/infrastructure-only/f5-infra-only-2AZ-for-3nic-bigip.template
 
-
-
 # BIGIP Stacks
 python master_template.py -s full -n 1 -l hourly > ../experimental/learning-stacks/standalone/1nic/f5-full-stack-hourly-1nic-bigip.template
 python master_template.py -s full -n 2 -l hourly > ../experimental/learning-stacks/standalone/2nic/f5-full-stack-hourly-2nic-bigip.template
 python master_template.py -s full -n 3 -l hourly > ../experimental/learning-stacks/standalone/3nic/f5-full-stack-hourly-3nic-bigip.template
 
-python master_template.py -s existing -n 1 -l hourly > ../experimental/standalone/1nic/f5-existing-stack-hourly-1nic-bigip.template
-python master_template.py -s existing -n 2 -l hourly > ../experimental/standalone/2nic/f5-existing-stack-hourly-2nic-bigip.template
 python master_template.py -s existing -n 3 -l hourly > ../experimental/standalone/3nic/f5-existing-stack-hourly-3nic-bigip.template
 
 python master_template.py -s full -n 1 -l byol > ../experimental/learning-stacks/standalone/1nic/f5-full-stack-byol-1nic-bigip.template
 python master_template.py -s full -n 2 -l byol > ../experimental/learning-stacks/standalone/2nic/f5-full-stack-byol-2nic-bigip.template
 python master_template.py -s full -n 3 -l byol > ../experimental/learning-stacks/standalone/3nic/f5-full-stack-byol-3nic-bigip.template
 
-python master_template.py -s existing -n 1 -l byol > ../experimental/standalone/1nic/f5-existing-stack-byol-1nic-bigip.template
-python master_template.py -s existing -n 2 -l byol > ../experimental/standalone/2nic/f5-existing-stack-byol-2nic-bigip.template
 python master_template.py -s existing -n 3 -l byol > ../experimental/standalone/3nic/f5-existing-stack-byol-3nic-bigip.template
 
 python master_template.py -s full -n 1 -l bigiq > ../experimental/learning-stacks/reference/1nic/bigiq/f5-full-stack-bigiq-license-pool-1nic-bigip.template
@@ -79,14 +77,14 @@ python master_template.py -s existing -n 1 -l bigiq -c waf > ../experimental/ref
 
 #### HOURLY
 python master_template.py -s full -n 2 -l hourly -H same-az > ../experimental/learning-stacks/cluster/2nic/f5-full-stack-same-az-cluster-hourly-2nic-bigip.template
-python master_template.py -s existing -n 2 -l hourly -H same-az > ../experimental/cluster/2nic/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template
+
 #### WITH WAF 
 python master_template.py -s full -n 2 -l hourly -c waf -H same-az > ../experimental/learning-stacks/reference/2nic/waf/f5-full-stack-same-az-cluster-hourly-2nic-bigip-w-waf.template
 python master_template.py -s existing -n 2 -l hourly -c waf -H same-az > ../experimental/reference/2nic/waf/f5-existing-stack-same-az-cluster-hourly-2nic-bigip-w-waf.template
 
 #### BYOL
 python master_template.py -s full -n 2 -l byol -H same-az > ../experimental/learning-stacks/cluster/2nic/f5-full-stack-same-az-cluster-byol-2nic-bigip.template
-python master_template.py -s existing -n 2 -l byol -H same-az > ../experimental/cluster/2nic/f5-existing-stack-same-az-cluster-byol-2nic-bigip.template
+
 #### WITH WAF 
 python master_template.py -s full -n 2 -l byol -c waf -H same-az > ../experimental/learning-stacks/reference/2nic/waf/f5-full-stack-same-az-cluster-byol-2nic-bigip-w-waf.template
 python master_template.py -s existing -n 2 -l byol -c waf -H same-az > ../experimental/reference/2nic/waf/f5-existing-stack-same-az-cluster-byol-2nic-bigip-w-waf.template

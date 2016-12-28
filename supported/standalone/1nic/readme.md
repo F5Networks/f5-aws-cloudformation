@@ -106,7 +106,7 @@ The following is a simple configuration diagram for this single NIC deployment. 
 
 ![Single NIC configuration example](images/AWS-1nic.png)
 ### Documentation
-The ***BIG-IP Virtual Edition and Amazon Web Services: Single NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.  This document also decribes the configuration in more detail.
+The ***BIG-IP Virtual Edition and Amazon Web Services: Single NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also decribes the configuration in more detail.
 
 ## Design Patterns
 
@@ -131,9 +131,6 @@ See `Contributing <CONTRIBUTING.md>`__
 
 Before you open a pull request, your code must have passed a deployment into Azure with the intended result
 
-## Unit Tests
-
-Simply deploying the ARM template and completing use case fulfills a functional test
 
 
 

@@ -97,7 +97,6 @@ After clicking the Launch button, you must specify the following parameters.
 | Vpc | x | Common VPC for the deployment |
 
 
-
 ### <a name="cli"></a>AWS CLI Usage
 Coming soon
 

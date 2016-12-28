@@ -21,7 +21,7 @@ The following are prerequisites for the F5 2-NIC CFT:
     - External subnet (called Private in the AWS UI) 
     - NAT instance and associated network interface for network translation.
   - An AWS security group that allows port 22 for SSH access to BIG-IP VE
-  - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual server. The default virtual server port created by the template is 80.
+  - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual server.
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
 
 ## Supported instance types and hypervisors
@@ -67,7 +67,6 @@ After clicking the Launch button, you must specify the following parameters.
 | sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
 | subnet1Az1 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |
-| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
 
 <br>
 <br>
@@ -102,7 +101,6 @@ After clicking the Launch button, you must specify the following parameters.
 | subnet1Az1 | x | Public or External subnet ID |
 | subnet1Az2 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |
-| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
 
 
 ### <a name="cli"></a>AWS CLI Usage
@@ -114,7 +112,7 @@ The following is a simple configuration diagram for this 2-NIC deployment. In th
 ![2-NIC configuration example](images/aws-1nic.png)
 
 ### Documentation
-The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.  This document also decribes the configuration in more detail.
+The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also describes the configuration in more detail.
 
 ## Design Patterns
 
@@ -139,9 +137,7 @@ See `Contributing <CONTRIBUTING.md>`__
 
 Before you open a pull request, your code must have passed a deployment into Azure with the intended result
 
-## Unit Tests
 
-Simply deploying the ARM template and completing use case fulfills a functional test
 
 
 

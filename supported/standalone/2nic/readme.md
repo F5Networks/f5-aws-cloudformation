@@ -110,7 +110,8 @@ Coming soon
 
 ## Configuration Example <a name="config">
 
-The following is a simple configuration diagram for this 2-NIC deployment. In this scenario, all access to the BIG-IP VE appliance is through the same IP address and virtual network interface (vNIC).  This interface processes both management and data plane traffic.
+The following is a simple configuration diagram for this 2-NIC deployment. The IP addresses in this diagram are included as examples.<br><br>
+![2- NIC configuration example](images/aws-2nic.png)
 
 ### Documentation
 The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.  This document also decribes the configuration in more detail.

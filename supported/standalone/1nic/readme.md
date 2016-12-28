@@ -20,7 +20,7 @@ This solution provides two different template options:
 The following are prerequisites for the F5 single NIC CFT:
   - An AWS VPC with one subnet
   - An AWS security group that allows port 22 for SSH access to BIG-IP VE
-  - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual server. The default virtual server port created by the template is 80.
+  - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual server.
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
 
 ## Supported instance types and hypervisors
@@ -67,7 +67,6 @@ After clicking the Launch button, you must specify the following parameters.
 | sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
 | subnet1Az1 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |
-| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
 
 <br>
 <a name="byol"></a>**BYOL deploy button**
@@ -96,7 +95,7 @@ After clicking the Launch button, you must specify the following parameters.
 | sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
 | subnet1Az1 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |
-| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
+
 
 
 ### <a name="cli"></a>AWS CLI Usage

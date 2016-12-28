@@ -1,11 +1,10 @@
 # Deploying the BIG-IP in AWS - 2 NIC
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
-[![Doc Status](http://readthedocs.org/projects/f5-sdk/badge/?version=latest)](https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html)
 
 ## Introduction
 
-This solution implements a Cloud Formation Template to deploy a base example of F5 in a two NIC deployment. In a two NIC implementation, interface #1 is for management and data-plane traffic from the Internet, and interface #2 is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. 
+This solution uses a Cloud Formation Template to launch a 2-NIC deployment of a BIG-IP VE in an Amazon Virtual Private Clould. In a 2-NIC implementation, one interface is for management and data-plane traffic from the Internet, and the second interface is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.
 
 This solution provides two different template options:
   - **BYOL**<br>
@@ -14,10 +13,21 @@ This solution provides two different template options:
   The Hourly template which uses pay-as-you-go hourly billing
   
   The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
-  
-## Documentation
 
-Please see the project documentation - This is still being created
+## Prerequisites
+The following are prerequisites for the F5 2-NIC CFT:
+  - An AWS VPC with three subnets: 
+    - Management subnet (called Public in the AWS UI)
+    - External subnet (called Private in the AWS UI) 
+    - NAT instance and associated network interface for network translation.
+  - An AWS security group that allows port 22 for SSH access to BIG-IP VE
+  - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual server. The default virtual server port created by the template is 80.
+  - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
+
+## Supported instance types and hypervisors
+  - For a list of supported AWS instance types for this solutions, see the **Amazon EC2 instances for BIG-IP VE** section of https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0/1.html#guid-71265d82-3a1a-43d2-bae5-892c184cc59b
+
+  - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
 ## Installation
 
@@ -98,7 +108,12 @@ After clicking the Launch button, you must specify the following parameters.
 ### <a name="cli"></a>AWS CLI Usage
 Coming soon
 
+## Configuration Example <a name="config">
 
+The following is a simple configuration diagram for this 2-NIC deployment. In this scenario, all access to the BIG-IP VE appliance is through the same IP address and virtual network interface (vNIC).  This interface processes both management and data plane traffic.
+
+### Documentation
+The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.  This document also decribes the configuration in more detail.
 
 ## Design Patterns
 

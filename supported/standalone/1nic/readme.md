@@ -66,7 +66,7 @@ After clicking the Launch button, you must specify the following parameters.
 | instanceType | x | BIG-IP virtual instance type |
 | managementGuiPort | x | Port to use for the management port GUI |
 | restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |
 
@@ -94,7 +94,7 @@ After clicking the Launch button, you must specify the following parameters.
 | licenseKey1 | x | Type or paste your F5 BYOL regkey here |
 | managementGuiPort | x | Port to use for the management port GUI |
 | restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |
 
@@ -108,7 +108,7 @@ The following is a simple configuration diagram for this single NIC deployment. 
 
 ![Single NIC configuration example](images/AWS-1nic.png)
 ### Documentation
-The ***BIG-IP Virtual Edition and Amazon Web Services: Single NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also decribes the configuration in more detail.
+The ***BIG-IP Virtual Edition and Amazon Web Services: Single NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also describes the configuration in more detail.
 
 ## Design Patterns
 

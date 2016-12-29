@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This solution uses a Cloud Formation Template to launch a 2-NIC deployment of a BIG-IP VE in an Amazon Virtual Private Clould. In a 2-NIC implementation, one interface is for management and data-plane traffic from the Internet, and the second interface is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.
+This solution uses a Cloud Formation Template to launch a 2-NIC deployment of a BIG-IP VE in an Amazon Virtual Private Cloud. In a 2-NIC implementation, one interface is for management and data-plane traffic from the Internet, and the second interface is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.
 
 This solution provides two different template options:
   - **BYOL**<br>

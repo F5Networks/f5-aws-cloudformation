@@ -14,6 +14,8 @@ This solution provides two different template options:
   
   The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
 
+See the [Configuration Example](#config) section for a configuration diagram and description for this solution.
+
 ## Prerequisites
 The following are prerequisites for the F5 2-NIC CFT:
   - An AWS VPC with three subnets: 

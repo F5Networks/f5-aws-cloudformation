@@ -111,7 +111,7 @@ Coming soon
 ## Configuration Example <a name="config">
 
 The following is a simple configuration diagram for this 2-NIC deployment. In this diagram, the IP addresses are provided as examples.
-![2-NIC configuration example](images/aws-1nic.png)
+![2-NIC configuration example](images/aws-2nic.png)
 
 ### Documentation
 The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also describes the configuration in more detail.

@@ -20,7 +20,7 @@ This solution provides two different template options:
 The following are prerequisites for the F5 single NIC CFT:
   - An AWS VPC with one subnet
   - An AWS security group that allows port 22 for SSH access to BIG-IP VE
-  - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual server.
+  - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual servers.
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   
 ### Help

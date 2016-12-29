@@ -23,7 +23,7 @@ The following are prerequisites for the F5 2-NIC CFT:
     - External subnet (called Private in the AWS UI) 
     - NAT instance and associated network interface for network translation.
   - An AWS security group that allows port 22 for SSH access to BIG-IP VE
-  - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual server.
+  - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual servers.
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
 
 ## Supported instance types and hypervisors

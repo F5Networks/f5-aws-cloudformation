@@ -13,7 +13,8 @@ The F5 solution provides two different template options:
   The Hourly template which uses pay-as-you-go hourly billing
   
 The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
-  
+
+See the [Configuration Example](#config) section for a configuration diagram and description for this solution.
 
 ## Installation
 
@@ -92,6 +93,11 @@ After clicking the Launch button, you must specify the following parameters.
 
 ### <a name="cli"></a>AWS CLI Usage
 Coming soon
+
+## Configuration Example <a name="config">
+
+The following is a simple configuration diagram for this clustered, 2-NIC deployment. In this diagram, the IP addresses are provided as examples.<br>
+![Clustered 2-NIC configuration example](images/aws-drawing3-azs.png)
 
 ## Documentation
 

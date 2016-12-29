@@ -64,7 +64,7 @@ After clicking the Launch button, you must specify the following parameters.
 | licenseKey1 | x | Type or paste your F5 BYOL regkey |
 | managementSubnetAz1 | x | Management subnet ID |
 | restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |
 
@@ -97,7 +97,7 @@ After clicking the Launch button, you must specify the following parameters.
 | managementSubnetAz1 | x | Management subnet ID |
 | managementSubnetAz2 | x | Management subnet ID |
 | restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | x | Public or External subnet ID |
 | subnet1Az2 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |

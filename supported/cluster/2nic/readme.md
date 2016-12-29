@@ -1,13 +1,12 @@
 # Deploying the BIG-IP in AWS - 2 NIC
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
-[![Doc Status](http://readthedocs.org/projects/f5-sdk/badge/?version=latest)](https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html)
 
 ## Introduction
 
-This solution implements a Cloud Formation Template to deploy a base example of F5 in a clustered, highly available configuration across availability zones using a two NIC deployment. In a two NIC implementation, interface #1 is for management and data-plane traffic from the Internet, and interface #2 is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. 
+This solution uses a CloudFormation Template to launch and configure two BIG-IP 2-NIC VEs in a clustered, highly available configuration across Amazon Availability Zones. The BIG-IP VE can detect Availability Zone failure and automatically shift public traffic to the BIG-IP in the Availability Zone that is unaffected. In a 2-NIC implementation, each BIG-IP VE has one interface used for management and data-plane traffic from the Internet, and the second interface connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.
 
-This template deploys and configures two BIG-IPs in a clustered configuration across specified availability zones. The F5 solution provides two different template options:
+The F5 solution provides two different template options:
   - **BYOL**<br>
   The BYOL (bring your own license) template allows you to input an existing BIG-IP license.
   - **Hourly**<br>
@@ -15,10 +14,6 @@ This template deploys and configures two BIG-IPs in a clustered configuration ac
   
 The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
   
-## Documentation
-
-The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.
-
 
 ## Installation
 
@@ -97,6 +92,10 @@ After clicking the Launch button, you must specify the following parameters.
 
 ### <a name="cli"></a>AWS CLI Usage
 Coming soon
+
+## Documentation
+
+The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.
 
 ## Design Patterns
 

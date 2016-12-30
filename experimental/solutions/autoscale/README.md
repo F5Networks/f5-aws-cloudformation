@@ -134,4 +134,4 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 
 The following is a simple configuration diagram deployment. 
 
-![Single NIC configuration example](images/.png)
+![Single NIC configuration example](images/config-diagram-autoscale-waf.png)

@@ -1,12 +1,10 @@
 # Auto scaling the BIG-IP VE Web Application Firewall in AWS
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
-[![Doc Status](http://readthedocs.org/projects/f5-sdk/badge/?version=latest)](https://f5.com/solutions/deployment-guides)
 
 ## Introduction
 This project implements auto scaling of BIG-IP Virtual Edition Web Application Firewall (WAF) systems in Amazon Web Services using the AWS CloudFormation template **autoscale-bigip.template**. As traffic increases or decreases, the number of BIG-IP VE instances automatically increases or decreases accordingly.
 
-## Documentation
-The ***BIG-IP Virtual Edition and Amazon Web Services: Auto Scaling*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-autoscaling-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.
+See the [Configuration Example](#config) section for a configuration diagram and more information for this solution.
 
 ## BIG-IP deployment and configuration
 
@@ -131,3 +129,9 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 	}
 ]
 ```
+
+## Configuration Example <a name="config">
+
+The following is a simple configuration diagram deployment. 
+
+![Single NIC configuration example](images/.png)

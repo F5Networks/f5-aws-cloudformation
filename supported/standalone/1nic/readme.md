@@ -6,15 +6,9 @@
 This solution uses a CloudFormation Template to launch a single NIC deployment a BIG-IP VE in an Amazon Virtual Private Cloud. Traffic flows from the BIG-IP VE to the application servers.  This is the standard Cloud design where the compute instance of
 F5 is running with a single interface, which processes both management and data plane traffic.  This is a traditional model in the cloud where the deployment is considered one-armed.
 
-This solution provides two different template options:
-  - **BYOL**<br>
-  The BYOL (bring your own license) template allows you to input an existing BIG-IP license.
-  - **Hourly**<br>
-  The Hourly template which uses pay-as-you-go hourly billing
+The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
   
-  The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
-  
-  See the [Configuration Example](#config) section for a configuration diagram and more information for this solution.
+See the **[Configuration Example](#config)** section for a configuration diagram and more information for this solution.
   
 ## Prerequisites
 The following are prerequisites for the F5 single NIC CFT:
@@ -23,24 +17,25 @@ The following are prerequisites for the F5 single NIC CFT:
   - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual servers.
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   
-### Help
-If you are having trouble with this template, we encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for assistance.
-
 ## Supported instance types and hypervisors
   - For a list of supported AWS instance types for this solutions, see the **Amazon EC2 instances for BIG-IP VE** section of https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0/1.html
 
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
+### Help
+We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. <br>
+Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support via your typical methods.
+
 ## Installation
 
-You have two options for deploying this template: 
+There are two methods for deploying this template: 
   - Using the AWS deploy buttons 
   - Using [CLI Tools](#cli)
 
 ### Using the AWS deploy buttons
 The easiest way to deploy of the of CloudFormation templates is to use the appropriate Launch button.
- - Hourly
- - [BYOL](#byol)
+ - Hourly, which uses pay-as-you-go hourly billing
+ - [BYOL](#byol) (bring your own license), which allows you to use an existing BIG-IP license.
 <br><br>
 
 **Hourly deploy button**
@@ -53,7 +48,7 @@ Use this button to deploy the **hourly** template:
 <br>
 <br>
 
-**Hourly Parameters**
+**Hourly Parameters**<br>
 After clicking the Launch button, you must specify the following parameters.
 
 
@@ -81,7 +76,7 @@ Use this button to deploy the **BYOL** template:
 
 <br>
 <br>
-**BYOL Parameters**
+**BYOL Parameters**<br>
 After clicking the Launch button, you must specify the following parameters.
 
 | Parameter | Required | Description |

@@ -6,15 +6,9 @@
 
 This solution uses a CloudFormation Template to launch a 2-NIC deployment of a BIG-IP VE in an Amazon Virtual Private Cloud. In a 2-NIC implementation, one interface is for management and data-plane traffic from the Internet, and the second interface is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.
 
-This solution provides two different template options:
-  - **BYOL**<br>
-  The BYOL (bring your own license) template allows you to input an existing BIG-IP license.
-  - **Hourly**<br>
-  The Hourly template which uses pay-as-you-go hourly billing
-  
-  The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
+The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder.
 
-See the [Configuration Example](#config) section for a configuration diagram and description for this solution.
+See the **[Configuration Example](#config)** section for a configuration diagram and description for this solution.
 
 ## Prerequisites
 The following are prerequisites for the F5 2-NIC CFT:
@@ -31,6 +25,10 @@ The following are prerequisites for the F5 2-NIC CFT:
 
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
+### Help
+We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. <br>
+Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support via your typical methods.
+
 ## Installation
 
 You have two options for deploying this template: 
@@ -39,7 +37,8 @@ You have two options for deploying this template:
 
 ### Using the AWS deploy buttons
 The easiest way to deploy of the of CloudFormation templates is to use the appropriate Launch button.
-<br>
+ - Hourly, which uses pay-as-you-go hourly billing
+ - [BYOL](#byol) (bring your own license), which allows you to use an existing BIG-IP license.
 <br>
 
 **Hourly deploy button**
@@ -73,7 +72,7 @@ After clicking the Launch button, you must specify the following parameters.
 <br>
 <br>
 
-  **BYOL deploy button**
+<a name="byol"></a>**BYOL deploy button**
 
 Use this button to deploy the **BYOL** template: 
 

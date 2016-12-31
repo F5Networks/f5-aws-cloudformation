@@ -674,12 +674,6 @@
                 "owner": "root",
                 "group": "root"
               },
-              "/config/cloud/f5-aws-autoscale-cluster.tar.gz": {
-                "source": "https://s3.amazonaws.com/f5-devdev/f5-aws-autoscale-cluster.tar.gz",
-                "mode": "000644",
-                "owner": "root",
-                "group": "root"
-              },
               "/config/cloud/aws/firstrun.config": {
                 "content": {
                   "Fn::Join": [
@@ -725,24 +719,19 @@
                       "date\n",
                       ". /config/cloud/aws/firstrun.config\n",
                       "ADMIN_PASSWORD=$1\n",
-                      "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/getAutoscaleGroupName.js` \n",
-                      "#BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js --file /config/cloud/aws/getAutoscaleGroupName.js -o /var/log/getAutoscaleGroupName.log` \n",
+                      "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
                       "tmsh modify sys autoscale-group autoscale-group-id ${BIGIP_ASG_NAME} \n",
-                      "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/reportMetrics.sh }\n",
+                      "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
                       "tmsh create sys icall handler periodic /Common/metricUploadHandler { first-occurrence now interval 60 script /Common/uploadMetrics }\n",
                       "echo 'Attempting to Join or Initiate Autoscale Cluster' \n",
-                      "#f5-rest-node /config/cloud/aws/autoscale-cluster.js -c join --log-level debug --output /var/log/aws-autoscale-cluster.log\n",
                       "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"},
                       ",mgmtPort:", { "Ref": "managementGuiPort" }, " --host localhost --port ", { "Ref": "managementGuiPort" }, " --user ", { "Ref": "adminUsername" }, " --password ${ADMIN_PASSWORD} --device-group autoscale-group --block-sync -c join --log-level debug --output /var/log/aws-autoscale.log\n",
                       "if [ -f /config/cloud/aws/master ]; then \n",                      
                       "   echo 'SELF-SELECTED as Master ... Initiated Autoscale Cluster ... Loading default config'\n",
-                      "   #tmsh create cm device-group autoscale-group devices add { ${HOSTNAME} } type sync-failover auto-sync enabled network-failover disabled\n",
-                      "   #tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/autoscale-cluster.js -c update --log-level debug --output /var/log/aws-autoscale-cluster.log }\n",
                       "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
                       " --host localhost --port ", { "Ref": "managementGuiPort" }," --user ", { "Ref": "adminUsername" }, " --device-group autoscale-group -c update --log-level debug --output /var/log/aws-autoscale.log }\n",
                       "   tmsh create sys icall handler periodic /Common/ClusterUpdateHandler { first-occurrence now interval 600 script /Common/ClusterUpdate }\n",
                       "   tmsh save /sys config\n",
-                      "####################\n",
                       "   tmsh create ltm node ${APP_NAME} fqdn { name ${POOL_DNS} }\n",
                       "   tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
                       "   # BEGIN CUSTOMIZE:  Policy Name/Policy URL, etc. \n",
@@ -771,7 +760,6 @@
             "commands": {
               "001-upack-libs": {
                 "command": { "Fn::Join" : [ " ", [
-                                                  "tar xvfz /config/cloud/f5-aws-autoscale-cluster.tar.gz -C /config/cloud;",
                                                   "tar xvfz /config/cloud/asm-policy-linux.tar.gz -C /config/cloud;",
                                                   "mkdir -p /config/cloud/aws/node_modules;",
                                                   "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules;",
@@ -1072,6 +1060,11 @@
     "bigipAutoscaleGroup": {
       "Value": {
         "Ref": "BigipAutoscaleGroup"
+      }
+    },
+    "s3Bucket": {
+      "Value": {
+        "Ref": "S3Bucket"
       }
     }
   }

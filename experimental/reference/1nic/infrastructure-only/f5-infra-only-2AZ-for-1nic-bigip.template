@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template for creating a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Description": "Template Version 1.0.0: AWS CloudFormation Template for creating a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
     "Mappings": {
         "WebserverRegionMap": {
             "ap-northeast-1": {
@@ -171,7 +171,8 @@
                     "default": "Application IP Address"
                 }
             }
-        }
+        },
+        "Version": "1.0.0"
     },
     "Outputs": {
         "Az1ApplicationSubnet": {

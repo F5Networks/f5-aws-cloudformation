@@ -4,103 +4,49 @@
     "Mappings": {
         "BigipRegionMap": {
             "ap-northeast-1": {
-                "Best1000Mbps": "ami-acf82acd",
-                "Best200Mbps": "ami-6bfc2e0a",
-                "Best25Mbps": "ami-a6f92bc7",
-                "Better1000Mbps": "ami-aff82ace",
-                "Better200Mbps": "ami-69f92b08",
-                "Better25Mbps": "ami-1afd2f7b",
-                "Good1000Mbps": "ami-3ef82a5f",
-                "Good200Mbps": "ami-62fc2e03",
-                "Good25Mbps": "ami-3af82a5b"
+                "Best": "ami-29f82a48",
+                "Better": "ami-d1fc2eb0",
+                "Good": "ami-e1fe2c80"
             },
             "ap-southeast-1": {
-                "Best1000Mbps": "ami-ab78ddc8",
-                "Best200Mbps": "ami-d37edbb0",
-                "Best25Mbps": "ami-4e79dc2d",
-                "Better1000Mbps": "ami-d47fdab7",
-                "Better200Mbps": "ami-7f78dd1c",
-                "Better25Mbps": "ami-4278dd21",
-                "Good1000Mbps": "ami-d87cd9bb",
-                "Good200Mbps": "ami-da7cd9b9",
-                "Good25Mbps": "ami-d47cd9b7"
+                "Best": "ami-b178ddd2",
+                "Better": "ami-ae78ddcd",
+                "Good": "ami-cd7edbae"
             },
             "ap-southeast-2": {
-                "Best1000Mbps": "ami-c2e8d8a1",
-                "Best200Mbps": "ami-c4e8d8a7",
-                "Best25Mbps": "ami-bdecdcde",
-                "Better1000Mbps": "ami-6febdb0c",
-                "Better200Mbps": "ami-b1ebdbd2",
-                "Better25Mbps": "ami-42e8d821",
-                "Good1000Mbps": "ami-bcebdbdf",
-                "Good200Mbps": "ami-dbebdbb8",
-                "Good25Mbps": "ami-58e9d93b"
+                "Best": "ami-c1e8d8a2",
+                "Better": "ami-e6eede85",
+                "Good": "ami-41e9d922"
             },
             "eu-central-1": {
-                "Best1000Mbps": "ami-2157aa4e",
-                "Best200Mbps": "ami-8055a8ef",
-                "Best25Mbps": "ami-2c56ab43",
-                "Better1000Mbps": "ami-2f57aa40",
-                "Better200Mbps": "ami-2854a947",
-                "Better25Mbps": "ami-2657aa49",
-                "Good1000Mbps": "ami-e357aa8c",
-                "Good200Mbps": "ami-2557aa4a",
-                "Good25Mbps": "ami-cb55a8a4"
+                "Best": "ami-0556ab6a",
+                "Better": "ami-fa50ad95",
+                "Good": "ami-0254a96d"
             },
             "eu-west-1": {
-                "Best1000Mbps": "ami-8af48ef9",
-                "Best200Mbps": "ami-fbeb9188",
-                "Best25Mbps": "ami-cbf58fb8",
-                "Better1000Mbps": "ami-c8f58fbb",
-                "Better200Mbps": "ami-51f18b22",
-                "Better25Mbps": "ami-7bf38908",
-                "Good1000Mbps": "ami-b5f68cc6",
-                "Good200Mbps": "ami-65f58f16",
-                "Good25Mbps": "ami-91f18be2"
+                "Best": "ami-d6e892a5",
+                "Better": "ami-d1f58fa2",
+                "Good": "ami-e3eb9190"
             },
             "sa-east-1": {
-                "Best1000Mbps": "ami-7142d11d",
-                "Best200Mbps": "ami-8b5fcce7",
-                "Best25Mbps": "ami-8a5ecde6",
-                "Better1000Mbps": "ami-955fccf9",
-                "Better200Mbps": "ami-c142d1ad",
-                "Better25Mbps": "ami-c342d1af",
-                "Good1000Mbps": "ami-335dce5f",
-                "Good200Mbps": "ami-1359ca7f",
-                "Good25Mbps": "ami-1f59ca73"
+                "Best": "ami-7542d119",
+                "Better": "ami-8c5ecde0",
+                "Good": "ami-1659ca7a"
             },
             "us-east-1": {
-                "Best1000Mbps": "ami-1d057e0a",
-                "Best200Mbps": "ami-0b7a011c",
-                "Best25Mbps": "ami-ce047fd9",
-                "Better1000Mbps": "ami-83047f94",
-                "Better200Mbps": "ami-84017a93",
-                "Better25Mbps": "ami-8f007b98",
-                "Good1000Mbps": "ami-98017a8f",
-                "Good200Mbps": "ami-a2017ab5",
-                "Good25Mbps": "ami-130c7704"
+                "Best": "ami-67067d70",
+                "Better": "ami-a3047fb4",
+                "Good": "ami-5e077c49"
             },
             "us-west-1": {
-                "Best1000Mbps": "ami-812668e1",
-                "Best200Mbps": "ami-05246a65",
-                "Best25Mbps": "ami-f0256b90",
-                "Better1000Mbps": "ami-822668e2",
-                "Better200Mbps": "ami-44226c24",
-                "Better25Mbps": "ami-8b256beb",
-                "Good1000Mbps": "ami-49256b29",
-                "Good200Mbps": "ami-a72769c7",
-                "Good25Mbps": "ami-e5246a85"
+                "Best": "ami-b02769d0",
+                "Better": "ami-42256b22",
+                "Good": "ami-bd2769dd"
             },
             "us-west-2": {
-                "Best1000Mbps": "ami-012ef261",
-                "Best200Mbps": "ami-8633efe6",
-                "Best25Mbps": "ami-792ff319",
-                "Better1000Mbps": "ami-5b29f53b",
-                "Better200Mbps": "ami-a031edc0",
-                "Better25Mbps": "ami-a731edc7",
-                "Good1000Mbps": "ami-6a2df10a",
-                "Good200Mbps": "ami-532ff333",
-                "Good25Mbps": "ami-dc2ef2bc"
+                "Best": "ami-f12df191",
+                "Better": "ami-f92df199",
+                "Good": "ami-8333efe3"
             }
         }
     },
@@ -403,18 +349,12 @@
         },
         "imageName": {
             "AllowedValues": [
-                "Good25Mbps",
-                "Good200Mbps",
-                "Good1000Mbps",
-                "Better25Mbps",
-                "Better200Mbps",
-                "Better1000Mbps",
-                "Best25Mbps",
-                "Best200Mbps",
-                "Best1000Mbps"
+                "Good",
+                "Better",
+                "Best"
             ],
             "ConstraintDescription": "Must be a valid F5 BIG-IP performance type",
-            "Default": "Best1000Mbps",
+            "Default": "Best",
             "Description": "F5 BIG-IP Performance Type",
             "Type": "String"
         },
@@ -439,6 +379,14 @@
             "ConstraintDescription": "Must be a valid BIG-IP EC2 instance type",
             "Default": "m3.2xlarge",
             "Description": "Size of the F5 BIG-IP Virtual Instance",
+            "Type": "String"
+        },
+        "licenseKey1": {
+            "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
+            "ConstraintDescription": "Verify your F5 BYOL regkey.",
+            "Description": "Paste or type your F5 BYOL regkey here:",
+            "MaxLength": "255",
+            "MinLength": "1",
             "Type": "String"
         },
         "managementSubnetAz1": {
@@ -514,21 +462,21 @@
                                             "--background",
                                             "--no-reboot",
                                             "--host localhost",
-                                            "--user ",
-                                            {
-                                                "Ref": "adminUsername"
-                                            },
-                                            " ",
+                                            "--user admin",
                                             "--password '",
                                             {
                                                 "Ref": "adminPassword"
                                             },
                                             "'",
-                                            "--set-password admin:'",
+                                            "--update-user 'user:",
+                                            {
+                                                "Ref": "adminUsername"
+                                            },
+                                            ",password:",
                                             {
                                                 "Ref": "adminPassword"
                                             },
-                                            "'",
+                                            ",role:admin'",
                                             "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
                                             "--ntp 0.us.pool.ntp.org",
                                             "--ntp 1.us.pool.ntp.org",
@@ -571,6 +519,9 @@
                                             "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
                                             "tmsh create net route default gw ${GATEWAY}\n",
                                             "tmsh save /sys config\n",
+                                            "echo 'start install byol license'\n",
+                                            "networkUp 120 \n",
+                                            "LicenseBigIP ${REGKEY}\n",
                                             "checkStatusnoret\n",
                                             "sleep 20 \n",
                                             "tmsh save /sys config\n",
@@ -582,7 +533,7 @@
                                             "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             "tmsh save /sys config\n",
                                             "date\n",
-                                            "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
+                                            "# for security purposes, remove firstrun.config\n",
                                             "# rm /config/cloud/aws/firstrun.config\n"
                                         ]
                                     ]
@@ -608,6 +559,11 @@
                                                 "Ref": "adminPassword"
                                             },
                                             "'\n",
+                                            "REGKEY=",
+                                            {
+                                                "Ref": "licenseKey1"
+                                            },
+                                            "\n",
                                             "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                                             "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
                                             "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
@@ -674,7 +630,7 @@
                                 "group": "root",
                                 "mode": "000755",
                                 "owner": "root",
-                                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/v1.2.0"
+                                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop"
                             }
                         }
                     }

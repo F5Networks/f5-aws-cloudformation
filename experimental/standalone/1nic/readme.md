@@ -28,6 +28,12 @@ The following are prerequisites for the F5 single NIC CFT:
 
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
+<<<<<<< HEAD:supported/standalone/1nic/readme.md
+=======
+### Help
+Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support via your typical methods.<br>
+We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
+>>>>>>> develop:experimental/standalone/1nic/readme.md
 
 ## Installation
 

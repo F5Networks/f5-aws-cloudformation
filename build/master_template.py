@@ -378,7 +378,7 @@ def main():
         if num_nics == 1:
             managementGuiPort = t.add_parameter(Parameter(
                 "managementGuiPort",
-                Default="443",
+                Default="8443",
                 ConstraintDescription="Must be a valid, unused port on the BIG-IP.",
                 Type="Number",
                 Description="Port for the management GUI",

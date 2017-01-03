@@ -51,9 +51,18 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+.idea/.name
+.idea/encodings.xml
+.idea/f5-aws-cloudformation.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/workspace.xml
+.idea/vcs.xml
+
 
 # Config files
 *.ini
 
 # PyBuilder
 target/
+

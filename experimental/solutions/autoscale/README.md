@@ -1,12 +1,10 @@
 # Auto scaling the BIG-IP VE Web Application Firewall in AWS
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
-[![Doc Status](http://readthedocs.org/projects/f5-sdk/badge/?version=latest)](https://f5.com/solutions/deployment-guides)
 
 ## Introduction
 This project implements auto scaling of BIG-IP Virtual Edition Web Application Firewall (WAF) systems in Amazon Web Services using the AWS CloudFormation template **autoscale-bigip.template**. As traffic increases or decreases, the number of BIG-IP VE instances automatically increases or decreases accordingly.
 
-## Documentation
-The ***BIG-IP Virtual Edition and Amazon Web Services: Auto Scaling*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-autoscaling-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.
+See the [Configuration Example](#config) section for a configuration diagram and more information for this solution.
 
 ## BIG-IP deployment and configuration
 
@@ -50,11 +48,11 @@ Use this template to automate the autoscale implementation by providing the para
 | subnets | x | Public or External Subnet IDs of above Availability Zones |
 | bigipSecurityGroup | x | Existing Security Group for BIG-IPs |
 | bigipElasticLoadBalancer | x | Elastic Load Balancer group for BIG-IPs, e.g. AcmeBigipELB |
-| keyName | x | Existing EC2 KeyPair to enable SSH access to the BIG-IP instance |
-| sshLocation | x | IP address range that can SSH to the BIG-IP instances (Default 0.0.0.0/0) |
+| sshKey | x | Existing EC2 KeyPair to enable SSH access to the BIG-IP instance |
+| restrictedSrcAddress | x | IP address range that can SSH to the BIG-IP instances (Default 0.0.0.0/0) |
 | instanceType | x | BIG-IP Instance Type (Default m3.2xlarge) |
-| performanceType | x | BIG-IP Performance Type (Default Best) |
 | throughput | x | BIG-IP Throughput (Default 1000Mbps) |
+| adminUsername | x | BIG-IP Admin Username (Default admin). Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
 | adminPassword | x | BIG-IP Admin Password |
 | managementGuiPort | x | Port of BIG-IP management GUI (Default 8443) |
 | timezone | x | Olson timezone string from /usr/share/zoneinfo (Default UTC) |
@@ -66,7 +64,7 @@ Use this template to automate the autoscale implementation by providing the para
 | notificationEmail |  | Valid email address to send AutoScaling Event Notifications |
 | virtualServicePort | x | Virtual Service Port on BIG-IP (Default 80) |
 | applicationPort | x | Application Pool Member Port on BIG-IP (Default 80) |
-| appInternalElbDnsName | x | DNS of the ELB used for the application, e.g. Acme.region.elb.amazonaws.com |
+| appInternalDnsName | x | DNS of the ELB used for the application, e.g. Acme.region.elb.amazonaws.com |
 | policyLevel | x | WAF Policy Level to protect the application (Default high) |
 | application |  | Application Tag (Default f5app) |
 | environment |  | Environment Name Tag (Default f5env) |
@@ -106,11 +104,11 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 		"ParameterValue":"Acme-BigipElb"
 	},
 	{
-		"ParameterKey":"keyName",
+		"ParameterKey":"sshKey",
 		"ParameterValue":"awskeypair"
 	},
 	{
-		"ParameterKey":"sshLocation",
+		"ParameterKey":"restrictedSrcAddress",
 		"ParameterValue":"0.0.0.0/0"
 	},
 	{
@@ -122,7 +120,7 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 		"ParameterValue":"user@company.com"
 	},
 	{
-		"ParameterKey":"appInternalElbDnsName",
+		"ParameterKey":"appInternalDnsName",
 		"ParameterValue":"internal-Acme-AppElb-911355308.us-east-1.elb.amazonaws.com"
 	},
 	{
@@ -131,3 +129,9 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 	}
 ]
 ```
+
+## Configuration Example <a name="config">
+
+The following is a simple configuration diagram deployment. 
+
+![Single NIC configuration example](images/config-diagram-autoscale-waf.png)

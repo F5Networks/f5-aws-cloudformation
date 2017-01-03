@@ -1626,9 +1626,9 @@ def main():
                                "--background",
                                "--no-reboot",
                                "--host localhost",
-                               "--user ", { "Ref": "adminUsername" }, " ",
+                               "--user admin",
                                "--password '", { "Ref": "adminPassword" }, "'",
-                               "--set-password admin:'", { "Ref": "adminPassword" }, "'",
+                               "--update-user 'user:", { "Ref": "adminUsername" }, ",password:", { "Ref": "adminPassword" }, ",role:admin'",
                                "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
                                "--ntp 0.us.pool.ntp.org",
                                "--ntp 1.us.pool.ntp.org",
@@ -1837,7 +1837,7 @@ def main():
                                 files=InitFiles(
                                     {
                                         '/config/cloud/f5-cloud-libs.tar.gz': InitFile(
-                                            source='https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/v1.2.0',
+                                            source='https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop',
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -1908,7 +1908,7 @@ def main():
                                 files=InitFiles(
                                     {
                                         '/config/cloud/f5-cloud-libs.tar.gz': InitFile(
-                                            source='https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/v1.2.0',
+                                            source='https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop',
                                             mode='000755',
                                             owner='root',
                                             group='root'

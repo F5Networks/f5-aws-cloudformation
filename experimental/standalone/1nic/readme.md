@@ -7,9 +7,9 @@ This solution uses a CloudFormation Template to launch a single NIC deployment a
 F5 is running with a single interface, which processes both management and data plane traffic.  This is a traditional model in the cloud where the deployment is considered one-armed.
 
 The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the *learning-stacks* folder in the **experimental** directory.
-  
+
 See the **[Configuration Example](#config)** section for a configuration diagram and more information for this solution.
-  
+
 ## Prerequisites
 The following are prerequisites for the F5 single NIC CFT:
   - An AWS VPC with one subnet
@@ -24,7 +24,7 @@ The following are prerequisites for the F5 single NIC CFT:
 
 ### Help
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support.<br>
-While this template has been created by F5 Networks, it is in the experimental directory and therefore has not completed full testing and is subject to change.  F5 Networks does not offer technical support for templates in the experimental directory. For supported templates, see the templates in the supported directory.
+While this template has been created by F5 Networks, it is in the experimental directory and therefore has not completed full testing and is subject to change.  F5 Networks does not offer technical support for templates in the experimental directory. For supported templates, see the templates in the **supported** directory.
 
 
 ## Installation
@@ -34,7 +34,7 @@ There are two methods for deploying this template:
   - Using [CLI Tools](#cli)
 
 ### Using the AWS deploy buttons
-The easiest way to deploy of the of CloudFormation templates is to use the appropriate Launch button.
+The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.
  - Hourly, which uses pay-as-you-go hourly billing
  - [BYOL](#byol) (bring your own license), which allows you to use an existing BIG-IP license.
 <br><br>

@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Description": "Template Version 1.0.0: AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
     "Mappings": {
         "BigipRegionMap": {
             "ap-northeast-1": {
@@ -189,7 +189,8 @@
                     "default": "Application IP Address"
                 }
             }
-        }
+        },
+        "Version": "1.0.0"
     },
     "Outputs": {
         "Bigip1ExternalInterfacePrivateIp": {
@@ -633,7 +634,7 @@
                                             "tmsh save /sys config\n",
                                             "echo 'sleeping additional 180 secs to wait for peer to boot'\n",
                                             "sleep 300\n",
-                                            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password \"${BIGIP_ADMIN_PASSWORD}\"\n",
+                                            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username \"${BIGIP_ADMIN_USERNAME}\" password \"${BIGIP_ADMIN_PASSWORD}\"\n",
                                             "tmsh create cm device-group across_az_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
                                             "tmsh run cm config-sync to-group across_az_failover_group\n",
                                             "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",

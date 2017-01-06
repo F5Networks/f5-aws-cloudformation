@@ -1,6 +1,0 @@
-.. include:: README.rst
-
-
-
-
-

@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template for creating network components for a 1 Availability Zone VPC",
+    "Description": "Template Version 1.0.0: AWS CloudFormation Template for creating network components for a 1 Availability Zone VPC",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -140,7 +140,8 @@
                     "default": "Application IP Address"
                 }
             }
-        }
+        },
+        "Version": "1.0.0"
     },
     "Outputs": {
         "Az1ApplicationSubnet": {

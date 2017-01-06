@@ -29,6 +29,13 @@ The following are prerequisites for the F5 2-NIC CFT:
 
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
+<<<<<<< HEAD
+=======
+### Help
+We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support.<br>
+While this template has been created by F5 Networks, it is in the experimental directory and therefore has not completed full testing and is subject to change.  F5 Networks does not offer technical support for templates in the experimental directory. For supported templates, see the templates in the **supported** directory.
+
+>>>>>>> develop
 ## Installation
 
 You have two options for deploying this template: 
@@ -36,8 +43,14 @@ You have two options for deploying this template:
   - Using [CLI Tools](#cli)
 
 ### Using the AWS deploy buttons
+<<<<<<< HEAD
 The easiest way to deploy of the of CloudFormation templates is to use the appropriate Launch button.
 <br>
+=======
+The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.
+ - Hourly, which uses pay-as-you-go hourly billing
+ - [BYOL](#byol) (bring your own license), which allows you to use an existing BIG-IP license.
+>>>>>>> develop
 <br>
 
 **Hourly deploy button**
@@ -78,7 +91,6 @@ Use this button to deploy the **BYOL** template:
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BYOL&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
-
 <br>
 After clicking the Launch button, you must specify the following parameters.
 
@@ -136,8 +148,6 @@ See `Contributing <CONTRIBUTING.md>`__
 
 
 Before you open a pull request, your code must have passed a deployment into Azure with the intended result
-
-
 
 
 

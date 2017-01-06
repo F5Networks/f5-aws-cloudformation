@@ -1,4 +1,4 @@
-# Deploying the BIG-IP in AWS - 2 NIC
+# Deploying the BIG-IP in AWS - Clustered 2 NIC
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 [![Doc Status](http://readthedocs.org/projects/f5-sdk/badge/?version=latest)](https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html)
@@ -7,6 +7,7 @@
 
 This solution implements a Cloud Formation Template to deploy a base example of F5 in a clustered, highly available configuration across availability zones using a two NIC deployment. In a two NIC implementation, interface #1 is for management and data-plane traffic from the Internet, and interface #2 is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. 
 
+<<<<<<< HEAD
 This template deploys and configures two BIG-IPs in a clustered configuration across specified availability zones. The F5 solution provides two different template options:
   - **BYOL**<br>
   The BYOL (bring your own license) template allows you to input an existing BIG-IP license.
@@ -18,6 +19,15 @@ The **existing stack** CloudFormation template incorporates an existing Virtual 
 ## Documentation
 
 The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) decribes how to create the configuration manually without using the CloudFormation template.
+=======
+
+The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the *learning-stacks* folder in the **Experimental** directory.
+>>>>>>> develop
+
+
+### Help
+We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support.<br> 
+While this template has been created by F5 Networks, it is in the experimental directory and therefore has not completed full testing and is subject to change.  F5 Networks does not offer technical support for templates in the experimental directory. For supported templates, see the templates in the **supported** directory.
 
 
 ## Installation
@@ -27,7 +37,10 @@ You have two options for deploying this template:
   - Using [CLI Tools](#cli)
 
 ### Using the AWS deploy buttons
-The easiest way to deploy of the of CloudFormation templates is to use the appropriate Launch button below.
+The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.
+ - Hourly, which uses pay-as-you-go hourly billing
+ - [BYOL](#byol) (bring your own license), which allows you to use an existing BIG-IP license.
+<br><br>
 
 **Hourly deploy button**
 
@@ -52,15 +65,14 @@ After clicking the Launch button, you must specify the following parameters.
 | instanceType | x | BIG-IP virtual instance type |
 | managementSubnetAz1 | x | Management subnet ID |
 | restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |
-| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
 
 
 <br>
 <br>
-  **BYOL deploy button**
+  <a name="byol"></a>**BYOL deploy button**
 
 Use this button to deploy the **BYOL** template: 
 
@@ -86,18 +98,26 @@ After clicking the Launch button, you must specify the following parameters.
 | managementSubnetAz1 | x | Management subnet ID |
 | managementSubnetAz2 | x | Management subnet ID |
 | restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | x | Name of an existing EC2 KeyPair to enable SSH acccess to the instance |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | x | Public or External subnet ID |
 | subnet1Az2 | x | Public or External subnet ID |
 | Vpc | x | Common VPC for the deployment |
-| webserverPrivateIp | x | Web Server IP used for the BIG-IP pool member |
-
 
 
 
 ### <a name="cli"></a>AWS CLI Usage
 Coming soon
 
+<<<<<<< HEAD
+=======
+## Configuration Example <a name="config">
+
+The following is a simple configuration diagram for this clustered, 2-NIC deployment. In this diagram, the IP addresses are provided as examples.<br>
+![Clustered 2-NIC configuration example](images/aws-drawing3-azs.png)
+
+
+
+>>>>>>> develop
 ## Design Patterns
 
 

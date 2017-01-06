@@ -1731,7 +1731,7 @@ def main():
                 custom_sh +=  [
                                 "echo 'sleeping additional 180 secs to wait for peer to boot'\n",
                                 "sleep 300\n",
-                                "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password \"${BIGIP_ADMIN_PASSWORD}\"\n",    
+                                "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username \"${BIGIP_ADMIN_USERNAME}\" password \"${BIGIP_ADMIN_PASSWORD}\"\n",    
                                 "tmsh create cm device-group across_az_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
                                 "tmsh run cm config-sync to-group across_az_failover_group\n", 
                                 ]
@@ -1806,7 +1806,7 @@ def main():
                                             "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                                             "tmsh run cm config-sync to-group across_az_failover_group\n",
                                             "sleep 15\n",
-                                            "curl -sSk -u admin:\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
+                                            "curl -sSk -u \"${BIGIP_ADMIN_USERNAME}\":\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
                                     ]
             # If ASM, Need to use overwite Config (SOL16509 / BZID: 487538 )
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:

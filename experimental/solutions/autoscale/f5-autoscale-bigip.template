@@ -162,24 +162,24 @@
           "default": "Owner"
         },
         "costcenter": {
-          "default": "Costcenter"
+          "default": "Cost Center"
         }
       }
     }
   },
   "Parameters": {
     "deploymentName" : {
-      "Description" : "Deployment Name use in creating object names",
+      "Description" : "Name the template uses to create object names",
       "Type" : "String",
       "MaxLength": 25,
       "Default": "<replace>Acme<replace>"
     },
     "vpc": {
-      "Description": "VPC to deploy BIG-IPs",
+      "Description": "VPC where you want to deploy the BIG-IPs",
       "Type": "AWS::EC2::VPC::Id"
     },
     "availabilityZones": {
-      "Description": "Availability Zones to deploy BIG-IPs (Recommend at least 2)",
+      "Description": "Availability Zones where you want to deploy BIG-IPs (We recommend at least 2)",
       "Type": "List<AWS::EC2::AvailabilityZone::Name>"
     },
     "subnets": {
@@ -200,7 +200,7 @@
       "Type": "AWS::EC2::KeyPair::KeyName"
     },
     "restrictedSrcAddress" : {
-      "Description" : "IP address range that can SSH to the BIG-IP instances (Default 0.0.0.0/0)",
+      "Description" : "IP address range that can SSH to the BIG-IP instances",
       "Type": "String",
       "MinLength": "9",
       "MaxLength": "18",
@@ -209,7 +209,7 @@
       "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x."
     },
     "instanceType": {
-      "Description": "BIG-IP Instance Type (Default m3.2xlarge)",
+      "Description": "AWS Instance Type",
       "Type": "String",
       "Default": "m3.2xlarge",
       "AllowedValues": [
@@ -222,10 +222,10 @@
         "c4.4xlarge",
         "c4.8xlarge"
       ],
-      "ConstraintDescription": "Must be a valid Big-IP BEST virtual EC2 instance type."
+      "ConstraintDescription": "Must be a valid BIG-IP BEST virtual EC2 instance type."
     },
     "throughput": {
-      "Description": "BIG-IP Throughput (Default 1000Mbps)",
+      "Description": "BIG-IP Throughput",
       "Type": "String",
       "Default": "1000Mbps",
       "AllowedValues": [
@@ -233,11 +233,11 @@
         "200Mbps",
         "1000Mbps"
       ],
-      "ConstraintDescription": "Please select the desired BIG-IP throughput"
+      "ConstraintDescription": "Select the desired BIG-IP throughput"
     },
     "adminUsername": {
-      "ConstraintDescription": "Please verify your BIG-IP Admin User. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa.",
-      "Description": "BIG-IP Admin User",
+      "ConstraintDescription": "Please verify your BIG-IP Admin user name. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). The user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa.",
+      "Description": "Admin user name for connecting to BIG-IP",
       "MaxLength": "255",
       "MinLength": "1",
       "AllowedPattern": "[a-zA-Z0-9._-]+",
@@ -245,31 +245,31 @@
       "Type": "String"
     },
     "adminPassword": {
-        "ConstraintDescription": "Please verify your BIG-IP Admin Password",
-        "Description": "BIG-IP Admin Password",
+        "ConstraintDescription": "Verify your BIG-IP Admin Password",
+        "Description": "Strong admin password for connecting to BIG-IP ",
         "MaxLength": "255",
         "MinLength": "1",
         "NoEcho": true,
         "Type": "String"
     },
     "managementGuiPort": {
-      "Description": "Port of BIG-IP management GUI (Default 8443)",
+      "Description": "Port for the BIG-IP management GUI",
       "Type": "Number",
       "Default": 8443,
       "ConstraintDescription": "Must be a valid, unused port on BIG-IP."
     },
     "timezone": {
-      "Description": "Olson timezone string from /usr/share/zoneinfo (Default UTC)",
+      "Description": "Olson timezone string from /usr/share/zoneinfo",
       "Default": "UTC",
       "Type": "String"
     },
     "ntpServer": {
-      "Description": "NTP server (Default 0.pool.ntp.org)",
+      "Description": "NTP server for this implementation",
       "Default": "0.pool.ntp.org",
       "Type": "String"
     },
     "scalingMinSize": {
-      "Description": "Minimum number of BIG-IP instances (1-8) to be available in the AutoScale Group (Default 1)",
+      "Description": "Minimum number of BIG-IP instances (1-8) you want available in the AutoScale Group (Default 1)",
       "Default": "1",
       "ConstraintDescription": "Must be a number between 1-8",
       "Type": "Number",
@@ -285,12 +285,12 @@
       "MinValue": "2"
     },
     "scaleDownBytesThreshold": {
-      "Description": "Incoming Bytes Threshold to begin Scaling Down BIG-IP Instances (Default 10000)",
+      "Description": "Incoming Bytes Threshold to begin Scaling Down BIG-IP Instances",
       "Default": "10000",   
       "Type": "Number"
     },
     "scaleUpBytesThreshold": {
-      "Description": "Incoming Bytes Threshold to begin Scaling Up BIG-IP Instances (Default 35000)",
+      "Description": "Incoming Bytes Threshold to begin Scaling Up BIG-IP Instances",
       "Default": "35000",
       "Type": "Number"
     },
@@ -300,7 +300,7 @@
       "Type": "String"
     },
     "virtualServicePort": {
-      "Description": "Virtual Service Port on BIG-IP (Default 80)",
+      "Description": "Virtual Service Port on BIG-IP ",
       "Default": "80",
       "ConstraintDescription": "Must be a valid port number (1-65535).",
       "Type": "Number",
@@ -308,7 +308,7 @@
       "MinValue": "1"
     },
     "applicationPort": {
-      "Description": "Application Pool Member Port on BIG-IP (Default 80)",
+      "Description": "Application Pool Member Port on BIG-IP",
       "Default": "80",
       "ConstraintDescription": "Must be a valid port number (1-65535).",
       "Type": "Number",
@@ -316,12 +316,12 @@
       "MinValue": "1"
     },
     "appInternalDnsName": {
-      "Description": "DNS of the ELB used for the application, e.g. Acme.region.elb.amazonaws.com",
+      "Description": "DNS of the ELB used for the application",
       "Type": "String",
       "Default": "<replace>Acme.region.elb.amazonaws.com<replace>"
     },
     "policyLevel": {
-      "Description": "WAF Policy Level to protect the application (Default high)",
+      "Description": "WAF Policy Level you want to use to protect the application ",
       "Type": "String",
       "Default": "high",
       "AllowedValues": [
@@ -329,31 +329,31 @@
         "medium",
         "high"
       ],
-      "ConstraintDescription": "Please select desired WAF Policy Level"
+      "ConstraintDescription": "Select the WAF Policy Level you want to use"
     },
     "application": {
       "Default": "f5app",
-      "Description": "Application Tag (Default f5app)",
+      "Description": "Application Tag",
       "Type": "String"
     },
     "environment": {
       "Default": "f5env",
-      "Description": "Environment Name Tag (Default f5env)",
+      "Description": "Environment Name Tag",
       "Type": "String"
     },
     "group": {
       "Default": "f5group",
-      "Description": "Group Tag (Default f5group)",
+      "Description": "Group Tag",
       "Type": "String"
     },
     "owner": {
       "Default": "f5owner",
-      "Description": "Owner Tag (Default f5owner)",
+      "Description": "Owner Tag",
       "Type": "String"
     },
     "costcenter": {
       "Default": "f5costcenter",
-      "Description": "Costcenter Tag (Default f5costcenter)",
+      "Description": "Cost Center Tag",
       "Type": "String"
     }
   },

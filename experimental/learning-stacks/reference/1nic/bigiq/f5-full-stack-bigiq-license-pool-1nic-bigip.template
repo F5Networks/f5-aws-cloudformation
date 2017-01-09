@@ -777,7 +777,7 @@
                                             "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
                                             "tmsh save /sys config\n",
                                             "echo 'start install biqiq license'\n",
-                                            " . /config/cloud/aws/license_from_bigiq.sh\n",
+                                            ". /config/cloud/aws/license_from_bigiq.sh\n",
                                             "checkStatusnoret\n",
                                             "sleep 20 \n",
                                             "tmsh save /sys config\n",

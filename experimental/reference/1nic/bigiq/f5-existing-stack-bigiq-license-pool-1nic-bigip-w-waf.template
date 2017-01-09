@@ -517,7 +517,7 @@
                                             "tmsh modify net self-allow defaults add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
                                             "tmsh save /sys config\n",
                                             "echo 'start install biqiq license'\n",
-                                            " . /config/cloud/aws/license_from_bigiq.sh\n",
+                                            ". /config/cloud/aws/license_from_bigiq.sh\n",
                                             "checkStatusnoret\n",
                                             "sleep 20 \n",
                                             "tmsh save /sys config\n",

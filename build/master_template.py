@@ -1473,9 +1473,9 @@ def main():
                             ]
 
             # License file downloaded remotely from https://cdn.f5.com/product/iapp/utils/license-from-bigiq.sh
-            license_from_bigiq =  [ 
+            license_from_bigiq =  [
                                 "echo 'start install biqiq license'\n",
-                                " . /config/cloud/aws/license_from_bigiq.sh\n",
+                                ". /config/cloud/aws/license_from_bigiq.sh\n",
                                 ]
 
             provision_asm = [

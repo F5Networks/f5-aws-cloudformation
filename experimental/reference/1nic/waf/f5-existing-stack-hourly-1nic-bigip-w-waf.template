@@ -308,7 +308,7 @@
             }
         },
         "Bigip1subnet1Az1SelfEipAddress": {
-            "Description": "IP Address of teh External interface attached to BIG-IP",
+            "Description": "IP Address of the External interface attached to BIG-IP",
             "Value": {
                 "Ref": "Bigip1subnet1Az1SelfEipAddress"
             }

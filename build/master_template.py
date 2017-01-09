@@ -1854,13 +1854,13 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/license_from_bigiq.sh': InitFile(
+                                        '/config/cloud/aws/license_from_bigiq.sh': InitFile(
                                             source='http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh',
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/remove_license_from_bigiq.sh': InitFile(
+                                        '/config/cloud/aws/remove_license_from_bigiq.sh': InitFile(
                                             source='http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh',
                                             mode='000755',
                                             owner='root',

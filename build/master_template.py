@@ -239,10 +239,10 @@ def main():
                 "default": "Availability Zone 2"
             },
             "bigipManagementSecurityGroup": {
-                "default": "BIG-IP Management Security Group"
+                "default": "Management Security Group"
             },
             "bigipExternalSecurityGroup": {
-                "default": "BIG-IP External Security Group"
+                "default": "External Security Group"
             },
             "adminUsername": {
                 "default": "Admin Username"
@@ -263,7 +263,7 @@ def main():
                 "default": "License Key1"
             },
             "restrictedSrcAddress": {
-                "default": "Restricted Source Addresses"
+                "default": "Restricted Source IP Addresses"
             },
             "iamAccessKey": {
                 "default": "IAM Access Key"
@@ -272,7 +272,7 @@ def main():
                 "default": "IAM Secret Key"
             },            
             "managementGuiPort": {
-                "default": "Management GUI Port"
+                "default": "Management Port"
             },
             "sshKey": {
                 "default": "SSH Key"
@@ -293,7 +293,7 @@ def main():
                 "default": "Owner"
             },
             "costcenter": {
-                "default": "Cost center"
+                "default": "Cost Center"
             }
           }
         }
@@ -349,7 +349,7 @@ def main():
         sshKey = t.add_parameter(Parameter(
             "sshKey",
             Type="AWS::EC2::KeyPair::KeyName",
-            Description="Name of an existing EC2 KeyPair to enable SSH access to the instance",
+            Description="Key pair for accessing the instance",
         ))
 
 
@@ -381,7 +381,7 @@ def main():
                 Default="8443",
                 ConstraintDescription="Must be a valid, unused port on the BIG-IP.",
                 Type="Number",
-                Description="Port for the management GUI",
+                Description="Port for the BIG-IP management Configuration utility",
             ))
 
     if bigip == True:
@@ -390,9 +390,9 @@ def main():
             instanceType = t.add_parameter(Parameter(
                 "instanceType",
                 Default="m3.2xlarge",
-                ConstraintDescription="Must be a valid BIG-IP EC2 instance type",
+                ConstraintDescription="Must be a valid EC2 instance type for BIG-IP",
                 Type="String",
-                Description="Size of the F5 BIG-IP Virtual Instance",
+                Description="AWS instance type",
                 AllowedValues=[
                                 "m3.2xlarge",
                                 "m4.2xlarge",
@@ -409,7 +409,7 @@ def main():
             instanceType = t.add_parameter(Parameter(
                 "instanceType",
                 Default="m3.2xlarge",
-                ConstraintDescription="Must be a valid BIG-IP EC2 instance type",
+                ConstraintDescription="Must be a valid EC2 instance type for BIG-IP",
                 Type="String",
                 Description="Size of the F5 BIG-IP Virtual Instance",
                 AllowedValues=[
@@ -435,9 +435,9 @@ def main():
             imageName = t.add_parameter(Parameter(
                 "imageName",
                 Default="Best1000Mbps",
-                ConstraintDescription="Must be a valid F5 BIG-IP performance type",
+                ConstraintDescription="Must be a valid F5 BIG-IP VE image type",
                 Type="String",
-                Description="F5 BIG-IP Performance Type",
+                Description="F5 BIG-IP VE image",
                 AllowedValues=[
                                 "Good25Mbps",
                                 "Good200Mbps",
@@ -454,7 +454,7 @@ def main():
             imageName = t.add_parameter(Parameter(
                 "imageName",
                 Default="Best1000Mbps",
-                ConstraintDescription="Must be a valid F5 BIG-IP performance type",
+                ConstraintDescription="Must be a valid F5 BIG-IP VE image type",
                 Type="String",
                 Description="F5 BIG-IP Performance Type",
                 AllowedValues=[                     
@@ -467,7 +467,7 @@ def main():
             imageName = t.add_parameter(Parameter(
                 "imageName",
                 Default="Best",
-                ConstraintDescription="Must be a valid F5 BIG-IP performance type",
+                ConstraintDescription="Must be a valid F5 BIG-IP VE image type",
                 Type="String",
                 Description="F5 BIG-IP Performance Type",
                 AllowedValues=["Good", "Better", "Best"],
@@ -475,26 +475,26 @@ def main():
         adminUsername = t.add_parameter(Parameter(
             "adminUsername",
             Type="String",
-            Description="BIG-IP Admin Username",
+            Description="BIG-IP VE Admin Username",
             Default="admin",
             MinLength="1",
             MaxLength="255",
-            ConstraintDescription="Verify your BIG-IP Admin Username",
+            ConstraintDescription="Verify your BIG-IP VE Admin Username",
         ))
 
         adminPassword = t.add_parameter(Parameter(
             "adminPassword",
             Type="String",
-            Description="BIG-IP Admin Password",
+            Description="BIG-IP VE Admin Password",
             MinLength="1",
             NoEcho=True,
             MaxLength="255",
-            ConstraintDescription="Verify your BIG-IP Admin Password",
+            ConstraintDescription="Verify your BIG-IP VE Admin Password",
         ))
         if aws_creds == True:
             iamAccessKey = t.add_parameter(Parameter(
                 "iamAccessKey",
-                Description="IAM Access Key",
+                Description="IAM Access key ID",
                 Type="String",
                 MinLength="16",
                 MaxLength="32",
@@ -504,7 +504,7 @@ def main():
             ))
             iamSecretKey = t.add_parameter(Parameter(
                 "iamSecretKey",
-                Description="IAM Secret Key for BIG-IP",
+                Description="IAM Secret access key",
                 Type="String",
                 MinLength="1",
                 MaxLength="255",
@@ -518,7 +518,7 @@ def main():
                 PARAMETERS[licenseKey] = t.add_parameter(Parameter(
                     licenseKey,
                     Type="String",
-                    Description="Paste or type your F5 BYOL regkey here:",
+                    Description="F5 BYOL license key",
                     MinLength="1",
                     AllowedPattern="([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
                     MaxLength="255",
@@ -530,7 +530,7 @@ def main():
                 MinLength="1",
                 ConstraintDescription="Verify your BIG-IQ Hostname or IP",
                 Type="String",
-                Description="Type your BIG-IQ Hostname or IP",
+                Description="BIG-IQ Hostname or IP",
                 MaxLength="255",
             ))
             bigiqUsername = t.add_parameter(Parameter(
@@ -538,13 +538,13 @@ def main():
                 MinLength="1",
                 ConstraintDescription="Verify your BIG-IQ Username.",
                 Type="String",
-                Description="Type your BIG-IQ Username",
+                Description="BIG-IQ Username",
                 MaxLength="255",
             ))
             bigiqPassword = t.add_parameter(Parameter(
                 "bigiqPassword",
                 Type="String",
-                Description="Type your BIG-IQ Password",
+                Description="BIG-IQ Password",
                 MinLength="1",
                 NoEcho=True,
                 MaxLength="255",
@@ -555,7 +555,7 @@ def main():
                 MinLength="1",
                 ConstraintDescription="Verify your BIG-IQ License Pool UUID",
                 Type="String",
-                Description="Type or paste your BIG-IQ License Pool UUID",
+                Description="BIG-IQ License Pool UUID",
                 MaxLength="255",
             ))
     if stack == "existing" or stack == "security_groups":
@@ -572,13 +572,13 @@ def main():
                 ExternalSubnet,
                 ConstraintDescription="The subnet ID must be within an existing VPC",
                 Type="AWS::EC2::Subnet::Id",
-                Description="Public or External subnet ID",
+                Description="Public or External subnet",
             ))
         bigipExternalSecurityGroup = t.add_parameter(Parameter(
             "bigipExternalSecurityGroup",
             ConstraintDescription="The security group ID must be within an existing VPC",
             Type="AWS::EC2::SecurityGroup::Id",
-            Description="Public or External Security Group ID",
+            Description="Public or External Security Group",
         ))
         if num_nics > 1:
             for INDEX in range(num_azs):

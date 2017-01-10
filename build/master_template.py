@@ -1446,12 +1446,18 @@ def main():
                                     ]
                 
                 if num_nics > 1:
-                    custom_config +=  [
-                                        "PEER_EXTPRIVIP='", Select("0", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "subnet1" + "Az" + str(BIGIP_INDEX + 2) + "Interface", "SecondaryPrivateIpAddresses")), "'\n", 
-                                        "VIPEIP='",Ref(VipEipAddress),"'\n",
+                    if ha_type == "across-az":
+                        custom_config +=  [
+                                            "PEER_EXTPRIVIP='", Select("0", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "subnet1" + "Az" + str(BIGIP_INDEX + 2) + "Interface", "SecondaryPrivateIpAddresses")), "'\n", 
+                                            "VIPEIP='",Ref(VipEipAddress),"'\n",
 
-                                        ]
+                                            ]
+                    if ha_type == "same-az":
+                         custom_config +=  [
+                                            "PEER_EXTPRIVIP='", Select("0", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "subnet1" + "Az1Interface", "SecondaryPrivateIpAddresses")), "'\n", 
+                                            "VIPEIP='",Ref(VipEipAddress),"'\n",
 
+                                            ]                   
             if aws_creds == True:
                 custom_config +=  [
                                       "IAM_ACCESS_KEY='", Ref(iamAccessKey), "'\n",
@@ -1730,9 +1736,10 @@ def main():
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 custom_sh +=  [
                                 "echo 'sleeping additional 180 secs to wait for peer to boot'\n",
-                                "sleep 300\n",
-                                "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password \"${BIGIP_ADMIN_PASSWORD}\"\n",    
+                                "sleep 180\n",
+                                "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username \"${BIGIP_ADMIN_USERNAME}\" password \"${BIGIP_ADMIN_PASSWORD}\"\n",    
                                 "tmsh create cm device-group across_az_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
+                                "sleep 10\n",
                                 "tmsh run cm config-sync to-group across_az_failover_group\n", 
                                 ]
             if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
@@ -1806,7 +1813,7 @@ def main():
                                             "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                                             "tmsh run cm config-sync to-group across_az_failover_group\n",
                                             "sleep 15\n",
-                                            "curl -sSk -u admin:\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
+                                            "curl -sSk -u \"${BIGIP_ADMIN_USERNAME}\":\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
                                     ]
             # If ASM, Need to use overwite Config (SOL16509 / BZID: 487538 )
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
@@ -1854,13 +1861,13 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/license_from_bigiq.sh': InitFile(
+                                        '/config/cloud/aws/license_from_bigiq.sh': InitFile(
                                             source='http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh',
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/tmp/remove_license_from_bigiq.sh': InitFile(
+                                        '/config/cloud/aws/remove_license_from_bigiq.sh': InitFile(
                                             source='http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh',
                                             mode='000755',
                                             owner='root',
@@ -2136,12 +2143,16 @@ def main():
 
     if bigip == True:
 
-        for BIGIP_INDEX in range(num_bigips): 
-
-            ExternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "subnet1" + "Az" + str(BIGIP_INDEX + 1) + "Interface"
+        for BIGIP_INDEX in range(num_bigips):
+            if ha_type == "across-az":
+                ExternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "subnet1" + "Az" + str(BIGIP_INDEX + 1) + "Interface"
+                ExternalSelfEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "subnet1" + "Az" + str(BIGIP_INDEX + 1) + "SelfEipAddress"
+                ExternalSelfEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + "subnet1" + "Az" + str(BIGIP_INDEX + 1) + "SelfEipAssociation"
+            if ha_type == "same-az":
+                ExternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "subnet1" + "Az1Interface"
+                ExternalSelfEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "subnet1" + "Az1SelfEipAddress"
+                ExternalSelfEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + "subnet1" + "Az1SelfEipAssociation"            
             ExternalInterfacePrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "ExternalInterfacePrivateIp"
-            ExternalSelfEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "subnet1" + "Az" + str(BIGIP_INDEX + 1) + "SelfEipAddress"
-            ExternalSelfEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + "subnet1" + "Az" + str(BIGIP_INDEX + 1) + "SelfEipAssociation"
             BigipInstance = "Bigip" + str(BIGIP_INDEX + 1) + "Instance"
             BigipInstanceId = "Bigip" + str(BIGIP_INDEX + 1) + "InstanceId"
             BigipUrl = "Bigip" + str(BIGIP_INDEX + 1) + "Url"
@@ -2149,10 +2160,8 @@ def main():
 
             OUTPUTS[BigipInstanceId] = t.add_output(Output(
                 BigipInstanceId,
-
                 Description="Instance Id of BIG-IP in Amazon",
                 Value=Ref(BigipInstance),
-
             ))
 
             OUTPUTS[AvailabilityZone] = t.add_output(Output(
@@ -2163,25 +2172,20 @@ def main():
 
             OUTPUTS[ExternalInterface] = t.add_output(Output(
                 ExternalInterface,
-
                 Description="External interface Id on BIG-IP",
                 Value=Ref(ExternalInterface),
-
             ))
 
             OUTPUTS[ExternalInterfacePrivateIp] = t.add_output(Output(
                 ExternalInterfacePrivateIp,
-
                 Description="Internally routable IP of the public interface on BIG-IP",
                 Value=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
             ))
 
             OUTPUTS[ExternalSelfEipAddress] = t.add_output(Output(
                 ExternalSelfEipAddress,
-
-                Description="IP Address of teh External interface attached to BIG-IP",
+                Description="IP Address of the External interface attached to BIG-IP",
                 Value=Ref(ExternalSelfEipAddress),
-
             ))
 
             if num_nics == 1:

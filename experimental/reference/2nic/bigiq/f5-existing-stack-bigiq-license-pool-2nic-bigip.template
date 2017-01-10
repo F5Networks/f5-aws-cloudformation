@@ -282,7 +282,7 @@
             }
         },
         "Bigip1subnet1Az1SelfEipAddress": {
-            "Description": "IP Address of teh External interface attached to BIG-IP",
+            "Description": "IP Address of the External interface attached to BIG-IP",
             "Value": {
                 "Ref": "Bigip1subnet1Az1SelfEipAddress"
             }
@@ -667,23 +667,23 @@
                                 "owner": "root",
                                 "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
                             },
-                            "/config/cloud/f5-cloud-libs.tar.gz": {
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root",
-                                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop"
-                            },
-                            "/tmp/license_from_bigiq.sh": {
+                            "/config/cloud/aws/license_from_bigiq.sh": {
                                 "group": "root",
                                 "mode": "000755",
                                 "owner": "root",
                                 "source": "http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh"
                             },
-                            "/tmp/remove_license_from_bigiq.sh": {
+                            "/config/cloud/aws/remove_license_from_bigiq.sh": {
                                 "group": "root",
                                 "mode": "000755",
                                 "owner": "root",
                                 "source": "http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh"
+                            },
+                            "/config/cloud/f5-cloud-libs.tar.gz": {
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root",
+                                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop"
                             }
                         }
                     }

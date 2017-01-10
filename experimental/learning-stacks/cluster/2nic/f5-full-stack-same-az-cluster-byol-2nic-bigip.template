@@ -317,7 +317,7 @@
             }
         },
         "Bigip1subnet1Az1SelfEipAddress": {
-            "Description": "IP Address of teh External interface attached to BIG-IP",
+            "Description": "IP Address of the External interface attached to BIG-IP",
             "Value": {
                 "Ref": "Bigip1subnet1Az1SelfEipAddress"
             }
@@ -326,7 +326,7 @@
             "Description": "Internally routable IP of the public interface on BIG-IP",
             "Value": {
                 "Fn::GetAtt": [
-                    "Bigip2subnet1Az2Interface",
+                    "Bigip2subnet1Az1Interface",
                     "PrimaryPrivateIpAddress"
                 ]
             }
@@ -375,16 +375,16 @@
                 ]
             }
         },
-        "Bigip2subnet1Az2Interface": {
+        "Bigip2subnet1Az1Interface": {
             "Description": "External interface Id on BIG-IP",
             "Value": {
-                "Ref": "Bigip2subnet1Az2Interface"
+                "Ref": "Bigip2subnet1Az1Interface"
             }
         },
-        "Bigip2subnet1Az2SelfEipAddress": {
-            "Description": "IP Address of teh External interface attached to BIG-IP",
+        "Bigip2subnet1Az1SelfEipAddress": {
+            "Description": "IP Address of the External interface attached to BIG-IP",
             "Value": {
-                "Ref": "Bigip2subnet1Az2SelfEipAddress"
+                "Ref": "Bigip2subnet1Az1SelfEipAddress"
             }
         },
         "DnsServers": {
@@ -902,9 +902,10 @@
                                             "sleep 20 \n",
                                             "tmsh save /sys config\n",
                                             "echo 'sleeping additional 180 secs to wait for peer to boot'\n",
-                                            "sleep 300\n",
-                                            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password \"${BIGIP_ADMIN_PASSWORD}\"\n",
+                                            "sleep 180\n",
+                                            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username \"${BIGIP_ADMIN_USERNAME}\" password \"${BIGIP_ADMIN_PASSWORD}\"\n",
                                             "tmsh create cm device-group across_az_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
+                                            "sleep 10\n",
                                             "tmsh run cm config-sync to-group across_az_failover_group\n",
                                             "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
                                             "tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\n",
@@ -1019,7 +1020,7 @@
                                                     "0",
                                                     {
                                                         "Fn::GetAtt": [
-                                                            "Bigip2subnet1Az2Interface",
+                                                            "Bigip2subnet1Az1Interface",
                                                             "SecondaryPrivateIpAddresses"
                                                         ]
                                                     }

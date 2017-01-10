@@ -282,7 +282,7 @@
             }
         },
         "Bigip1subnet1Az1SelfEipAddress": {
-            "Description": "IP Address of teh External interface attached to BIG-IP",
+            "Description": "IP Address of the External interface attached to BIG-IP",
             "Value": {
                 "Ref": "Bigip1subnet1Az1SelfEipAddress"
             }
@@ -347,7 +347,7 @@
             }
         },
         "Bigip2subnet1Az2SelfEipAddress": {
-            "Description": "IP Address of teh External interface attached to BIG-IP",
+            "Description": "IP Address of the External interface attached to BIG-IP",
             "Value": {
                 "Ref": "Bigip2subnet1Az2SelfEipAddress"
             }
@@ -651,9 +651,10 @@
                                             "sleep 20 \n",
                                             "tmsh save /sys config\n",
                                             "echo 'sleeping additional 180 secs to wait for peer to boot'\n",
-                                            "sleep 300\n",
-                                            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username admin password \"${BIGIP_ADMIN_PASSWORD}\"\n",
+                                            "sleep 180\n",
+                                            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username \"${BIGIP_ADMIN_USERNAME}\" password \"${BIGIP_ADMIN_PASSWORD}\"\n",
                                             "tmsh create cm device-group across_az_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
+                                            "sleep 10\n",
                                             "tmsh run cm config-sync to-group across_az_failover_group\n",
                                             "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
                                             "curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
@@ -673,7 +674,7 @@
                                             "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                                             "tmsh run cm config-sync to-group across_az_failover_group\n",
                                             "sleep 15\n",
-                                            "curl -sSk -u admin:\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
+                                            "curl -sSk -u \"${BIGIP_ADMIN_USERNAME}\":\"${BIGIP_ADMIN_PASSWORD}\" -H 'Content-Type: application/json' -X PATCH -d '{\"execute-action\":\"definition\"}' https://${PEER_MGMTIP}/mgmt/tm/sys/application/service/~Common~HA_Across_AZs.app~HA_Across_AZs\n",
                                             "tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\n",
                                             "tmsh run cm config-sync to-group datasync-global-dg\n",
                                             "tmsh save /sys config\n",
@@ -835,23 +836,23 @@
                                 "owner": "root",
                                 "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
                             },
-                            "/config/cloud/f5-cloud-libs.tar.gz": {
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root",
-                                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop"
-                            },
-                            "/tmp/license_from_bigiq.sh": {
+                            "/config/cloud/aws/license_from_bigiq.sh": {
                                 "group": "root",
                                 "mode": "000755",
                                 "owner": "root",
                                 "source": "http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh"
                             },
-                            "/tmp/remove_license_from_bigiq.sh": {
+                            "/config/cloud/aws/remove_license_from_bigiq.sh": {
                                 "group": "root",
                                 "mode": "000755",
                                 "owner": "root",
                                 "source": "http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh"
+                            },
+                            "/config/cloud/f5-cloud-libs.tar.gz": {
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root",
+                                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop"
                             }
                         }
                     }
@@ -1299,23 +1300,23 @@
                                 "owner": "root",
                                 "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
                             },
-                            "/config/cloud/f5-cloud-libs.tar.gz": {
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root",
-                                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop"
-                            },
-                            "/tmp/license_from_bigiq.sh": {
+                            "/config/cloud/aws/license_from_bigiq.sh": {
                                 "group": "root",
                                 "mode": "000755",
                                 "owner": "root",
                                 "source": "http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh"
                             },
-                            "/tmp/remove_license_from_bigiq.sh": {
+                            "/config/cloud/aws/remove_license_from_bigiq.sh": {
                                 "group": "root",
                                 "mode": "000755",
                                 "owner": "root",
                                 "source": "http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh"
+                            },
+                            "/config/cloud/f5-cloud-libs.tar.gz": {
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root",
+                                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop"
                             }
                         }
                     }

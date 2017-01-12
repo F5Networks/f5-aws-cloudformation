@@ -17,6 +17,11 @@ The following are prerequisites for the F5 single NIC CFT:
   - The AWS security group should include the GUI port you specify in the CFT (8443 by default) for BIG-IP access. It should also include any port required to access your application virtual servers.
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   
+## Security
+If your organization is security conscious and want to verify the authenticity of the template, you can open the CFT and ensure the following lines are present. See [Security Detail](#securitydetail) for the exact code in each of the following sections.
+  - In the */config/verifyHash* section: **script-signature** and then a hashed signature
+  - In the */config/installCloudLibs.sh* section **"tmsh load sys config merge file /config/verifyHash"**
+  
 ## Supported instance types and hypervisors
   - For a list of supported AWS instance types for this solutions, see the **Amazon EC2 instances for BIG-IP VE** section of https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0/1.html
 
@@ -98,7 +103,7 @@ After clicking the Launch button, you must specify the following parameters.
 ### <a name="cli"></a>AWS CLI Usage
 Coming soon
 
-## Configuration Example <a name="config">
+## Configuration Example <a name="config"></a>
 
 The following is a simple configuration diagram for this single NIC deployment. In this scenario, all access to the BIG-IP VE appliance is through the same IP address and virtual network interface (vNIC).  This interface processes both management and data plane traffic.
 
@@ -106,10 +111,100 @@ The following is a simple configuration diagram for this single NIC deployment. 
 ### Documentation
 The ***BIG-IP Virtual Edition and Amazon Web Services: Single NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also describes the configuration in more detail.
 
+
+## Security Details <a name="securitydetail"></a>
+This section has the entire code snippets for each of the lines you should ensure are present in your template file if you want to verify the authenticity of the template.
+
+**/config/verifyHash section**
+
+Note the hashed script-signature may be different in your template.<br>
+
+
+```json
+"/config/verifyHash": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "cli script /Common/verifyHash {",
+                      "proc script::run {} {",
+                      "    set file_path  [lindex $tmsh::argv 1]",
+                      "    set expected_hash 73d01a6b4f27032fd31ea7eba55487430ed858feaabd949d4138094c26ce5521b4578c8fc0b20a87edc8cb0d9f28b32b803974ea52b10038f068e6a72fdb2bbd",
+                      "    set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
+                      "    if { $expected_hash eq $computed_hash } {",
+                      "        exit 0",
+                      "    }",
+                      "    exit 1",
+                      "}",
+                      "    script-signature OGvFJVFxyBm/YlpBsOf8/AIyo5+p7luzrE11v8t7wJ1u24MBeit5pL/McqLxjydPJplymTcJ0qDEtXPZv09TTUF5hrF0g1pJ+z70omzJ6J9kOfOO8lyWP4XU/qM+ywEgAGoc8o8kGjKX01XcmB1e3rq6Mj5gE7CEkxKEcNzF3n5nDIFyBbpG6pJ8kg/7f6gtU14bJo0+ipNAiX+gBmT/10aUKKeJESU5wz+QqnEOE1WuTzdURArxditpk0+qqROZaSULD61w72hEy7kBC/miO+As7q8wjM5/H2yUHLoFLmBWP0jMWqIuzqnG+tgAFjJbZ1UJJDzWiYZK1TG1MsxfPg==",
+                      "}"
+                    ]
+                  ]
+                },
+                "mode": "000755",
+                "owner": "root",
+                "group": "root"
+              },
+```
+<br><br>
+**/config/installCloudLibs.sh section**
+
+
+```json
+"/config/installCloudLibs.sh": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "#!/bin/bash",
+                      "echo about to execute",
+                      "checks=0",
+                      "while [ $checks -lt 120 ]; do echo checking mcpd",
+                      "    tmsh -a show sys mcp-state field-fmt | grep -q running",
+                      "    if [ $? == 0 ]; then",
+                      "        echo mcpd ready",
+                      "        break",
+                      "    fi",
+                      "    echo mcpd not ready yet",
+                      "    let checks=checks+1",
+                      "    sleep 10",
+                      "done",
+                      "echo loading verifyHash script",
+                      "tmsh load sys config merge file /config/verifyHash",
+                      "if [ $? != 0 ]; then",
+                      "    echo cannot validate signature of /config/verifyHash",
+                      "    exit",
+                      "fi",
+                      "echo loaded verifyHash",
+                      "echo verifying f5-cloud-libs.targ.gz",
+                      "tmsh run cli script verifyHash /config/cloud/f5-cloud-libs.tar.gz",
+                      "if [ $? != 0 ]; then",
+                      "    echo f5-cloud-libs.tar.gz is not valid",
+                      "    exit",
+                      "fi",
+                      "echo verified f5-cloud-libs.tar.gz",
+                      "echo expanding f5-cloud-libs.tar.gz",
+                      "tar xvfz /config/cloud/f5-aws-autoscale-cluster.tar.gz -C /config/cloud",
+                      "tar xvfz /config/cloud/asm-policy-linux.tar.gz -C /config/cloud",
+                      "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
+                      "cd /config/cloud/aws/node_modules/f5-cloud-libs",
+                      "echo installing dependencies",
+                      "npm install --production /config/cloud/f5-cloud-libs-aws.tar.gz",
+                      "touch /config/cloud/cloudLibsReady"
+                    ]
+                  ]
+                },
+                "mode": "000755",
+                "owner": "root",
+                "group": "root"
+              },
+```
+
+
 ## Design Patterns
 
 
-The goal is for the design patterns for all the iterative examples of F5 being deployed via ARM templates to closely match as much as possible.
+The goal is for the design patterns for all the iterative examples of F5 being deployed via CloudFormation templates to closely match as much as possible.
 
 ### List of Patterns For Contributing Developers
 

@@ -18,7 +18,7 @@ The following are prerequisites for the F5 single NIC CFT:
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   
 ## Security
-This CloudFormation template downloads helper code to configure the BIG-IP system. If your organization is security conscious and you want to verify the integrityof this helper code, you can open the CFT and ensure the following lines are present. See [Security Detail](#securitydetail) for the exact code in each of the following sections.
+This CloudFormation template downloads helper code to configure the BIG-IP system. If your organization is security conscious and you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Detail](#securitydetail) for the exact code in each of the following sections.
   - In the */config/verifyHash* section: **script-signature** and then a hashed signature
   - In the */config/installCloudLibs.sh* section **"tmsh load sys config merge file /config/verifyHash"**
   
@@ -113,7 +113,7 @@ The ***BIG-IP Virtual Edition and Amazon Web Services: Single NIC Setup*** guide
 
 
 ## Security Details <a name="securitydetail"></a>
-This section has the entire code snippets for each of the lines you should ensure are present in your template file if you want to verify the authenticity of the template.
+This section has the entire code snippets for each of the lines you should ensure are present in your template file if you want to verify the integrity of the helper code in the template.
 
 **/config/verifyHash section**
 

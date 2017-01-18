@@ -1,29 +1,87 @@
-| Region | BIG-IP Image Name | BIG-IP Version | Amazon AMI |
+# BIG-IP and AMI mapping tables
+Use the following information for guidance on the mappings between regions, BIG-IP Images and versions, and the AWS AMIs. 
+There are two tables on this page, one for BYOL (bring your own license) and Hourly.  <br>
+Click **[Hourly](#hourly)** to be taken to the hourly table.<br>
+
+## BYOL mapping table
+
+
+| **Region** | **BIG-IP Image** | **BIG-IP Version** | **Amazon AMI** |
 | --- | --- | --- | ---|
-| ap-northeast-1 | Best | ami-29f82a48 |
-| | Better | ami-d1fc2eb0 |
-| | Good | ami-e1fe2c80 |
-| ap-southeast-1 | Best | ami-b178ddd2 |
-| | Better | ami-ae78ddcd |
-| | Good | ami-cd7edbae |
-| ap-southeast-2 | Best | ami-c1e8d8a2 |
-| | Better | ami-e6eede85 |
-| | Good | ami-41e9d922 |
-| eu-central-1 | Best | ami-0556ab6a |
-| | Better | ami-fa50ad95 |
-| | Good | ami-0254a96d |
-| eu-west-1 | Best | ami-d6e892a5 |
-| | Better | ami-d1f58fa2 |
-| | Good | ami-e3eb9190 |
-| sa-east-1 | Best | ami-7542d119 |
-| | Better | ami-8c5ecde0 |
-| | Good | ami-1659ca7a |
-| us-east-1 | Best | ami-67067d70 |
-| | Better | ami-a3047fb4 |
-| | Good | ami-5e077c49 |
-| us-west-1 | Best | ami-b02769d0 |
-| | Better | ami-42256b22 |
-| | Good | ami-bd2769dd|
-| us-west-2 | Best | ami-f12df191 |
-| | Better | ami-f92df199 |
-| | Good | ami-8333efe3|
+| ap-northeast-1 | Best | BIG-IP v12.1 | ami-29f82a48 |
+| | | BIG-IP v12.0 | ami 12345 |
+| | | BIG-IP v11.6 | ami 12346 |
+| | Better | BIG-IP v12.1 | ami-d1fc2eb0 |
+| | | BIG-IP v12.0 | ami 12345 |
+| | | BIG-IP v11.6 | ami 12346 |
+| | Good | BIG-IP v12.1 | ami-e1fe2c80 |
+| | | BIG-IP v12.0 | ami 12345 |
+| | | BIG-IP v11.6 | ami 12346 |
+| ap-southeast-1 | Best | BIG-IP v12.1 | ami-b178ddd2 |
+| | | BIG-IP v12.0 | ami 12345 |
+| | | BIG-IP v11.6 | ami 12346 |
+| | Better | BIG-IP v12.1 | ami-d1fc2eb0 |
+| | | BIG-IP v12.0 | ami 12345 |
+| | | BIG-IP v11.6 | ami 12346 |
+| | Good | BIG-IP v12.1 | ami-e1fe2c80 |
+| | | BIG-IP v12.0 | ami 12345 |
+| | | BIG-IP v11.6 | ami 12346 |
+
+<a name="hourly"></a>
+## Hourly mapping table 
+| **Region** | **BIG-IP Image** | **BIG-IP Version** | **Amazon AMI** |
+| --- | --- | --- | ---|
+| ap-northeast-1 | Best1000Mbps | BIG-IP v12.1 | ami-29f82a48 |
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Best200Mbps | BIG-IP v12.1 | ami-12345
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Best25Mbps | BIG-IP v12.1 | ami-123423
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Better1000Mbps | BIG-IP v12.1 | ami-d1fc2eb0 |
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Better200Mbps | BIG-IP v12.1 | ami-12345
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Better25Mbps | BIG-IP v12.1 | ami-123423
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Good1000Mbps | BIG-IP v12.1 | ami-e1fe2c80 |
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Good200Mbps | BIG-IP v12.1 | ami-12345
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Good25Mbps | BIG-IP v12.1 | ami-123423
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| ap-northeast-2 | Best1000Mbps | BIG-IP v12.1 | ami-29f82a48 |
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Best200Mbps | BIG-IP v12.1 | ami-12345
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Best25Mbps | BIG-IP v12.1 | ami-123423
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Better1000Mbps | BIG-IP v12.1 | ami-d1fc2eb0 |
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Better200Mbps | BIG-IP v12.1 | ami-12345
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Better25Mbps | BIG-IP v12.1 | ami-123423
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Good1000Mbps | BIG-IP v12.1 | ami-e1fe2c80 |
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Good200Mbps | BIG-IP v12.1 | ami-12345
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |
+| | Good25Mbps | BIG-IP v12.1 | ami-123423
+| | | BIG-IP v12.0 | ami-234223 |
+| | | BIG-IP v11.6 | ami-23423 |

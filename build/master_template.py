@@ -1566,14 +1566,96 @@ def main():
 
             # begin building custom-config.sh
             custom_sh = [
-                                "#!/bin/bash\n",
-                          ] 
+                            "#!/bin/bash\n",
+                        ]
+            sig_check1 = [
+                            "cli script /Common/sigcheck {"
+                        ]
+            sig_check = [
+                            "cli script /Common/verifyHash {",
+                            "    proc script::run {} {",
+                            "        if {[catch {",
+                            "            set file_path [lindex $tmsh::argv 1]",
+                            "            set expected_hash 965fd074eafee6b098640d7772e5969233e21df0fae95dc9e6b3ebe1c58a1d8cbcdcdd5a19cbe553a6e11be29b4680622a1836da7ec8f97cd04f6d055e7ac5b0",
+                            "            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
+                            "            if { $expected_hash eq $computed_hash } {",
+                            "                exit 0",
+                            "            }",
+                            "            tmsh::log err {Hash does not match}",
+                            "            exit 1",
+                            "        }]} {",
+                            "            tmsh::log err {Unexpected error in verifyHash}",
+                            "            exit 1",
+                            "        }",
+                            "    }",
+                            "    script-signature htxFA2OEqT6OgONuvjOMB9i/3l6xmX8yt/ypJAT7ddul2xLA7V8RN3yHXAGA+7RohkCk/o9+FYfY54fXY1cJe7MjksaJ7NITWVcytJc68cyvn3u1H37xMp8HeMR0TSgGA5h7NjWEwQod8JZZm+bGb+a1e2ex1hBAQb+Ix7ZEwsIZil25RCJTSEopkffZ7ENls13K/8DtVsgbSX0hX6kZOhoPeP9GW4+0amB99EQJVxFDMM3lcBEZx52nDdXNHgEVpoaYP0DVTAxfo2OCx0TNLPfBpUstlC/NcpVAr/15oZE5KhJpB7B4aBbGwPDql9GEnlNTeYMVXlWlunHTLBPMRg==",
+                            "}"
+                        ]
+            cloudlibs_sh =  [
+                                "#!/bin/bash",
+                                "echo about to execute",
+                                "checks=0",
+                                "while [ $checks -lt 120 ]; do echo checking mcpd",
+                                "    tmsh -a show sys mcp-state field-fmt | grep -q running",
+                                "    if [ $? == 0 ]; then",
+                                "        echo mcpd ready",
+                                "        break",
+                                "    fi",
+                                "    echo mcpd not ready yet",
+                                "    let checks=checks+1",
+                                "    sleep 10",
+                                "done",
+                                "echo loading sigcheck script",
+                                "tmsh load sys config merge file /config/sigcheck",
+                                "if [ $? != 0 ]; then",
+                                "    echo cannot validate signature of /config/sigcheck",
+                                "    exit",
+                                "fi",
+                                "echo loaded sigcheck",
+                                "echo verifying f5-cloud-libs.targ.gz",
+                                "tmsh run cli script verifyHash /config/cloud/f5-cloud-libs.tar.gz",
+                                "if [ $? != 0 ]; then",
+                                "    echo f5-cloud-libs.tar.gz does not match signature f5-coud-libs.tar.gz.f5sig",
+                                "    exit",
+                                "fi",
+                                "echo verified f5-cloud-libs.tar.gz",
+                                "echo expanding f5-cloud-libs.tar.gz",
+                                "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws",
+                                "cd /config/cloud/aws/f5-cloud-libs",
+                                "touch /config/cloud/cloudLibsReady"
+                            ]         
+            waitthenrun_sh =    [
+                                    "#!/bin/bash",
+                                    "while true; do echo \"waiting for cloud libs install to complete\"",
+                                    "    if [ -f /config/cloud/cloudLibsReady ]; then",
+                                    "        break",
+                                    "    else",
+                                    "        sleep 10",
+                                    "    fi",
+                                    "done",
+                                    "\"$@\""
+                                ]
+                                
+            get_nameserver =    [
+                                    "INTERFACE=$1",
+                                    "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
+                                    "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
+                                    "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+                                    "VPC_NET=${VPC_CIDR_BLOCK%/*}",
+                                    "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
+                                    "echo $NAME_SERVER"
+                                ]
+                                
             unpack_libs = [
-                                "tar xvzf /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/;",
-                                "mv /config/cloud/aws/F5Networks-f5-cloud-libs-* /config/cloud/aws/f5-cloud-libs;",
-                                "cd /config/cloud/aws/f5-cloud-libs;",
-                                "npm install --production;"
-                          ]
+                                "nohup /config/installCloudLibs.sh",
+                                "&> /var/log/cloudlibs-install.log < /dev/null",
+                                "&"
+                           ]
+            nicautoconfig = [
+                                "/usr/bin/setdb provision.1nicautoconfig disable",
+                                "&> /var/log/cloudlibs-install.log < /dev/null",
+                                "&"
+                            ]
             onboard_BIG_IP =    [
                                 ]
             one_nic_setup =     [
@@ -1581,13 +1663,15 @@ def main():
             cluster_BIG_IP=     [
                                 ]                                
             custom_command =   [
+                                    "nohup /config/waitThenRun.sh",
                                     "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
-                                    "--wait-for ONBOARD_DONE",
                                     "--file /config/cloud/aws/custom-config.sh",
                                     "--cwd /config/cloud/aws",
-                                    "--log-level verbose",
                                     "-o /var/log/custom-config.log",
-                                    "--background",
+                                    "--log-level debug",
+                                    "--wait-for ONBOARD_DONE",
+                                    "&> /var/log/cloudlibs-install.log < /dev/null",
+                                    "&"
                                 ]
             if num_nics == 1:
                 if ha_type != "standalone":
@@ -1608,28 +1692,31 @@ def main():
                          ]
             if num_nics == 1:
                 one_nic_setup += [
+                                  "nohup /config/waitThenRun.sh",
                                   "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
                                   "--file /config/cloud/aws/f5-cloud-libs/scripts/aws/1nicSetup.sh",
                                   "--cwd /config/cloud/aws/f5-cloud-libs/scripts/aws",
                                   "-o /var/log/1nicSetup.log",
-                                  "--background",
-                                  "--signal 1_NIC_SETUP_DONE"
+                                  "--signal 1_NIC_SETUP_DONE",
+                                  "&> /var/log/cloudlibs-install.log < /dev/null",
+                                  "&"
                                  ]
                 onboard_BIG_IP += [
-                                    "NAME_SERVER=`/config/cloud/aws/f5-cloud-libs/scripts/aws/getNameServer.sh eth0`;",
+                                    "NAME_SERVER=`/config/getNameServer.sh eth0`;",
+                                    "nohup /config/waitThenRun.sh",
                                     "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
                                     "--ssl-port '", { "Ref": "managementGuiPort" }, "'",
                                     "--wait-for 1_NIC_SETUP_DONE",
                                   ]
             if num_nics > 1:
                 onboard_BIG_IP += [
-                                    "NAME_SERVER=`/config/cloud/aws/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                    "NAME_SERVER=`/config/getNameServer.sh eth1`;",
+                                    "nohup /config/waitThenRun.sh",
                                     "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
                                   ]
             onboard_BIG_IP += [
-                               "--log-level verbose",
-                               "-o  /var/log/onboard.log",
-                               "--background",
+                               "-o /var/log/onboard.log",
+                               "--log-level debug",
                                "--no-reboot",
                                "--host localhost",
                                "--user admin",
@@ -1650,7 +1737,7 @@ def main():
             if num_nics == 1:
                 custom_sh +=  [
                                 "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
-                                ] 
+                              ] 
                 # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
                 if 'waf' in components:
                     custom_sh +=  [ 
@@ -1732,6 +1819,11 @@ def main():
                onboard_BIG_IP += [ 
                                     "--module asm:nominal",
                                  ]
+            onboard_BIG_IP += [ 
+                "--ping",
+                "&> /var/log/cloudlibs-install.log < /dev/null",
+                "&"
+            ]
             # Cluster Devices if Cluster Seed
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 custom_sh +=  [
@@ -1915,7 +2007,31 @@ def main():
                                 files=InitFiles(
                                     {
                                         '/config/cloud/f5-cloud-libs.tar.gz': InitFile(
-                                            source='https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop',
+                                            source='https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/release-2.0.0/dist/f5-cloud-libs.tar.gz',
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/config/sigcheck': InitFile(
+                                            content=Join('\n', sig_check ),
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/config/installCloudLibs.sh': InitFile(
+                                            content=Join('\n', cloudlibs_sh ),
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/config/waitThenRun.sh': InitFile(
+                                            content=Join('\n', waitthenrun_sh ),
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        '/config/getNameServer.sh': InitFile(
+                                            content=Join('\n', get_nameserver ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -1941,7 +2057,12 @@ def main():
                                     } 
                                 ),
                                 commands={  
-                                            "001-unpack-libs": {
+                                            "000-disable-1nicautoconfig": {
+                                                "command": { "Fn::Join" : [ " ", nicautoconfig
+                                                                          ]
+                                                }
+                                            },                                            
+                                            "001-install-libs": {
                                                 "command": { "Fn::Join" : [ " ", unpack_libs
                                                                           ]
                                                 }

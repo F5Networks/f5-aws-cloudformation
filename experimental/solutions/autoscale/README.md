@@ -16,6 +16,14 @@ The template performs all of the BIG-IP VE configuration and synchronization whe
 - Create a HTTP virtual server with a Web Application Firewall policy
 - Deploy integration with EC2 Autoscale and CloudWatch services for scaling of the BIG-IP tier.
 
+## Prerequisites
+The following are prerequisites for this solution:
+  - An AWS VPC with a public subnet and an ELB sandwich (one ELB front of the BIG-IP(s) and one ELB behind the BIG-IP(s))
+  - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
+  - An AWS Security Group with the following inbound rules:
+    - Port 22 for SSH access to the BIG-IP VE
+    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility
+    - A port for accessing your applications via the BIG-IP virtual server
 
 ### Installation
 Download the CloudFormation template from https://github.com/f5networks and use it to create a stack in AWS CloudFormation either using the AWS Console or AWS CLI

@@ -161,13 +161,13 @@
                     "default": "Availability Zone 2"
                 },
                 "bigipExternalSecurityGroup": {
-                    "default": "BIG-IP External Security Group"
+                    "default": "External Security Group"
                 },
                 "bigipManagementSecurityGroup": {
-                    "default": "BIG-IP Management Security Group"
+                    "default": "Management Security Group"
                 },
                 "costcenter": {
-                    "default": "Cost center"
+                    "default": "Cost Center"
                 },
                 "environment": {
                     "default": "Environment"
@@ -191,7 +191,7 @@
                     "default": "License Key1"
                 },
                 "managementGuiPort": {
-                    "default": "Management GUI Port"
+                    "default": "Management Port"
                 },
                 "managementSubnetAz1": {
                     "default": "Management Subnet AZ1"
@@ -203,7 +203,7 @@
                     "default": "Owner"
                 },
                 "restrictedSrcAddress": {
-                    "default": "Restricted Source Addresses"
+                    "default": "Restricted Source IP Addresses"
                 },
                 "sshKey": {
                     "default": "SSH Key"
@@ -495,17 +495,17 @@
     },
     "Parameters": {
         "adminPassword": {
-            "ConstraintDescription": "Verify your BIG-IP Admin Password",
-            "Description": "BIG-IP Admin Password",
+            "ConstraintDescription": "Verify your BIG-IP VE Admin Password",
+            "Description": "BIG-IP VE Admin Password",
             "MaxLength": "255",
             "MinLength": "1",
             "NoEcho": true,
             "Type": "String"
         },
         "adminUsername": {
-            "ConstraintDescription": "Verify your BIG-IP Admin Username",
+            "ConstraintDescription": "Verify your BIG-IP VE Admin Username",
             "Default": "admin",
-            "Description": "BIG-IP Admin Username",
+            "Description": "BIG-IP VE Admin Username",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
@@ -540,21 +540,21 @@
         },
         "bigiqAddress": {
             "ConstraintDescription": "Verify your BIG-IQ Hostname or IP",
-            "Description": "Type your BIG-IQ Hostname or IP",
+            "Description": "BIG-IQ Hostname or IP",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
         },
         "bigiqLicensePoolUUID": {
             "ConstraintDescription": "Verify your BIG-IQ License Pool UUID",
-            "Description": "Type or paste your BIG-IQ License Pool UUID",
+            "Description": "BIG-IQ License Pool UUID",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
         },
         "bigiqPassword": {
             "ConstraintDescription": "Verify your BIG-IQ Password",
-            "Description": "Type your BIG-IQ Password",
+            "Description": "BIG-IQ Password",
             "MaxLength": "255",
             "MinLength": "1",
             "NoEcho": true,
@@ -562,7 +562,7 @@
         },
         "bigiqUsername": {
             "ConstraintDescription": "Verify your BIG-IQ Username.",
-            "Description": "Type your BIG-IQ Username",
+            "Description": "BIG-IQ Username",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
@@ -585,7 +585,7 @@
         "iamAccessKey": {
             "AllowedPattern": "[\\w]*",
             "ConstraintDescription": "Can contain only ASCII characters.",
-            "Description": "IAM Access Key",
+            "Description": "IAM Access key ID",
             "MaxLength": "32",
             "MinLength": "16",
             "NoEcho": true,
@@ -594,7 +594,7 @@
         "iamSecretKey": {
             "AllowedPattern": "[\\x20-\\x7E]*",
             "ConstraintDescription": "Can contain only ASCII characters.",
-            "Description": "IAM Secret Key for BIG-IP",
+            "Description": "IAM Secret access key",
             "MaxLength": "255",
             "MinLength": "1",
             "NoEcho": true,
@@ -606,7 +606,7 @@
                 "Better",
                 "Best"
             ],
-            "ConstraintDescription": "Must be a valid F5 BIG-IP performance type",
+            "ConstraintDescription": "Must be a valid F5 BIG-IP VE image type",
             "Default": "Best",
             "Description": "F5 BIG-IP Performance Type",
             "Type": "String"
@@ -623,9 +623,9 @@
                 "c4.8xlarge",
                 "cc2.8xlarge"
             ],
-            "ConstraintDescription": "Must be a valid BIG-IP EC2 instance type",
+            "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
             "Default": "m3.2xlarge",
-            "Description": "Size of the F5 BIG-IP Virtual Instance",
+            "Description": "AWS instance type",
             "Type": "String"
         },
         "owner": {
@@ -643,7 +643,7 @@
             "Type": "String"
         },
         "sshKey": {
-            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+            "Description": "Key pair for accessing the instance",
             "Type": "AWS::EC2::KeyPair::KeyName"
         }
     },

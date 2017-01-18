@@ -4,6 +4,8 @@
 # python image_finder.py
 
 # BIGIP Stacks supported - Standalone
+rm ../experimental/checksum.md
+rm ../supported/checksum.md
 python master_template.py -s existing -n 1 -l hourly > ../experimental/standalone/1nic/f5-existing-stack-hourly-1nic-bigip.template
 python master_template.py -s existing -n 2 -l hourly > ../experimental/standalone/2nic/f5-existing-stack-hourly-2nic-bigip.template
 
@@ -120,3 +122,42 @@ python master_template.py -s existing -n 2 -l bigiq -H across-az > ../experiment
 #### WITH WAF
 python master_template.py -s full -n 2 -l bigiq -c waf -H across-az > ../experimental/learning-stacks/reference/2nic/bigiq/f5-full-stack-across-az-cluster-bigiq-license-pool-2nic-bigip-w-waf.template
 python master_template.py -s existing -n 2 -l bigiq -c waf -H across-az > ../experimental/reference/2nic/bigiq/f5-existing-stack-across-az-cluster-bigiq-license-pool-2nic-bigip-w-waf.template
+### Build Checksum.md
+cd ../
+echo "| **Checksum** | **Filename** |" >> experimental/checksum.md
+echo "| --- | --- |" >> experimental/checksum.md
+find experimental -name \*.template | xargs sha512sum >> experimental/checksum.txt
+i=0
+s=""
+n=$'\n'
+for fn in `cat experimental/checksum.txt`; do
+    i=$((i+1))
+    if [ $((i%2)) -eq 0 ];
+    then
+        s=$s"$fn |$n";
+    else    
+        split=`echo $fn | sed 's/.\{64\}/& /g'`
+        s=$s"| $split | ";
+    fi
+done    
+echo "$s" >> experimental/checksum.md
+rm experimental/checksum.txt
+
+echo "| **Checksum** | **Filename** |" >> supported/checksum.md
+echo "| --- | --- |" >> supported/checksum.md
+find supported -name \*.template | xargs sha512sum >> supported/checksum.txt
+i=0
+s=""
+for fn in `cat supported/checksum.txt`; do
+    i=$((i+1))
+    if [ $((i%2)) -eq 0 ];
+    then
+        s=$s"$fn |$n";
+    else    
+        split=`echo $fn | sed 's/.\{64\}/& /g'`
+        s=$s"| $split | ";
+    fi
+done    
+echo "$s" >> supported/checksum.md
+rm supported/checksum.txt
+

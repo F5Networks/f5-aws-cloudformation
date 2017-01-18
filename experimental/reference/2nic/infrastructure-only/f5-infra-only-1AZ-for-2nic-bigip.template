@@ -114,13 +114,13 @@
                     "default": "Availability Zone 2"
                 },
                 "bigipExternalSecurityGroup": {
-                    "default": "BIG-IP External Security Group"
+                    "default": "External Security Group"
                 },
                 "bigipManagementSecurityGroup": {
-                    "default": "BIG-IP Management Security Group"
+                    "default": "Management Security Group"
                 },
                 "costcenter": {
-                    "default": "Cost center"
+                    "default": "Cost Center"
                 },
                 "environment": {
                     "default": "Environment"
@@ -144,7 +144,7 @@
                     "default": "License Key1"
                 },
                 "managementGuiPort": {
-                    "default": "Management GUI Port"
+                    "default": "Management Port"
                 },
                 "managementSubnetAz1": {
                     "default": "Management Subnet AZ1"
@@ -156,7 +156,7 @@
                     "default": "Owner"
                 },
                 "restrictedSrcAddress": {
-                    "default": "Restricted Source Addresses"
+                    "default": "Restricted Source IP Addresses"
                 },
                 "sshKey": {
                     "default": "SSH Key"
@@ -306,7 +306,7 @@
             "Type": "String"
         },
         "sshKey": {
-            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+            "Description": "Key pair for accessing the instance",
             "Type": "AWS::EC2::KeyPair::KeyName"
         }
     },

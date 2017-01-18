@@ -186,13 +186,13 @@
                     "default": "Availability Zone 2"
                 },
                 "bigipExternalSecurityGroup": {
-                    "default": "BIG-IP External Security Group"
+                    "default": "External Security Group"
                 },
                 "bigipManagementSecurityGroup": {
-                    "default": "BIG-IP Management Security Group"
+                    "default": "Management Security Group"
                 },
                 "costcenter": {
-                    "default": "Cost center"
+                    "default": "Cost Center"
                 },
                 "environment": {
                     "default": "Environment"
@@ -216,7 +216,7 @@
                     "default": "License Key1"
                 },
                 "managementGuiPort": {
-                    "default": "Management GUI Port"
+                    "default": "Management Port"
                 },
                 "managementSubnetAz1": {
                     "default": "Management Subnet AZ1"
@@ -228,7 +228,7 @@
                     "default": "Owner"
                 },
                 "restrictedSrcAddress": {
-                    "default": "Restricted Source Addresses"
+                    "default": "Restricted Source IP Addresses"
                 },
                 "sshKey": {
                     "default": "SSH Key"
@@ -431,17 +431,17 @@
             "Type": "AWS::EC2::VPC::Id"
         },
         "adminPassword": {
-            "ConstraintDescription": "Verify your BIG-IP Admin Password",
-            "Description": "BIG-IP Admin Password",
+            "ConstraintDescription": "Verify your BIG-IP VE Admin Password",
+            "Description": "BIG-IP VE Admin Password",
             "MaxLength": "255",
             "MinLength": "1",
             "NoEcho": true,
             "Type": "String"
         },
         "adminUsername": {
-            "ConstraintDescription": "Verify your BIG-IP Admin Username",
+            "ConstraintDescription": "Verify your BIG-IP VE Admin Username",
             "Default": "admin",
-            "Description": "BIG-IP Admin Username",
+            "Description": "BIG-IP VE Admin Username",
             "MaxLength": "255",
             "MinLength": "1",
             "Type": "String"
@@ -453,7 +453,7 @@
         },
         "bigipExternalSecurityGroup": {
             "ConstraintDescription": "The security group ID must be within an existing VPC",
-            "Description": "Public or External Security Group ID",
+            "Description": "Public or External Security Group",
             "Type": "AWS::EC2::SecurityGroup::Id"
         },
         "bigipManagementSecurityGroup": {
@@ -479,7 +479,7 @@
         "iamAccessKey": {
             "AllowedPattern": "[\\w]*",
             "ConstraintDescription": "Can contain only ASCII characters.",
-            "Description": "IAM Access Key",
+            "Description": "IAM Access key ID",
             "MaxLength": "32",
             "MinLength": "16",
             "NoEcho": true,
@@ -488,7 +488,7 @@
         "iamSecretKey": {
             "AllowedPattern": "[\\x20-\\x7E]*",
             "ConstraintDescription": "Can contain only ASCII characters.",
-            "Description": "IAM Secret Key for BIG-IP",
+            "Description": "IAM Secret access key",
             "MaxLength": "255",
             "MinLength": "1",
             "NoEcho": true,
@@ -506,9 +506,9 @@
                 "Best200Mbps",
                 "Best1000Mbps"
             ],
-            "ConstraintDescription": "Must be a valid F5 BIG-IP performance type",
+            "ConstraintDescription": "Must be a valid F5 BIG-IP VE image type",
             "Default": "Best1000Mbps",
-            "Description": "F5 BIG-IP Performance Type",
+            "Description": "F5 BIG-IP VE image",
             "Type": "String"
         },
         "instanceType": {
@@ -529,7 +529,7 @@
                 "c4.2xlarge",
                 "c4.4xlarge"
             ],
-            "ConstraintDescription": "Must be a valid BIG-IP EC2 instance type",
+            "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
             "Default": "m3.2xlarge",
             "Description": "Size of the F5 BIG-IP Virtual Instance",
             "Type": "String"
@@ -554,12 +554,12 @@
             "Type": "String"
         },
         "sshKey": {
-            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+            "Description": "Key pair for accessing the instance",
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "subnet1Az1": {
             "ConstraintDescription": "The subnet ID must be within an existing VPC",
-            "Description": "Public or External subnet ID",
+            "Description": "Public or External subnet",
             "Type": "AWS::EC2::Subnet::Id"
         },
         "webserverPrivateIp": {

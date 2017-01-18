@@ -933,10 +933,9 @@
                                     "Fn::Join": [
                                         " ",
                                         [
-                                            "tar xvzf /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/;",
-                                            "mv /config/cloud/aws/F5Networks-f5-cloud-libs-* /config/cloud/aws/f5-cloud-libs;",
-                                            "cd /config/cloud/aws/f5-cloud-libs;",
-                                            "npm install --production;"
+                                            "nohup /config/installCloudLibs.sh",
+                                            "&> /var/log/cloudlibs-install.log < /dev/null",
+                                            "&"
                                         ]
                                     ]
                                 }
@@ -954,11 +953,11 @@
                                     "Fn::Join": [
                                         " ",
                                         [
-                                            "NAME_SERVER=`/config/cloud/aws/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                            "NAME_SERVER=`/config/getNameServer.sh eth1`;",
+                                            "nohup /config/waitThenRun.sh",
                                             "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
-                                            "--log-level verbose",
-                                            "-o  /var/log/onboard.log",
-                                            "--background",
+                                            "-o /var/log/onboard.log",
+                                            "--log-level debug",
                                             "--no-reboot",
                                             "--host localhost",
                                             "--user admin",
@@ -981,7 +980,10 @@
                                             "--ntp 1.us.pool.ntp.org",
                                             "--tz UTC",
                                             "--dns ${NAME_SERVER}",
-                                            "--module ltm:nominal"
+                                            "--module ltm:nominal",
+                                            "--ping",
+                                            "&> /var/log/cloudlibs-install.log < /dev/null",
+                                            "&"
                                         ]
                                     ]
                                 }
@@ -991,13 +993,15 @@
                                     "Fn::Join": [
                                         " ",
                                         [
+                                            "nohup /config/waitThenRun.sh",
                                             "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
-                                            "--wait-for ONBOARD_DONE",
                                             "--file /config/cloud/aws/custom-config.sh",
                                             "--cwd /config/cloud/aws",
-                                            "--log-level verbose",
                                             "-o /var/log/custom-config.log",
-                                            "--background"
+                                            "--log-level debug",
+                                            "--wait-for ONBOARD_DONE",
+                                            "&> /var/log/cloudlibs-install.log < /dev/null",
+                                            "&"
                                         ]
                                     ]
                                 }
@@ -1460,10 +1464,9 @@
                                     "Fn::Join": [
                                         " ",
                                         [
-                                            "tar xvzf /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/;",
-                                            "mv /config/cloud/aws/F5Networks-f5-cloud-libs-* /config/cloud/aws/f5-cloud-libs;",
-                                            "cd /config/cloud/aws/f5-cloud-libs;",
-                                            "npm install --production;"
+                                            "nohup /config/installCloudLibs.sh",
+                                            "&> /var/log/cloudlibs-install.log < /dev/null",
+                                            "&"
                                         ]
                                     ]
                                 }
@@ -1481,11 +1484,11 @@
                                     "Fn::Join": [
                                         " ",
                                         [
-                                            "NAME_SERVER=`/config/cloud/aws/f5-cloud-libs/scripts/aws/getNameServer.sh eth1`;",
+                                            "NAME_SERVER=`/config/getNameServer.sh eth1`;",
+                                            "nohup /config/waitThenRun.sh",
                                             "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
-                                            "--log-level verbose",
-                                            "-o  /var/log/onboard.log",
-                                            "--background",
+                                            "-o /var/log/onboard.log",
+                                            "--log-level debug",
                                             "--no-reboot",
                                             "--host localhost",
                                             "--user admin",
@@ -1508,7 +1511,10 @@
                                             "--ntp 1.us.pool.ntp.org",
                                             "--tz UTC",
                                             "--dns ${NAME_SERVER}",
-                                            "--module ltm:nominal"
+                                            "--module ltm:nominal",
+                                            "--ping",
+                                            "&> /var/log/cloudlibs-install.log < /dev/null",
+                                            "&"
                                         ]
                                     ]
                                 }
@@ -1518,13 +1524,15 @@
                                     "Fn::Join": [
                                         " ",
                                         [
+                                            "nohup /config/waitThenRun.sh",
                                             "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
-                                            "--wait-for ONBOARD_DONE",
                                             "--file /config/cloud/aws/custom-config.sh",
                                             "--cwd /config/cloud/aws",
-                                            "--log-level verbose",
                                             "-o /var/log/custom-config.log",
-                                            "--background"
+                                            "--log-level debug",
+                                            "--wait-for ONBOARD_DONE",
+                                            "&> /var/log/cloudlibs-install.log < /dev/null",
+                                            "&"
                                         ]
                                     ]
                                 }

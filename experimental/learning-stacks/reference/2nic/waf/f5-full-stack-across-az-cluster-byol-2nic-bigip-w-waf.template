@@ -119,14 +119,6 @@
                 },
                 {
                     "Label": {
-                        "default": "VIRTUAL SERVICE CONFIGURATION"
-                    },
-                    "Parameters": [
-                        "webserverPrivateIp"
-                    ]
-                },
-                {
-                    "Label": {
                         "default": "TAGS"
                     },
                     "Parameters": [
@@ -213,9 +205,6 @@
                 },
                 "subnet1Az2": {
                     "default": "Subnet AZ2"
-                },
-                "webserverPrivateIp": {
-                    "default": "Application IP Address"
                 }
             }
         },

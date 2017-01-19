@@ -144,14 +144,6 @@
                 },
                 {
                     "Label": {
-                        "default": "VIRTUAL SERVICE CONFIGURATION"
-                    },
-                    "Parameters": [
-                        "webserverPrivateIp"
-                    ]
-                },
-                {
-                    "Label": {
                         "default": "TAGS"
                     },
                     "Parameters": [
@@ -238,9 +230,6 @@
                 },
                 "subnet1Az2": {
                     "default": "Subnet AZ2"
-                },
-                "webserverPrivateIp": {
-                    "default": "Application IP Address"
                 }
             }
         },
@@ -469,11 +458,6 @@
             "ConstraintDescription": "The subnet ID must be within an existing VPC",
             "Description": "Public or External subnet",
             "Type": "AWS::EC2::Subnet::Id"
-        },
-        "webserverPrivateIp": {
-            "ConstraintDescription": "Web Server IP used for the BIG-IP pool Member",
-            "Description": "Web Server IP used for BIG-IP pool member",
-            "Type": "String"
         }
     },
     "Resources": {
@@ -591,12 +575,6 @@
                                             "checkStatusnoret\n",
                                             "sleep 20 \n",
                                             "tmsh save /sys config\n",
-                                            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-                                            "tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\n",
-                                            "tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\n",
-                                            "tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\n",
-                                            "tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\n",
-                                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                             "tmsh save /sys config\n",
                                             "date\n",
                                             "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
@@ -664,12 +642,6 @@
                                             },
                                             "'\n",
                                             "EXTMASK='24'\n",
-                                            "POOLMEM='",
-                                            {
-                                                "Ref": "webserverPrivateIp"
-                                            },
-                                            "'\n",
-                                            "POOLMEMPORT=80\n",
                                             "APPNAME='demo-app-1'\n",
                                             "VIRTUALSERVERPORT=80\n",
                                             "CRT='default.crt'\n",

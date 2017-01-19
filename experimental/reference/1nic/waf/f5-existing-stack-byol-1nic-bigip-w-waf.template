@@ -90,14 +90,6 @@
                 },
                 {
                     "Label": {
-                        "default": "VIRTUAL SERVICE CONFIGURATION"
-                    },
-                    "Parameters": [
-                        "webserverPrivateIp"
-                    ]
-                },
-                {
-                    "Label": {
                         "default": "TAGS"
                     },
                     "Parameters": [
@@ -184,9 +176,6 @@
                 },
                 "subnet1Az2": {
                     "default": "Subnet AZ2"
-                },
-                "webserverPrivateIp": {
-                    "default": "Application IP Address"
                 }
             }
         },
@@ -379,11 +368,6 @@
             "ConstraintDescription": "The subnet ID must be within an existing VPC",
             "Description": "Public or External subnet",
             "Type": "AWS::EC2::Subnet::Id"
-        },
-        "webserverPrivateIp": {
-            "ConstraintDescription": "Web Server IP used for the BIG-IP pool Member",
-            "Description": "Web Server IP used for BIG-IP pool member",
-            "Type": "String"
         }
     },
     "Resources": {
@@ -519,7 +503,6 @@
                                             "checkStatusnoret\n",
                                             "sleep 20 \n",
                                             "tmsh save /sys config\n",
-                                            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
                                             "curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
                                             "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
                                             "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
@@ -527,7 +510,6 @@
                                             "tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
                                             "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
                                             "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
-                                            "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
                                             "tmsh save /sys config\n",
                                             "date\n",
                                             "# for security purposes, remove firstrun.config\n",
@@ -575,12 +557,6 @@
                                             "VPC_NET=${VPC_CIDR_BLOCK%/*}\n",
                                             "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
                                             "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n",
-                                            "POOLMEM='",
-                                            {
-                                                "Ref": "webserverPrivateIp"
-                                            },
-                                            "'\n",
-                                            "POOLMEMPORT=80\n",
                                             "APPNAME='demo-app-1'\n",
                                             "VIRTUALSERVERPORT=80\n",
                                             "CRT='default.crt'\n",

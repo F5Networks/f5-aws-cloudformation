@@ -4,7 +4,8 @@
 ## Introduction
 This project implements auto scaling of BIG-IP Virtual Edition Web Application Firewall (WAF) systems in Amazon Web Services using the AWS CloudFormation template **autoscale-bigip.template**. As traffic increases or decreases, the number of BIG-IP VE instances automatically increases or decreases accordingly.
 
-See the [Configuration Example](#config) section for a configuration diagram and more information for this solution.
+See the [Configuration Example](#config) section for a configuration diagram and more information for this solution.<br>
+See the [Security Blocking Levels](#blocking) section for a description of the blocking levels for the Web Application Firewall presented in the template.
 
 ## BIG-IP deployment and configuration
 
@@ -138,8 +139,21 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 ]
 ```
 
-## Configuration Example <a name="config">
+## Configuration Example <a name="config"></a>
 
 The following is a simple configuration diagram deployment. 
 
 ![Single NIC configuration example](images/config-diagram-autoscale-waf.png)
+
+### Security blocking levels <a name="blocking"></a>
+The security blocking level you choose when you configure the template determines how much traffic is blocked and alerted by the F5 WAF.
+
+Attack signatures are rules that identify attacks on a web application and its components. The WAF has at least 2600 attack signatures available. The higher the security level you choose, the more traffic that is blocked by these signatures.
+
+| Level | Details |
+| --- | --- | --- |
+| Low | The fewest attack signatures enabled. There is a greater chance of possible security violations making it through to the web applications, but a lesser chance of false positives. |
+| Medium | A balance between logging too many violations and too many false positives. |
+| High | The most attack signatures enabled. A large number of false positives may be recorded; you must correct these alerts for your application to function correctly. |
+
+All traffic that is not being blocked is being used by the WAF for learning. Over time, if the WAF determines that traffic is safe, it allows it through to the application. Alternately, the WAF can determine that traffic is unsafe and block it from the application.

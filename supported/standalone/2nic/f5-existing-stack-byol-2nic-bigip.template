@@ -166,7 +166,7 @@
                     "default": "Owner"
                 },
                 "restrictedSrcAddress": {
-                    "default": "Restricted Source IP Addresses"
+                    "default": "Source Address(es) for SSH Access"
                 },
                 "sshKey": {
                     "default": "SSH Key"
@@ -414,31 +414,21 @@
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "commands": {
-                            "000-disable-1nicautoconfig": {
-                                "command": {
-                                    "Fn::Join": [
-                                        " ",
-                                        [
-                                            "/usr/bin/setdb provision.1nicautoconfig disable",
-                                            "&> /var/log/cloudlibs-install.log < /dev/null",
-                                            "&"
-                                        ]
-                                    ]
-                                }
+                            "001-disable-1nicautoconfig": {
+                                "command": "/usr/bin/setdb provision.1nicautoconfig disable"
                             },
-                            "001-install-libs": {
+                            "002-install-libs": {
                                 "command": {
                                     "Fn::Join": [
                                         " ",
                                         [
                                             "nohup /config/installCloudLibs.sh",
-                                            "&> /var/log/cloudlibs-install.log < /dev/null",
-                                            "&"
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                         ]
                                     ]
                                 }
                             },
-                            "002-1nic-setup": {
+                            "003-1nic-setup": {
                                 "command": {
                                     "Fn::Join": [
                                         " ",
@@ -446,7 +436,27 @@
                                     ]
                                 }
                             },
-                            "003-onboard-BIG-IP": {
+                            "004-create-admin-user": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "nohup /config/waitThenRun.sh",
+                                            " f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
+                                            " --signal ADMIN_CREATED",
+                                            " --file /config/cloud/aws/createUser.sh",
+                                            " --cl-args ",
+                                            {
+                                                "Ref": "adminUsername"
+                                            },
+                                            " --log-level debug",
+                                            " -o /var/log/createUser.log",
+                                            " > /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "005-onboard-BIG-IP": {
                                 "command": {
                                     "Fn::Join": [
                                         " ",
@@ -454,39 +464,33 @@
                                             "NAME_SERVER=`/config/getNameServer.sh eth1`;",
                                             "nohup /config/waitThenRun.sh",
                                             "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
+                                            "--wait-for ADMIN_CREATED",
                                             "-o /var/log/onboard.log",
                                             "--log-level debug",
                                             "--no-reboot",
                                             "--host localhost",
-                                            "--user admin",
-                                            "--password '",
-                                            {
-                                                "Ref": "adminPassword"
-                                            },
-                                            "'",
-                                            "--update-user 'user:",
+                                            "--user ",
                                             {
                                                 "Ref": "adminUsername"
                                             },
-                                            ",password:",
-                                            {
-                                                "Ref": "adminPassword"
-                                            },
-                                            ",role:admin'",
+                                            "--password-url file:///config/cloud/aws/.adminPassword",
                                             "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
                                             "--ntp 0.us.pool.ntp.org",
                                             "--ntp 1.us.pool.ntp.org",
                                             "--tz UTC",
                                             "--dns ${NAME_SERVER}",
                                             "--module ltm:nominal",
+                                            "--license ",
+                                            {
+                                                "Ref": "licenseKey1"
+                                            },
                                             "--ping",
-                                            "&> /var/log/cloudlibs-install.log < /dev/null",
-                                            "&"
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                         ]
                                     ]
                                 }
                             },
-                            "005-custom-config": {
+                            "006-custom-config": {
                                 "command": {
                                     "Fn::Join": [
                                         " ",
@@ -498,38 +502,33 @@
                                             "-o /var/log/custom-config.log",
                                             "--log-level debug",
                                             "--wait-for ONBOARD_DONE",
-                                            "&> /var/log/cloudlibs-install.log < /dev/null",
-                                            "&"
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                         ]
                                     ]
                                 }
                             }
                         },
                         "files": {
-                            "/config/cloud/aws/custom-config.sh": {
+                            "/config/cloud/aws/.adminPassword": {
+                                "content": {
+                                    "Ref": "adminPassword"
+                                },
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root"
+                            },
+                            "/config/cloud/aws/createUser.sh": {
                                 "content": {
                                     "Fn::Join": [
-                                        "",
+                                        "\n",
                                         [
-                                            "#!/bin/bash\n",
-                                            ". /config/cloud/aws/custom.config\n",
-                                            ". /config/cloud/aws/firstrun.utils\n",
-                                            "date\n",
-                                            "echo 'starting tmsh config'\n",
-                                            "tmsh create net vlan external interfaces add { 1.1 } \n",
-                                            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
-                                            "tmsh create net route default gw ${GATEWAY}\n",
-                                            "tmsh save /sys config\n",
-                                            "echo 'start install byol license'\n",
-                                            "networkUp 120 \n",
-                                            "LicenseBigIP ${REGKEY}\n",
-                                            "checkStatusnoret\n",
-                                            "sleep 20 \n",
-                                            "tmsh save /sys config\n",
-                                            "tmsh save /sys config\n",
-                                            "date\n",
-                                            "# for security purposes, remove firstrun.config\n",
-                                            "# rm /config/cloud/aws/firstrun.config\n"
+                                            "#!/bin/bash",
+                                            "PASSWORD=$(/bin/sed -e $'s:[\\'\"{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
+                                            "if [ \"$1\" = admin ]; then",
+                                            "    tmsh modify auth user \"$1\" password ${PASSWORD}",
+                                            "else",
+                                            "    tmsh create auth user \"$1\" password ${PASSWORD} shell bash partition-access replace-all-with { all-partitions { role admin } }",
+                                            "fi"
                                         ]
                                     ]
                                 },
@@ -537,45 +536,19 @@
                                 "mode": "000755",
                                 "owner": "root"
                             },
-                            "/config/cloud/aws/custom.config": {
+                            "/config/cloud/aws/custom-config.sh": {
                                 "content": {
                                     "Fn::Join": [
                                         "",
                                         [
                                             "#!/bin/bash\n",
-                                            "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
-                                            "BIGIP_ADMIN_USERNAME='",
-                                            {
-                                                "Ref": "adminUsername"
-                                            },
-                                            "'\n",
-                                            "BIGIP_ADMIN_PASSWORD='",
-                                            {
-                                                "Ref": "adminPassword"
-                                            },
-                                            "'\n",
-                                            "REGKEY=",
-                                            {
-                                                "Ref": "licenseKey1"
-                                            },
-                                            "\n",
+                                            "date\n",
+                                            "echo 'starting tmsh config'\n",
                                             "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                                             "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
                                             "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
                                             "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
                                             "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                                            "VPC_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-block`\n",
-                                            "VPC_NET=${VPC_CIDR_BLOCK%/*}\n",
-                                            "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
-                                            "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n",
-                                            "MGMTIP='",
-                                            {
-                                                "Fn::GetAtt": [
-                                                    "Bigip1ManagementInterface",
-                                                    "PrimaryPrivateIpAddress"
-                                                ]
-                                            },
-                                            "'\n",
                                             "EXTIP='",
                                             {
                                                 "Fn::GetAtt": [
@@ -597,11 +570,14 @@
                                                 ]
                                             },
                                             "'\n",
-                                            "EXTMASK='24'\n",
-                                            "APPNAME='demo-app-1'\n",
-                                            "VIRTUALSERVERPORT=80\n",
-                                            "CRT='default.crt'\n",
-                                            "KEY='default.key'\n"
+                                            "EXTMASK=${GATEWAY_PREFIX}\n",
+                                            "tmsh create net vlan external interfaces add { 1.1 } \n",
+                                            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
+                                            "tmsh create net route default gw ${GATEWAY}\n",
+                                            "tmsh save /sys config\n",
+                                            "date\n",
+                                            "### START CUSTOM TMSH CONFIGURTION\n",
+                                            "### END CUSTOM TMSH CONFIGURATION"
                                         ]
                                     ]
                                 },
@@ -609,17 +585,11 @@
                                 "mode": "000755",
                                 "owner": "root"
                             },
-                            "/config/cloud/aws/firstrun.utils": {
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root",
-                                "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
-                            },
                             "/config/cloud/f5-cloud-libs.tar.gz": {
                                 "group": "root",
                                 "mode": "000755",
                                 "owner": "root",
-                                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/release-2.0.0/dist/f5-cloud-libs.tar.gz"
+                                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.0.1/dist/f5-cloud-libs.tar.gz"
                             },
                             "/config/getNameServer.sh": {
                                 "content": {
@@ -692,7 +662,7 @@
                                             "    proc script::run {} {",
                                             "        if {[catch {",
                                             "            set file_path [lindex $tmsh::argv 1]",
-                                            "            set expected_hash 965fd074eafee6b098640d7772e5969233e21df0fae95dc9e6b3ebe1c58a1d8cbcdcdd5a19cbe553a6e11be29b4680622a1836da7ec8f97cd04f6d055e7ac5b0",
+                                            "            set expected_hash f5c4206c0b093fb2f3a6e16409610ec0300b509dee9157b2c4801f99e41d08b1b1d2b6a3c75c6a509daee77c3103403aa4c8ae47c4b232a6ec76b4663017b11c",
                                             "            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
                                             "            if { $expected_hash eq $computed_hash } {",
                                             "                exit 0",
@@ -704,7 +674,7 @@
                                             "            exit 1",
                                             "        }",
                                             "    }",
-                                            "    script-signature htxFA2OEqT6OgONuvjOMB9i/3l6xmX8yt/ypJAT7ddul2xLA7V8RN3yHXAGA+7RohkCk/o9+FYfY54fXY1cJe7MjksaJ7NITWVcytJc68cyvn3u1H37xMp8HeMR0TSgGA5h7NjWEwQod8JZZm+bGb+a1e2ex1hBAQb+Ix7ZEwsIZil25RCJTSEopkffZ7ENls13K/8DtVsgbSX0hX6kZOhoPeP9GW4+0amB99EQJVxFDMM3lcBEZx52nDdXNHgEVpoaYP0DVTAxfo2OCx0TNLPfBpUstlC/NcpVAr/15oZE5KhJpB7B4aBbGwPDql9GEnlNTeYMVXlWlunHTLBPMRg==",
+                                            "    script-signature o4v4/Y2mV0cXV/eZefkq6wXlE5GCACYd6+HuN4ScfL/meD0Grw1aJxZGp9MAvv4Ik3IPIwS2n8WgvfG/cDKcwQHVMGFJN4kmN4tzhr9Zdf3879hKqJaqbLLkifDsYk8bX3ontvrqT7r7XKboBv2qygPaUrVZPtkxzbcAJ26ewIj9m+Rui2yp+uYskZAL0bAPi/g5KDTZvEz0rCtSSxOeVljk5lr6vA79HPCHfglCKucH1QnbcrGhpARcs+wiwCYC18yiKsOBl+BVRTQwXuQYs8RsNhCJ8bHQeM8dOHUZj5/1Exh0V6QOcqG8/6pMuSmXfduNKzmQQPyN+bO4ETQ03Q==",
                                             "}"
                                         ]
                                     ]

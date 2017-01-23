@@ -117,7 +117,7 @@
                     "default": "Owner"
                 },
                 "restrictedSrcAddress": {
-                    "default": "Restricted Source IP Addresses"
+                    "default": "Source Address(es) for SSH Access"
                 },
                 "sshKey": {
                     "default": "SSH Key"

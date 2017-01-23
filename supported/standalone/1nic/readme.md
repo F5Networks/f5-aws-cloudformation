@@ -24,24 +24,22 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
   - In the */config/verifyHash* section: **script-signature** and then a hashed signature
   - In the */config/installCloudLibs.sh* section **"tmsh load sys config merge file /config/verifyHash"**
   
+  Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
+  
 ## Supported instance types and hypervisors
   - For a list of supported AWS instance types for this solutions, see the **Amazon EC2 instances for BIG-IP VE** section of https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0/1.html
 
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
-### Help
-We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support.<br>
-While this template has been created by F5 Networks, it is in the experimental directory and therefore has not completed full testing and is subject to change.  F5 Networks does not offer technical support for templates in the experimental directory. For supported templates, see the templates in the **supported** directory.
+### Help 
+Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support via your typical methods.
+
+We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 
 
-## Installation
 
-There are two methods for deploying this template: 
-  - Using the AWS deploy buttons 
-  - Using [CLI Tools](#cli)
-
-### Using the AWS deploy buttons
-The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.
+## Installation using the AWS Launch Stack buttons
+The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch Stack button.
  - Hourly, which uses pay-as-you-go hourly billing
  - [BYOL](#byol) (bring your own license), which allows you to use an existing BIG-IP license.
 <br><br>
@@ -102,8 +100,6 @@ After clicking the Launch button, you must specify the following parameters.
 | Vpc | x | Common VPC for the deployment |
 
 
-### <a name="cli"></a>AWS CLI Usage
-Coming soon
 
 ## Configuration Example <a name="config"></a>
 
@@ -203,35 +199,19 @@ Note the hashed script-signature may be different in your template.<br>
 ```
 
 
-## Design Patterns
 
-
-The goal is for the design patterns for all the iterative examples of F5 being deployed via CloudFormation templates to closely match as much as possible.
-
-### List of Patterns For Contributing Developers
-
-
- 1. Still working on patterns to use
 
 ## Filing Issues
-
-See the Issues section of `Contributing <CONTRIBUTING.md>`__.
-
-## Contributing
-
-See `Contributing <CONTRIBUTING.md>`__
-
-## Test
-
-
-Before you open a pull request, your code must have passed a deployment into Azure with the intended result
-
+If you find an issue, we would love to hear about it. 
+You have a choice when it comes to filing issues:
+  - Use the **Issues** link on the GitHub menu bar in this repository for items such as enhancement or feature requests and non-urgent bug fixes. Tell us as much as you can about what you found and how you found it.
+  - Contact F5 Technical support via your typical method for more time sensitive changes and other issues requiring immediate support.
 
 
 
 ## Copyright
 
-Copyright 2014-2016 F5 Networks Inc.
+Copyright 2014-2017 F5 Networks Inc.
 
 
 ## License

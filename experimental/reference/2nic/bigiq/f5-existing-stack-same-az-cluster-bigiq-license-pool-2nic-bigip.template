@@ -166,7 +166,7 @@
                     "default": "Owner"
                 },
                 "restrictedSrcAddress": {
-                    "default": "Restricted Source IP Addresses"
+                    "default": "Source Address(es) for SSH Access"
                 },
                 "sshKey": {
                     "default": "SSH Key"
@@ -534,8 +534,7 @@
                                         " ",
                                         [
                                             "nohup /config/installCloudLibs.sh",
-                                            "&> /var/log/cloudlibs-install.log < /dev/null",
-                                            "&"
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                         ]
                                     ]
                                 }
@@ -556,25 +555,16 @@
                                             "NAME_SERVER=`/config/getNameServer.sh eth1`;",
                                             "nohup /config/waitThenRun.sh",
                                             "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
+                                            "--wait-for ADMIN_CREATED",
                                             "-o /var/log/onboard.log",
                                             "--log-level debug",
                                             "--no-reboot",
                                             "--host localhost",
-                                            "--user admin",
-                                            "--password '",
-                                            {
-                                                "Ref": "adminPassword"
-                                            },
-                                            "'",
-                                            "--update-user 'user:",
+                                            "--user ",
                                             {
                                                 "Ref": "adminUsername"
                                             },
-                                            ",password:",
-                                            {
-                                                "Ref": "adminPassword"
-                                            },
-                                            ",role:admin'",
+                                            "--password-url file:///config/cloud/aws/.adminPassword",
                                             "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
                                             "--ntp 0.us.pool.ntp.org",
                                             "--ntp 1.us.pool.ntp.org",
@@ -582,8 +572,7 @@
                                             "--dns ${NAME_SERVER}",
                                             "--module ltm:nominal",
                                             "--ping",
-                                            "&> /var/log/cloudlibs-install.log < /dev/null",
-                                            "&"
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                         ]
                                     ]
                                 }
@@ -600,8 +589,7 @@
                                             "-o /var/log/custom-config.log",
                                             "--log-level debug",
                                             "--wait-for ONBOARD_DONE",
-                                            "&> /var/log/cloudlibs-install.log < /dev/null",
-                                            "&"
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                         ]
                                     ]
                                 }
@@ -614,34 +602,91 @@
                                         "",
                                         [
                                             "#!/bin/bash\n",
-                                            ". /config/cloud/aws/custom.config\n",
-                                            ". /config/cloud/aws/firstrun.utils\n",
                                             "date\n",
                                             "echo 'starting tmsh config'\n",
-                                            "tmsh modify sys global-settings aws-access-key ${IAM_ACCESS_KEY}\n",
-                                            "tmsh modify sys global-settings aws-secret-key ${IAM_SECRET_KEY}\n",
+                                            "tmsh modify sys global-settings aws-access-key",
+                                            {
+                                                "Ref": "iamAccessKey"
+                                            },
+                                            "\n",
+                                            "tmsh modify sys global-settings aws-secret-key",
+                                            {
+                                                "Ref": "iamSecretKey"
+                                            },
+                                            "\n",
+                                            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                                            "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                                            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                                            "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                                            "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                                            "EXTIP='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "Bigip1subnet1Az1Interface",
+                                                    "PrimaryPrivateIpAddress"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTPRIVIP='",
+                                            {
+                                                "Fn::Select": [
+                                                    "0",
+                                                    {
+                                                        "Fn::GetAtt": [
+                                                            "Bigip1subnet1Az1Interface",
+                                                            "SecondaryPrivateIpAddresses"
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTMASK=${GATEWAY_PREFIX}\n",
                                             "tmsh create net vlan external interfaces add { 1.1 } \n",
                                             "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
                                             "tmsh create net route default gw ${GATEWAY}\n",
+                                            "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                                             "tmsh mv cm device bigip1 ${HOSTNAME}\n",
                                             "tmsh modify sys db dhclient.mgmt { value disable }\n",
                                             "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
-                                            "tmsh save /sys config\n",
                                             "echo 'start install biqiq license'\n",
                                             ". /config/cloud/aws/license_from_bigiq.sh\n",
-                                            "checkStatusnoret\n",
-                                            "sleep 20 \n",
-                                            "tmsh save /sys config\n",
                                             "echo 'sleeping additional 180 secs to wait for peer to boot'\n",
                                             "sleep 180\n",
-                                            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username \"${BIGIP_ADMIN_USERNAME}\" password \"${BIGIP_ADMIN_PASSWORD}\"\n",
+                                            "PEER_HOSTNAME='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "Bigip2Instance",
+                                                    "PrivateDnsName"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "PEER_MGMTIP='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "Bigip2ManagementInterface",
+                                                    "PrimaryPrivateIpAddress"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "USERNAME=",
+                                            {
+                                                "Ref": "adminUsername"
+                                            },
+                                            "\n",
+                                            "PASSWORD=",
+                                            {
+                                                "Ref": "adminPassword"
+                                            },
+                                            "\n",
+                                            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username \"${USERNAME}\" password \"${PASSWORD}\"\n",
                                             "tmsh create cm device-group across_az_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
                                             "sleep 10\n",
                                             "tmsh run cm config-sync to-group across_az_failover_group\n",
+                                            "rm /config/cloud/aws/.adminPassword\n",
                                             "tmsh save /sys config\n",
                                             "date\n",
-                                            "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
-                                            "# rm /config/cloud/aws/firstrun.config\n"
+                                            "### START CUSTOM TMSH CONFIGURTION\n",
+                                            "### END CUSTOM TMSH CONFIGURATION"
                                         ]
                                     ]
                                 },
@@ -655,6 +700,7 @@
                                         "",
                                         [
                                             "#!/bin/bash\n",
+                                            "### Add Supporting Config",
                                             "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                                             "BIGIP_ADMIN_USERNAME='",
                                             {
@@ -730,10 +776,6 @@
                                             },
                                             "'\n",
                                             "EXTMASK='24'\n",
-                                            "APPNAME='demo-app-1'\n",
-                                            "VIRTUALSERVERPORT=80\n",
-                                            "CRT='default.crt'\n",
-                                            "KEY='default.key'\n",
                                             "PEER_HOSTNAME='",
                                             {
                                                 "Fn::GetAtt": [
@@ -807,7 +849,7 @@
                                 "group": "root",
                                 "mode": "000755",
                                 "owner": "root",
-                                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop"
+                                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.0.0/dist/f5-cloud-libs.tar.gz"
                             }
                         }
                     }
@@ -1034,8 +1076,7 @@
                                         " ",
                                         [
                                             "nohup /config/installCloudLibs.sh",
-                                            "&> /var/log/cloudlibs-install.log < /dev/null",
-                                            "&"
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                         ]
                                     ]
                                 }
@@ -1056,25 +1097,16 @@
                                             "NAME_SERVER=`/config/getNameServer.sh eth1`;",
                                             "nohup /config/waitThenRun.sh",
                                             "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
+                                            "--wait-for ADMIN_CREATED",
                                             "-o /var/log/onboard.log",
                                             "--log-level debug",
                                             "--no-reboot",
                                             "--host localhost",
-                                            "--user admin",
-                                            "--password '",
-                                            {
-                                                "Ref": "adminPassword"
-                                            },
-                                            "'",
-                                            "--update-user 'user:",
+                                            "--user ",
                                             {
                                                 "Ref": "adminUsername"
                                             },
-                                            ",password:",
-                                            {
-                                                "Ref": "adminPassword"
-                                            },
-                                            ",role:admin'",
+                                            "--password-url file:///config/cloud/aws/.adminPassword",
                                             "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
                                             "--ntp 0.us.pool.ntp.org",
                                             "--ntp 1.us.pool.ntp.org",
@@ -1082,8 +1114,7 @@
                                             "--dns ${NAME_SERVER}",
                                             "--module ltm:nominal",
                                             "--ping",
-                                            "&> /var/log/cloudlibs-install.log < /dev/null",
-                                            "&"
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                         ]
                                     ]
                                 }
@@ -1100,8 +1131,7 @@
                                             "-o /var/log/custom-config.log",
                                             "--log-level debug",
                                             "--wait-for ONBOARD_DONE",
-                                            "&> /var/log/cloudlibs-install.log < /dev/null",
-                                            "&"
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                         ]
                                     ]
                                 }
@@ -1114,28 +1144,59 @@
                                         "",
                                         [
                                             "#!/bin/bash\n",
-                                            ". /config/cloud/aws/custom.config\n",
-                                            ". /config/cloud/aws/firstrun.utils\n",
                                             "date\n",
                                             "echo 'starting tmsh config'\n",
-                                            "tmsh modify sys global-settings aws-access-key ${IAM_ACCESS_KEY}\n",
-                                            "tmsh modify sys global-settings aws-secret-key ${IAM_SECRET_KEY}\n",
+                                            "tmsh modify sys global-settings aws-access-key",
+                                            {
+                                                "Ref": "iamAccessKey"
+                                            },
+                                            "\n",
+                                            "tmsh modify sys global-settings aws-secret-key",
+                                            {
+                                                "Ref": "iamSecretKey"
+                                            },
+                                            "\n",
+                                            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                                            "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                                            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                                            "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                                            "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                                            "EXTIP='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "Bigip2subnet1Az1Interface",
+                                                    "PrimaryPrivateIpAddress"
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTPRIVIP='",
+                                            {
+                                                "Fn::Select": [
+                                                    "0",
+                                                    {
+                                                        "Fn::GetAtt": [
+                                                            "Bigip2subnet1Az1Interface",
+                                                            "SecondaryPrivateIpAddresses"
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "'\n",
+                                            "EXTMASK=${GATEWAY_PREFIX}\n",
                                             "tmsh create net vlan external interfaces add { 1.1 } \n",
                                             "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
                                             "tmsh create net route default gw ${GATEWAY}\n",
+                                            "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                                             "tmsh mv cm device bigip1 ${HOSTNAME}\n",
                                             "tmsh modify sys db dhclient.mgmt { value disable }\n",
                                             "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
-                                            "tmsh save /sys config\n",
                                             "echo 'start install biqiq license'\n",
                                             ". /config/cloud/aws/license_from_bigiq.sh\n",
-                                            "checkStatusnoret\n",
-                                            "sleep 20 \n",
-                                            "tmsh save /sys config\n",
+                                            "rm /config/cloud/aws/.adminPassword\n",
                                             "tmsh save /sys config\n",
                                             "date\n",
-                                            "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
-                                            "# rm /config/cloud/aws/firstrun.config\n"
+                                            "### START CUSTOM TMSH CONFIGURTION\n",
+                                            "### END CUSTOM TMSH CONFIGURATION"
                                         ]
                                     ]
                                 },
@@ -1149,6 +1210,7 @@
                                         "",
                                         [
                                             "#!/bin/bash\n",
+                                            "### Add Supporting Config",
                                             "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                                             "BIGIP_ADMIN_USERNAME='",
                                             {
@@ -1224,10 +1286,6 @@
                                             },
                                             "'\n",
                                             "EXTMASK='24'\n",
-                                            "APPNAME='demo-app-1'\n",
-                                            "VIRTUALSERVERPORT=80\n",
-                                            "CRT='default.crt'\n",
-                                            "KEY='default.key'\n",
                                             "IAM_ACCESS_KEY='",
                                             {
                                                 "Ref": "iamAccessKey"
@@ -1267,7 +1325,7 @@
                                 "group": "root",
                                 "mode": "000755",
                                 "owner": "root",
-                                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop"
+                                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.0.0/dist/f5-cloud-libs.tar.gz"
                             }
                         }
                     }

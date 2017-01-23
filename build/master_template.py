@@ -255,7 +255,7 @@ def main():
                 "default": "License Key1"
             },
             "restrictedSrcAddress": {
-                "default": "Restricted Source IP Addresses"
+                "default": "Source Address(es) for SSH Access"
             },
             "iamAccessKey": {
                 "default": "IAM Access Key"
@@ -1345,42 +1345,44 @@ def main():
                         Description="Internal Interface for the BIG-IP",
                     ))
             # Build custom-config
-            custom_config = []
-
-            custom_config += [
-                                    "#!/bin/bash\n", 
+            custom_config = [
+                            "#!/bin/bash\n",
+                            "### Add Supporting Config",
+                            ]            
+            if ha_type != "standalone":
+                custom_config += [
                                     "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                                     "BIGIP_ADMIN_USERNAME='", Ref(adminUsername), "'\n", 
                                     "BIGIP_ADMIN_PASSWORD='", Ref(adminPassword), "'\n",                                    
-                                ]
-            if license_type == "byol":
-                custom_config += [ "REGKEY=", Ref(licenseKey), "\n" ]
-            elif license_type == "bigiq":
-                custom_config += [ 
-                                    "BIGIQ_ADDRESS='", Ref(bigiqAddress), "'\n",
-                                    "BIGIQ_USERNAME='", Ref(bigiqUsername), "'\n",
-                                    "BIGIQ_PASSWORD='", Ref(bigiqPassword), "'\n",
-                                    "BIGIQ_LICENSE_POOL_UUID='", Ref(bigiqLicensePoolUUID), "'\n"
-                                   ]
+                                 ]
+                if license_type == "byol":
+                    custom_config += [ "REGKEY=", Ref(licenseKey), "\n" ]
+                elif license_type == "bigiq":
+                    custom_config += [ 
+                                        "BIGIQ_ADDRESS='", Ref(bigiqAddress), "'\n",
+                                        "BIGIQ_USERNAME='", Ref(bigiqUsername), "'\n",
+                                        "BIGIQ_PASSWORD='", Ref(bigiqPassword), "'\n",
+                                        "BIGIQ_LICENSE_POOL_UUID='", Ref(bigiqLicensePoolUUID), "'\n"
+                                    ]
+
+                    if num_nics == 1:
+                        custom_config += [ "BIGIP_DEVICE_ADDRESS='", Ref(ExternalSelfEipAddress),"'\n" ] 
+                    if num_nics > 1:
+                        custom_config += [ "BIGIP_DEVICE_ADDRESS='", Ref(ManagementEipAddress),"'\n" ] 
+
 
                 if num_nics == 1:
-                    custom_config += [ "BIGIP_DEVICE_ADDRESS='", Ref(ExternalSelfEipAddress),"'\n" ] 
+                    custom_config += [ 
+                                        "MANAGEMENT_GUI_PORT='", Ref(managementGuiPort), "'\n",  
+                                        "GATEWAY_MAC=`ifconfig eth0 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                                     ]
+
                 if num_nics > 1:
-                    custom_config += [ "BIGIP_DEVICE_ADDRESS='", Ref(ManagementEipAddress),"'\n" ] 
+                    custom_config += [ 
+                                        "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                                     ]
 
-
-            if num_nics == 1:
-                custom_config += [ 
-                                    "MANAGEMENT_GUI_PORT='", Ref(managementGuiPort), "'\n",  
-                                    "GATEWAY_MAC=`ifconfig eth0 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                   ]
-
-            if num_nics > 1:
-                custom_config += [ 
-                                    "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                   ]
-
-            custom_config += [
+                custom_config += [
                                     "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
                                     "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
                                     "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
@@ -1390,15 +1392,15 @@ def main():
                                     "VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
                                     "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n", 
                                 ]
-            if num_nics > 1:
-                custom_config += [ 
+                if num_nics > 1:
+                    custom_config += [ 
                                     "MGMTIP='", GetAtt(ManagementInterface, "PrimaryPrivateIpAddress"), "'\n", 
                                     "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n", 
                                     "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n", 
                                     "EXTMASK='24'\n",
                                     ]
-            if num_nics > 2:
-                custom_config += [ 
+                if num_nics > 2:
+                    custom_config += [ 
                                     "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
                                     "INTMASK='24'\n", 
                                    ]
@@ -1409,11 +1411,8 @@ def main():
                                     "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n", 
                                     "POOLMEMPORT=80\n", 
                                     ]
-            elif stack == "existing":
-                custom_config +=  []         
-
-
-            custom_config +=  [
+    
+                custom_config +=  [
                                     "APPNAME='demo-app-1'\n", 
                                     "VIRTUALSERVERPORT=80\n",
                                     "CRT='default.crt'\n", 
@@ -1446,9 +1445,8 @@ def main():
             # build custom-confg.sh vars
 
             license_byol =  [ 
-                                "echo 'start install byol license'\n",
-                                "networkUp 120 \n",
-                                "LicenseBigIP ${REGKEY}\n",
+                                "--license ",
+                                Ref(licenseKey),
                                 # "nohup tcpdump -U -ni 0.0:nnn -s0 -c 10000 udp port 53 or host 104.219.104.132 -w /var/tmp/license-attempt.pcap &\n",
                                 # "sleep 10\n",
                                 # "LICENSE_RETURN=$( tmsh install /sys license registration-key \"${REGKEY}\")\n",
@@ -1556,7 +1554,7 @@ def main():
                             "    proc script::run {} {",
                             "        if {[catch {",
                             "            set file_path [lindex $tmsh::argv 1]",
-                            "            set expected_hash 965fd074eafee6b098640d7772e5969233e21df0fae95dc9e6b3ebe1c58a1d8cbcdcdd5a19cbe553a6e11be29b4680622a1836da7ec8f97cd04f6d055e7ac5b0",
+                            "            set expected_hash f5c4206c0b093fb2f3a6e16409610ec0300b509dee9157b2c4801f99e41d08b1b1d2b6a3c75c6a509daee77c3103403aa4c8ae47c4b232a6ec76b4663017b11c",
                             "            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
                             "            if { $expected_hash eq $computed_hash } {",
                             "                exit 0",
@@ -1568,7 +1566,7 @@ def main():
                             "            exit 1",
                             "        }",
                             "    }",
-                            "    script-signature htxFA2OEqT6OgONuvjOMB9i/3l6xmX8yt/ypJAT7ddul2xLA7V8RN3yHXAGA+7RohkCk/o9+FYfY54fXY1cJe7MjksaJ7NITWVcytJc68cyvn3u1H37xMp8HeMR0TSgGA5h7NjWEwQod8JZZm+bGb+a1e2ex1hBAQb+Ix7ZEwsIZil25RCJTSEopkffZ7ENls13K/8DtVsgbSX0hX6kZOhoPeP9GW4+0amB99EQJVxFDMM3lcBEZx52nDdXNHgEVpoaYP0DVTAxfo2OCx0TNLPfBpUstlC/NcpVAr/15oZE5KhJpB7B4aBbGwPDql9GEnlNTeYMVXlWlunHTLBPMRg==",
+                            "    script-signature o4v4/Y2mV0cXV/eZefkq6wXlE5GCACYd6+HuN4ScfL/meD0Grw1aJxZGp9MAvv4Ik3IPIwS2n8WgvfG/cDKcwQHVMGFJN4kmN4tzhr9Zdf3879hKqJaqbLLkifDsYk8bX3ontvrqT7r7XKboBv2qygPaUrVZPtkxzbcAJ26ewIj9m+Rui2yp+uYskZAL0bAPi/g5KDTZvEz0rCtSSxOeVljk5lr6vA79HPCHfglCKucH1QnbcrGhpARcs+wiwCYC18yiKsOBl+BVRTQwXuQYs8RsNhCJ8bHQeM8dOHUZj5/1Exh0V6QOcqG8/6pMuSmXfduNKzmQQPyN+bO4ETQ03Q==",
                             "}"
                         ]
             cloudlibs_sh =  [
@@ -1625,17 +1623,39 @@ def main():
                                     "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
                                     "echo $NAME_SERVER"
                                 ]
-                                
-            unpack_libs = [
-                                "nohup /config/installCloudLibs.sh",
-                                "&> /var/log/cloudlibs-install.log < /dev/null",
-                                "&"
-                           ]
-            nicautoconfig = [
-                                "/usr/bin/setdb provision.1nicautoconfig disable",
-                                "&> /var/log/cloudlibs-install.log < /dev/null",
-                                "&"
+            password_config =   [
+                                Ref(adminPassword)
+                                ]                    
+            create_user =       [
+                                    "#!/bin/bash",
+                                    "PASSWORD=$(/bin/sed -e $'s:[\\'\"{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
+                                    "if [ \"$1\" = admin ]; then",
+                                    "    tmsh modify auth user \"$1\" password ${PASSWORD}",
+                                    "else",
+                                    "    tmsh create auth user \"$1\" password ${PASSWORD} shell bash partition-access replace-all-with { all-partitions { role admin } }",
+                                    "fi"
+                                ]
+            admin_user  =   [
+                                    "nohup /config/waitThenRun.sh",
+                                    " f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
                             ]
+            if num_nics == 1:
+                admin_user +=   [
+                                    " --wait-for 1_NIC_SETUP_DONE",
+                                ]
+            admin_user +=   [    
+                                    " --signal ADMIN_CREATED",
+                                    " --file /config/cloud/aws/createUser.sh",
+                                    " --cl-args ", Ref(adminUsername),
+                                    " --log-level debug",
+                                    " -o /var/log/createUser.log",
+                                    " > /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"  
+                            ]    
+            unpack_libs =       [
+                                    "nohup /config/installCloudLibs.sh",
+                                    "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
+                                ]
+               
             onboard_BIG_IP =    [
                                 ]
             one_nic_setup =     [
@@ -1650,21 +1670,12 @@ def main():
                                     "-o /var/log/custom-config.log",
                                     "--log-level debug",
                                     "--wait-for ONBOARD_DONE",
-                                    "&> /var/log/cloudlibs-install.log < /dev/null",
-                                    "&"
+                                    "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                 ]
-            if num_nics == 1:
-                if ha_type != "standalone":
-                    custom_sh += [
-                                        "/usr/bin/setdb provision.1nicautoconfig disable\n",
-                                   ]
+            if ha_type != "standalone":
+                custom_sh +=    [
 
-            custom_sh +=  [ 
-                                ". /config/cloud/aws/custom.config\n",
-                                ". /config/cloud/aws/firstrun.utils\n",
-                            ]
-
-
+                                ]
             # Global Settings
             custom_sh += [
                             "date\n",
@@ -1672,21 +1683,21 @@ def main():
                          ]
             if num_nics == 1:
                 one_nic_setup += [
-                                  "nohup /config/waitThenRun.sh",
-                                  "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
-                                  "--file /config/cloud/aws/f5-cloud-libs/scripts/aws/1nicSetup.sh",
-                                  "--cwd /config/cloud/aws/f5-cloud-libs/scripts/aws",
-                                  "-o /var/log/1nicSetup.log",
-                                  "--signal 1_NIC_SETUP_DONE",
-                                  "&> /var/log/cloudlibs-install.log < /dev/null",
-                                  "&"
+                                    "nohup /config/waitThenRun.sh",
+                                    "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
+                                    "--file /config/cloud/aws/f5-cloud-libs/scripts/aws/1nicSetup.sh",
+                                    "--cwd /config/cloud/aws/f5-cloud-libs/scripts/aws",
+                                    "--log-level debug",
+                                    "-o /var/log/1nicSetup.log",
+                                    "--signal 1_NIC_SETUP_DONE",
+                                    "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
                                  ]
+                   
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/config/getNameServer.sh eth0`;",
                                     "nohup /config/waitThenRun.sh",
                                     "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
-                                    "--ssl-port '", { "Ref": "managementGuiPort" }, "'",
-                                    "--wait-for 1_NIC_SETUP_DONE",
+                                    "--ssl-port ", Ref(managementGuiPort),
                                   ]
             if num_nics > 1:
                 onboard_BIG_IP += [
@@ -1695,13 +1706,13 @@ def main():
                                     "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
                                   ]
             onboard_BIG_IP += [
+                               "--wait-for ADMIN_CREATED",
                                "-o /var/log/onboard.log",
                                "--log-level debug",
                                "--no-reboot",
                                "--host localhost",
-                               "--user admin",
-                               "--password '", { "Ref": "adminPassword" }, "'",
-                               "--update-user 'user:", { "Ref": "adminUsername" }, ",password:", { "Ref": "adminPassword" }, ",role:admin'",
+                               "--user ", Ref(adminUsername),
+                               "--password-url file:///config/cloud/aws/.adminPassword",
                                "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
                                "--ntp 0.us.pool.ntp.org",
                                "--ntp 1.us.pool.ntp.org",
@@ -1711,13 +1722,10 @@ def main():
                             ]
             if aws_creds:
                 custom_sh += [
-                                "tmsh modify sys global-settings aws-access-key ${IAM_ACCESS_KEY}\n",
-                                "tmsh modify sys global-settings aws-secret-key ${IAM_SECRET_KEY}\n",
+                                "tmsh modify sys global-settings aws-access-key", Ref(iamAccessKey), "\n",
+                                "tmsh modify sys global-settings aws-secret-key", Ref(iamSecretKey), "\n",
                                 ]   
             if num_nics == 1:
-                custom_sh +=  [
-                                "tmsh modify sys httpd ssl-port ${MANAGEMENT_GUI_PORT}\n",
-                              ] 
                 # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
                 if 'waf' in components:
                     custom_sh +=  [ 
@@ -1726,6 +1734,14 @@ def main():
             # Network Settings
             if num_nics > 1:
                 custom_sh +=  [ 
+                                "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                                "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                                "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                                "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                                "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                                "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n", 
+                                "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n", 
+                                "EXTMASK=${GATEWAY_PREFIX}\n",
                                 "tmsh create net vlan external interfaces add { 1.1 } \n",
                                 ]
                 if ha_type == "standalone":
@@ -1748,6 +1764,11 @@ def main():
                                         ]
             if num_nics > 2:
                 custom_sh +=  [ 
+                                "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                                "GATEWAY_CIDR_BLOCK2=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
+                                "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}\n",
+                                "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
+                                "INTMASK=${GATEWAY_PREFIX2}\n", 
                                 "tmsh create net vlan internal interfaces add { 1.2 } \n",
                                 "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
                                 ]
@@ -1768,6 +1789,7 @@ def main():
             # Disable DHCP if clustering. 
             if ha_type != "standalone":
                 custom_sh += [ 
+                                    "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                                     "tmsh mv cm device bigip1 ${HOSTNAME}\n",
                                     "tmsh modify sys db dhclient.mgmt { value disable }\n",
                                 ] 
@@ -1782,18 +1804,15 @@ def main():
                     custom_sh += [
                                     "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n", 
                                    ]
-            custom_sh +=  [ "tmsh save /sys config\n", ]
             # License Device
             if license_type == "byol":
-                custom_sh += license_byol
+                onboard_BIG_IP += license_byol
             elif license_type == "bigiq":
                 custom_sh += license_from_bigiq
             # Wait until licensing finishes
-            custom_sh += [
-                              "checkStatusnoret\n",
-                              "sleep 20 \n",
-                              "tmsh save /sys config\n",
-                           ]
+            if license_type == "hourly":
+                custom_sh +=    [
+                                ]
             # Provision Modules
             if 'waf' in components:
                onboard_BIG_IP += [ 
@@ -1801,15 +1820,18 @@ def main():
                                  ]
             onboard_BIG_IP += [ 
                 "--ping",
-                "&> /var/log/cloudlibs-install.log < /dev/null",
-                "&"
+                "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
             ]
             # Cluster Devices if Cluster Seed
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 custom_sh +=  [
                                 "echo 'sleeping additional 180 secs to wait for peer to boot'\n",
                                 "sleep 180\n",
-                                "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username \"${BIGIP_ADMIN_USERNAME}\" password \"${BIGIP_ADMIN_PASSWORD}\"\n",    
+                                "PEER_HOSTNAME='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "Instance", "PrivateDnsName"), "'\n",
+                                "PEER_MGMTIP='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "ManagementInterface", "PrimaryPrivateIpAddress"), "'\n",
+                                "USERNAME=", Ref(adminUsername), "\n",
+                                "PASSWORD=", Ref(adminPassword), "\n",
+                                "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username \"${USERNAME}\" password \"${PASSWORD}\"\n",    
                                 "tmsh create cm device-group across_az_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
                                 "sleep 10\n",
                                 "tmsh run cm config-sync to-group across_az_failover_group\n", 
@@ -1895,15 +1917,17 @@ def main():
                 custom_sh += [
                                     "tmsh save /sys config\n",
                                     "date\n",
-                                    "# for security purposes, remove firstrun.config\n",
-                                    "# rm /config/cloud/aws/firstrun.config\n"
+                                    "### START CUSTOM TMSH CONFIGURTION\n",
+                                    "### END CUSTOM TMSH CONFIGURATION"
                                ]
             else:
                 custom_sh += [
+                                    "rm /config/cloud/aws/.adminPassword\n",
                                     "tmsh save /sys config\n",
                                     "date\n",
-                                    "# remove_license_from_bigiq.sh uses firstrun.config but for security purposes, typically want to remove firstrun.config\n",
-                                    "# rm /config/cloud/aws/firstrun.config\n"
+                                    "### START CUSTOM TMSH CONFIGURTION\n",
+                                    "### END CUSTOM TMSH CONFIGURATION"
+                                    
                                ]             
 
             if license_type == "bigiq":
@@ -1913,7 +1937,7 @@ def main():
                                 files=InitFiles(
                                     {
                                         '/config/cloud/f5-cloud-libs.tar.gz': InitFile(
-                                            source='https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/develop',
+                                            source='https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.0.0/dist/f5-cloud-libs.tar.gz',
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -1978,13 +2002,14 @@ def main():
                         })
                     )
             else:
+             
                 metadata = Metadata(
                         Init({
                             'config': InitConfig(
                                 files=InitFiles(
                                     {
                                         '/config/cloud/f5-cloud-libs.tar.gz': InitFile(
-                                            source='https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/release-2.0.0/dist/f5-cloud-libs.tar.gz',
+                                            source='https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.0.1/dist/f5-cloud-libs.tar.gz',
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -2013,14 +2038,14 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/config/cloud/aws/custom.config': InitFile(
-                                            content=Join('', custom_config ),
+                                        '/config/cloud/aws/createUser.sh': InitFile(
+                                            content=Join('\n', create_user ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/config/cloud/aws/firstrun.utils': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
+                                        '/config/cloud/aws/.adminPassword': InitFile(
+                                            content=Ref(adminPassword),
                                             mode='000755',
                                             owner='root',
                                             group='root'
@@ -2034,29 +2059,33 @@ def main():
                                     } 
                                 ),
                                 commands={  
-                                            "000-disable-1nicautoconfig": {
-                                                "command": { "Fn::Join" : [ " ", nicautoconfig
-                                                                          ]
-                                                }
+                                            "001-disable-1nicautoconfig": {
+                                                "command": "/usr/bin/setdb provision.1nicautoconfig disable"
                                             },                                            
-                                            "001-install-libs": {
+                                            "002-install-libs": {
                                                 "command": { "Fn::Join" : [ " ", unpack_libs
                                                                           ]
                                                 }
                                             },
-                                            "002-1nic-setup": {
+                                            "003-1nic-setup": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", one_nic_setup
                                                                  ]
                                                 }
                                             },
-                                            "003-onboard-BIG-IP": {
+                                            "004-create-admin-user": {
+                                                "command": { 
+                                                    "Fn::Join" : [ "", admin_user
+                                                                 ]
+                                                }
+                                            },
+                                            "005-onboard-BIG-IP": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", onboard_BIG_IP
                                                                  ]
                                                 }
                                             },
-                                            "005-custom-config": {
+                                            "006-custom-config": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", custom_command
                                                                  ]
@@ -2066,9 +2095,7 @@ def main():
                             ) 
                         })
                     )
-
             NetworkInterfaces = []
-
             if num_nics == 1:
                 NetworkInterfaces = [
                     NetworkInterfaceProperty(
@@ -2077,7 +2104,6 @@ def main():
                         Description="Public or External Interface",
                     ),
                 ]
-
             if num_nics == 2:  
                 NetworkInterfaces = [
                     NetworkInterfaceProperty(
@@ -2091,7 +2117,6 @@ def main():
                         Description="Public or External Interface",
                     ),    
                 ]
-
             if num_nics == 3:  
                 NetworkInterfaces = [
                     NetworkInterfaceProperty(
@@ -2110,7 +2135,6 @@ def main():
                         Description="Private or Internal Interface",
                     ), 
                 ]
-
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 RESOURCES[BigipInstance] = t.add_resource(Instance(
                     BigipInstance,
@@ -2150,7 +2174,6 @@ def main():
                 ))
 
     ### BEGIN OUTPUT
-
     if network == True:
         Vpc = t.add_output(Output(
             "Vpc",

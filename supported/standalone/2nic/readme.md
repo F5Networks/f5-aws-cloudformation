@@ -110,7 +110,7 @@ After clicking the Launch button, you must specify the following parameters.
 
 ## Configuration Example <a name="config">
 
-The following is a simple configuration diagram for this 2-NIC deployment. In this diagram, the IP addresses are provided as examples.
+The following is a simple configuration diagram for this 2-NIC deployment. In this diagram, the IP addresses are provided as examples.<br>
 ![2-NIC configuration example](images/aws-2nic.png)
 
 ### Documentation

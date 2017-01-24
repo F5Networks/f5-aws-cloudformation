@@ -1,0 +1,74 @@
+; Instructions: 
+; Rename this file to config.ini and update the variables. 
+; config.ini is not tracked in git.
+
+[vars]
+
+; Required
+; arbitrary name for your deployment, must follow CFT naming conventions
+; ex. DeploymentName=f5_demo
+DeploymentName=
+
+; aws/ec2 region where you want to deploy
+; ex. Region=us-east-1
+Region=
+
+; the name of your ssh key pair in ec2, don't include the .pem
+; ex. KeyName=my-key-pair
+KeyName=
+
+; SSH location
+; ex. SSHLocation=55.55.50.50/32
+SSHLocation=
+
+; availability zones
+; ex. AvailabilityZone1=us-east-1b 
+; ex. AvailabilityZone2=us-east-1c 
+AvailabilityZone1=
+AvailabilityZone2= 
+
+; admin creds
+; ex. BigipAdminUsername=admin 
+; ex. BigipAdminPassword=MyPassword
+BigipAdminUsername=
+BigipAdminPassword=
+
+; Big-IP instance Type
+; ex. BigipInstanceType=m3.xlarge
+BigipInstanceType=
+
+; Big-IP Performance Type
+; ex. BigipPerformanceType=Good 
+BigipPerformanceType= 
+
+; ex. BigipManagementGuiPort=8443
+BigipManagementGuiPort=
+
+; REQUIRED FOR DEPLOYMENTES USING BIGIQ LICENSE POOL
+;ex. BigiqUsername=admin
+;ex. BigiqPassword=MyPassword
+;ex. BigiqAddress=55.55.55.55
+;ex. BigiqLicensePoolUUID=92ff652f-3569-40ce-80db-6f0fce4b900a
+;To obtain UUID: curl -sk -u admin:'Password' -H "Content-Type: application/json" https://55.55.55.55/mgmt/cm/shared/licensing/pools/?\$select=uuid,name | python -m json.tool
+BigiqUsername=
+BigiqPassword=
+BigiqAddress=
+BigiqLicensePoolUUID=
+
+; Webserver
+; ex. WebserverInstanceType=t1.micro 
+WebserverInstanceType=
+
+
+; your access credentials
+; ex. IamAccessKey=A....Q
+; ex. IamSecretKey=Os....ASJD22
+IamAccessKey=
+IamSecretKey= 
+
+; ssl certificate id used in ELB
+ex. CertificateId=arn:aws:iam::4525353943099:server-certificate/f5example-cert 
+CertificateId=
+
+
+

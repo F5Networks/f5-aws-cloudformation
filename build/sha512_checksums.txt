@@ -1,0 +1,12 @@
+**Cluster: - Same Azs2 NIC - BYOL**(f5-existing-stack-same-az-cluster-byol-2nic-bigip.template)
+'7d8cf6f9027e93fd53fe26a09e504edda824592cdd2dd2f6a5a5b8ab2c2e20207f99216409f3365a4c52b47f43e496e7fa8922b8b3e9c9f67a78040b6be5703e'
+**Cluster: - Same Azs2 NIC - HOURLY**(f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template)
+'d664d6d3879dd4fc3a89d59333ac2f01eedfa8a4bb1a60dd15ac35116cb0355e1621297587810616f1b96f3353da168b1c16234ecd68bc13a4acaf153869e42e'
+**Standalone:1 NIC - BYOL**(f5-existing-stack-byol-1nic-bigip.template)
+'8dfac7440f2165fe323eebb0b6ca304f45252e20972b478037de9cd826816cfd0b1d24979d1620e68b306e8be69d4b307ce799f3e10b70b745aa8933e9da8174'
+**Standalone:1 NIC - HOURLY**(f5-existing-stack-hourly-1nic-bigip.template)
+'ffbf12eee5aa160b1232295b4dde6882fb8f8b8e7b5ee46d5f2fd7a7a891bfb6ecee391febe2bac0a0b0ae61601d982db0d533a31ee2d9dc260845b72e715b0a'
+**Standalone:2 NIC - BYOL**(f5-existing-stack-byol-2nic-bigip.template)
+'d9cfd710f49e444532a205f3d5383f9dedcde97b622734c7d861c76df3e82fee18ab658070fcd5fc9b328425d93503fe0a1b308683c62e2400f3206f3a3e98ab'
+**Standalone:2 NIC - HOURLY**(f5-existing-stack-hourly-2nic-bigip.template)
+'420af5992ebcf4fa1d7ed74a5004260e2094fb37836309bb4662623298aeba0325f276559e477a4e4a38bdda8e9f51ee50039246d558edb9eea248195334ebb2'

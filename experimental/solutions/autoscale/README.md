@@ -2,7 +2,7 @@
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 
 ## Introduction
-This project implements auto scaling of BIG-IP Virtual Edition Web Application Firewall (WAF) systems in Amazon Web Services using the AWS CloudFormation template **autoscale-bigip.template**. As traffic increases or decreases, the number of BIG-IP VE instances automatically increases or decreases accordingly.
+This project implements auto scaling of BIG-IP Virtual Edition Web Application Firewall (WAF) systems in Amazon Web Services using the AWS CloudFormation template **f5-autoscale-bigip.template**. As traffic increases or decreases, the number of BIG-IP VE instances automatically increases or decreases accordingly.
 
 See the [Configuration Example](#config) section for a configuration diagram and more information for this solution.<br>
 See the [Security Blocking Levels](#blocking) section for a description of the blocking levels for the Web Application Firewall presented in the template.
@@ -35,34 +35,32 @@ Download the CloudFormation template from https://github.com/f5networks and use 
    1. Under AWS Services, click **CloudFormation**.
    2. Click the **Create Stack** button 
    3. In the Choose a template area, click **Upload a template to Amazon S3**.
-   4. Click **Choose File** and then browse to the **autoscale-bigip.template** file.
+   4. Click **Choose File** and then browse to the **f5-autoscale-bigip.template** file.
  
  <br>
  **AWS CLI**
  
  From the AWS CLI, use the following command syntax:
  ```
- aws cloudformation create-stack --stack-name Acme-autoscale-bigip --template-body file:///fullfilepath/autoscale-bigip.template --parameters file:///fullfilepath/autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM`
+ aws cloudformation create-stack --stack-name Acme-autoscale-bigip --template-body file:///fullfilepath/f5-autoscale-bigip.template --parameters file:///fullfilepath/f5-autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM`
 ```
 <br>
 ### Usage ###
-Use this template to automate the autoscale implementation by providing the parameter values. You can use or change the default parameter values, which are defined in the AWS CloudFormation template on the AWS Console.  If using the AWS CLI, use the following JSON format parameter file
+Use this template to automate the auto scale implementation by providing the parameter values. You can use or change the default parameter values, which are defined in the AWS CloudFormation template on the AWS Console.  If using the AWS CLI, use the following JSON parameter file.
 
 
 | Parameter | Required | Description |
 | --- | --- | --- |
 | deploymentName | x | Deployment Name use in creating object names |
 | vpc | x | VPC to deploy BIG-IPs |
-| availabilityZones | x | Availability Zones to deploy BIG-IPs (Recommend at least 2) |
+| availabilityZones | x | Availability Zones to deploy BIG-IPs (we recommend at least 2) |
 | subnets | x | Public or External Subnet IDs of above Availability Zones |
 | bigipSecurityGroup | x | Existing Security Group for BIG-IPs |
 | bigipElasticLoadBalancer | x | Elastic Load Balancer group for BIG-IPs, e.g. AcmeBigipELB |
 | sshKey | x | Existing EC2 KeyPair to enable SSH access to the BIG-IP instance |
-| restrictedSrcAddress | x | IP address range that can SSH to the BIG-IP instances (Default 0.0.0.0/0) |
 | instanceType | x | BIG-IP Instance Type (Default m3.2xlarge) |
 | throughput | x | BIG-IP Throughput (Default 1000Mbps) |
 | adminUsername | x | BIG-IP Admin Username (Default admin). Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
-| adminPassword | x | BIG-IP Admin Password |
 | managementGuiPort | x | Port of BIG-IP management GUI (Default 8443) |
 | timezone | x | Olson timezone string from /usr/share/zoneinfo (Default UTC) |
 | ntpServer | x | NTP server (Default 0.pool.ntp.org) |
@@ -115,14 +113,6 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 	{
 		"ParameterKey":"sshKey",
 		"ParameterValue":"awskeypair"
-	},
-	{
-		"ParameterKey":"restrictedSrcAddress",
-		"ParameterValue":"0.0.0.0/0"
-	},
-	{
-		"ParameterKey":"adminPassword",
-		"ParameterValue":"strongPassword"
 	},
 	{
 		"ParameterKey":"notificationEmail",

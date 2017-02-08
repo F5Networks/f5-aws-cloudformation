@@ -32,8 +32,7 @@
             "sshKey",
             "instanceType",
             "throughput",
-            "adminUsername",       
-            "adminPassword",
+            "adminUsername",
             "managementGuiPort",
             "timezone",
             "ntpServer"
@@ -104,10 +103,7 @@
           "default": "Maximum Throughput"
         },
         "adminUsername": {
-          "default": "Admin Username"
-        },
-        "adminPassword": {
-          "default": "Admin Password"
+          "default": "BIG-IP Admin User for clustering"
         },
         "managementGuiPort": {
           "default": "Management Port"
@@ -224,20 +220,12 @@
     },
     "adminUsername": {
       "ConstraintDescription": "Verify your BIG-IP admin username. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). The user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa.",
-      "Description": "BIG-IP VE admin username",
+      "Description": "BIG-IP Admin User for clustering",
       "MaxLength": "255",
       "MinLength": "1",
       "AllowedPattern": "[a-zA-Z0-9._-]+",
       "Default": "admin",
       "Type": "String"
-    },
-    "adminPassword": {
-        "ConstraintDescription": "Verify your BIG-IP admin Password",
-        "Description": "BIG-IP VE admin password",
-        "MaxLength": "255",
-        "MinLength": "1",
-        "NoEcho": true,
-        "Type": "String"
     },
     "managementGuiPort": {
       "Description": "Port for the BIG-IP management Configuration utility",
@@ -462,48 +450,6 @@
         "Better": "Better1000Mbps",
         "Best": "Best1000Mbps"
       }
-    },
-    "AWSBigipThrougputThreshold": {
-      "25Mbps": {
-        "10": "2621440",
-        "20": "5242880",
-        "30": "7864320",
-        "40": "10485760",
-        "60": "15728640",
-        "70": "18350080",
-        "80": "20971520",
-        "90": "23592960"
-      },
-      "200Mbps": {
-        "10": "20971520",
-        "20": "41943040",
-        "30": "62914560",
-        "40": "83886080",
-        "60": "125829120",
-        "70": "146800640",
-        "80": "167772160",
-        "90": "188743680"
-      },
-      "1000Mbps": {
-        "10": "107374182",
-        "20": "214748365",
-        "30": "322122547",
-        "40": "429496730",
-        "60": "644245094",
-        "70": "751619277",
-        "80": "858993459",
-        "90": "966367642"
-      },
-      "5000Mbps": {
-        "10": "536870912",
-        "20": "1073741824",
-        "30": "1610612736",
-        "40": "2147483648",
-        "60": "3221225472",
-        "70": "3758096384",
-        "80": "4294967296",
-        "90": "4294967296"
-      }
     }
   },
   "Resources": {
@@ -637,46 +583,27 @@
         "AWS::CloudFormation::Init": {
           "config": {
             "files": {
-              "/config/cloud/asm-policy-linux.tar.gz":{
-                "source": "https://s3-us-west-2.amazonaws.com/f5-dev/asm-policy-linux.tar.gz",
+              "/config/cloud/asm-policy-linux.tar.gz": {
+                "source": "http://cdn.f5.com/product/blackbox/aws/asm-policy-linux.tar.gz",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
               },
-              "/config/cloud/f5.http.v1.2.0rc4.tmpl":{
-                "source": "http://cdn.f5.com/product/blackbox/staging/azure/f5.http.v1.2.0rc4.tmpl",
+              "/config/cloud/f5.http.v1.2.0rc4.tmpl": {
+                "source": "http://cdn.f5.com/product/blackbox/aws/f5.http.v1.2.0rc4.tmpl",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
-              },                          
-              "/config/cloud/f5-cloud-libs.tar.gz":{
-                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs/tarball/release-2.0.0",
+              },
+              "/config/cloud/f5-cloud-libs.tar.gz": {
+                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/release-2.1.0/dist/f5-cloud-libs.tar.gz",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
               },
               "/config/cloud/f5-cloud-libs-aws.tar.gz": {
-                "source": "https://api.github.com/repos/F5Networks/f5-cloud-libs-aws/tarball/develop",
+                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/release-1.0.0/dist/f5-cloud-libs-aws.tar.gz",
                 "mode": "000644",
-                "owner": "root",
-                "group": "root"
-              },
-              "/config/getNameServer.sh": {
-                "content": {
-                  "Fn::Join": [
-                    "\n",
-                    [
-                      "INTERFACE=$1",
-                      "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-                      "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-                      "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
-                      "VPC_NET=${VPC_CIDR_BLOCK%/*}",
-                      "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
-                      "echo $NAME_SERVER"
-                    ]
-                  ]
-                },
-                "mode": "000755",
                 "owner": "root",
                 "group": "root"
               },
@@ -716,6 +643,49 @@
                   ]
                 }
               },
+              "/config/verifyHash": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "cli script /Common/verifyHash {",
+                      "proc script::run {} {",
+                      "        if {[catch {",
+                      "            set hashes(f5-cloud-libs.tar.gz) a6a9db3b89bbd014413706f22fa619c3717fac41fc99ffe875589c90e9b85a05cea227c134ea6e5b519c8fee0d12f2175368e75917f31f447ece3d92f31814af",
+                      "            set hashes(f5-cloud-libs-aws.tar.gz) 90058095cc536a057378a90ed19c3afe0cecd9034e1d1816745bd5ad837939623fad034ebd2ee9bdf594f33358b50c50f49a18c2ee7588ba89645142f2217330",
+                      "            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0",
+                      "            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034",
+                      "            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe",
+                      "",
+                      "            set file_path [lindex $tmsh::argv 1]",
+                      "            set file_name [file tail $file_path]",
+                      "",
+                      "            if {![info exists hashes($file_name)]} {",
+                      "                tmsh::log err \"No hash found for $file_name\"",
+                      "                exit 1",
+                      "            }",
+                      "",
+                      "            set expected_hash $hashes($file_name)",
+                      "            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
+                      "            if { $expected_hash eq $computed_hash } {",
+                      "                exit 0",
+                      "            }",
+                      "            tmsh::log err \"Hash does not match for $file_path\"",
+                      "            exit 1",
+                      "        }]} {",
+                      "            tmsh::log err {Unexpected error in verifyHash}",
+                      "            exit 1",
+                      "        }",
+                      "    }",
+                      "    script-signature OmyfJKVQkBj+Ks6SdIc2+UNxM2xFCK4MGizGysivShzeRof0EFlEUTQiZveZ4v2SElofUp5DMVKiTIIkM00kZ7LnwqvLYIOztDFNAtMGwO6/B/zA8jLhkfnA2xzxu9fFgFn3OEsc8QwbfFS1AqCMyyacbbiczJycHtu3z0a/8sqCgiZtcQ4iXqBP4fz+8HKLA36U0jpmW+z0gQQUwpiC+AfFWcAarXMtmpwLzScldnaZ5RLo0MG8EGrHmXiWjndSR/Ii9b3+vnHnceD6+sw7e7LXPvz+jV9/rFyEQOA1QNpv0Cy4SJcuY9NRjV9KNdBobJ5N+h2PZBlgaIdLMACAVQ==",
+                      "}"
+                    ]
+                  ]
+                },
+                "mode": "000755",
+                "owner": "root",
+                "group": "root"
+              },
               "/config/cloud/aws/custom-config.sh": {
                 "content": {
                   "Fn::Join": [
@@ -724,115 +694,250 @@
                       "#!/bin/bash\n",
                       "date\n",
                       ". /config/cloud/aws/firstrun.config\n",
-                      "ADMIN_PASSWORD=$1\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
                       "tmsh modify sys autoscale-group autoscale-group-id ${BIGIP_ASG_NAME} \n",
                       "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
                       "tmsh create sys icall handler periodic /Common/metricUploadHandler { first-occurrence now interval 60 script /Common/uploadMetrics }\n",
                       "echo 'Attempting to Join or Initiate Autoscale Cluster' \n",
-                      "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --no-console --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"},
-                      ",mgmtPort:", { "Ref": "managementGuiPort" }, " --host localhost --port ", { "Ref": "managementGuiPort" }, " --user ", { "Ref": "adminUsername" }, " --password ${ADMIN_PASSWORD} --device-group autoscale-group --block-sync -c join --log-level debug --output /var/log/aws-autoscale.log\n",
-                      "if [ -f /config/cloud/aws/master ]; then \n",                      
+                      "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"},
+                      ",mgmtPort:", { "Ref": "managementGuiPort" }, " --host localhost --port ", { "Ref": "managementGuiPort" }, " --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group --block-sync -c join --log-level debug --output /var/log/aws-autoscale.log\n",
+                      "if [ -f /config/cloud/aws/master ]; then \n",
                       "   echo 'SELF-SELECTED as Master ... Initiated Autoscale Cluster ... Loading default config'\n",
-                      "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --no-console --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
-                      " --host localhost --port ", { "Ref": "managementGuiPort" }," --user ", { "Ref": "adminUsername" }, " --device-group autoscale-group -c update --log-level debug --output /var/log/aws-autoscale.log }\n",
+                      "   tmsh create cm device-group autoscale-group devices add { ${HOSTNAME} } type sync-failover auto-sync enabled network-failover disabled\n",
+                      "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
+                      " --host localhost --port ", { "Ref": "managementGuiPort" }," --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group -c update --log-level debug --output /var/log/aws-autoscale.log }\n",
                       "   tmsh create sys icall handler periodic /Common/ClusterUpdateHandler { first-occurrence now interval 600 script /Common/ClusterUpdate }\n",
                       "   tmsh save /sys config\n",
                       "   tmsh create ltm node ${APP_NAME} fqdn { name ${POOL_DNS} }\n",
+                      "   tmsh create ltm pool ${APP_NAME}_pool members add { ${APP_NAME}:${POOL_MEMBER_PORT} } monitor http\n",
+                      "   ### START CUSTOM TMSH CONFIGURTION:  Policy Name/Policy URL, etc. \n",
                       "   tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
-                      "   # BEGIN CUSTOMIZE:  Policy Name/Policy URL, etc. \n",
                       "   tmsh load asm policy file /config/cloud/asm-policy-linux-${POLICY_LEVEL}.xml\n",
                       "   # modify asm policy names below (ex. /Common/linux-${POLICY_LEVEL}) to match policy name in the xml file\n",
                       "   tmsh modify asm policy /Common/linux-${POLICY_LEVEL} active\n",
                       "   tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
                       "   tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
                       "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${POLICY_LEVEL} } } } }\n",
-                      "   tmsh create sys application service ${APP_NAME} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${APP_NAME} ${POOL_MEMBER_PORT} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${VS_PORT} } monitor__http_version { value http10 } }}\n",
-                      "   f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --no-console --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
-                      "      --host localhost --port ", { "Ref": "managementGuiPort" }," --user admin --password ${ADMIN_PASSWORD} -c unblock-sync\n",
+                      "   tmsh create ltm virtual ${APP_NAME}_vs_${VS_PORT} { destination 0.0.0.0:${VS_PORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool ${APP_NAME}_pool profiles replace-all-with { tcp { } http { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                      "   ### END CUSTOM TMSH CONFIGURATION\n",
                       "   tmsh save /sys config\n",
+                      "   f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
+                      "      --host localhost --port ", { "Ref": "managementGuiPort" }," --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword -c unblock-sync\n",
                       "fi\n",
                       "date\n",
                       "echo 'custom-config.sh complete'\n"
                     ]
                   ]
                 },
-                "mode": "000744",
+                "mode": "000755",
+                "owner": "root",
+                "group": "root"
+              },
+              "/config/installCloudLibs.sh": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "#!/bin/bash",
+                      "echo about to execute",
+                      "checks=0",
+                      "while [ $checks -lt 120 ]; do echo checking mcpd",
+                      "    tmsh -a show sys mcp-state field-fmt | grep -q running",
+                      "    if [ $? == 0 ]; then",
+                      "        echo mcpd ready",
+                      "        break",
+                      "    fi",
+                      "    echo mcpd not ready yet",
+                      "    let checks=checks+1",
+                      "    sleep 10",
+                      "done",
+                      "echo loading verifyHash script",
+                      "if ! tmsh load sys config merge file /config/verifyHash; then",
+                      "    echo cannot validate signature of /config/verifyHash",
+                      "    exit",
+                      "fi",
+                      "echo loaded verifyHash",
+                      "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+                      "for fileToVerify in \"${filesToVerify[@]}\"",
+                      "do",
+                      "    echo verifying \"$fileToVerify\"",
+                      "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+                      "        echo \"$fileToVerify\" is not valid",
+                      "        exit 1",
+                      "    fi",
+                      "    echo verified \"$fileToVerify\"",
+                      "done",
+                      "mkdir -p /config/cloud/aws/node_modules",
+                      "echo expanding f5-cloud-libs.tar.gz",
+                      "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
+                      "tar xvfz /config/cloud/asm-policy-linux.tar.gz -C /config/cloud",
+                      "cd /config/cloud/aws/node_modules/f5-cloud-libs",
+                      "echo installing dependencies",
+                      "npm install --production /config/cloud/f5-cloud-libs-aws.tar.gz",
+                      "echo cloud libs install complete",
+                      "touch /config/cloud/cloudLibsReady"
+                    ]
+                  ]
+                },
+                "mode": "000755",
+                "owner": "root",
+                "group": "root"
+              },
+              "/config/cloud/aws/createUser.sh": {
+                  "content": {
+                      "Fn::Join": [
+                          "\n",
+                          [
+                              "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
+                              "PASSWORD=$(/bin/sed -e $'s:[\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
+                              "if [ \"$1\" == admin ]; then",
+                              "    /usr/bin/tmsh modify /auth user \"$1\" password ${PASSWORD}",
+                              "else",
+                              "    tmsh create auth user \"$1\" password ${PASSWORD} shell bash partition-access replace-all-with { all-partitions { role admin } }",
+                              "fi",
+                              "sleep 5"
+                          ]
+                      ]
+                  },
+                  "mode": "000755",
+                  "owner": "root",
+                  "group": "root"
+              },
+              "/config/cloud/getNameServer.sh": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "INTERFACE=$1",
+                      "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
+                      "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
+                      "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+                      "VPC_NET=${VPC_CIDR_BLOCK%/*}",
+                      "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
+                      "echo $NAME_SERVER"
+                    ]
+                  ]
+                },
+                "mode": "000755",
+                "owner": "root",
+                "group": "root"
+              },
+              "/config/cloud/waitThenRun.sh": {
+                "content": {
+                  "Fn::Join": [
+                    "\n",
+                    [
+                      "#!/bin/bash",
+                      "while true; do echo waiting for cloud libs install to complete",
+                      "    if [ -f /config/cloud/cloudLibsReady ]; then",
+                      "        echo cloud libs installed",
+                      "        break",
+                      "    else",
+                      "        sleep 10",
+                      "    fi",
+                      "done",
+                      "\"$@\""
+                    ]
+                  ]
+                },
+                "mode": "000755",
                 "owner": "root",
                 "group": "root"
               }
             },
             "commands": {
-              "001-upack-libs": {
-                "command": { "Fn::Join" : [ " ", [
-                                                  "tar xvfz /config/cloud/asm-policy-linux.tar.gz -C /config/cloud;",
-                                                  "mkdir -p /config/cloud/aws/node_modules;",
-                                                  "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules;",
-                                                  "mv /config/cloud/aws/node_modules/F5Networks-f5-cloud-libs-* /config/cloud/aws/node_modules/f5-cloud-libs;",
-                                                  "cd /config/cloud/aws/node_modules/f5-cloud-libs;",
-                                                  "npm install --production;",
-                                                  "npm install --production /config/cloud/f5-cloud-libs-aws.tar.gz;"
-                                                ]
-                                          ]
-                          }
+              "001-disable-1nicautoconfig": {
+                "command": "/usr/bin/setdb provision.1nicautoconfig disable"
               },
-              "002-1nic-setup": {
-                "command": { "Fn::Join" : [ " ", [
-                                                  "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
-                                                  "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh",
-                                                  "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws",
-                                                  "-o /var/log/1nicSetup.log",
-                                                  "--background",
-                                                  "--signal 1_NIC_SETUP_DONE"
-                                                ]
-                                          ]
-                          }
-              },  
-              "003-onboard-BIG-IP": {
-                "command": { "Fn::Join" : [ "", [
-                                                  "NAME_SERVER=`/config/getNameServer.sh eth0`;",
-                                                  "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
-                                                  " --wait-for 1_NIC_SETUP_DONE",
-                                                  " -o  /var/log/onboard.log",
-                                                  " --background",
-                                                  " --no-reboot",
-                                                  " --host localhost",
-                                                  " --user admin",
-                                                  " --password xxxxx",
-                                                  " --update-user 'user:",
-                                                  {
-                                                    "Ref": "adminUsername"
-                                                  },
-                                                  ",password:",
-                                                  {
-                                                    "Ref": "adminPassword"
-                                                  },
-                                                  ",role:admin,shell:tmsh'",
-                                                  " --hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
-                                                  " --ntp ", { "Ref": "ntpServer" },
-                                                  " --tz ", { "Ref": "timezone" },
-                                                  " --dns ${NAME_SERVER}",
-                                                  " --ssl-port ", { "Ref": "managementGuiPort" },
-                                                  " --module ltm:nominal",
-                                                  " --module asm:nominal",
-                                                  " --ping"
-                                                ]
-                                          ]
-                          }
+              "002-install-libs": {
+                "command": "nohup /config/installCloudLibs.sh &> /var/log/cloudlibs-install.log < /dev/null &"
               },
-              "004-custom-config": {
-                "command": { "Fn::Join" : [ "", [
-                                                  "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
-                                                  " --file /config/cloud/aws/custom-config.sh",
-                                                  " --cl-args '", { "Ref": "adminPassword" }, "'",
-                                                  " --cwd /config/cloud/aws",
-                                                  " -o /var/log/custom-config.log",
-                                                  " --background",
-                                                  " --wait-for ONBOARD_DONE"
-                                                ]
-                                          ]
-                          }
-              }            
+              "003-1nic-setup": {
+                "command": {
+                  "Fn::Join": [
+                    " ",
+                    [
+                      "nohup /config/cloud/waitThenRun.sh",
+                      "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                      "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh",
+                      "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws",
+                      "-o /var/log/1nicSetup.log",
+                      "--signal 1_NIC_SETUP_DONE",
+                      "&>> /var/log/cloudlibs-install.log < /dev/null",
+                      "&"
+                    ]
+                  ]
+                }
+              },
+              "004-create-admin-user": {
+                  "command": {
+                      "Fn::Join": [
+                          "",
+                          [
+                              "nohup /config/cloud/waitThenRun.sh",
+                              " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                              " --signal ADMIN_CREATED",
+                              " --file /config/cloud/aws/createUser.sh",
+                              " --cl-args '",
+                              { "Ref": "adminUsername" },
+                              "'",
+                              " --log-level verbose",
+                              " -o /var/log/createUser.log",
+                              " &>> /var/log/cloudlibs-install.log < /dev/null",
+                              " &"
+                          ]
+                      ]
+                  }
+              },
+              "005-onboard-BIG-IP": {
+                "command": {
+                  "Fn::Join": [
+                    " ",
+                    [
+                      "NAME_SERVER=`/config/cloud/getNameServer.sh eth0`;",
+                      "nohup /config/cloud/waitThenRun.sh",
+                      "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+                      "--wait-for 1_NIC_SETUP_DONE",
+                      "-o /var/log/onboard.log",
+                      "--no-reboot",
+                      "--host localhost",
+                      "--user",
+                      { "Ref": "adminUsername" },
+                      "--password-url file:///config/cloud/aws/.adminPassword",
+                      "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                      "--ntp ",
+                      { "Ref": "ntpServer" },
+                      "--tz ",
+                      { "Ref": "timezone" },
+                      "--dns ${NAME_SERVER}",
+                      "--ssl-port ",
+                      { "Ref": "managementGuiPort" },
+                      "--module ltm:nominal",
+                      "--module asm:nominal",
+                      "--ping",
+                      "&>> /var/log/cloudlibs-install.log < /dev/null",
+                      "&"
+                    ]
+                  ]
+                }
+              },
+              "005-custom-config": {
+                "command": {
+                  "Fn::Join": [
+                    " ",
+                    [
+                      "nohup /config/cloud/waitThenRun.sh",
+                      "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                      "--file /config/cloud/aws/custom-config.sh",
+                      "--cwd /config/cloud/aws",
+                      "-o /var/log/custom-config.log",
+                      "--wait-for ONBOARD_DONE",
+                      "&>> /var/log/cloudlibs-install.log < /dev/null",
+                      "&"
+                    ]
+                  ]
+                }
+              }
             }
           }
         }
@@ -856,7 +961,7 @@
             }
           ]
         },
-        "InstanceMonitoring" : false,
+        "InstanceMonitoring": false,
         "InstanceType": {
           "Ref": "instanceType"
         },

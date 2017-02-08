@@ -275,7 +275,7 @@
       "Type": "String"
     },
     "virtualServicePort": {
-      "Description": "Port for the virtual Service Port on BIG-IP VE",
+      "Description": "Port for the virtual service on BIG-IP VE",
       "Default": "80",
       "ConstraintDescription": "Must be a valid port number (1-65535).",
       "Type": "Number",

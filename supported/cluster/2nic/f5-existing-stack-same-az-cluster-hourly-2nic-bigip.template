@@ -1,6 +1,6 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 1.0.0: AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.0.0: AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -225,7 +225,7 @@
     }
    }
   },
-  "Version": "1.0.0"
+  "Version": "2.0.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -641,6 +641,23 @@
           ]
          ]
         }
+       },
+       "008-rm-password": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           "--file /config/cloud/aws/rm-password.sh",
+           "-o /var/log/rm-password.log",
+           "--log-level debug",
+           "--wait-for CLUSTER_DONE",
+           "--signal PASSWORD_REMOVED",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
        }
       },
       "files": {
@@ -714,17 +731,34 @@
         "mode": "000755",
         "owner": "root"
        },
+       "/config/cloud/aws/rm-password.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "date\n",
+           "echo 'starting rm-password.sh'\n",
+           "rm /config/cloud/aws/.adminPassword\n",
+           "date\n"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
        "/config/cloud/f5-cloud-libs-aws.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/release-1.0.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.0.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/release-2.1.0/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.1.0/dist/f5-cloud-libs.tar.gz"
        },
        "/config/getNameServer.sh": {
         "content": {
@@ -1203,6 +1237,23 @@
           ]
          ]
         }
+       },
+       "008-rm-password": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           "--file /config/cloud/aws/rm-password.sh",
+           "-o /var/log/rm-password.log",
+           "--log-level debug",
+           "--wait-for CLUSTER_DONE",
+           "--signal PASSWORD_REMOVED",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
        }
       },
       "files": {
@@ -1276,17 +1327,34 @@
         "mode": "000755",
         "owner": "root"
        },
+       "/config/cloud/aws/rm-password.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "date\n",
+           "echo 'starting rm-password.sh'\n",
+           "rm /config/cloud/aws/.adminPassword\n",
+           "date\n"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
        "/config/cloud/f5-cloud-libs-aws.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/release-1.0.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.0.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/release-2.1.0/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.1.0/dist/f5-cloud-libs.tar.gz"
        },
        "/config/getNameServer.sh": {
         "content": {
@@ -1633,52 +1701,52 @@
     },
     "Path": "/",
     "Policies": [
-                 {
-                  "PolicyName": "BigipClusterAcccessPolicy",
-                  "PolicyDocument": {
-                   "Version": "2012-10-17",
-                   "Statement": [
-                    {
-                     "Effect": "Allow",
-                     "Action": [
-                      "s3:ListBucket"
-                     ],
-                     "Resource": {
-                      "Fn::Join": [
-                       "",
-                       [
-                        "arn:aws:s3:::",
-                         {
-                          "Ref": "S3Bucket"
-                         }
-                       ]
-                      ]
+                {
+                 "PolicyName": "BigipClusterAcccessPolicy",
+                 "PolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                  {
+                   "Effect": "Allow",
+                   "Action": [
+                   "s3:ListBucket"
+                   ],
+                   "Resource": {
+                    "Fn::Join": [
+                    "",
+                    [
+                     "arn:aws:s3:::",
+                     {
+                      "Ref": "S3Bucket"
                      }
+                    ]
+                    ]
+                   }
+                  },
+                  {
+                   "Effect": "Allow",
+                   "Action": [
+                   "s3:PutObject",
+                   "s3:GetObject",
+                   "s3:DeleteObject"
+                   ],
+                   "Resource": {
+                    "Fn::Join": [
+                    "",
+                    [
+                    "arn:aws:s3:::",
+                    {
+                     "Ref": "S3Bucket"
                     },
-                    {
-                     "Effect": "Allow",
-                     "Action": [
-                      "s3:PutObject",
-                      "s3:GetObject",
-                      "s3:DeleteObject"
-                     ],
-                     "Resource": {
-                      "Fn::Join": [
-                       "",
-                        [
-                         "arn:aws:s3:::",
-                          {
-                           "Ref": "S3Bucket"
-                          },
-                         "/*"
-                        ]
-                      ]
-                     }
+                    "/*"
+                    ]
+                    ]
                     }
+                   }
                    ]
                   }
                  }
-                ]
+    ]
    },
    "Metadata": {
     "AWS::CloudFormation::Designer": {

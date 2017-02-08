@@ -1,6 +1,6 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 1.0.0: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.0.0: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -171,7 +171,7 @@
     }
    }
   },
-  "Version": "1.0.0"
+  "Version": "2.0.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -454,6 +454,7 @@
            "-o /var/log/custom-config.log",
            "--log-level debug",
            "--wait-for ONBOARD_DONE",
+           "--signal CUSTOM_CONFIG_DONE",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
          ]
@@ -464,6 +465,23 @@
          "Fn::Join": [
           " ",
           []
+         ]
+        }
+       },
+       "008-rm-password": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           "--file /config/cloud/aws/rm-password.sh",
+           "-o /var/log/rm-password.log",
+           "--log-level debug",
+           "--wait-for CUSTOM_CONFIG_DONE",
+           "--signal PASSWORD_REMOVED",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
          ]
         }
        }
@@ -499,9 +517,25 @@
            "echo 'starting tmsh config'\n",
            "tmsh save /sys config\n",
            "date\n",
-           "rm /config/cloud/aws/.adminPassword",
            "### START CUSTOM TMSH CONFIGURTION\n",
            "### END CUSTOM TMSH CONFIGURATION"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/rm-password.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "date\n",
+           "echo 'starting rm-password.sh'\n",
+           "rm /config/cloud/aws/.adminPassword\n",
+           "date\n"
           ]
          ]
         },
@@ -513,13 +547,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/release-1.0.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.0.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/release-2.1.0/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.1.0/dist/f5-cloud-libs.tar.gz"
        },
        "/config/getNameServer.sh": {
         "content": {

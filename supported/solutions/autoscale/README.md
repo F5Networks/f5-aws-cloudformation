@@ -15,16 +15,17 @@ The template performs all of the BIG-IP VE configuration and synchronization whe
 - Set the BIG-IP hostname, NTP, and DNS settings
 - Configure an IAM (Identity and Access Management) role with policies allowing the BIG-IP to make authenticated calls to AWS HTTPS endpoints.
 - Create a HTTP virtual server with a Web Application Firewall policy
-- Deploy integration with EC2 Autoscale and CloudWatch services for scaling of the BIG-IP tier.
+- Deploy integration with EC2 Auto Scale and CloudWatch services for scaling of the BIG-IP tier.
 
 ## Prerequisites
 The following are prerequisites for this solution:
-  - An AWS VPC with a public subnet and an ELB sandwich (one ELB front of the BIG-IP(s) and one ELB behind the BIG-IP(s))
+  - An AWS VPC with a public subnet, an ELB in front of the BIG-IP(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s))  
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   - An AWS Security Group with the following inbound rules:
     - Port 22 for SSH access to the BIG-IP VE
     - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility
     - A port for accessing your applications via the BIG-IP virtual server
+  - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. If your organization is security conscious and you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Detail](#securitydetail) for the exact code in each of the following sections.
@@ -85,13 +86,13 @@ Use this template to automate the auto scale implementation by providing the par
 | notificationEmail |  | Valid email address to send Auto Scaling Event Notifications |
 | virtualServicePort | x | Port on BIG-IP (Default 80) |
 | applicationPort | x | Application Pool Member Port on BIG-IP (Default 80) |
-| appInternalDnsName | x | DNS of the ELB used for the application, e.g. Acme.region.elb.amazonaws.com |
+| appInternalDnsName | x | DNS name for the application pool |
 | policyLevel | x | WAF Policy Level to protect the application (Default high) |
 | application |  | Application Tag (Default f5app) |
 | environment |  | Environment Name Tag (Default f5env) |
 | group |  | Group Tag (Default f5group) |
 | owner |  | Owner Tag (Default f5owner) |
-| costcenter |  | Costcenter Tag (Default f5costcenter) |
+| costcenter |  | Cost Center Tag (Default f5costcenter) |
 <br>
 
 
@@ -102,7 +103,7 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 [
 	{
 		"ParameterKey":"deploymentName",
-		"ParameterValue":"Acme"
+		"ParameterValue":"abc"
 	},
 	{
 		"ParameterKey":"vpc",
@@ -122,7 +123,7 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 	},
 	{
 		"ParameterKey":"bigipElasticLoadBalancer",
-		"ParameterValue":"Acme-BigipElb"
+		"ParameterValue":"abc-BigipElb"
 	},
 	{
 		"ParameterKey":"sshKey",
@@ -134,7 +135,7 @@ Example minimum **autoscale-bigip-parameters.json** using default values for unl
 	},
 	{
 		"ParameterKey":"appInternalDnsName",
-		"ParameterValue":"internal-Acme-AppElb-911355308.us-east-1.elb.amazonaws.com"
+		"ParameterValue":"poolapp.example.com"
 	},
 	{
 		"ParameterKey":"policyLevel",
@@ -167,7 +168,7 @@ This section has the entire code snippets for each of the lines you should ensur
 
 **/config/verifyHash section**
 
-Note the hashed script-signature may be different in your template.<br>
+Note the hashes and script-signature may be different in your template. It is important to check there is a script-signature line present in the location shown.<br>
 
 
 ```json
@@ -267,3 +268,38 @@ Note the hashed script-signature may be different in your template.<br>
                 "group": "root"
               }
 ```
+
+## Filing Issues
+If you find an issue, we would love to hear about it. 
+You have a choice when it comes to filing issues:
+  - Use the **Issues** link on the GitHub menu bar in this repository for items such as enhancement or feature requests and non-urgent bug fixes. Tell us as much as you can about what you found and how you found it.
+  - Contact F5 Technical support via your typical method for more time sensitive changes and other issues requiring immediate support.
+
+
+
+## Copyright
+
+Copyright 2014-2017 F5 Networks Inc.
+
+
+## License
+
+
+Apache V2.0
+~~~~~~~~~~~
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations
+under the License.
+
+Contributor License Agreement
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Individuals or business entities who contribute to this project must have
+completed and submitted the `F5 Contributor License Agreement`

@@ -112,7 +112,7 @@ This section has the entire code snippets for each of the lines you should ensur
 
 **/config/verifyHash section**
 
-Note the hashes and script-signature may be different in your template. It is important to check there is a script-signature line present in the location shown.<br>
+Note the hashes and script-signature may be different in your template. The important thing to check is that there is a script-signature line present in the location.<br>
 
 
 ```json

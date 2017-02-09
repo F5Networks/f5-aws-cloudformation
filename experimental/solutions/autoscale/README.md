@@ -31,14 +31,13 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
   - In the */config/verifyHash* section: **script-signature** and then a hashed signature
   - In the */config/installCloudLibs.sh* section **"tmsh load sys config merge file /config/verifyHash"**
   
-Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
-
 In order to form a cluster of devices, a secure trust must be established between BIG-IP systems. To establish this trust, we generate and store credentials in an Amazon S3 bucket. You must not delete these credentials from the S3 bucket.
 
 ### Help 
-Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support via your typical methods.
 
-We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
+We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support.<br>
+While this template has been created by F5 Networks, it is in the experimental directory and therefore has not completed full testing and is subject to change.  F5 Networks does not offer technical support for templates in the **experimental** directory. For supported templates, see the templates in the supported directory.
+
 
 ### Installation
 Download the CloudFormation template from https://github.com/f5networks and use it to create a stack in AWS CloudFormation either using the AWS Console or AWS CLI
@@ -209,7 +208,7 @@ Note the hashed script-signature may be different in your template.<br>
                       "}"
                     ]
                   ]
-                },
+                }
 ```
 <br><br>
 **/config/installCloudLibs.sh section**

@@ -21,6 +21,7 @@ The following are prerequisites for the F5 2-NIC CFT:
     - Port 22 for SSH access to the BIG-IP VE
     - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility
     - A port for accessing your applications via the BIG-IP virtual server
+  - This solution uses the SSH key to enable access to the BIG-IP system. If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. If your organization is security conscious and you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Detail](#securitydetail) for the exact code in each of the following sections.
@@ -61,8 +62,6 @@ After clicking the Launch button, you must specify the following parameters.
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-| adminPassword | x | Type the BIG-IP admin password |
-| adminUsername | x | Type the BIG_IP user name |
 | bigipExternalSecurityGroup | x | Public or External Security Group ID |
 | bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
 | imageName | x | F5 BIG-IP Performance Type |
@@ -89,8 +88,6 @@ After clicking the Launch button, you must specify the following parameters.
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-| adminPassword | x | Type the BIG-IP admin password |
-| adminUsername | x | Type the BIG_IP user name |
 | bigipExternalSecurityGroup | x | Public or External Security Group ID |
 | bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
 | iamAccessKey | x | Type the IAM Access Key |
@@ -121,7 +118,7 @@ This section has the entire code snippets for each of the lines you should ensur
 
 **/config/verifyHash section**
 
-Note the hashed script-signature may be different in your template.<br>
+Note the hashes and script-signature may be different in your template. The important thing to check is that there is a script-signature line present in the location shown.<br>
 
 
 ```json

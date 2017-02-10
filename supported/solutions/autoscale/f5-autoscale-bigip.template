@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
+  "Description": "Template Version 2.0.0: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -157,7 +157,8 @@
           "default": "Cost Center"
         }
       }
-    }
+    },
+  "Version": "2.0.0"
   },
   "Parameters": {
     "deploymentName" : {
@@ -677,7 +678,7 @@
                       "            exit 1",
                       "        }",
                       "    }",
-                      "    script-signature QmpupbE2kzw2T7LO/Hp6NtscwZnEXjq8U0xOQLOfFIid1pdvsis6HOphdKyXjY+uzFnHktSy/Xe2LdwxjKmKRaMy5ZuE8NR+MJyUGLR3OwgVj1sGVZgwDCWvkBLyNKDQFkFfuTBk6TTN7q58+dJ3qulOv7KWkpKq/m8+8VXyQ4pj+96bHWwrs8kYRtHX5wc7cSJE/3thNWCF8v9BAyFFUFEyy6z7mFhH8iD2i+OEnqpK+0VAY1irspmaCigo3NmJXfZXIo2cWIopORqWsCATsVT6lunpV6z7h2FipnMJpAhVWqlzezSAOCHI0juPeGDAHIyNX8uLlTOpWJSgP1d4YQ==,
+                      "    script-signature QmpupbE2kzw2T7LO/Hp6NtscwZnEXjq8U0xOQLOfFIid1pdvsis6HOphdKyXjY+uzFnHktSy/Xe2LdwxjKmKRaMy5ZuE8NR+MJyUGLR3OwgVj1sGVZgwDCWvkBLyNKDQFkFfuTBk6TTN7q58+dJ3qulOv7KWkpKq/m8+8VXyQ4pj+96bHWwrs8kYRtHX5wc7cSJE/3thNWCF8v9BAyFFUFEyy6z7mFhH8iD2i+OEnqpK+0VAY1irspmaCigo3NmJXfZXIo2cWIopORqWsCATsVT6lunpV6z7h2FipnMJpAhVWqlzezSAOCHI0juPeGDAHIyNX8uLlTOpWJSgP1d4YQ==",
                       "}"
                     ]
                   ]

@@ -225,7 +225,7 @@
       "MaxLength": "255",
       "MinLength": "1",
       "AllowedPattern": "[a-zA-Z0-9._-]+",
-      "Default": "admin",
+      "Default": "cluster-admin",
       "Type": "String"
     },
     "managementGuiPort": {

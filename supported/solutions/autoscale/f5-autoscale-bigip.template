@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Template Version 2.0.0: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
+  "Description": "Template Version 2.0.1: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -158,7 +158,7 @@
         }
       }
     },
-  "Version": "2.0.0"
+  "Version": "2.0.1"
   },
   "Parameters": {
     "deploymentName" : {
@@ -336,103 +336,158 @@
   "Mappings": {
     "BigipRegionMap": {
       "ap-northeast-1": {
-        "Best1000Mbps": "ami-acf82acd", 
-        "Best200Mbps": "ami-6bfc2e0a", 
-        "Best25Mbps": "ami-a6f92bc7", 
-        "Better1000Mbps": "ami-aff82ace", 
-        "Better200Mbps": "ami-69f92b08", 
-        "Better25Mbps": "ami-1afd2f7b", 
-        "Good1000Mbps": "ami-3ef82a5f", 
-        "Good200Mbps": "ami-62fc2e03", 
-        "Good25Mbps": "ami-3af82a5b"
+        "Best1000Mbps": "ami-c64204a1", 
+        "Best200Mbps": "ami-c54503a2", 
+        "Best25Mbps": "ami-d54305b2", 
+        "Better1000Mbps": "ami-8f4204e8", 
+        "Better200Mbps": "ami-ff440298", 
+        "Better25Mbps": "ami-7a387e1d", 
+        "Good1000Mbps": "ami-7d44021a", 
+        "Good200Mbps": "ami-38387e5f", 
+        "Good25Mbps": "ami-fe440299"
+      }, 
+      "ap-northeast-2": {
+        "Best1000Mbps": "ami-7359881d", 
+        "Best200Mbps": "ami-4358892d", 
+        "Best25Mbps": "ami-4058892e", 
+        "Better1000Mbps": "ami-d65687b8", 
+        "Better200Mbps": "ami-4258892c", 
+        "Better25Mbps": "ami-e554858b", 
+        "Good1000Mbps": "ami-fb598895", 
+        "Good200Mbps": "ami-d15687bf", 
+        "Good25Mbps": "ami-3c588952"
+      }, 
+      "ap-south-1": {
+        "Best1000Mbps": "ami-fd671692", 
+        "Best200Mbps": "ami-816213ee", 
+        "Best25Mbps": "ami-d86716b7", 
+        "Better1000Mbps": "ami-3d651452", 
+        "Better200Mbps": "ami-f8671697", 
+        "Better25Mbps": "ami-3465145b", 
+        "Good1000Mbps": "ami-9e6514f1", 
+        "Good200Mbps": "ami-966415f9", 
+        "Good25Mbps": "ami-0462136b"
       }, 
       "ap-southeast-1": {
-        "Best1000Mbps": "ami-ab78ddc8", 
-        "Best200Mbps": "ami-d37edbb0", 
-        "Best25Mbps": "ami-4e79dc2d", 
-        "Better1000Mbps": "ami-d47fdab7", 
-        "Better200Mbps": "ami-7f78dd1c", 
-        "Better25Mbps": "ami-4278dd21", 
-        "Good1000Mbps": "ami-d87cd9bb", 
-        "Good200Mbps": "ami-da7cd9b9", 
-        "Good25Mbps": "ami-d47cd9b7"
+        "Best1000Mbps": "ami-92db6ff1", 
+        "Best200Mbps": "ami-94da6ef7", 
+        "Best25Mbps": "ami-38c6725b", 
+        "Better1000Mbps": "ami-1bc57178", 
+        "Better200Mbps": "ami-afdb6fcc", 
+        "Better25Mbps": "ami-36c67255", 
+        "Good1000Mbps": "ami-dbc470b8", 
+        "Good200Mbps": "ami-0ac47069", 
+        "Good25Mbps": "ami-17c57174"
       }, 
       "ap-southeast-2": {
-        "Best1000Mbps": "ami-c2e8d8a1", 
-        "Best200Mbps": "ami-c4e8d8a7", 
-        "Best25Mbps": "ami-bdecdcde", 
-        "Better1000Mbps": "ami-6febdb0c", 
-        "Better200Mbps": "ami-b1ebdbd2", 
-        "Better25Mbps": "ami-42e8d821", 
-        "Good1000Mbps": "ami-bcebdbdf", 
-        "Good200Mbps": "ami-dbebdbb8", 
-        "Good25Mbps": "ami-58e9d93b"
+        "Best1000Mbps": "ami-d51d1bb6", 
+        "Best200Mbps": "ami-311d1b52", 
+        "Best25Mbps": "ami-8e1b1ded", 
+        "Better1000Mbps": "ami-ae1a1ccd", 
+        "Better200Mbps": "ami-f31a1c90", 
+        "Better25Mbps": "ami-451a1c26", 
+        "Good1000Mbps": "ami-281d1b4b", 
+        "Good200Mbps": "ami-891b1dea", 
+        "Good25Mbps": "ami-f41a1c97"
+      }, 
+      "ca-central-1": {
+        "Best1000Mbps": "ami-dac07dbe", 
+        "Best200Mbps": "ami-adc07dc9", 
+        "Best25Mbps": "ami-51c37e35", 
+        "Better1000Mbps": "ami-d9c07dbd", 
+        "Better200Mbps": "ami-e8c37e8c", 
+        "Better25Mbps": "ami-d1c479b5", 
+        "Good1000Mbps": "ami-5bc77a3f", 
+        "Good200Mbps": "ami-d0c479b4", 
+        "Good25Mbps": "ami-dec17cba"
       }, 
       "eu-central-1": {
-        "Best1000Mbps": "ami-2157aa4e", 
-        "Best200Mbps": "ami-8055a8ef", 
-        "Best25Mbps": "ami-2c56ab43", 
-        "Better1000Mbps": "ami-2f57aa40", 
-        "Better200Mbps": "ami-2854a947", 
-        "Better25Mbps": "ami-2657aa49", 
-        "Good1000Mbps": "ami-e357aa8c", 
-        "Good200Mbps": "ami-2557aa4a", 
-        "Good25Mbps": "ami-cb55a8a4"
+        "Best1000Mbps": "ami-cd0dc4a2", 
+        "Best200Mbps": "ami-560fc639", 
+        "Best25Mbps": "ami-0d0cc562", 
+        "Better1000Mbps": "ami-000fc66f", 
+        "Better200Mbps": "ami-a80bc2c7", 
+        "Better25Mbps": "ami-090cc566", 
+        "Good1000Mbps": "ami-bc09c0d3", 
+        "Good200Mbps": "ami-cb0dc4a4", 
+        "Good25Mbps": "ami-df0cc5b0"
       }, 
       "eu-west-1": {
-        "Best1000Mbps": "ami-8af48ef9", 
-        "Best200Mbps": "ami-fbeb9188", 
-        "Best25Mbps": "ami-cbf58fb8", 
-        "Better1000Mbps": "ami-c8f58fbb", 
-        "Better200Mbps": "ami-51f18b22", 
-        "Better25Mbps": "ami-7bf38908", 
-        "Good1000Mbps": "ami-b5f68cc6", 
-        "Good200Mbps": "ami-65f58f16", 
-        "Good25Mbps": "ami-91f18be2"
+        "Best1000Mbps": "ami-25663d43", 
+        "Best200Mbps": "ami-00613a66", 
+        "Best25Mbps": "ami-a9663dcf", 
+        "Better1000Mbps": "ami-b1673cd7", 
+        "Better200Mbps": "ami-40673c26", 
+        "Better25Mbps": "ami-b8663dde", 
+        "Good1000Mbps": "ami-ba663ddc", 
+        "Good200Mbps": "ami-1b613a7d", 
+        "Good25Mbps": "ami-2e613a48"
+      }, 
+      "eu-west-2": {
+        "Best1000Mbps": "ami-f6465392", 
+        "Best200Mbps": "ami-53465337", 
+        "Best25Mbps": "ami-f7465393", 
+        "Better1000Mbps": "ami-04425760", 
+        "Better200Mbps": "ami-5c415438", 
+        "Better25Mbps": "ami-13425777", 
+        "Good1000Mbps": "ami-12425776", 
+        "Good200Mbps": "ami-3d405559", 
+        "Good25Mbps": "ami-ae4154ca"
       }, 
       "sa-east-1": {
-        "Best1000Mbps": "ami-7142d11d", 
-        "Best200Mbps": "ami-8b5fcce7", 
-        "Best25Mbps": "ami-8a5ecde6", 
-        "Better1000Mbps": "ami-955fccf9", 
-        "Better200Mbps": "ami-c142d1ad", 
-        "Better25Mbps": "ami-c342d1af", 
-        "Good1000Mbps": "ami-335dce5f", 
-        "Good200Mbps": "ami-1359ca7f", 
-        "Good25Mbps": "ami-1f59ca73"
+        "Best1000Mbps": "ami-c85c38a4", 
+        "Best200Mbps": "ami-ce5c38a2", 
+        "Best25Mbps": "ami-1751357b", 
+        "Better1000Mbps": "ami-a05337cc", 
+        "Better200Mbps": "ami-fd5c3891", 
+        "Better25Mbps": "ami-805236ec", 
+        "Good1000Mbps": "ami-3053375c", 
+        "Good200Mbps": "ami-0052366c", 
+        "Good25Mbps": "ami-835236ef"
       }, 
       "us-east-1": {
-        "Best1000Mbps": "ami-1d057e0a", 
-        "Best200Mbps": "ami-0b7a011c", 
-        "Best25Mbps": "ami-ce047fd9", 
-        "Better1000Mbps": "ami-83047f94", 
-        "Better200Mbps": "ami-84017a93", 
-        "Better25Mbps": "ami-8f007b98", 
-        "Good1000Mbps": "ami-98017a8f", 
-        "Good200Mbps": "ami-a2017ab5", 
-        "Good25Mbps": "ami-130c7704"
+        "Best1000Mbps": "ami-fe16eee8", 
+        "Best200Mbps": "ami-190af20f", 
+        "Best25Mbps": "ami-4f0af259", 
+        "Better1000Mbps": "ami-4617ef50", 
+        "Better200Mbps": "ami-c315edd5", 
+        "Better25Mbps": "ami-9f17ef89", 
+        "Good1000Mbps": "ami-7c08f06a", 
+        "Good200Mbps": "ami-fa14ecec", 
+        "Good25Mbps": "ami-d815edce"
+      }, 
+      "us-east-2": {
+        "Best1000Mbps": "ami-810326e4", 
+        "Best200Mbps": "ami-25002540", 
+        "Best25Mbps": "ami-6901240c", 
+        "Better1000Mbps": "ami-860326e3", 
+        "Better200Mbps": "ami-36002553", 
+        "Better25Mbps": "ami-ba0025df", 
+        "Good1000Mbps": "ami-840326e1", 
+        "Good200Mbps": "ami-9b0124fe", 
+        "Good25Mbps": "ami-870326e2"
       }, 
       "us-west-1": {
-        "Best1000Mbps": "ami-812668e1", 
-        "Best200Mbps": "ami-05246a65", 
-        "Best25Mbps": "ami-f0256b90", 
-        "Better1000Mbps": "ami-822668e2", 
-        "Better200Mbps": "ami-44226c24", 
-        "Better25Mbps": "ami-8b256beb", 
-        "Good1000Mbps": "ami-49256b29", 
-        "Good200Mbps": "ami-a72769c7", 
-        "Good25Mbps": "ami-e5246a85"
+        "Best1000Mbps": "ami-ffb9e49f", 
+        "Best200Mbps": "ami-5dbbe63d", 
+        "Best25Mbps": "ami-c7b8e5a7", 
+        "Better1000Mbps": "ami-11b8e571", 
+        "Better200Mbps": "ami-b2bee3d2", 
+        "Better25Mbps": "ami-11bfe271", 
+        "Good1000Mbps": "ami-24bee344", 
+        "Good200Mbps": "ami-25bee345", 
+        "Good25Mbps": "ami-23bee343"
       }, 
       "us-west-2": {
-        "Best1000Mbps": "ami-012ef261", 
-        "Best200Mbps": "ami-8633efe6", 
-        "Best25Mbps": "ami-792ff319", 
-        "Better1000Mbps": "ami-5b29f53b", 
-        "Better200Mbps": "ami-a031edc0", 
-        "Better25Mbps": "ami-a731edc7", 
-        "Good1000Mbps": "ami-6a2df10a", 
-        "Good200Mbps": "ami-532ff333", 
-        "Good25Mbps": "ami-dc2ef2bc"
+        "Best1000Mbps": "ami-3157ec51", 
+        "Best200Mbps": "ami-fc51ea9c", 
+        "Best25Mbps": "ami-5e50eb3e", 
+        "Better1000Mbps": "ami-fb53e89b", 
+        "Better200Mbps": "ami-3d57ec5d", 
+        "Better25Mbps": "ami-6c50eb0c", 
+        "Good1000Mbps": "ami-6d50eb0d", 
+        "Good200Mbps": "ami-6f50eb0f", 
+        "Good25Mbps": "ami-935ce7f3"
       }
     },
     "AWSBigipThrougput": {
@@ -693,6 +748,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
+                      "# Generated from Template Version 2.0.1\n",
                       "date\n",
                       ". /config/cloud/aws/firstrun.config\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
@@ -704,22 +760,21 @@
                       ",mgmtPort:", { "Ref": "managementGuiPort" }, " --host localhost --port ", { "Ref": "managementGuiPort" }, " --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group --block-sync -c join --log-level debug --output /var/log/aws-autoscale.log\n",
                       "if [ -f /config/cloud/aws/master ]; then \n",
                       "   echo 'SELF-SELECTED as Master ... Initiated Autoscale Cluster ... Loading default config'\n",
-                      "   tmsh create cm device-group autoscale-group devices add { ${HOSTNAME} } type sync-failover auto-sync enabled network-failover disabled\n",
+                      "   tmsh modify cm device-group autoscale-group asm-sync enabled\n",
                       "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
                       " --host localhost --port ", { "Ref": "managementGuiPort" }," --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group -c update --log-level debug --output /var/log/aws-autoscale.log }\n",
                       "   tmsh create sys icall handler periodic /Common/ClusterUpdateHandler { first-occurrence now interval 600 script /Common/ClusterUpdate }\n",
                       "   tmsh save /sys config\n",
                       "   tmsh create ltm node ${APP_NAME} fqdn { name ${POOL_DNS} }\n",
-                      "   tmsh create ltm pool ${APP_NAME}_pool members add { ${APP_NAME}:${POOL_MEMBER_PORT} } monitor http\n",
-                      "   ### START CUSTOM TMSH CONFIGURTION:  Policy Name/Policy URL, etc. \n",
                       "   tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
+                      "   ### START CUSTOM TMSH CONFIGURTION:  Policy Name/Policy URL, etc. \n",
                       "   tmsh load asm policy file /config/cloud/asm-policy-linux-${POLICY_LEVEL}.xml\n",
                       "   # modify asm policy names below (ex. /Common/linux-${POLICY_LEVEL}) to match policy name in the xml file\n",
                       "   tmsh modify asm policy /Common/linux-${POLICY_LEVEL} active\n",
                       "   tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
                       "   tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
                       "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${POLICY_LEVEL} } } } }\n",
-                      "   tmsh create ltm virtual ${APP_NAME}_vs_${VS_PORT} { destination 0.0.0.0:${VS_PORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool ${APP_NAME}_pool profiles replace-all-with { tcp { } http { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                      "   tmsh create sys application service ${APP_NAME} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${APP_NAME} ${POOL_MEMBER_PORT} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${VS_PORT} } monitor__http_version { value http10 } }}\n",
                       "   ### END CUSTOM TMSH CONFIGURATION\n",
                       "   tmsh save /sys config\n",
                       "   f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
@@ -789,7 +844,7 @@
                           "\n",
                           [
                               "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
-                              "PASSWORD=$(/bin/sed -e $'s:[\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
+                              "PASSWORD=$(/bin/sed -e $'s:[!\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                               "if [ \"$1\" == admin ]; then",
                               "    /usr/bin/tmsh modify /auth user \"$1\" password ${PASSWORD}",
                               "else",
@@ -899,7 +954,6 @@
                       "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
                       "--wait-for 1_NIC_SETUP_DONE",
                       "-o /var/log/onboard.log",
-                      "--no-reboot",
                       "--host localhost",
                       "--user",
                       { "Ref": "adminUsername" },
@@ -921,7 +975,7 @@
                   ]
                 }
               },
-              "005-custom-config": {
+              "006-custom-config": {
                 "command": {
                   "Fn::Join": [
                     " ",

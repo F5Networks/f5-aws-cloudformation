@@ -663,36 +663,61 @@
                 "owner": "root",
                 "group": "root"
               },
-              "/config/cloud/aws/firstrun.config": {
+              "/config/cloud/aws/onboard_config_vars": {
                 "content": {
                   "Fn::Join": [
                     "",
                     [
                       "#!/bin/bash\n",
-                      "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
-                      "APP_NAME='",
+                      "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+                      "deploymentName='",
                       {
                         "Ref": "deploymentName"
                       },
                       "'\n",
-                      "POOL_DNS='",
+                      "adminUsername='",
                       {
-                        "Ref": "appInternalDnsName"
+                        "Ref": "adminUsername"
                       },
                       "'\n",
-                      "POOL_MEMBER_PORT='",
+                      "managementGuiPort='",
                       {
-                        "Ref": "applicationPort"
+                        "Ref": "managementGuiPort"
                       },
                       "'\n",
-                      "VS_PORT='",
+                      "timezone='",
+                      {
+                        "Ref": "timezone"
+                      },
+                      "'\n",
+                      "ntpServer='",
+                      {
+                        "Ref": "ntpServer"
+                      },
+                      "'\n",
+                      "virtualServicePort='",
                       {
                         "Ref": "virtualServicePort"
                       },
                       "'\n",
-                      "POLICY_LEVEL='",
+                      "applicationPort='",
+                      {
+                        "Ref": "applicationPort"
+                      },
+                      "'\n",
+                      "appInternalDnsName='",
+                      {
+                        "Ref": "appInternalDnsName"
+                      },
+                      "'\n",
+                      "policyLevel='",
                       {
                         "Ref": "policyLevel"
+                      },
+                      "'\n",
+                      "s3Bucket='",
+                      {
+                        "Ref": "S3Bucket"
                       },
                       "'\n"
                     ]
@@ -751,35 +776,34 @@
                       "#!/bin/bash\n",
                       "# Generated from Template Version 2.0.1\n",
                       "date\n",
-                      ". /config/cloud/aws/firstrun.config\n",
+                      ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
                       "tmsh modify sys autoscale-group autoscale-group-id ${BIGIP_ASG_NAME} \n",
                       "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
                       "tmsh create sys icall handler periodic /Common/metricUploadHandler { first-occurrence now interval 60 script /Common/uploadMetrics }\n",
                       "echo 'Attempting to Join or Initiate Autoscale Cluster' \n",
-                      "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"},
-                      ",mgmtPort:", { "Ref": "managementGuiPort" }, " --host localhost --port ", { "Ref": "managementGuiPort" }, " --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group --block-sync -c join --log-level info --output /var/log/aws-autoscale.log\n",
+                      "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort} --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group --block-sync -c join --log-level info --output /var/log/aws-autoscale.log\n",
                       "if [ -f /config/cloud/aws/master ]; then \n",
                       "   echo 'SELF-SELECTED as Master ... Initiated Autoscale Cluster ... Loading default config'\n",
                       "   tmsh modify cm device-group autoscale-group asm-sync enabled\n",
-                      "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
-                      " --host localhost --port ", { "Ref": "managementGuiPort" }," --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group -c update --log-level info --output /var/log/aws-autoscale.log }\n",
+                      "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",
+                      " --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group -c update --log-level info --output /var/log/aws-autoscale.log }\n",
                       "   tmsh create sys icall handler periodic /Common/ClusterUpdateHandler { first-occurrence now interval 600 script /Common/ClusterUpdate }\n",
                       "   tmsh save /sys config\n",
-                      "   tmsh create ltm node ${APP_NAME} fqdn { name ${POOL_DNS} }\n",
+                      "   tmsh create ltm node ${deploymentName} fqdn { name ${appInternalDnsName} }\n",
                       "   tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
                       "   ### START CUSTOM TMSH CONFIGURTION:  Policy Name/Policy URL, etc. \n",
-                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-${POLICY_LEVEL}.xml\n",
-                      "   # modify asm policy names below (ex. /Common/linux-${POLICY_LEVEL}) to match policy name in the xml file\n",
-                      "   tmsh modify asm policy /Common/linux-${POLICY_LEVEL} active\n",
+                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-${policyLevel}.xml\n",
+                      "   # modify asm policy names below (ex. /Common/linux-${policyLevel}) to match policy name in the xml file\n",
+                      "   tmsh modify asm policy /Common/linux-${policyLevel} active\n",
                       "   tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
                       "   tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
-                      "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${POLICY_LEVEL} } } } }\n",
-                      "   tmsh create sys application service ${APP_NAME} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${APP_NAME} ${POOL_MEMBER_PORT} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${VS_PORT} } monitor__http_version { value http10 } }}\n",
+                      "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${policyLevel} } } } }\n",
+                      "   tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http10 } }}\n",
                       "   ### END CUSTOM TMSH CONFIGURATION\n",
                       "   tmsh save /sys config\n",
-                      "   f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
-                      "      --host localhost --port ", { "Ref": "managementGuiPort" }," --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword -c unblock-sync\n",
+                      "   f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",
+                      "      --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword -c unblock-sync\n",
                       "fi\n",
                       "date\n",
                       "echo 'custom-config.sh complete'\n"

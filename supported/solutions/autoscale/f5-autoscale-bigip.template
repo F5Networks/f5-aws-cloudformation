@@ -225,7 +225,7 @@
       "MaxLength": "255",
       "MinLength": "1",
       "AllowedPattern": "[a-zA-Z0-9._-]+",
-      "Default": "admin",
+      "Default": "cluster-admin",
       "Type": "String"
     },
     "managementGuiPort": {
@@ -658,41 +658,66 @@
                 "group": "root"
               },
               "/config/cloud/f5-cloud-libs-aws.tar.gz": {
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.0.1/dist/f5-cloud-libs-aws.tar.gz",
+                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
               },
-              "/config/cloud/aws/firstrun.config": {
+              "/config/cloud/aws/onboard_config_vars": {
                 "content": {
                   "Fn::Join": [
                     "",
                     [
                       "#!/bin/bash\n",
-                      "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
-                      "APP_NAME='",
+                      "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+                      "deploymentName='",
                       {
                         "Ref": "deploymentName"
                       },
                       "'\n",
-                      "POOL_DNS='",
+                      "adminUsername='",
                       {
-                        "Ref": "appInternalDnsName"
+                        "Ref": "adminUsername"
                       },
                       "'\n",
-                      "POOL_MEMBER_PORT='",
+                      "managementGuiPort='",
                       {
-                        "Ref": "applicationPort"
+                        "Ref": "managementGuiPort"
                       },
                       "'\n",
-                      "VS_PORT='",
+                      "timezone='",
+                      {
+                        "Ref": "timezone"
+                      },
+                      "'\n",
+                      "ntpServer='",
+                      {
+                        "Ref": "ntpServer"
+                      },
+                      "'\n",
+                      "virtualServicePort='",
                       {
                         "Ref": "virtualServicePort"
                       },
                       "'\n",
-                      "POLICY_LEVEL='",
+                      "applicationPort='",
+                      {
+                        "Ref": "applicationPort"
+                      },
+                      "'\n",
+                      "appInternalDnsName='",
+                      {
+                        "Ref": "appInternalDnsName"
+                      },
+                      "'\n",
+                      "policyLevel='",
                       {
                         "Ref": "policyLevel"
+                      },
+                      "'\n",
+                      "s3Bucket='",
+                      {
+                        "Ref": "S3Bucket"
                       },
                       "'\n"
                     ]
@@ -707,7 +732,7 @@
                       "cli script /Common/verifyHash {",
                       "proc script::run {} {",
                       "        if {[catch {",
-                      "            set hashes(f5-cloud-libs.tar.gz) a6a9db3b89bbd014413706f22fa619c3717fac41fc99ffe875589c90e9b85a05cea227c134ea6e5b519c8fee0d12f2175368e75917f31f447ece3d92f31814af",
+                      "            set hashes(f5-cloud-libs.tar.gz) 4d07ca201743657042b13a2d2e463689ccd3bd9a92a06bf173d51a2bad860928fbc6d33f93c1fd4156f7172ec5add702f4a674f23fb5df4f822549b6548d8115",
                       "            set hashes(f5-cloud-libs-aws.tar.gz) 22b554337b27802b7794206462bb98d346a7241622c11bcf9e834a06bcd1bd1b5b99efee512ac6eebe64e9d34f3024bcb569371fd4ee79006761bc5e5a74a59c",
                       "            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0",
                       "            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034",
@@ -733,7 +758,8 @@
                       "            exit 1",
                       "        }",
                       "    }",
-                      "    script-signature QmpupbE2kzw2T7LO/Hp6NtscwZnEXjq8U0xOQLOfFIid1pdvsis6HOphdKyXjY+uzFnHktSy/Xe2LdwxjKmKRaMy5ZuE8NR+MJyUGLR3OwgVj1sGVZgwDCWvkBLyNKDQFkFfuTBk6TTN7q58+dJ3qulOv7KWkpKq/m8+8VXyQ4pj+96bHWwrs8kYRtHX5wc7cSJE/3thNWCF8v9BAyFFUFEyy6z7mFhH8iD2i+OEnqpK+0VAY1irspmaCigo3NmJXfZXIo2cWIopORqWsCATsVT6lunpV6z7h2FipnMJpAhVWqlzezSAOCHI0juPeGDAHIyNX8uLlTOpWJSgP1d4YQ==",
+                      "    script-signature f/uV0eJ2W5TpHEew9apC5mUTvM3tFjq6JN1zz9parKVWJgDkPPb2hJwfY1KHHXIINC/i2RTwooRMRZIKI9HeCm8husaXkAQpBiDWVMKmtCNEcd6Soeueixbyg6hDm3/NgBbq/3tIZKPsuNnRy3JKA0aHX4ixYu93VRaiNz5Pjf6i9sWpYh/TP97TtdZleRFTG4fpc29tBeUJVysR6QPsTTpAUBvnaZjR+kcF6XPLgqIBsy5hzefkSOyxIHp0Md/+H9u3pjLdGMlcVPMLtyoIpBxwdcQ1Y77Yc5ENbwxePr5QOdrjAp7GpiiICPFaU2o8Cq5EW8vWfgBQ4fzw0nsjsw==",
+                      "    signing-key /Common/f5-irule",
                       "}"
                     ]
                   ]
@@ -750,35 +776,34 @@
                       "#!/bin/bash\n",
                       "# Generated from Template Version 2.0.1\n",
                       "date\n",
-                      ". /config/cloud/aws/firstrun.config\n",
+                      ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
                       "tmsh modify sys autoscale-group autoscale-group-id ${BIGIP_ASG_NAME} \n",
                       "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
                       "tmsh create sys icall handler periodic /Common/metricUploadHandler { first-occurrence now interval 60 script /Common/uploadMetrics }\n",
                       "echo 'Attempting to Join or Initiate Autoscale Cluster' \n",
-                      "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"},
-                      ",mgmtPort:", { "Ref": "managementGuiPort" }, " --host localhost --port ", { "Ref": "managementGuiPort" }, " --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group --block-sync -c join --log-level debug --output /var/log/aws-autoscale.log\n",
+                      "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort} --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group --block-sync -c join --log-level info --output /var/log/aws-autoscale.log\n",
                       "if [ -f /config/cloud/aws/master ]; then \n",
                       "   echo 'SELF-SELECTED as Master ... Initiated Autoscale Cluster ... Loading default config'\n",
                       "   tmsh modify cm device-group autoscale-group asm-sync enabled\n",
-                      "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
-                      " --host localhost --port ", { "Ref": "managementGuiPort" }," --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group -c update --log-level debug --output /var/log/aws-autoscale.log }\n",
+                      "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",
+                      " --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group -c update --log-level info --output /var/log/aws-autoscale.log }\n",
                       "   tmsh create sys icall handler periodic /Common/ClusterUpdateHandler { first-occurrence now interval 600 script /Common/ClusterUpdate }\n",
                       "   tmsh save /sys config\n",
-                      "   tmsh create ltm node ${APP_NAME} fqdn { name ${POOL_DNS} }\n",
+                      "   tmsh create ltm node ${deploymentName} fqdn { name ${appInternalDnsName} }\n",
                       "   tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
                       "   ### START CUSTOM TMSH CONFIGURTION:  Policy Name/Policy URL, etc. \n",
-                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-${POLICY_LEVEL}.xml\n",
-                      "   # modify asm policy names below (ex. /Common/linux-${POLICY_LEVEL}) to match policy name in the xml file\n",
-                      "   tmsh modify asm policy /Common/linux-${POLICY_LEVEL} active\n",
+                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-${policyLevel}.xml\n",
+                      "   # modify asm policy names below (ex. /Common/linux-${policyLevel}) to match policy name in the xml file\n",
+                      "   tmsh modify asm policy /Common/linux-${policyLevel} active\n",
                       "   tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
                       "   tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
-                      "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${POLICY_LEVEL} } } } }\n",
-                      "   tmsh create sys application service ${APP_NAME} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${APP_NAME} ${POOL_MEMBER_PORT} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${VS_PORT} } monitor__http_version { value http10 } }}\n",
+                      "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${policyLevel} } } } }\n",
+                      "   tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http10 } }}\n",
                       "   ### END CUSTOM TMSH CONFIGURATION\n",
                       "   tmsh save /sys config\n",
-                      "   f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:", {"Ref": "S3Bucket"}, ",mgmtPort:", { "Ref": "managementGuiPort" },
-                      "      --host localhost --port ", { "Ref": "managementGuiPort" }," --user ", { "Ref": "adminUsername"}, " --password-url file:///config/cloud/aws/.adminPassword -c unblock-sync\n",
+                      "   f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",
+                      "      --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword -c unblock-sync\n",
                       "fi\n",
                       "date\n",
                       "echo 'custom-config.sh complete'\n"
@@ -936,7 +961,7 @@
                               " --cl-args '",
                               { "Ref": "adminUsername" },
                               "'",
-                              " --log-level verbose",
+                              " --log-level info",
                               " -o /var/log/createUser.log",
                               " &>> /var/log/cloudlibs-install.log < /dev/null",
                               " &"

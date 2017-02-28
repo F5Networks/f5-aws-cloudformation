@@ -10,6 +10,8 @@
     "Good200Mbps": "ami-62fc2e03", 
     "Good25Mbps": "ami-3af82a5b"
   }, 
+  "ap-northeast-2": {}, 
+  "ap-south-1": {}, 
   "ap-southeast-1": {
     "Best1000Mbps": "ami-ab78ddc8", 
     "Best200Mbps": "ami-d37edbb0", 
@@ -31,6 +33,17 @@
     "Good1000Mbps": "ami-bcebdbdf", 
     "Good200Mbps": "ami-dbebdbb8", 
     "Good25Mbps": "ami-58e9d93b"
+  }, 
+  "ca-central-1": {
+    "Best1000Mbps": "ami-b1cd7fd5", 
+    "Best200Mbps": "ami-20cf7d44", 
+    "Best25Mbps": "ami-65c57701", 
+    "Better1000Mbps": "ami-33c57757", 
+    "Better200Mbps": "ami-33cc7e57", 
+    "Better25Mbps": "ami-32cc7e56", 
+    "Good1000Mbps": "ami-27cf7d43", 
+    "Good200Mbps": "ami-66c57702", 
+    "Good25Mbps": "ami-b2cd7fd6"
   }, 
   "eu-central-1": {
     "Best1000Mbps": "ami-2157aa4e", 
@@ -54,6 +67,17 @@
     "Good200Mbps": "ami-65f58f16", 
     "Good25Mbps": "ami-91f18be2"
   }, 
+  "eu-west-2": {
+    "Best1000Mbps": "ami-e4232980", 
+    "Best200Mbps": "ami-8b242eef", 
+    "Best25Mbps": "ami-68212b0c", 
+    "Better1000Mbps": "ami-8a212bee", 
+    "Better200Mbps": "ami-a6252fc2", 
+    "Better25Mbps": "ami-0f272d6b", 
+    "Good1000Mbps": "ami-6f212b0b", 
+    "Good200Mbps": "ami-8b252fef", 
+    "Good25Mbps": "ami-69212b0d"
+  }, 
   "sa-east-1": {
     "Best1000Mbps": "ami-7142d11d", 
     "Best200Mbps": "ami-8b5fcce7", 
@@ -75,6 +99,17 @@
     "Good1000Mbps": "ami-98017a8f", 
     "Good200Mbps": "ami-a2017ab5", 
     "Good25Mbps": "ami-130c7704"
+  }, 
+  "us-east-2": {
+    "Best1000Mbps": "ami-27c99242", 
+    "Best200Mbps": "ami-bed08bdb", 
+    "Best25Mbps": "ami-4cd68d29", 
+    "Better1000Mbps": "ami-acd48fc9", 
+    "Better200Mbps": "ami-20c99245", 
+    "Better25Mbps": "ami-39d58e5c", 
+    "Good1000Mbps": "ami-0ed48f6b", 
+    "Good200Mbps": "ami-0fd48f6a", 
+    "Good25Mbps": "ami-34d68d51"
   }, 
   "us-west-1": {
     "Best1000Mbps": "ami-812668e1", 

@@ -1,0 +1,202 @@
+#!/usr/bin/env python
+
+# Modified from
+# https://github.com/f5devcentral/f5-aws-migrate/blob/master/f5-aws-migrate.py
+# Assumptions: Script will be run on a BIGI-IP itself
+
+import os
+import sys
+import re
+import json
+import time
+import string
+import shutil
+import tarfile
+from random import *
+from datetime import datetime
+from tempfile import mkstemp
+from optparse import OptionParser
+
+
+def get_ip(config_file):
+    # 1nic Autoscale IPv4 Specific
+
+    # searching for field
+    # "fixed-address 10.0.1.219;"
+    # with open('/var/lib/dhclient/dhclient.leases', 'r') as f:
+    #     for line in f:
+    #         match = re.search('fixed-address (.+);', line)
+    #         if match:
+    #             self_ip = match.group(1)
+    # Looking for entry in bigip_base.conf:
+    # net self /Common/10.0.11.241/24 {
+    #     address 10.0.11.241/24
+    #     allow-service {
+    #         default
+    #     }
+    #     traffic-group /Common/traffic-group-local-only
+    #     vlan /Common/external
+    # }
+    ip = ""
+    line_number = 0
+    net_self_token_line = 0
+    with open(config_file, 'r') as f:
+        for line in f:
+            match = re.search('net self', line)
+            if match:
+                net_self_token_line = line_number
+            # Search for address in that token
+            match = re.search('    address (.+)/(.+)', line)
+            if match and ( line_number - net_self_token_line == 1):
+                ip = match.group(1)
+                mask = match.group(2)
+            line_number += 1
+    # could do a little more validation here to make sure not another self-ip configured by accident
+    # octets match management ip, hostname, etc.         
+    return ip
+
+
+def get_gateway(config_file):
+
+    # 1nic Autoscale IPv4 Specific
+
+    # searching for field
+    # "option routers 10.0.1.1;"
+    # with open('/var/lib/dhclient/dhclient.leases', 'r') as f:
+    #     for line in f:
+    #         match = re.search('option routers (.+);', line)
+    #         if match:
+    #             gateway = match.group(1)
+    gateway = ""
+    with open(config_file, 'r') as f:
+        for line in f:
+            match = re.search('    gw (.+)', line)
+            if match:
+                gateway = match.group(1)
+
+    return gateway
+
+
+def replace(source_file_path, pattern, substring):
+    fh, target_file_path = mkstemp()
+    with open(target_file_path, 'w') as target_file:
+        with open(source_file_path, 'r') as source_file:
+            for line in source_file:
+                target_file.write(line.replace(pattern, substring))
+    os.remove(source_file_path)
+    shutil.move(target_file_path, source_file_path)
+
+
+def main():
+
+    parser = OptionParser()
+    parser.add_option("--debug-level", action="store", type="int", dest="debug_level", default=0, help="debug level print debug (0-9)")
+    parser.add_option("--original-ucs", action="store", type="string", dest="original_ucs", help="Original UCS file name")
+    parser.add_option("--updated-ucs", action="store", type="string", dest="updated_ucs", default="updated.ucs", help="Modified UCS file name")
+    parser.add_option("--extract-directory", action="store", type="string", dest="extract_dir", default="ucs_extract_dir", help="name of directory to extract to")
+    parser.add_option("--original-ucs-ip", action="store", type="string", dest="original_ucs_ip", help="ip in original ucs")
+    parser.add_option("--original-ucs-gateway", action="store", type="string", dest="original_ucs_gateway", help="gateway in original ucs")
+    parser.add_option("--dest-ip", action="store", type="string", dest="dest_ip", help="ip of destination instance")
+    parser.add_option("--dest-gateway", action="store", type="string", dest="dest_gateway", help="gateway of destination instance")
+    # parser.add_option("-f", "--force", action="store_true", dest="force", default=False, help="Force Migration")
+    # parser.add_option("-C", "--CVE", action="store_true", dest="cve", default=False, help="cve-2016-2084-remediation")
+    # parser.add_option("-k", "--ssh-key", action="store", type="string", dest="ssh_key", help="SSH Key File - full path" )
+    # parser.add_option("-i", "--src-instance-id", action="store", type="string", dest="src_instance_id", help="Source Big-IP instance-id")
+    # parser.add_option("-m", "--management-ip", action="store", type="string", dest="management_ip", help="Management Ip" )
+    # parser.add_option("-u", "--username", action="store", type="string", dest="username", help="Big-IP admin username" )
+    # parser.add_option("-p", "--password", action="store", type="string", dest="password", help="Big-IP admin password" )
+    # parser.add_option("-d", "--dest-ami", action="store", type="string", dest="dest_ami", help="Destination Big-IP AMI" )
+    # parser.add_option("-t", "--dest-instance-type", action="store", type="string", dest="dest_instance_type", help="Destination Instance Type" )
+    # # Allow for user to provide new regkey when migrate from Util to BYOL
+    # parser.add_option("-r", "--regkeys", action="store", type="string", dest="regkeys", help="Comma seperated list of regkeys" )
+    # # These may be picked up in ~/.aws/credentials instead if exist in user environment via AWS CLI install
+    # parser.add_option("-R", "--aws-region", action="store", type="string", dest="aws_region", help="AWS Region", default=None )
+    # parser.add_option("-A", "--aws-access-key", action="store", type="string", dest="aws_access_key", help="AWS Access Key", default=None )
+    # parser.add_option("-S", "--aws-secret-key", action="store", type="string", dest="aws_secret_key", help="AWS Secret Key", default=None )
+    (options, args) = parser.parse_args()
+
+    # Set variables from options
+    debug_level = options.debug_level
+    original_ucs = options.original_ucs
+    updated_ucs = options.updated_ucs
+    extract_ucs_dir = options.extract_dir
+    original_ucs_ip = options.original_ucs_ip
+    original_ucs_gateway = options.original_ucs_gateway
+    dest_ip = options.dest_ip
+    dest_gateway = options.dest_gateway
+
+    if not original_ucs:
+        print "Usage: "
+        print ("    ./%s --original-ucs <ucs_filename>" % (sys.argv[0]))
+        print ("    ./%s --original-ucs <ucs_filename> --updated-ucs <ucs_filename>" % (sys.argv[0]))
+        print "ex. "
+        print ("    ./%s --original-ucs original.ucs --updated-ucs updated.ucs" % (sys.argv[0]))
+        sys.exit()
+
+    # Open files
+    tar_original = tarfile.open(original_ucs, "r:gz")
+    tar_updated = tarfile.open(updated_ucs, "w:gz")
+
+    tar_original.extractall(path=extract_ucs_dir)
+
+    # Grab instance's IP from UCS or local config file
+    bigip_base_file = "/config/bigip_base.conf"
+    gateway_file = "/config/partitions/LOCAL_ONLY/bigip.conf"
+
+    if not original_ucs_ip:
+        original_ucs_ip = get_ip(extract_ucs_dir + bigip_base_file)
+    if not original_ucs_gateway:
+        original_ucs_gateway = get_gateway(extract_ucs_dir + gateway_file)
+    if not dest_ip:
+        dest_ip = get_ip(bigip_base_file)
+    if not dest_gateway:
+        dest_gateway = get_gateway(gateway_file)
+
+    if debug_level > 0:
+        print "original_ucs_ip: " + original_ucs_ip
+        print "original_ucs_gateway: " + original_ucs_gateway
+        print "dest_ip: " + dest_ip
+        print "dest_gateway: " + dest_gateway
+
+    # Fix string version of addresses with "-". ex. ip-10-0-11-151
+    original_ucs_ip_str = original_ucs_ip.replace(".", "-")
+    dest_ip_str = dest_ip.replace(".", "-")
+
+    if debug_level > 0:
+        print "original_ucs_ip_str: " + original_ucs_ip_str
+        print "dest_ip_str: " + dest_ip_str
+
+    files_to_update = [
+                        "/config/bigip_base.conf",
+                        "/config/bigip.conf",
+                        "/config/BigDB.dat",
+                        "/SPEC-Manifest"
+                      ]
+
+    # Replace Gateway
+    replace(extract_ucs_dir + gateway_file, original_ucs_gateway, dest_gateway)
+
+    # Replace IP, String Versions in other files
+    for f in files_to_update:
+        filename = extract_ucs_dir + f
+        if debug_level > 0:
+            print "updating : " + filename
+        replace(filename, original_ucs_ip, dest_ip)
+        replace(filename, original_ucs_ip_str, dest_ip_str)
+
+    tar_updated.add(extract_ucs_dir, arcname='.')
+
+    tar_original.close()
+    tar_updated.close()
+
+    shutil.rmtree(extract_ucs_dir, ignore_errors=False, onerror=None)
+
+    print "UCS Update Complete"
+    print "Load UCS with command below:"
+    print "   tmsh load /sys ucs " + os.path.abspath(updated_ucs) + " no-license"
+
+	# Leverage cfn-signal here  
+	# http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html
+
+if __name__ == "__main__":
+    main()

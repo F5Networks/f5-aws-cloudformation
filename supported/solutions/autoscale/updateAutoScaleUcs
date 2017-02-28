@@ -98,21 +98,6 @@ def main():
     parser.add_option("--original-ucs-gateway", action="store", type="string", dest="original_ucs_gateway", help="gateway in original ucs")
     parser.add_option("--dest-ip", action="store", type="string", dest="dest_ip", help="ip of destination instance")
     parser.add_option("--dest-gateway", action="store", type="string", dest="dest_gateway", help="gateway of destination instance")
-    # parser.add_option("-f", "--force", action="store_true", dest="force", default=False, help="Force Migration")
-    # parser.add_option("-C", "--CVE", action="store_true", dest="cve", default=False, help="cve-2016-2084-remediation")
-    # parser.add_option("-k", "--ssh-key", action="store", type="string", dest="ssh_key", help="SSH Key File - full path" )
-    # parser.add_option("-i", "--src-instance-id", action="store", type="string", dest="src_instance_id", help="Source Big-IP instance-id")
-    # parser.add_option("-m", "--management-ip", action="store", type="string", dest="management_ip", help="Management Ip" )
-    # parser.add_option("-u", "--username", action="store", type="string", dest="username", help="Big-IP admin username" )
-    # parser.add_option("-p", "--password", action="store", type="string", dest="password", help="Big-IP admin password" )
-    # parser.add_option("-d", "--dest-ami", action="store", type="string", dest="dest_ami", help="Destination Big-IP AMI" )
-    # parser.add_option("-t", "--dest-instance-type", action="store", type="string", dest="dest_instance_type", help="Destination Instance Type" )
-    # # Allow for user to provide new regkey when migrate from Util to BYOL
-    # parser.add_option("-r", "--regkeys", action="store", type="string", dest="regkeys", help="Comma seperated list of regkeys" )
-    # # These may be picked up in ~/.aws/credentials instead if exist in user environment via AWS CLI install
-    # parser.add_option("-R", "--aws-region", action="store", type="string", dest="aws_region", help="AWS Region", default=None )
-    # parser.add_option("-A", "--aws-access-key", action="store", type="string", dest="aws_access_key", help="AWS Access Key", default=None )
-    # parser.add_option("-S", "--aws-secret-key", action="store", type="string", dest="aws_secret_key", help="AWS Secret Key", default=None )
     (options, args) = parser.parse_args()
 
     # Set variables from options
@@ -195,8 +180,8 @@ def main():
     print "Load UCS with command below:"
     print "   tmsh load /sys ucs " + os.path.abspath(updated_ucs) + " no-license"
 
-	# Leverage cfn-signal here  
-	# http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html
+    # Leverage cfn-signal here  
+    # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html
 
 if __name__ == "__main__":
     main()

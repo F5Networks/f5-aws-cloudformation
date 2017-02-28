@@ -4,6 +4,16 @@
     "Better": "ami-dc4305bb", 
     "Good": "ami-fb47019c"
   }, 
+  "ap-northeast-2": {
+    "Best": "ami-3358895d", 
+    "Better": "ami-3058895e", 
+    "Good": "ami-7059881e"
+  }, 
+  "ap-south-1": {
+    "Best": "ami-ff661790", 
+    "Better": "ami-836415ec", 
+    "Good": "ami-9d6514f2"
+  }, 
   "ap-southeast-1": {
     "Best": "ami-c6db6fa5", 
     "Better": "ami-c7db6fa4", 
@@ -13,6 +23,11 @@
     "Best": "ami-341c1a57", 
     "Better": "ami-6a1a1c09", 
     "Good": "ami-b91a1cda"
+  }, 
+  "ca-central-1": {
+    "Best": "ami-c9c77aad", 
+    "Better": "ami-d1c67bb5", 
+    "Good": "ami-d9c17cbd"
   }, 
   "eu-central-1": {
     "Best": "ami-d20dc4bd", 
@@ -24,6 +39,11 @@
     "Better": "ami-b7653ed1", 
     "Good": "ami-fe9bc098"
   }, 
+  "eu-west-2": {
+    "Best": "ami-ed415489", 
+    "Better": "ami-ec415488", 
+    "Good": "ami-67465303"
+  }, 
   "sa-east-1": {
     "Best": "ami-0653376a", 
     "Better": "ami-0153376d", 
@@ -33,6 +53,11 @@
     "Best": "ami-4209f154", 
     "Better": "ami-a40af2b2", 
     "Good": "ami-af0af2b9"
+  }, 
+  "us-east-2": {
+    "Best": "ami-e6032683", 
+    "Better": "ami-800326e5", 
+    "Good": "ami-31002554"
   }, 
   "us-west-1": {
     "Best": "ami-79b8e519", 

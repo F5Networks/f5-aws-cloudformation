@@ -196,27 +196,33 @@ def main():
 
     ### BEGIN MAPPINGS
     regions = [
-                'us-east-1',
-                'us-west-2',
-                'us-west-1',
-                'eu-west-1',
-                'eu-central-1',
+                'ap-south-1',
                 'ap-southeast-1',
-                'ap-northeast-1',
                 'ap-southeast-2',
-                'sa-east-1',
+                'ap-northeast-1',
+                'ap-northeast-2',
+                'ap-southeast-2',
+                'ca-central-1',
+                'eu-west-1',
+                'eu-west-2',
+                'eu-central-1',
+                'sa-east-1',                
+                'us-west-1',
+                'us-west-2',                
+                'us-east-1',
+                'us-east-2',
     ]
 
     image_finder_obj = BigIpImageFinder()
 
     # Hourly Region Map ( Need to wait for v12/v13 to be released before can use Cloudinit )
-    HourlyRegionMap = image_finder_obj.getBigipRegionMap(license="hourly", version="12.1.1.1.0.196", regions=regions)
+    HourlyRegionMap = image_finder_obj.getBigipRegionMap(license="hourly", version="13.0.0.0.0.1645", regions=regions)
     
     with open('cached-hourly-region-map.json', 'w') as outfile:
         json.dump(HourlyRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)
 
     # BYOL Region Map:
-    ByolRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="12.1.1.1.0.196", regions=regions)
+    ByolRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="13.0.0.0.0.1645", regions=regions)
 
     with open('cached-byol-region-map.json', 'w') as outfile:
         json.dump(ByolRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)

@@ -1174,11 +1174,9 @@
       },
       "UpdatePolicy": {
         "AutoScalingRollingUpdate": {
-          "MaxBatchSize": "2",
-          "MinInstancesInService": {
-            "Ref": "scalingMinSize"
-          },
-          "PauseTime": "PT25M"
+          "MaxBatchSize": "1",
+          "MinInstancesInService": "1",
+          "PauseTime": "PT60M"
         }
       }
     },

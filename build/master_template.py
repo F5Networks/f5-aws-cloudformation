@@ -90,6 +90,10 @@ def main():
     webserver = False
     bigip = False
 
+    subnets_list = []
+    securitygroups_list = []
+    interfaces_list = []
+
     if stack == "network":
         network = True
         security_groups = False
@@ -520,6 +524,8 @@ def main():
             Type="AWS::EC2::SecurityGroup::Id",
             Description="Public or External Security Group",
         ))
+        subnets_list.append(ExternalSubnet)
+        securitygroups_list.append(bigipExternalSecurityGroup)
         if num_nics > 1:
             for INDEX in range(num_azs):
                 managementSubnet = "managementSubnet" + "Az" + str(INDEX + 1)
@@ -535,6 +541,8 @@ def main():
                 Type="AWS::EC2::SecurityGroup::Id",
                 Description="BIG-IP Management Security Group",
             ))
+        subnets_list.append(managementSubnet)
+        securitygroups_list.append(bigipManagementSecurityGroup)
         if num_nics > 2:
             for INDEX in range(num_azs):
                 InternalSubnet = "subnet2" + "Az" + str(INDEX + 1)
@@ -550,6 +558,25 @@ def main():
                 Type="AWS::EC2::SecurityGroup::Id",
                 Description="Private or Internal Security Group ID",
             ))
+            subnets_list.append(InternalSubnet)
+            securitygroups_list.append(bigipInternalSecurityGroup)
+        if num_nics > 3:
+            for x in range(3,num_nics):
+                subnet_name = "subnet%s" %x + "Az" + str(INDEX + 1)
+                PARAMETERS[subnet_name] = t.add_parameter(Parameter(
+                    subnet_name,
+                    ConstraintDescription="The subnet ID must be within an existing VPC",
+                    Type="AWS::EC2::Subnet::Id",
+                    Description="Interface %s subnet ID" %(x),
+                ))
+                bigipInterfaceSecurityGroup = t.add_parameter(Parameter(
+                        "bigipInterface%sSecurityGroup" %(x),
+                        ConstraintDescription="The security group ID must be within an existing VPC",
+                        Type="AWS::EC2::SecurityGroup::Id",
+                        Description="Interface %s Security Group ID" %(x),
+                        ))
+                subnets_list.append(subnet_name)
+                securitygroups_list.append(bigipInterfaceSecurityGroup)
 
     # BEGIN REGION MAPPINGS FOR AMI IDS
     if bigip == True: 
@@ -1212,6 +1239,7 @@ def main():
             ExternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "Interface"
             ExternalSelfEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "SelfEipAssociation"
 
+            interfaces_list.append(ExternalInterface)
 
             RESOURCES[ExternalInterface] = t.add_resource(NetworkInterface(
                 ExternalInterface,
@@ -1266,6 +1294,8 @@ def main():
                 ManagementEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementEipAddress"
                 ManagementEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementEipAssociation"
 
+                interfaces_list.append(ManagementInterface)
+                    
                 if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
 
                     if stack == "full":
@@ -1342,6 +1372,8 @@ def main():
 
                     InternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterface"
 
+                    interfaces_list.append(InternalInterface)
+
                     RESOURCES[InternalInterface] = t.add_resource(NetworkInterface(
                         InternalInterface,
                         SubnetId=Ref(InternalSubnet),
@@ -1351,6 +1383,19 @@ def main():
 
                         Description="Internal Interface for the BIG-IP",
                     ))
+                if num_nics > 3:
+                    for x in range(3,num_nics):
+                        InterfaceX = "Bigip" + str(BIGIP_INDEX + 1) + "Interface%s" %(x)
+                        interfaces_list.append(InterfaceX)
+                        RESOURCES[InterfaceX] = t.add_resource(NetworkInterface(
+                                InterfaceX,
+                                SubnetId=Ref(subnets_list[x]),
+                                GroupSet=[Ref(securitygroups_list[x])],
+                                Description="Interface %s for the BIG-IP" %(InterfaceX),
+                                ))
+
+                        
+                    
             # Build custom_sh
             custom_sh = [
                             "#!/bin/bash\n",
@@ -2210,7 +2255,7 @@ def main():
                         Description="Public or External Interface",
                     ),    
                 ]
-            if num_nics == 3:  
+            if num_nics >= 3:  
                 NetworkInterfaces = [
                     NetworkInterfaceProperty(
                         DeviceIndex="0",
@@ -2228,6 +2273,14 @@ def main():
                         Description="Private or Internal Interface",
                     ), 
                 ]
+            if num_nics > 3:
+                for x in range(3,num_nics):
+                    NetworkInterfaces.append(NetworkInterfaceProperty(DeviceIndex="%s" %(x),
+                                                                     NetworkInterfaceId=Ref(interfaces_list[x]),
+                                                                     Description='Interface %s' %(x),
+                                                                     ))
+
+
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 RESOURCES[BigipInstance] = t.add_resource(Instance(
                     BigipInstance,

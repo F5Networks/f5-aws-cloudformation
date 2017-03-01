@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Template Version 2.0.1: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
+  "Description": "Template Version 0.0.0: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -57,8 +57,7 @@
           "Parameters": [
             "virtualServicePort",
             "applicationPort",
-            "appInternalDnsName",
-            "policyLevel"
+            "appInternalDnsName"
           ]
         },
         {
@@ -138,9 +137,6 @@
         "appInternalDnsName": {
           "default": "Application Pool DNS"
         },
-        "policyLevel": {
-          "default": "Web Application Firewall Policy Level"
-        },
         "application": {
           "default": "Application"
         },
@@ -158,7 +154,7 @@
         }
       }
     },
-  "Version": "2.0.1"
+  "Version": "0.0.0"
   },
   "Parameters": {
     "deploymentName" : {
@@ -195,14 +191,23 @@
     "instanceType": {
       "Description": "AWS Instance Size",
       "Type": "String",
-      "Default": "m3.2xlarge",
+      "Default": "m3.large",
       "AllowedValues": [
+        "m3.large",
+        "m3.xlarge",
         "m3.2xlarge",
+        "m4.large",
+        "m4.xlarge",
         "m4.2xlarge",
         "m4.4xlarge",
         "m4.10xlarge",
+        "m4.16xlarge",
+        "c3.xlarge",
+        "c3.2xlarge",
         "c3.4xlarge",
         "c3.8xlarge",
+        "c4.xlarge",
+        "c4.2xlarge",
         "c4.4xlarge",
         "c4.8xlarge"
       ],
@@ -295,17 +300,6 @@
       "Description": "DNS name for the application pool",
       "Type": "String",
       "Default": "<replace>poolapp.example.com<replace>"
-    },
-    "policyLevel": {
-      "Description": "WAF Policy Level you want to use to protect the applications",
-      "Type": "String",
-      "Default": "high",
-      "AllowedValues": [
-        "low",
-        "medium",
-        "high"
-      ],
-      "ConstraintDescription": "Select the WAF Policy Level you want to use"
     },
     "application": {
       "Default": "f5app",
@@ -639,12 +633,6 @@
         "AWS::CloudFormation::Init": {
           "config": {
             "files": {
-              "/config/cloud/asm-policy-linux.tar.gz": {
-                "source": "http://cdn.f5.com/product/blackbox/aws/asm-policy-linux.tar.gz",
-                "mode": "000644",
-                "owner": "root",
-                "group": "root"
-              },
               "/config/cloud/f5.http.v1.2.0rc4.tmpl": {
                 "source": "http://cdn.f5.com/product/blackbox/aws/f5.http.v1.2.0rc4.tmpl",
                 "mode": "000644",
@@ -652,13 +640,13 @@
                 "group": "root"
               },
               "/config/cloud/f5-cloud-libs.tar.gz": {
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.1.3/dist/f5-cloud-libs.tar.gz",
+                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/develop/dist/f5-cloud-libs.tar.gz",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
               },
               "/config/cloud/f5-cloud-libs-aws.tar.gz": {
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.0.1/dist/f5-cloud-libs-aws.tar.gz",
+                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
@@ -708,11 +696,6 @@
                       "appInternalDnsName='",
                       {
                         "Ref": "appInternalDnsName"
-                      },
-                      "'\n",
-                      "policyLevel='",
-                      {
-                        "Ref": "policyLevel"
                       },
                       "'\n",
                       "s3Bucket='",
@@ -774,7 +757,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.0.1\n",
+                      "# Generated from Template Version 0.0.0\n",
                       "date\n",
                       ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
@@ -785,21 +768,14 @@
                       "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort} --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group --block-sync -c join --log-level info --output /var/log/aws-autoscale.log\n",
                       "if [ -f /config/cloud/aws/master ]; then \n",
                       "   echo 'SELF-SELECTED as Master ... Initiated Autoscale Cluster ... Loading default config'\n",
-                      "   tmsh modify cm device-group autoscale-group asm-sync enabled\n",
                       "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",
                       " --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group -c update --log-level info --output /var/log/aws-autoscale.log }\n",
                       "   tmsh create sys icall handler periodic /Common/ClusterUpdateHandler { first-occurrence now interval 600 script /Common/ClusterUpdate }\n",
                       "   tmsh save /sys config\n",
                       "   tmsh create ltm node ${deploymentName} fqdn { name ${appInternalDnsName} }\n",
                       "   tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
-                      "   ### START CUSTOM TMSH CONFIGURTION:  Policy Name/Policy URL, etc. \n",
-                      "   tmsh load asm policy file /config/cloud/asm-policy-linux-${policyLevel}.xml\n",
-                      "   # modify asm policy names below (ex. /Common/linux-${policyLevel}) to match policy name in the xml file\n",
-                      "   tmsh modify asm policy /Common/linux-${policyLevel} active\n",
-                      "   tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
-                      "   tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
-                      "   tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${policyLevel} } } } }\n",
-                      "   tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http10 } }}\n",
+                      "   ### START CUSTOM TMSH CONFIGURTION:  \n",
+                      "   tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http10 } }}\n",
                       "   ### END CUSTOM TMSH CONFIGURATION\n",
                       "   tmsh save /sys config\n",
                       "   f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",
@@ -833,26 +809,25 @@
                       "    sleep 10",
                       "done",
                       "echo loading verifyHash script",
-                      "if ! tmsh load sys config merge file /config/verifyHash; then",
-                      "    echo cannot validate signature of /config/verifyHash",
-                      "    exit",
-                      "fi",
-                      "echo loaded verifyHash",
-                      "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
-                      "for fileToVerify in \"${filesToVerify[@]}\"",
-                      "do",
-                      "    echo verifying \"$fileToVerify\"",
-                      "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-                      "        echo \"$fileToVerify\" is not valid",
-                      "        exit 1",
-                      "    fi",
-                      "    echo verified \"$fileToVerify\"",
-                      "done",
+                      "#if ! tmsh load sys config merge file /config/verifyHash; then",
+                      "#    echo cannot validate signature of /config/verifyHash",
+                      "#    exit",
+                      "#fi",
+                      "#echo loaded verifyHash",
+                      "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+                      "#for fileToVerify in \"${filesToVerify[@]}\"",
+                      "#do",
+                      "#    echo verifying \"$fileToVerify\"",
+                      "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+                      "#        echo \"$fileToVerify\" is not valid",
+                      "#        exit 1",
+                      "#    fi",
+                      "#    echo verified \"$fileToVerify\"",
+                      "#done",
                       "mkdir -p /config/cloud/aws/node_modules",
                       "echo expanding f5-cloud-libs.tar.gz",
                       "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
                       "echo installing dependencies",
-                      "tar xvfz /config/cloud/asm-policy-linux.tar.gz -C /config/cloud",
                       "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/f5-cloud-libs/node_modules",
                       "echo cloud libs install complete",
                       "touch /config/cloud/cloudLibsReady"
@@ -992,7 +967,6 @@
                       "--ssl-port ",
                       { "Ref": "managementGuiPort" },
                       "--module ltm:nominal",
-                      "--module asm:nominal",
                       "--ping",
                       "&>> /var/log/cloudlibs-install.log < /dev/null",
                       "&"
@@ -1174,9 +1148,11 @@
       },
       "UpdatePolicy": {
         "AutoScalingRollingUpdate": {
-          "MaxBatchSize": "1",
-          "MinInstancesInService": "1",
-          "PauseTime": "PT60M"
+          "MaxBatchSize": "2",
+          "MinInstancesInService": {
+            "Ref": "scalingMinSize"
+          },
+          "PauseTime": "PT25M"
         }
       }
     },

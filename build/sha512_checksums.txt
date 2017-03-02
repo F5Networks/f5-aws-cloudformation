@@ -2,8 +2,10 @@
 '3c9f3d07152fb86937528c9b1d4d82c68c0f1d55e23049189810d36afc8cfe952e3ed7c28d201742b436389672cc4dde982221116be656d429bb42a0f4c7e2ab'
 **Cluster: - Same Azs2 NIC - HOURLY**(f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template)
 '2e8dedc72f24a4c2b0cf2aaeb80bc01a778e96b76e10b24a9cf6f4547a1f291ff3b60935ff60f6c664c135b454b45cb25c924ee4811789af362758fa82b7b3ab'
+**Auto Scale LTM:**(f5-autoscale-ltm.template)
+'1ccc2124a734587b1bf7d748913497dfd6715a15aea034757b6fa96772cad20e1280298407be302b1697ad681ca3d51bbdddbda7221b6ecdeebf2979a746de93'
 **Auto Scale WAF:**(f5-autoscale-bigip.template)
-'746c3f037a7fd11aa38f84031b78c401959b65f1471b2c79c812a9b297edb69a7b6648c8dc4bd94495a41bba50f930478a9b8c2c4615cd8070f1f825ccd8f323'
+'78bb43106338c2b3888f0714e2dae30a1c1948bff0674ac3cc6d0414c2a76fc4cc8eee8d803516d3ea2b97536a203d54a305da17c0fba9b872eda06eb02234a9'
 **Standalone:1 NIC - BYOL**(f5-existing-stack-byol-1nic-bigip.template)
 '04223b77848cf90072f6f13361fd0b0967be0e484eb7c127c57758600a97f5eabcec3b515b12ffb02440f0f86090777f2c88665df2d8e475d28b1f9aeb31eb27'
 **Standalone:1 NIC - HOURLY**(f5-existing-stack-hourly-1nic-bigip.template)

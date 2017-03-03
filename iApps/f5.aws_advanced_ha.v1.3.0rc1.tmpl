@@ -2342,8 +2342,12 @@ def main() :
         interfaceVLAN = readIApp(EIPMapping, destinations,\
             iAppName + ".app/" + iAppName)
         setEnvironmentVariables()
-        os.environ["AWS_ACCESS_KEY"] = getAWSKey("aws-access-key")
-        os.environ["AWS_SECRET_KEY"] = getAWSKey("aws-secret-key")
+        if getAWSKey("aws-access-key") != "none":
+            logLTM.log(logging.INFO, "AWS secret and access key found, setting environment variables.")
+            os.environ["AWS_ACCESS_KEY"] = getAWSKey("aws-access-key")
+            os.environ["AWS_SECRET_KEY"] = getAWSKey("aws-secret-key")
+        else:
+            logLTM.log(logging.INFO, "No Secret and Key found, attempting to use IAM")
 
         # awsIID is created at system boot by scripts in /etc/vadc-init
         awsIID = "/shared/vadc/aws/iid-document"

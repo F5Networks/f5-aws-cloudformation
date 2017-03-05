@@ -93,6 +93,7 @@ def main():
     subnets_list = []
     securitygroups_list = []
     interfaces_list = []
+    selfs_list = []
 
     if stack == "network":
         network = True
@@ -541,8 +542,8 @@ def main():
                 Type="AWS::EC2::SecurityGroup::Id",
                 Description="BIG-IP Management Security Group",
             ))
-        subnets_list.append(managementSubnet)
-        securitygroups_list.append(bigipManagementSecurityGroup)
+            subnets_list.append(managementSubnet)
+            securitygroups_list.append(bigipManagementSecurityGroup)
         if num_nics > 2:
             for INDEX in range(num_azs):
                 InternalSubnet = "subnet2" + "Az" + str(INDEX + 1)
@@ -1457,7 +1458,6 @@ def main():
                                     "INTMASK='24'\n", 
                                    ]
 
-
             if stack == "full":
                 custom_sh +=  [              
                                     "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n", 
@@ -1896,6 +1896,15 @@ def main():
                                 "tmsh create net vlan external interfaces add { 1.1 } \n",
                               ]
                 if ha_type == "standalone":
+                    custom_sh += [
+                        "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                        "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                        "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                        "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                        "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                        "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n", 
+                        "EXTMASK=${GATEWAY_PREFIX}\n",
+                        ]
                     if 'waf' not in components:
                         custom_sh +=  [ 
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
@@ -1922,6 +1931,17 @@ def main():
                                 "INTMASK=${GATEWAY_PREFIX2}\n", 
                                 "tmsh create net vlan internal interfaces add { 1.2 } \n",
                                 "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
+                                ]
+            if num_nics > 3:
+                for x in range(3,num_nics):
+                    custom_sh +=  [ 
+                                "GATEWAY_MAC%s=`ifconfig eth%s | egrep HWaddr | awk '{print tolower($5)}'`\n" %(x,x),
+                                "GATEWAY_CIDR_BLOCK%s=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC%s}/subnet-ipv4-cidr-block`\n" %(x,x),
+                                "GATEWAY_PREFIX%s=${GATEWAY_CIDR_BLOCK%s#*/}\n" %(x,x),
+                                "SUBNET%sIP='" %(x),GetAtt(interfaces_list[x],"PrimaryPrivateIpAddress"),"'\n",
+                                "SUBNET%sMASK=${GATEWAY_PREFIX%s}\n" %(x,x),
+                                "tmsh create net vlan subnet%s interfaces add { 1.%s } \n" %(x,x),
+                                "tmsh create net self ${SUBNET%sIP}/${SUBNET%sMASK} vlan subnet%s allow-service none\n" %(x, x, x),
                                 ]
             # Set Gateway
             if ha_type == "across-az":

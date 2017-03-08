@@ -21,6 +21,7 @@ def usage():
     print "     -l  license  <BYOL, hourly or BIG-IQ>"
     print "     -c  components <WAF, autoscale, etc.>"
     print "     -H  ha-type <standalone, same-az, across-az>"
+    print "     --static_password"
     print "USAGE: "
     print " ex. " + sys.argv[0] + " -s network -n 1"
     print " ex. " + sys.argv[0] + " -s network -n 2 -a 2"
@@ -48,6 +49,7 @@ def main():
     parser.add_option("-l", "--license", action="store", type="string", dest="license_type", default="hourly", help="Type of License: hourly, BYOL, or BIG-IQ" )
     parser.add_option("-c", "--components", action="store", type="string", dest="components", help="Comma seperated list of components: ex. WAF" )
     parser.add_option("-H", "--ha-type", action="store", type="string", dest="ha_type", default="standalone", help="HA Type: standalone, same-az, across-az" )
+    parser.add_option("--static_password",action="store_true",dest="static_password",default=False)
 
     (options, args) = parser.parse_args()
 
@@ -58,6 +60,7 @@ def main():
     num_bigips = options.num_bigips
     ha_type = options.ha_type
     num_azs = options.num_azs
+    static_password = options.static_password
 
     # 1st BIG-IP will always be cluster seed
     CLUSTER_SEED = 1
@@ -167,6 +170,18 @@ def main():
             description += "AWS CloudFormation Template for creating a Across-AZs cluster of " + str(num_nics) + "NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
 
     t.add_description(description)
+    instance_parameters = [
+                "imageName",
+                "instanceType",
+                "applicationInstanceType",
+                "licenseKey1",
+                "licenseKey2",
+                "managementGuiPort",
+                "sshKey",
+                "restrictedSrcAddress",
+              ]
+    if static_password:
+        instance_parameters.append('adminPassword')
     t.add_metadata({
         "Version": str(version),
         "AWS::CloudFormation::Interface": {
@@ -191,16 +206,7 @@ def main():
               "Label": {
                   "default": "INSTANCE CONFIGURATION"
                 },
-              "Parameters": [
-                "imageName",
-                "instanceType",
-                "applicationInstanceType",
-                "licenseKey1",
-                "licenseKey2",
-                "managementGuiPort",
-                "sshKey",
-                "restrictedSrcAddress",
-              ]
+              "Parameters": instance_parameters
             },
             {
               "Label": {
@@ -285,6 +291,18 @@ def main():
     )
 
     ### BEGIN PARAMETERS
+    adminPassword = None
+    if static_password:
+        adminPassword = t.add_parameter(Parameter(
+                "adminPassword",
+                Type="String",
+                Description="BIG-IP VE Admin Password",
+                MinLength="1",
+                NoEcho=True,
+                MaxLength="255",
+                ConstraintDescription="Verify your BIG-IP VE Admin Password",
+                ))
+        
 
     application = t.add_parameter (Parameter(
         "application",
@@ -336,7 +354,6 @@ def main():
             Description="Key pair for accessing the instance",
         ))
 
-
     if network == True:
 
         for INDEX in range(num_azs):
@@ -379,6 +396,7 @@ def main():
                 Description="AWS instance type",
                 AllowedValues=[
                                 "m3.2xlarge",
+                                "m4.xlarge",
                                 "m4.2xlarge",
                                 "m4.4xlarge",
                                 "m4.10xlarge",
@@ -1250,7 +1268,7 @@ def main():
 
 
                 Description="Public External Interface for the BIG-IP",
-                SecondaryPrivateIpAddressCount="1",
+                SecondaryPrivateIpAddressCount="10",
             ))
 
             if stack == "full":
@@ -1383,6 +1401,7 @@ def main():
 
 
                         Description="Internal Interface for the BIG-IP",
+                        SecondaryPrivateIpAddressCount="10",
                     ))
                 if num_nics > 3:
                     for x in range(3,num_nics):
@@ -1686,8 +1705,10 @@ def main():
             create_user =       [
                                     "#!/bin/bash",
                                 ]
+            if not static_password:
+                create_user += [
+                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword"]
             create_user +=  [   
-                                "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                                 "PASSWORD=$(/bin/sed -e $'s:[\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                                 "if [ \"$1\" = admin ]; then",
                                 "    tmsh modify auth user \"$1\" password ${PASSWORD}",
@@ -1985,6 +2006,11 @@ def main():
                onboard_BIG_IP += [ 
                                     "--module asm:nominal",
                                  ]
+            if 'afm' in components:
+               onboard_BIG_IP += [ 
+                                    "--module afm:nominal",
+                                 ]
+
             onboard_BIG_IP += [ 
                 "--ping",
                 "&>> /var/log/cloudlibs-install.log < /dev/null &"
@@ -2105,7 +2131,7 @@ def main():
                                             mode='000755',
                                             owner='root',
                                             group='root'
-                                        ),
+                                        ),                                        
                                         '/config/cloud/aws/custom-config.sh': InitFile(
                                             content=Join('', custom_sh ),
                                             mode='000755',
@@ -2142,7 +2168,21 @@ def main():
                         })
                     )
             else:
-             
+                if static_password:
+                    password_file = InitFile(
+                        content=Ref(adminPassword),
+                        mode='000755',
+                        owner='root',
+                        group='root'
+                        )
+                else:
+                    password_file = InitFile(
+                        content="ARandOmPassWordWillBeGenerated",
+                        mode='000755',
+                        owner='root',
+                        group='root'
+                        )
+
                 metadata = Metadata(
                         Init({
                             'config': InitConfig(
@@ -2190,6 +2230,8 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
+                                        '/config/cloud/aws/.adminPassword':password_file,
+
                                         '/config/cloud/aws/custom-config.sh': InitFile(
                                             content=Join('', custom_sh ),
                                             mode='000755',

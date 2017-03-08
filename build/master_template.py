@@ -1268,7 +1268,7 @@ def main():
 
 
                 Description="Public External Interface for the BIG-IP",
-                SecondaryPrivateIpAddressCount="10",
+                SecondaryPrivateIpAddressCount="2",
             ))
 
             if stack == "full":
@@ -1401,7 +1401,7 @@ def main():
 
 
                         Description="Internal Interface for the BIG-IP",
-                        SecondaryPrivateIpAddressCount="10",
+                        SecondaryPrivateIpAddressCount="2",
                     ))
                 if num_nics > 3:
                     for x in range(3,num_nics):
@@ -2009,6 +2009,10 @@ def main():
             if 'afm' in components:
                onboard_BIG_IP += [ 
                                     "--module afm:nominal",
+                                 ]
+            if 'dns'  in components:
+               onboard_BIG_IP += [ 
+                                    "--module gtm:nominal",
                                  ]
 
             onboard_BIG_IP += [ 

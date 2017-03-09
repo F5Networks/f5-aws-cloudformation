@@ -306,7 +306,7 @@ def main():
 
     ### BEGIN PARAMETERS
     adminPassword = None
-    if static_password:
+    if static_password and not export_eni:
         adminPassword = t.add_parameter(Parameter(
                 "adminPassword",
                 Type="String",
@@ -365,7 +365,7 @@ def main():
             Type="String",
         ))
 
-    if stack != "network" and stack != "security_groups":
+    if stack != "network" and stack != "security_groups" and export_eni != True:
         sshKey = t.add_parameter(Parameter(
             "sshKey",
             Type="AWS::EC2::KeyPair::KeyName",
@@ -403,7 +403,7 @@ def main():
                 Description="Port for the BIG-IP management Configuration utility",
             ))
 
-    if bigip == True:
+    if bigip == True and not export_eni:
         if 'waf' in components:
             # Default to 2xlarge
             instanceType = t.add_parameter(Parameter(
@@ -451,7 +451,7 @@ def main():
                               ],
             ))
 
-        if license_type == "hourly" and 'waf' not in components:
+        if license_type == "hourly" and 'waf' not in components and not export_eni:
             imageName = t.add_parameter(Parameter(
                 "imageName",
                 Default="Best1000Mbps",
@@ -470,7 +470,7 @@ def main():
                                 "Best1000Mbps",
                               ],
             ))
-        if license_type == "hourly" and 'waf' in components:
+        if license_type == "hourly" and 'waf' in components and not export_eni:
             imageName = t.add_parameter(Parameter(
                 "imageName",
                 Default="Best1000Mbps",
@@ -539,14 +539,14 @@ def main():
                 Description="BIG-IQ License Pool UUID",
                 MaxLength="255",
             ))
-    if stack == "existing" or stack == "security_groups":
+    if (stack == "existing" or stack == "security_groups") and not import_eni:
             Vpc = t.add_parameter(Parameter(
                 "Vpc",
                 ConstraintDescription="This must be an existing VPC within the working region.",
                 Type="AWS::EC2::VPC::Id",
             ))
 
-    if stack == "existing":
+    if stack == "existing" and not import_eni:
         for INDEX in range(num_azs):
             ExternalSubnet = "subnet1" + "Az" + str(INDEX + 1)
             PARAMETERS[ExternalSubnet] = t.add_parameter(Parameter(
@@ -616,7 +616,7 @@ def main():
                 securitygroups_list.append(bigipInterfaceSecurityGroup)
 
     # BEGIN REGION MAPPINGS FOR AMI IDS
-    if bigip == True: 
+    if bigip == True and not export_eni: 
 
         if license_type == "hourly":
             with open("cached-hourly-region-map.json") as json_file:

@@ -50,6 +50,10 @@ def main():
     parser.add_option("-c", "--components", action="store", type="string", dest="components", help="Comma seperated list of components: ex. WAF" )
     parser.add_option("-H", "--ha-type", action="store", type="string", dest="ha_type", default="standalone", help="HA Type: standalone, same-az, across-az" )
     parser.add_option("--static_password",action="store_true",dest="static_password",default=False)
+    parser.add_option("--no_service_eip",action="store_true",dest="no_service_ip",default=False)
+    parser.add_option("--num_external_ip",action="store",dest="num_external_ip",default=1,type="int")
+    parser.add_option("--num_internal_ip",action="store",dest="num_internal_ip",default=1,type="int")
+    parser.add_option("--num_external_eip",action="store",dest="num_external_eip",default=1,type="int")
 
     (options, args) = parser.parse_args()
 
@@ -61,6 +65,9 @@ def main():
     ha_type = options.ha_type
     num_azs = options.num_azs
     static_password = options.static_password
+    num_external_ip = options.num_external_ip
+    num_internal_ip = options.num_internal_ip
+    num_external_eip = options.num_external_eip
 
     # 1st BIG-IP will always be cluster seed
     CLUSTER_SEED = 1
@@ -97,6 +104,8 @@ def main():
     securitygroups_list = []
     interfaces_list = []
     selfs_list = []
+    vip_address_list = []
+    vip_eip_list = []
 
     if stack == "network":
         network = True
@@ -1268,7 +1277,7 @@ def main():
 
 
                 Description="Public External Interface for the BIG-IP",
-                SecondaryPrivateIpAddressCount="2",
+                SecondaryPrivateIpAddressCount=num_external_ip,
             ))
 
             if stack == "full":
@@ -1314,6 +1323,14 @@ def main():
                 ManagementEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementEipAssociation"
 
                 interfaces_list.append(ManagementInterface)
+                vip_address_list.append(VipEipAddress)
+                vip_eip_list.append(VipEipAssociation)
+                if num_external_eip > 1:
+                    for x in range(1,num_external_eip):
+                        VipEipAddressX = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAddress%s" %(x+1)
+                        VipEipAssociationX = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAssociation%s" %(x+1)
+                        vip_address_list.append(VipEipAddressX)
+                        vip_eip_list.append(VipEipAssociationX)                                            
                     
                 if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
 
@@ -1347,6 +1364,20 @@ def main():
                             AllocationId=GetAtt(VipEipAddress, "AllocationId"),
                             PrivateIpAddress=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
                         ))
+                        for x in range(1,num_external_eip):
+                            VipEipAddressX = vip_address_list[x]
+                            VipEipAssociationX = vip_eip_list[x]
+                            RESOURCES[VipEipAddressX] = t.add_resource(EIP(
+                                    VipEipAddressX,
+                                    Domain="vpc",
+                                    ))
+                            RESOURCES[VipEipAssociation] = t.add_resource(EIPAssociation(
+                                    VipEipAssociationX,
+                                    NetworkInterfaceId=Ref(ExternalInterface),
+                                    AllocationId=GetAtt(VipEipAddressX, "AllocationId"),
+                                    PrivateIpAddress=Select("%s" %(x), GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
+                                    ))
+                            
 
                 RESOURCES[ManagementInterface] = t.add_resource(NetworkInterface(
                     ManagementInterface,
@@ -1401,7 +1432,7 @@ def main():
 
 
                         Description="Internal Interface for the BIG-IP",
-                        SecondaryPrivateIpAddressCount="2",
+                        SecondaryPrivateIpAddressCount=num_internal_ip,
                     ))
                 if num_nics > 3:
                     for x in range(3,num_nics):

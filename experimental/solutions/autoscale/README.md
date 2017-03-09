@@ -8,11 +8,11 @@ For more details, see [Deployment details](#config).
 
 ## Prerequisites
 Before you deploy this solution from the AWS Marketplace, you need these prerequisites:
- - A [secure, accurate, and up-to-date template](/docs/security.md).
- - The appropriate [AWS permissions](/docs/perms.md). 
+ - A [secure, accurate, and up-to-date template](/docs/template_security.md).
+ - The appropriate [AWS permissions](/docs/permissions.md). 
  - An AWS VPC with a public subnet.
  - A DNS name for the application pool; either a server or the ELB behind BIG-IP VE.
- - A classic [Elastic load balancer (ELB)](/docs/ELB_details.md) in front of the BIG-IP VE. It must be pre-configured to perform SSL offload.
+ - A classic [Elastic load balancer (ELB)](/docs/elb.md) in front of the BIG-IP VE. It must be pre-configured to perform SSL offload.
  - A key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS).
  - An AWS Security Group with the following inbound rules:
     - Port 22 for SSH access to BIG-IP VE *(source = Intra-VPC and/or mgmt networks)*
@@ -113,9 +113,9 @@ In AWS, an Auto Scaling Group of BIG-IP VEs is created. Each instance's paramete
   
 ## After you deploy ##
 
-- If you need to upgrade or change the deployment, you can [update the stack](/docs/updating.md).
+- If you need to upgrade or change the deployment, you can [update the stack](/docs/update_the_stack.md).
 
-- If you want to remove the deployment altogether, [you can](/docs/removing.md).
+- If you want to remove the deployment altogether, [you can](/docs/remove_the_deployment.md).
 
 
 ### Help ###

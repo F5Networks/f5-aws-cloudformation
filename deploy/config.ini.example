@@ -49,6 +49,7 @@ BigipManagementGuiPort=
 ;ex. BigiqPassword=MyPassword
 ;ex. BigiqAddress=55.55.55.55
 ;ex. BigiqLicensePoolUUID=92ff652f-3569-40ce-80db-6f0fce4b900a
+;To obtain UUID: curl -sk -u admin:'Password' -H "Content-Type: application/json" https://55.55.55.55/mgmt/cm/shared/licensing/pools/?\$select=uuid,name | python -m json.tool
 BigiqUsername=
 BigiqPassword=
 BigiqAddress=

@@ -1,0 +1,690 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Template Version 1.0.0: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Mappings": {
+        "BigipRegionMap": {
+            "ap-northeast-1": {
+                "Best": "ami-29f82a48",
+                "Better": "ami-d1fc2eb0",
+                "Good": "ami-e1fe2c80"
+            },
+            "ap-southeast-1": {
+                "Best": "ami-b178ddd2",
+                "Better": "ami-ae78ddcd",
+                "Good": "ami-cd7edbae"
+            },
+            "ap-southeast-2": {
+                "Best": "ami-c1e8d8a2",
+                "Better": "ami-e6eede85",
+                "Good": "ami-41e9d922"
+            },
+            "eu-central-1": {
+                "Best": "ami-0556ab6a",
+                "Better": "ami-fa50ad95",
+                "Good": "ami-0254a96d"
+            },
+            "eu-west-1": {
+                "Best": "ami-d6e892a5",
+                "Better": "ami-d1f58fa2",
+                "Good": "ami-e3eb9190"
+            },
+            "sa-east-1": {
+                "Best": "ami-7542d119",
+                "Better": "ami-8c5ecde0",
+                "Good": "ami-1659ca7a"
+            },
+            "us-east-1": {
+                "Best": "ami-67067d70",
+                "Better": "ami-a3047fb4",
+                "Good": "ami-5e077c49"
+            },
+            "us-west-1": {
+                "Best": "ami-b02769d0",
+                "Better": "ami-42256b22",
+                "Good": "ami-bd2769dd"
+            },
+            "us-west-2": {
+                "Best": "ami-f12df191",
+                "Better": "ami-f92df199",
+                "Good": "ami-8333efe3"
+            }
+        }
+    },
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "NETWORKING CONFIGURATION"
+                    },
+                    "Parameters": [
+                        "Vpc",
+                        "managementSubnetAz1",
+                        "managementSubnetAz2",
+                        "subnet1Az2",
+                        "bigipManagementSecurityGroup",
+                        "subnet1Az1",
+                        "bigipExternalSecurityGroup",
+                        "availabilityZone1",
+                        "availabilityZone2"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "INSTANCE CONFIGURATION"
+                    },
+                    "Parameters": [
+                        "adminUsername",
+                        "adminPassword",
+                        "imageName",
+                        "instanceType",
+                        "applicationInstanceType",
+                        "licenseKey1",
+                        "licenseKey2",
+                        "managementGuiPort",
+                        "sshKey",
+                        "restrictedSrcAddress",
+                        "iamAccessKey",
+                        "iamSecretKey"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "TAGS"
+                    },
+                    "Parameters": [
+                        "application",
+                        "environment",
+                        "group",
+                        "owner",
+                        "costcenter"
+                    ]
+                }
+            ],
+            "ParameterLabels": {
+                "Vpc": {
+                    "default": "VPC"
+                },
+                "adminPassword": {
+                    "default": "Admin Password"
+                },
+                "adminUsername": {
+                    "default": "Admin Username"
+                },
+                "application": {
+                    "default": "Application"
+                },
+                "applicationInstanceType": {
+                    "default": "Application Instance Type"
+                },
+                "availabilityZone1": {
+                    "default": "Availability Zone 1"
+                },
+                "availabilityZone2": {
+                    "default": "Availability Zone 2"
+                },
+                "bigipExternalSecurityGroup": {
+                    "default": "External Security Group"
+                },
+                "bigipManagementSecurityGroup": {
+                    "default": "Management Security Group"
+                },
+                "costcenter": {
+                    "default": "Cost Center"
+                },
+                "environment": {
+                    "default": "Environment"
+                },
+                "group": {
+                    "default": "Group"
+                },
+                "iamAccessKey": {
+                    "default": "IAM Access Key"
+                },
+                "iamSecretKey": {
+                    "default": "IAM Secret Key"
+                },
+                "imageName": {
+                    "default": "Image Name"
+                },
+                "instanceType": {
+                    "default": "AWS Instance Size"
+                },
+                "licenseKey1": {
+                    "default": "License Key1"
+                },
+                "managementGuiPort": {
+                    "default": "Management Port"
+                },
+                "managementSubnetAz1": {
+                    "default": "Management Subnet AZ1"
+                },
+                "managementSubnetAz2": {
+                    "default": "Management Subnet AZ2"
+                },
+                "owner": {
+                    "default": "Owner"
+                },
+                "restrictedSrcAddress": {
+                    "default": "Source Address(es) for SSH Access"
+                },
+                "sshKey": {
+                    "default": "SSH Key"
+                },
+                "subnet1Az1": {
+                    "default": "Subnet AZ1"
+                },
+                "subnet1Az2": {
+                    "default": "Subnet AZ2"
+                }
+            }
+        },
+        "Version": "1.0.0"
+    },
+    "Outputs": {
+        "Bigip1ExternalInterfacePrivateIp": {
+            "Description": "Internally routable IP of the public interface on BIG-IP",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Bigip1subnet1Az1Interface",
+                    "PrimaryPrivateIpAddress"
+                ]
+            }
+        },
+        "Bigip1InstanceId": {
+            "Description": "Instance Id of BIG-IP in Amazon",
+            "Value": {
+                "Ref": "Bigip1Instance"
+            }
+        },
+        "Bigip1Url": {
+            "Description": "BIG-IP Management GUI",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://",
+                        {
+                            "Fn::GetAtt": [
+                                "Bigip1Instance",
+                                "PublicIp"
+                            ]
+                        },
+                        ":",
+                        {
+                            "Ref": "managementGuiPort"
+                        }
+                    ]
+                ]
+            }
+        },
+        "Bigip1VipEipAddress": {
+            "Description": "EIP address for VIP",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "http://",
+                        {
+                            "Fn::GetAtt": [
+                                "Bigip1Instance",
+                                "PublicIp"
+                            ]
+                        },
+                        ":80"
+                    ]
+                ]
+            }
+        },
+        "Bigip1subnet1Az1Interface": {
+            "Description": "External interface Id on BIG-IP",
+            "Value": {
+                "Ref": "Bigip1subnet1Az1Interface"
+            }
+        },
+        "Bigip1subnet1Az1SelfEipAddress": {
+            "Description": "IP Address of the External interface attached to BIG-IP",
+            "Value": {
+                "Ref": "Bigip1subnet1Az1SelfEipAddress"
+            }
+        },
+        "availabilityZone1": {
+            "Description": "Availability Zone",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Bigip1Instance",
+                    "AvailabilityZone"
+                ]
+            }
+        }
+    },
+    "Parameters": {
+        "Vpc": {
+            "ConstraintDescription": "This must be an existing VPC within the working region.",
+            "Type": "AWS::EC2::VPC::Id"
+        },
+        "adminPassword": {
+            "ConstraintDescription": "Verify your BIG-IP VE Admin Password",
+            "Description": "BIG-IP VE Admin Password",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "NoEcho": true,
+            "Type": "String"
+        },
+        "adminUsername": {
+            "ConstraintDescription": "Verify your BIG-IP VE Admin Username",
+            "Default": "admin",
+            "Description": "BIG-IP VE Admin Username",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "application": {
+            "Default": "f5app",
+            "Description": "Name of the Application Tag",
+            "Type": "String"
+        },
+        "bigipExternalSecurityGroup": {
+            "ConstraintDescription": "The security group ID must be within an existing VPC",
+            "Description": "Public or External Security Group",
+            "Type": "AWS::EC2::SecurityGroup::Id"
+        },
+        "bigiqAddress": {
+            "ConstraintDescription": "Verify your BIG-IQ Hostname or IP",
+            "Description": "BIG-IQ Hostname or IP",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "bigiqLicensePoolUUID": {
+            "ConstraintDescription": "Verify your BIG-IQ License Pool UUID",
+            "Description": "BIG-IQ License Pool UUID",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "bigiqPassword": {
+            "ConstraintDescription": "Verify your BIG-IQ Password",
+            "Description": "BIG-IQ Password",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "NoEcho": true,
+            "Type": "String"
+        },
+        "bigiqUsername": {
+            "ConstraintDescription": "Verify your BIG-IQ Username.",
+            "Description": "BIG-IQ Username",
+            "MaxLength": "255",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "costcenter": {
+            "Default": "f5costcenter",
+            "Description": "Name of the Cost Center Tag",
+            "Type": "String"
+        },
+        "environment": {
+            "Default": "f5env",
+            "Description": "Name of the Environment Tag",
+            "Type": "String"
+        },
+        "group": {
+            "Default": "f5group",
+            "Description": "Name of the Group Tag",
+            "Type": "String"
+        },
+        "imageName": {
+            "AllowedValues": [
+                "Good",
+                "Better",
+                "Best"
+            ],
+            "ConstraintDescription": "Must be a valid F5 BIG-IP VE image type",
+            "Default": "Best",
+            "Description": "F5 BIG-IP Performance Type",
+            "Type": "String"
+        },
+        "instanceType": {
+            "AllowedValues": [
+                "t2.medium",
+                "t2.large",
+                "m3.xlarge",
+                "m3.2xlarge",
+                "m4.large",
+                "m4.xlarge",
+                "m4.2xlarge",
+                "m4.4xlarge",
+                "m4.10xlarge",
+                "c3.2xlarge",
+                "c3.4xlarge",
+                "c3.8xlarge",
+                "c4.xlarge",
+                "c4.2xlarge",
+                "c4.4xlarge"
+            ],
+            "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
+            "Default": "m3.2xlarge",
+            "Description": "Size of the F5 BIG-IP Virtual Instance",
+            "Type": "String"
+        },
+        "managementGuiPort": {
+            "ConstraintDescription": "Must be a valid, unused port on the BIG-IP.",
+            "Default": "8443",
+            "Description": "Port for the BIG-IP management Configuration utility",
+            "Type": "Number"
+        },
+        "owner": {
+            "Default": "f5owner",
+            "Description": "Name of the Owner Tag",
+            "Type": "String"
+        },
+        "restrictedSrcAddress": {
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+            "Default": "0.0.0.0/0",
+            "Description": " The IP address range that can be used to SSH to the EC2 instances",
+            "MaxLength": "18",
+            "MinLength": "9",
+            "Type": "String"
+        },
+        "sshKey": {
+            "Description": "Key pair for accessing the instance",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "subnet1Az1": {
+            "ConstraintDescription": "The subnet ID must be within an existing VPC",
+            "Description": "Public or External subnet",
+            "Type": "AWS::EC2::Subnet::Id"
+        }
+    },
+    "Resources": {
+        "Bigip1Instance": {
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "commands": {
+                            "001-unpack-libs": {
+                                "command": {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "nohup /config/installCloudLibs.sh",
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "002-1nic-setup": {
+                                "command": {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "nohup /config/waitThenRun.sh",
+                                            "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
+                                            "--file /config/cloud/aws/f5-cloud-libs/scripts/aws/1nicSetup.sh",
+                                            "--cwd /config/cloud/aws/f5-cloud-libs/scripts/aws",
+                                            "--log-level debug",
+                                            "-o /var/log/1nicSetup.log",
+                                            "--signal 1_NIC_SETUP_DONE",
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "003-onboard-BIG-IP": {
+                                "command": {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "NAME_SERVER=`/config/getNameServer.sh eth0`;",
+                                            "nohup /config/waitThenRun.sh",
+                                            "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
+                                            "--ssl-port ",
+                                            {
+                                                "Ref": "managementGuiPort"
+                                            },
+                                            "--wait-for ADMIN_CREATED",
+                                            "-o /var/log/onboard.log",
+                                            "--log-level debug",
+                                            "--no-reboot",
+                                            "--host localhost",
+                                            "--user ",
+                                            {
+                                                "Ref": "adminUsername"
+                                            },
+                                            "--password-url file:///config/cloud/aws/.adminPassword",
+                                            "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                                            "--ntp 0.us.pool.ntp.org",
+                                            "--ntp 1.us.pool.ntp.org",
+                                            "--tz UTC",
+                                            "--dns ${NAME_SERVER}",
+                                            "--module ltm:nominal",
+                                            "--ping",
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "005-custom-config": {
+                                "command": {
+                                    "Fn::Join": [
+                                        " ",
+                                        [
+                                            "nohup /config/waitThenRun.sh",
+                                            "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
+                                            "--file /config/cloud/aws/custom-config.sh",
+                                            "--cwd /config/cloud/aws",
+                                            "-o /var/log/custom-config.log",
+                                            "--log-level debug",
+                                            "--wait-for ONBOARD_DONE",
+                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
+                                        ]
+                                    ]
+                                }
+                            }
+                        },
+                        "files": {
+                            "/config/cloud/aws/custom-config.sh": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/bash\n",
+                                            "date\n",
+                                            "echo 'starting tmsh config'\n",
+                                            "echo 'start install biqiq license'\n",
+                                            ". /config/cloud/aws/license_from_bigiq.sh\n",
+                                            "rm /config/cloud/aws/.adminPassword\n",
+                                            "tmsh save /sys config\n",
+                                            "date\n",
+                                            "### START CUSTOM TMSH CONFIGURTION\n",
+                                            "### END CUSTOM TMSH CONFIGURATION"
+                                        ]
+                                    ]
+                                },
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root"
+                            },
+                            "/config/cloud/aws/custom.config": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/bash\n",
+                                            "### Add Supporting Config"
+                                        ]
+                                    ]
+                                },
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root"
+                            },
+                            "/config/cloud/aws/firstrun.utils": {
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root",
+                                "source": "http://cdn.f5.com/product/templates/utils/firstrun.utils"
+                            },
+                            "/config/cloud/aws/license_from_bigiq.sh": {
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root",
+                                "source": "http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh"
+                            },
+                            "/config/cloud/aws/remove_license_from_bigiq.sh": {
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root",
+                                "source": "http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh"
+                            },
+                            "/config/cloud/f5-cloud-libs.tar.gz": {
+                                "group": "root",
+                                "mode": "000755",
+                                "owner": "root",
+                                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.0.0/dist/f5-cloud-libs.tar.gz"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "BigipRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Ref": "imageName"
+                        }
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "instanceType"
+                },
+                "KeyName": {
+                    "Ref": "sshKey"
+                },
+                "NetworkInterfaces": [
+                    {
+                        "Description": "Public or External Interface",
+                        "DeviceIndex": "0",
+                        "NetworkInterfaceId": {
+                            "Ref": "Bigip1subnet1Az1Interface"
+                        }
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "application"
+                        }
+                    },
+                    {
+                        "Key": "Costcenter",
+                        "Value": {
+                            "Ref": "costcenter"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "environment"
+                        }
+                    },
+                    {
+                        "Key": "Group",
+                        "Value": {
+                            "Ref": "group"
+                        }
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "Big-IP: ",
+                                    {
+                                        "Ref": "AWS::StackName"
+                                    }
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "owner"
+                        }
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash\n",
+                                "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " -r ",
+                                "Bigip1Instance",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "Type": "AWS::EC2::Instance"
+        },
+        "Bigip1subnet1Az1Interface": {
+            "Properties": {
+                "Description": "Public External Interface for the BIG-IP",
+                "GroupSet": [
+                    {
+                        "Ref": "bigipExternalSecurityGroup"
+                    }
+                ],
+                "SecondaryPrivateIpAddressCount": "1",
+                "SubnetId": {
+                    "Ref": "subnet1Az1"
+                }
+            },
+            "Type": "AWS::EC2::NetworkInterface"
+        },
+        "Bigip1subnet1Az1SelfEipAddress": {
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "Bigip1subnet1Az1SelfEipAssociation": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "Bigip1subnet1Az1SelfEipAddress",
+                        "AllocationId"
+                    ]
+                },
+                "NetworkInterfaceId": {
+                    "Ref": "Bigip1subnet1Az1Interface"
+                },
+                "PrivateIpAddress": {
+                    "Fn::GetAtt": [
+                        "Bigip1subnet1Az1Interface",
+                        "PrimaryPrivateIpAddress"
+                    ]
+                }
+            },
+            "Type": "AWS::EC2::EIPAssociation"
+        }
+    }
+}

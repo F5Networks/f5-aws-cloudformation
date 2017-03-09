@@ -2,7 +2,7 @@
 
 from optparse import OptionParser
 import json
-from troposphere import Base64, Select, FindInMap, GetAtt, GetAZs, Join, Output
+from troposphere import Base64, Select, FindInMap, GetAtt, GetAZs, Join, Output, Export, Sub, ImportValue
 from troposphere import Parameter, Ref, Tags, Template
 from troposphere.cloudformation import Init, Metadata, InitConfig, InitFiles, InitFile
 from troposphere.s3 import Bucket, PublicRead, BucketOwnerFullControl, BucketPolicy 
@@ -54,7 +54,8 @@ def main():
     parser.add_option("--num_external_ip",action="store",dest="num_external_ip",default=1,type="int")
     parser.add_option("--num_internal_ip",action="store",dest="num_internal_ip",default=1,type="int")
     parser.add_option("--num_external_eip",action="store",dest="num_external_eip",default=1,type="int")
-
+    parser.add_option("--export_eni",action="store_true",dest="export_eni",default=False)
+    parser.add_option("--import_eni",action="store_true",dest="import_eni",default=False)
     (options, args) = parser.parse_args()
 
 
@@ -68,6 +69,8 @@ def main():
     num_external_ip = options.num_external_ip
     num_internal_ip = options.num_internal_ip
     num_external_eip = options.num_external_eip
+    export_eni = options.export_eni
+    import_eni = options.import_eni
 
     # 1st BIG-IP will always be cluster seed
     CLUSTER_SEED = 1
@@ -136,6 +139,8 @@ def main():
         security_groups = False
         webserver = False
         bigip = True
+
+        
 
     # Build variables used for QA
     ### Template Version
@@ -311,7 +316,11 @@ def main():
                 MaxLength="255",
                 ConstraintDescription="Verify your BIG-IP VE Admin Password",
                 ))
-        
+    if import_eni:
+        eni_stackName = t.add_parameter(Parameter("EniStackName",
+                                                  Type="String",
+                                                  Description="Name of ENI stack",
+                                                  ))
 
     application = t.add_parameter (Parameter(
         "application",
@@ -1268,17 +1277,17 @@ def main():
             ExternalSelfEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "SelfEipAssociation"
 
             interfaces_list.append(ExternalInterface)
+            if not import_eni:
+                RESOURCES[ExternalInterface] = t.add_resource(NetworkInterface(
+                        ExternalInterface,
+                        SubnetId=Ref(ExternalSubnet),
+                        GroupSet=[Ref(bigipExternalSecurityGroup)],
 
-            RESOURCES[ExternalInterface] = t.add_resource(NetworkInterface(
-                ExternalInterface,
-                SubnetId=Ref(ExternalSubnet),
-                GroupSet=[Ref(bigipExternalSecurityGroup)],
 
 
-
-                Description="Public External Interface for the BIG-IP",
-                SecondaryPrivateIpAddressCount=num_external_ip,
-            ))
+                        Description="Public External Interface for the BIG-IP",
+                        SecondaryPrivateIpAddressCount=num_external_ip,
+                        ))
 
             if stack == "full":
                 # External Interface is true on 1nic,2nic,3nic,etc.
@@ -1300,19 +1309,20 @@ def main():
                     PrivateIpAddress=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
                 ))
             else:
-                RESOURCES[ExternalSelfEipAddress] = t.add_resource(EIP(    
-                    ExternalSelfEipAddress,
+                if not import_eni:
+                    RESOURCES[ExternalSelfEipAddress] = t.add_resource(EIP(    
+                            ExternalSelfEipAddress,
 
-                    Domain="vpc",
-                ))
+                            Domain="vpc",
+                            ))
 
-                RESOURCES[ExternalSelfEipAssociation] = t.add_resource(EIPAssociation(
-                    ExternalSelfEipAssociation,
-
-                    NetworkInterfaceId=Ref(ExternalInterface),
-                    AllocationId=GetAtt(ExternalSelfEipAddress, "AllocationId"),
-                    PrivateIpAddress=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
-                ))
+                    RESOURCES[ExternalSelfEipAssociation] = t.add_resource(EIPAssociation(
+                            ExternalSelfEipAssociation,
+                            
+                            NetworkInterfaceId=Ref(ExternalInterface),
+                            AllocationId=GetAtt(ExternalSelfEipAddress, "AllocationId"),
+                            PrivateIpAddress=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
+                            ))
          
             if num_nics > 1:
 
@@ -1352,42 +1362,44 @@ def main():
                             PrivateIpAddress=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
                         ))
                     else:
-                        RESOURCES[VipEipAddress] = t.add_resource(EIP(
-                            VipEipAddress,
-
-                            Domain="vpc",
-                        ))
-                        RESOURCES[VipEipAssociation] = t.add_resource(EIPAssociation(
-                            VipEipAssociation,
-
-                            NetworkInterfaceId=Ref(ExternalInterface),
-                            AllocationId=GetAtt(VipEipAddress, "AllocationId"),
-                            PrivateIpAddress=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
-                        ))
-                        for x in range(1,num_external_eip):
-                            VipEipAddressX = vip_address_list[x]
-                            VipEipAssociationX = vip_eip_list[x]
-                            RESOURCES[VipEipAddressX] = t.add_resource(EIP(
-                                    VipEipAddressX,
+                        if not import_eni:
+                            RESOURCES[VipEipAddress] = t.add_resource(EIP(
+                                    VipEipAddress,
                                     Domain="vpc",
                                     ))
                             RESOURCES[VipEipAssociation] = t.add_resource(EIPAssociation(
-                                    VipEipAssociationX,
+                                    VipEipAssociation,
+
                                     NetworkInterfaceId=Ref(ExternalInterface),
-                                    AllocationId=GetAtt(VipEipAddressX, "AllocationId"),
-                                    PrivateIpAddress=Select("%s" %(x), GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
+                                    AllocationId=GetAtt(VipEipAddress, "AllocationId"),
+                                    PrivateIpAddress=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
                                     ))
+                        for x in range(1,num_external_eip):
+
+                            VipEipAddressX = vip_address_list[x]
+                            VipEipAssociationX = vip_eip_list[x]
+                            if not import_eni:
+                                RESOURCES[VipEipAddressX] = t.add_resource(EIP(
+                                        VipEipAddressX,
+                                        Domain="vpc",
+                                        ))
+                                RESOURCES[VipEipAssociation] = t.add_resource(EIPAssociation(
+                                        VipEipAssociationX,
+                                        NetworkInterfaceId=Ref(ExternalInterface),
+                                        AllocationId=GetAtt(VipEipAddressX, "AllocationId"),
+                                        PrivateIpAddress=Select("%s" %(x), GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
+                                        ))
                             
+                if not import_eni:
+                    RESOURCES[ManagementInterface] = t.add_resource(NetworkInterface(
+                            ManagementInterface,
+                            SubnetId=Ref(managementSubnet),
+                            GroupSet=[Ref(bigipManagementSecurityGroup)],
 
-                RESOURCES[ManagementInterface] = t.add_resource(NetworkInterface(
-                    ManagementInterface,
-                    SubnetId=Ref(managementSubnet),
-                    GroupSet=[Ref(bigipManagementSecurityGroup)],
 
 
-
-                    Description="Management Interface for the BIG-IP",
-                ))
+                            Description="Management Interface for the BIG-IP",
+                            ))
 
                 if stack == "full":
                     RESOURCES[ManagementEipAddress] = t.add_resource(EIP(
@@ -1406,44 +1418,46 @@ def main():
                         AllocationId=GetAtt(ManagementEipAddress, "AllocationId"),
                     ))
                 else:
-                    RESOURCES[ManagementEipAddress] = t.add_resource(EIP(
-                        ManagementEipAddress,
+                    if not import_eni:
+                        RESOURCES[ManagementEipAddress] = t.add_resource(EIP(
+                                ManagementEipAddress,
 
-                        Domain="vpc",
-                    ))
-                    RESOURCES[ManagementEipAssociation] = t.add_resource(EIPAssociation(
-                        ManagementEipAssociation,
+                                Domain="vpc",
+                                ))
+                        RESOURCES[ManagementEipAssociation] = t.add_resource(EIPAssociation(
+                                ManagementEipAssociation,
 
-                        NetworkInterfaceId=Ref(ManagementInterface),
-                        AllocationId=GetAtt(ManagementEipAddress, "AllocationId"),
-                    ))
+                                NetworkInterfaceId=Ref(ManagementInterface),
+                                AllocationId=GetAtt(ManagementEipAddress, "AllocationId"),
+                                ))
 
                 if num_nics > 2:
 
                     InternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterface"
 
                     interfaces_list.append(InternalInterface)
+                    if not import_eni:
+                        RESOURCES[InternalInterface] = t.add_resource(NetworkInterface(
+                                InternalInterface,
+                                SubnetId=Ref(InternalSubnet),
+                                GroupSet=[Ref(bigipInternalSecurityGroup)],
 
-                    RESOURCES[InternalInterface] = t.add_resource(NetworkInterface(
-                        InternalInterface,
-                        SubnetId=Ref(InternalSubnet),
-                        GroupSet=[Ref(bigipInternalSecurityGroup)],
 
 
-
-                        Description="Internal Interface for the BIG-IP",
-                        SecondaryPrivateIpAddressCount=num_internal_ip,
-                    ))
+                                Description="Internal Interface for the BIG-IP",
+                                SecondaryPrivateIpAddressCount=num_internal_ip,
+                                ))
                 if num_nics > 3:
                     for x in range(3,num_nics):
                         InterfaceX = "Bigip" + str(BIGIP_INDEX + 1) + "Interface%s" %(x)
                         interfaces_list.append(InterfaceX)
-                        RESOURCES[InterfaceX] = t.add_resource(NetworkInterface(
-                                InterfaceX,
-                                SubnetId=Ref(subnets_list[x]),
-                                GroupSet=[Ref(securitygroups_list[x])],
-                                Description="Interface %s for the BIG-IP" %(InterfaceX),
-                                ))
+                        if not import_eni:
+                            RESOURCES[InterfaceX] = t.add_resource(NetworkInterface(
+                                    InterfaceX,
+                                    SubnetId=Ref(subnets_list[x]),
+                                    GroupSet=[Ref(securitygroups_list[x])],
+                                    Description="Interface %s for the BIG-IP" %(InterfaceX),
+                                    ))
 
                         
                     
@@ -1948,13 +1962,17 @@ def main():
                                 "tmsh create net vlan external interfaces add { 1.1 } \n",
                               ]
                 if ha_type == "standalone":
+                    if import_eni:
+                        extip = ImportValue(Sub("${EniStackName}-Bigip1ExternalInterfacePrivateIp"))
+                    else:
+                        extip = GetAtt(ExternalInterface, "PrimaryPrivateIpAddress")
                     custom_sh += [
                         "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                         "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
                         "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
                         "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
                         "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                        "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n", 
+                        "EXTIP='", extip, "'\n", 
                         "EXTMASK=${GATEWAY_PREFIX}\n",
                         ]
                     if 'waf' not in components:
@@ -1975,22 +1993,32 @@ def main():
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
                                         ]
             if num_nics > 2:
+                if import_eni:
+                    intip = ImportValue(Sub("${EniStackName}-Bigip1InternalInterfacePrivateIp"))
+                else:
+                    intip = GetAtt(InternalInterface, "PrimaryPrivateIpAddress")
+
                 custom_sh +=  [ 
                                 "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                                 "GATEWAY_CIDR_BLOCK2=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                                 "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}\n",
-                                "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
+                                "INTIP='",intip,"'\n",
                                 "INTMASK=${GATEWAY_PREFIX2}\n", 
                                 "tmsh create net vlan internal interfaces add { 1.2 } \n",
                                 "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
                                 ]
             if num_nics > 3:
                 for x in range(3,num_nics):
+                    if import_eni:
+                        subip = ImportValue(Sub("${EniStackName}-Bigip1Interface%xPrivateIp" %(x)))
+                    else:
+                        subip = GetAtt(interfaces_list[x],"PrimaryPrivateIpAddress")
+
                     custom_sh +=  [ 
                                 "GATEWAY_MAC%s=`ifconfig eth%s | egrep HWaddr | awk '{print tolower($5)}'`\n" %(x,x),
                                 "GATEWAY_CIDR_BLOCK%s=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC%s}/subnet-ipv4-cidr-block`\n" %(x,x),
                                 "GATEWAY_PREFIX%s=${GATEWAY_CIDR_BLOCK%s#*/}\n" %(x,x),
-                                "SUBNET%sIP='" %(x),GetAtt(interfaces_list[x],"PrimaryPrivateIpAddress"),"'\n",
+                                "SUBNET%sIP='" %(x),subip,"'\n",
                                 "SUBNET%sMASK=${GATEWAY_PREFIX%s}\n" %(x,x),
                                 "tmsh create net vlan subnet%s interfaces add { 1.%s } \n" %(x,x),
                                 "tmsh create net self ${SUBNET%sIP}/${SUBNET%sMASK} vlan subnet%s allow-service none\n" %(x, x, x),
@@ -2330,15 +2358,25 @@ def main():
                             ) 
                         })
                     )
-            NetworkInterfaces = []
+
             if num_nics == 1:
-                NetworkInterfaces = [
-                    NetworkInterfaceProperty(
-                        DeviceIndex="0",
-                        NetworkInterfaceId=Ref(ExternalInterface),
-                        Description="Public or External Interface",
-                    ),
-                ]
+                if import_eni:
+                    NetworkInterfaces = [
+                        NetworkInterfaceProperty(
+                            DeviceIndex="0",
+                            NetworkInterfaceId=ImportValue(Sub("${EniStackName}-Bigip1subnet1Az1Interface")),
+                            Description="Public or External Interface",
+                            ),
+                        ]
+                    
+                else:
+                    NetworkInterfaces = [
+                        NetworkInterfaceProperty(
+                            DeviceIndex="0",
+                            NetworkInterfaceId=Ref(ExternalInterface),
+                            Description="Public or External Interface",
+                            ),
+                        ]
             if num_nics == 2:  
                 NetworkInterfaces = [
                     NetworkInterfaceProperty(
@@ -2352,31 +2390,56 @@ def main():
                         Description="Public or External Interface",
                     ),    
                 ]
-            if num_nics >= 3:  
-                NetworkInterfaces = [
-                    NetworkInterfaceProperty(
-                        DeviceIndex="0",
-                        NetworkInterfaceId=Ref(ManagementInterface),
-                        Description="Management Interface",
-                    ),
-                    NetworkInterfaceProperty(
-                        DeviceIndex="1",
-                        NetworkInterfaceId=Ref(ExternalInterface),
-                        Description="Public or External Interface",
-                    ),
-                    NetworkInterfaceProperty(
-                        DeviceIndex="2",
-                        NetworkInterfaceId=Ref(InternalInterface),
-                        Description="Private or Internal Interface",
-                    ), 
-                ]
+            if num_nics >= 3: 
+                if import_eni: 
+                    NetworkInterfaces = [
+                        NetworkInterfaceProperty(
+                            DeviceIndex="0",
+                            NetworkInterfaceId=ImportValue(Sub("${EniStackName}-Bigip1ManagementInterface")),
+                            Description="Management Interface",
+                            ),
+                        NetworkInterfaceProperty(
+                            DeviceIndex="1",
+                            NetworkInterfaceId=ImportValue(Sub("${EniStackName}-Bigip1subnet1Az1Interface")),
+                            Description="Public or External Interface",
+                            ),
+                        NetworkInterfaceProperty(
+                            DeviceIndex="2",
+                            NetworkInterfaceId=ImportValue(Sub("${EniStackName}-Bigip1InternalInterface")),
+                            Description="Private or Internal Interface",
+                            ), 
+                        ]
+                else:
+                    NetworkInterfaces = [
+                        NetworkInterfaceProperty(
+                            DeviceIndex="0",
+                            NetworkInterfaceId=Ref(ManagementInterface),
+                            Description="Management Interface",
+                            ),
+                        NetworkInterfaceProperty(
+                            DeviceIndex="1",
+                            NetworkInterfaceId=Ref(ExternalInterface),
+                            Description="Public or External Interface",
+                            ),
+                        NetworkInterfaceProperty(
+                            DeviceIndex="2",
+                            NetworkInterfaceId=Ref(InternalInterface),
+                            Description="Private or Internal Interface",
+                            ), 
+                        ]
+
             if num_nics > 3:
                 for x in range(3,num_nics):
-                    NetworkInterfaces.append(NetworkInterfaceProperty(DeviceIndex="%s" %(x),
-                                                                     NetworkInterfaceId=Ref(interfaces_list[x]),
-                                                                     Description='Interface %s' %(x),
-                                                                     ))
-
+                    if import_eni:
+                        NetworkInterfaces.append(NetworkInterfaceProperty(DeviceIndex="%s" %(x),
+                                                                          NetworkInterfaceId=ImportValue(Sub("${EniStackName}-Bigip1Interface%s" %(x))),
+                                                                          Description='Interface %s' %(x),
+                                                                          ))
+                    else:
+                        NetworkInterfaces.append(NetworkInterfaceProperty(DeviceIndex="%s" %(x),
+                                                                          NetworkInterfaceId=Ref(interfaces_list[x]),
+                                                                          Description='Interface %s' %(x),
+                                                                          ))
 
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 RESOURCES[BigipInstance] = t.add_resource(Instance(
@@ -2417,7 +2480,7 @@ def main():
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces
                 ))    
-            if ha_type == "standalone":
+            if ha_type == "standalone" and export_eni == False:
                 RESOURCES[BigipInstance] = t.add_resource(Instance(
                     BigipInstance,
                     Metadata=metadata,
@@ -2541,54 +2604,79 @@ def main():
             BigipInstanceId = "Bigip" + str(BIGIP_INDEX + 1) + "InstanceId"
             BigipUrl = "Bigip" + str(BIGIP_INDEX + 1) + "Url"
             AvailabilityZone = "availabilityZone" + str(BIGIP_INDEX + 1)
+            if not export_eni:
+                OUTPUTS[BigipInstanceId] = t.add_output(Output(
+                        BigipInstanceId,
+                        Description="Instance Id of BIG-IP in Amazon",
+                        Value=Ref(BigipInstance),
+                        ))
 
-            OUTPUTS[BigipInstanceId] = t.add_output(Output(
-                BigipInstanceId,
-                Description="Instance Id of BIG-IP in Amazon",
-                Value=Ref(BigipInstance),
-            ))
+                OUTPUTS[AvailabilityZone] = t.add_output(Output(
+                        AvailabilityZone,
+                        Description="Availability Zone",
+                        Value=GetAtt(BigipInstance, "AvailabilityZone"),
+                        ))
 
-            OUTPUTS[AvailabilityZone] = t.add_output(Output(
-                AvailabilityZone,
-                Description="Availability Zone",
-                Value=GetAtt(BigipInstance, "AvailabilityZone"),
-            ))
+            if export_eni:
+                OUTPUTS[ExternalInterface] = t.add_output(Output(
+                    ExternalInterface,
+                    Description="External interface Id on BIG-IP",
+                    Value=Ref(ExternalInterface),
+                    Export=Export(Sub("${AWS::StackName}-%s" %(ExternalInterface))),
+                    ))
+                OUTPUTS[ExternalInterfacePrivateIp] = t.add_output(Output(
+                        ExternalInterfacePrivateIp,
+                        Description="Internally routable IP of the public interface on BIG-IP",
+                        Value=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
+                        Export=Export(Sub("${AWS::StackName}-%s" %(ExternalInterfacePrivateIp))),
+                        ))
 
-            OUTPUTS[ExternalInterface] = t.add_output(Output(
-                ExternalInterface,
-                Description="External interface Id on BIG-IP",
-                Value=Ref(ExternalInterface),
-            ))
+                OUTPUTS[ExternalSelfEipAddress] = t.add_output(Output(
+                        ExternalSelfEipAddress,
+                        Description="IP Address of the External interface attached to BIG-IP",
+                        Value=Ref(ExternalSelfEipAddress),
+                        Export=Export(Sub("${AWS::StackName}-%s" %(ExternalSelfEipAddress))),
+                        ))
 
-            OUTPUTS[ExternalInterfacePrivateIp] = t.add_output(Output(
-                ExternalInterfacePrivateIp,
-                Description="Internally routable IP of the public interface on BIG-IP",
-                Value=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
-            ))
+            else:
+                if not import_eni:
+                    OUTPUTS[ExternalInterface] = t.add_output(Output(
+                            ExternalInterface,
+                            Description="External interface Id on BIG-IP",
+                            Value=Ref(ExternalInterface),
+                            ))
 
-            OUTPUTS[ExternalSelfEipAddress] = t.add_output(Output(
-                ExternalSelfEipAddress,
-                Description="IP Address of the External interface attached to BIG-IP",
-                Value=Ref(ExternalSelfEipAddress),
-            ))
+                    OUTPUTS[ExternalInterfacePrivateIp] = t.add_output(Output(
+                            ExternalInterfacePrivateIp,
+                            Description="Internally routable IP of the public interface on BIG-IP",
+                            Value=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
+                            ))
+                    
+                    OUTPUTS[ExternalSelfEipAddress] = t.add_output(Output(
+                            ExternalSelfEipAddress,
+                            Description="IP Address of the External interface attached to BIG-IP",
+                            Value=Ref(ExternalSelfEipAddress),
+                            ))
+
+
 
             if num_nics == 1:
 
                 VipEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAddress"
-
-                OUTPUTS[BigipUrl] = t.add_output(Output(
-                    BigipUrl,
-
-                    Description="BIG-IP Management GUI",
-                    Value=Join("", [ "https://", GetAtt(BigipInstance, "PublicIp"), ":", Ref(managementGuiPort) ]),
-                ))
-
-                OUTPUTS[VipEipAddress] = t.add_output(Output(
-                    VipEipAddress,
-
-                    Description="EIP address for VIP",
-                    Value=Join("", ["http://", GetAtt(BigipInstance, "PublicIp") , ":80"]),
-                ))
+                if not export_eni:
+                    OUTPUTS[BigipUrl] = t.add_output(Output(
+                            BigipUrl,
+                            
+                            Description="BIG-IP Management GUI",
+                            Value=Join("", [ "https://", GetAtt(BigipInstance, "PublicIp"), ":", Ref(managementGuiPort) ]),
+                            ))
+                    
+                    OUTPUTS[VipEipAddress] = t.add_output(Output(
+                            VipEipAddress,
+                            
+                            Description="EIP address for VIP",
+                            Value=Join("", ["http://", GetAtt(BigipInstance, "PublicIp") , ":80"]),
+                            ))
 
 
             if num_nics > 1:
@@ -2599,51 +2687,92 @@ def main():
                 ManagementEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementEipAddress"
                 VipPrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "VipPrivateIp"
                 VipEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAddress"
+                if not export_eni:
+                    OUTPUTS[BigipUrl] = t.add_output(Output(
+                            BigipUrl,
 
-                OUTPUTS[BigipUrl] = t.add_output(Output(
-                    BigipUrl,
+                            Description="BIG-IP Management GUI",
+                            Value=Join("", ["https://", GetAtt(BigipInstance, "PublicIp")]),
+                            ))
 
-                    Description="BIG-IP Management GUI",
-                    Value=Join("", ["https://", GetAtt(BigipInstance, "PublicIp")]),
-                ))
+                if export_eni:
+                    OUTPUTS[ManagementInterface] = t.add_output(Output(
+                            ManagementInterface,
+                            Description="Management interface ID on BIG-IP",
+                            Value=Ref(ManagementInterface),
+                            Export=Export(Sub("${AWS::StackName}-%s" %(ManagementInterface))),
+                            ))
 
-                OUTPUTS[ManagementInterface] = t.add_output(Output(
-                    ManagementInterface,
+                    OUTPUTS[ManagementInterfacePrivateIp] = t.add_output(Output(
+                            ManagementInterfacePrivateIp,
+                            
+                            Description="Internally routable IP of the management interface on BIG-IP",
+                            Value=GetAtt(ManagementInterface, "PrimaryPrivateIpAddress"),
+                            Export=Export(Sub("${AWS::StackName}-%s" %(ManagementInterfacePrivateIp))),
+                            ))
+                    
+                    OUTPUTS[ManagementEipAddress] = t.add_output(Output(
+                            ManagementEipAddress,
+                            
+                            Description="IP address of the management port on BIG-IP",
+                            Value=Ref(ManagementEipAddress),
+                            Export=Export(Sub("${AWS::StackName}-%s" %(ManagementEipAddress))),
+                            ))
 
-                    Description="Management interface ID on BIG-IP",
-                    Value=Ref(ManagementInterface),
+                elif not import_eni:
+                    OUTPUTS[ManagementInterface] = t.add_output(Output(
+                            ManagementInterface,
+                            Description="Management interface ID on BIG-IP",
+                            Value=Ref(ManagementInterface),
+                            ))
 
-                ))
+                    OUTPUTS[ManagementInterfacePrivateIp] = t.add_output(Output(
+                            ManagementInterfacePrivateIp,
 
-                OUTPUTS[ManagementInterfacePrivateIp] = t.add_output(Output(
-                    ManagementInterfacePrivateIp,
-
-                    Description="Internally routable IP of the management interface on BIG-IP",
-                    Value=GetAtt(ManagementInterface, "PrimaryPrivateIpAddress"),
-                ))
-
-                OUTPUTS[ManagementEipAddress] = t.add_output(Output(
-                    ManagementEipAddress,
-
-                    Description="IP address of the management port on BIG-IP",
-                    Value=Ref(ManagementEipAddress),
-
-                ))
+                            Description="Internally routable IP of the management interface on BIG-IP",
+                            Value=GetAtt(ManagementInterface, "PrimaryPrivateIpAddress"),
+                            ))
+                    
+                    OUTPUTS[ManagementEipAddress] = t.add_output(Output(
+                            ManagementEipAddress,
+                            
+                            Description="IP address of the management port on BIG-IP",
+                            Value=Ref(ManagementEipAddress),
+                            
+                            ))
 
                 if ha_type == "standalone":
-                    OUTPUTS[VipPrivateIp] = t.add_output(Output(
-                        VipPrivateIp,
+                    if export_eni:
+                        OUTPUTS[VipPrivateIp] = t.add_output(Output(
+                                VipPrivateIp,
 
-                        Description="VIP on External Interface Secondary IP 1",
-                        Value=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
-                    ))
+                                Description="VIP on External Interface Secondary IP 1",
+                                Value=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
+                                Export=Export(Sub("${AWS::StackName}-%s" %(VipPrivateIp))),
+                                ))
 
-                    OUTPUTS[VipEipAddress] = t.add_output(Output(
-                        VipEipAddress,
+                        OUTPUTS[VipEipAddress] = t.add_output(Output(
+                                VipEipAddress,
 
-                        Description="EIP address for VIP",
-                        Value=Join("", ["http://", Ref(VipEipAddress), ":80"]),
-                    ))
+                                Description="EIP address for VIP",
+                                Value=Join("", ["http://", Ref(VipEipAddress), ":80"]),
+                                Export=Export(Sub("${AWS::StackName}-%s" %(VipEipAddress))),
+                                ))
+
+                    elif not import_eni:
+                        OUTPUTS[VipPrivateIp] = t.add_output(Output(
+                                VipPrivateIp,
+                                
+                                Description="VIP on External Interface Secondary IP 1",
+                                Value=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
+                                ))
+                        
+                        OUTPUTS[VipEipAddress] = t.add_output(Output(
+                                VipEipAddress,
+                                
+                                Description="EIP address for VIP",
+                                Value=Join("", ["http://", Ref(VipEipAddress), ":80"]),
+                                ))
                 else:
                     # if clustered, needs to be cluster seed
                     if (BIGIP_INDEX + 1) == CLUSTER_SEED:
@@ -2665,21 +2794,55 @@ def main():
 
                 InternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterface"
                 InternalInterfacePrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterfacePrivateIp"
+                if export_eni:
+                    OUTPUTS[InternalInterface] = t.add_output(Output(
+                            InternalInterface,
+                            Description="Internal interface ID on BIG-IP",
+                            Value=Ref(InternalInterface),                            
+                            Export=Export(Sub("${AWS::StackName}-%s" %(InternalInterface))),
+                            ))
 
-                OUTPUTS[InternalInterface] = t.add_output(Output(
-                    InternalInterface,
+                    OUTPUTS[InternalInterfacePrivateIp] = t.add_output(Output(
+                            InternalInterfacePrivateIp,
+                            
+                            Description="Internally routable IP of internal interface on BIG-IP",
+                            Value=GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),
+                            Export=Export(Sub("${AWS::StackName}-%s" %(InternalInterfacePrivateIp))),
+                            ))
 
-                    Description="Internal interface ID on BIG-IP",
-                    Value=Ref(InternalInterface),
+                elif not import_eni:
+                    OUTPUTS[InternalInterface] = t.add_output(Output(
+                            InternalInterface,
+                            Description="Internal interface ID on BIG-IP",
+                            Value=Ref(InternalInterface),
+                            ))
 
-                ))
+                    OUTPUTS[InternalInterfacePrivateIp] = t.add_output(Output(
+                            InternalInterfacePrivateIp,
 
-                OUTPUTS[InternalInterfacePrivateIp] = t.add_output(Output(
-                    InternalInterfacePrivateIp,
+                            Description="Internally routable IP of internal interface on BIG-IP",
+                            Value=GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),
+                            ))
+            if num_nics > 3:
+                for x in range(3,num_nics):
+                    InterfaceX = interfaces_list[x]
+                    InterfaceXPrivateIp = InterfaceX
+                    InterfaceXPrivateIp += 'PrivateIp'
+                    if export_eni:
+                        OUTPUTS[InterfaceX] = t.add_output(Output(
+                            InterfaceX,
+                            Description="Interface %s on BIG-IP" %(x),
+                            Value=Ref(InterfaceX),                            
+                            Export=Export(Sub("${AWS::StackName}-%s" %(InterfaceX))),
+                            ))
+                        OUTPUTS[InterfaceXPrivateIp] = t.add_output(Output(
+                            InterfaceXPrivateIp,
+                            Description="Interface %s on BIG-IP PrivateIp" %(x),
+                            Value=GetAtt(InterfaceX, "PrimaryPrivateIpAddress"),
+                            Export=Export(Sub("${AWS::StackName}-%s" %(InterfaceXPrivateIp))),
+                            ))
 
-                    Description="Internally routable IP of internal interface on BIG-IP",
-                    Value=GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),
-                ))
+
 
     if webserver == True:
         webserverPrivateIp = t.add_output(Output(
@@ -2708,3 +2871,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

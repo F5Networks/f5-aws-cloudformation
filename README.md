@@ -41,8 +41,7 @@ The following is a list of the current *supported* F5 CloudFormation templates. 
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 
-  - ***Experimental*** <br>
-  <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/experimental/solutions/autoscale">**Autoscaling the BIG-IP Web Application Firewall in AWS**</a>
+  -   <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/solutions/autoscale">**Auto scaling the BIG-IP Web Application Firewall in AWS**</a>
    
 ### Copyright
 

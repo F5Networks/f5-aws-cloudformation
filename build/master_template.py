@@ -2378,18 +2378,34 @@ def main():
                             ),
                         ]
             if num_nics == 2:  
-                NetworkInterfaces = [
-                    NetworkInterfaceProperty(
-                        DeviceIndex="0",
-                        NetworkInterfaceId=Ref(ManagementInterface),
-                        Description="Management Interface",
-                    ),
-                    NetworkInterfaceProperty(
-                        DeviceIndex="1",
-                        NetworkInterfaceId=Ref(ExternalInterface),
-                        Description="Public or External Interface",
-                    ),    
-                ]
+                if import_eni:
+                    NetworkInterfaces = [
+                        NetworkInterfaceProperty(
+                            DeviceIndex="0",
+                            
+                            NetworkInterfaceId=ImportValue(Sub("${EniStackName}-Bigip1ManagementInterface")),
+                            Description="Management Interface",
+                            ),
+                        NetworkInterfaceProperty(
+                            DeviceIndex="1",
+                            NetworkInterfaceId=ImportValue(Sub("${EniStackName}-Bigip1subnet1Az1Interface")),
+                            Description="Public or External Interface",
+                            ),    
+                        ]
+                    
+                else:
+                    NetworkInterfaces = [
+                        NetworkInterfaceProperty(
+                            DeviceIndex="0",
+                            NetworkInterfaceId=Ref(ManagementInterface),
+                            Description="Management Interface",
+                            ),
+                        NetworkInterfaceProperty(
+                            DeviceIndex="1",
+                            NetworkInterfaceId=Ref(ExternalInterface),
+                            Description="Public or External Interface",
+                            ),    
+                        ]
             if num_nics >= 3: 
                 if import_eni: 
                     NetworkInterfaces = [

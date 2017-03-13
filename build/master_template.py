@@ -124,7 +124,7 @@ def main():
     ### Template Version
     version = "2.1.0"
     ### Cloudlib Download Location
-    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/ha_across_az/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
+    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/develop/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
     # https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.2.0rc1.tmpl
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/develop/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz"    

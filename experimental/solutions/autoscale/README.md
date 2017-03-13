@@ -107,9 +107,70 @@ In AWS, an Auto Scaling Group of BIG-IP VEs is created. Each instance's paramete
 
   - Set the BIG-IP system information: hostname, NTP, DNS settings, and so on.
   - Provision the WAF module: BIG-IP Application Security Manager (ASM)
+<<<<<<< HEAD
   - Join the BIG-IP VE cluster
   - Deploy integration with EC2 Auto Scaling and CloudWatch services for scaling of the BIG-IP tier.
   - Create an initial HTTP virtual server with a basic Web Application Firewall policy ([Low, Medium, High](/docs/blocking_levels.md)).
+=======
+  - Join the auto scale cluster
+  - Deploy integration with EC2 Auto Scale and CloudWatch services for scaling of the BIG-IP tier.
+  - Create an initial HTTP virtual server with a basic Web Application Firewall policy (Low, Medium, High)
+    - See the [Security Blocking Levels](##security-blocking-levels-) section for a description of the blocking levels for the Web Application Firewall presented in the template.
+
+The CloudFormation template uses the default **Best 1000Mbps** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
+
+#### Configuration Example <a name="config"></a>
+
+The following is a simple configuration diagram deployment. 
+
+![Configuration example](images/config-diagram-autoscale-waf.png)
+
+#### Detailed clustering information
+This solution creates a clustered system with "AutoSync" enabled, so any change is immediately propagated throughout the cluster. Each cluster member instance reports "Active" and "Actively" processes traffic.  Although Autosync is enabled and technically you can make changes to any existing clustered member, for consistency we recommend you make any changes to the original, primary instance.
+
+We also recommended you launch the cluster with one member instance to start. This instance registers itself as the primary and sets "Scale In" protection to Enabled. 
+
+When the first auto scale instance is launched, a Device Group called "autoscale-group" is automatically created. 
+
+Whenever a new instance is launched, it joins the cluster. If those instances are scaled down, they are removed from the cluster and the original instance remains. The cluster membership is updated once every 10 minutes and sends metrics every 60 seconds using [iCall](https://devcentral.f5.com/icall).
+
+This deployment creates an initial BIG-IP configuration using an [iApp](https://devcentral.f5.com/iapps) that includes a basic virtual service (listening on 0.0.0.0:80) with a WAF policy.   
+
+After the first instance is launched, you can log in and customize the configuration.
+
+
+### How this solution works
+
+The CloudFormation Template creates and leverages several AWS resources to support Auto Scale, including:
+
+  - S3 Bucket<br>
+    The S3 bucket acts as persistent storage for the cluster database. It contains:
+      - *Records*<br>
+      Records, named for the instance ID contain metadata for each instance. For example  ```{"privateIp":"10.0.11.190","mgmtIp":"10.0.11.190","hostname":"ip-10-0-11-190.ec2.internal","isMaster":true}```<br>
+      Newly launched instances query this bucket for an existing cluster and use information found here to join the cluster. If it it the first member launched in the group, it creates a record with "is Master":true. Otherwise, it enters itself as "isMaster":false.
+      - *Auto-generated credentials for clustering*<br>
+      The S3 bucket also contains auto-generated credentials for clustering, for example 
+      ```
+      {"username":"custom-admin","password":"J#\"?}$YDgb8c=L>>P8#FzmS$WB9EYzx3<"}
+      ```
+  - IAM Role<br>
+  The IAM Role is used to create Instance Profile. The instance profile allows the auto scaled BIG-IP instances to access / update the S3 Bucket, query the Auto Scale Group, and upload metrics to Cloudwatch.
+  
+  - SNS Topic<br>
+  The SNS topic is used to notify the admin via email of Scale Up / Down events.
+  - Cloudwatch Alarms<br>
+  These alarms are used to trigger scale Up / Down events.
+  - Auto Scale Group<br>
+  By default, the number of auto scaled instances is set to 1 and the Max is set to 8. We recommend you launch the solution with 1 instance to start. 
+
+
+### Restoring or upgrading the solution
+Certain elements of this deployment can be updated with the CloudFormation stack itself. This is referred to as *updating the Stack*. For instance, anything that causes the Auto Scale Launch Configuration to update, like changing the AMI IDs (to upgrade from one BIG-IP version to another), instance sizes, scaling thresholds, and many others, requires updating the stack. 
+
+Clustering is only done within a Launch Configuration ID basis, so any changes that result in a new Launch Configuration require the following procedure.
+
+  1.  Backup your BIG-IP configuration (ideally the cluster primary, but must be run on an instance created from the original stack configuration) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive and store it in a secure location (such as the S3 bucket created by this solution):<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
+>>>>>>> 31771f9026ac8d6458e3399b90175344df60334a
   
 ## After you deploy ##
 

@@ -122,20 +122,20 @@ def main():
 
     # Build variables used for QA
     ### Template Version
-    version = "2.0.0"
+    version = "2.1.0"
     ### Cloudlib Download Location
-    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/ha_across_az/iApp/f5.aws_advanced_ha.v1.2.0rc1.tmpl"
+    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/ha_across_az/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
     # https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.2.0rc1.tmpl
-    cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.1.0/dist/f5-cloud-libs.tar.gz"
-    cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.0.1/dist/f5-cloud-libs-aws.tar.gz"    
-    CLOUD_HASH = "a6a9db3b89bbd014413706f22fa619c3717fac41fc99ffe875589c90e9b85a05cea227c134ea6e5b519c8fee0d12f2175368e75917f31f447ece3d92f31814af"
+    cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/develop/dist/f5-cloud-libs.tar.gz"
+    cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz"    
+    CLOUD_HASH = "2fe3a932e1195be3ba5c272bbdf5eefd963b838470c48205d3fa0730cb7836a3b76dd927944aa3261a92e53518ce10aebc5a445f93b43f3b5c12fac884106ae4"
     CLOUD_AWS_HASH = "22b554337b27802b7794206462bb98d346a7241622c11bcf9e834a06bcd1bd1b5b99efee512ac6eebe64e9d34f3024bcb569371fd4ee79006761bc5e5a74a59c"
     ASM_POLICY = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
     HTTP_IAPP_RC4 = "47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034"
     HTTP_IAPP_RC6 = "811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe"
-    SCRIPT_SIGNATURE ="QmpupbE2kzw2T7LO/Hp6NtscwZnEXjq8U0xOQLOfFIid1pdvsis6HOphdKyXjY+uzFnHktSy/Xe2LdwxjKmKRaMy5ZuE8NR+MJyUGLR3OwgVj1sGVZgwDCWvkBLyNKDQFkFfuTBk6TTN7q58+dJ3qulOv7KWkpKq/m8+8VXyQ4pj+96bHWwrs8kYRtHX5wc7cSJE/3thNWCF8v9BAyFFUFEyy6z7mFhH8iD2i+OEnqpK+0VAY1irspmaCigo3NmJXfZXIo2cWIopORqWsCATsVT6lunpV6z7h2FipnMJpAhVWqlzezSAOCHI0juPeGDAHIyNX8uLlTOpWJSgP1d4YQ=="
+    SCRIPT_SIGNATURE ="dTsQJ2YdaaLJ3TzuB1XPi8fAeghkTUTdltfuW0cMndHHeLXMZBX/KSN+Dhnb0aFb1QCpDYJvZ38DmBy9gq1ETqcfxpoa1yj2Id144/JyFkIAyzD6sIslsCsFnwfpXWk1+Rqdrn1WoEjtyOZ7OSadhzVUQTctczVzwrK+SHoNKOZR2xtoQfpL0sBTj/g2cMioyk9bE9Y2hL2tfYGJTrgUM7hnKcyqL4dkDjurnBYOMWy+/SmYc/NvrbyA53xx6W9gNqGDd6j7+zqg3cmpCZFD+ca96wj0iiKAZcM0vYLaxp9LWEWX/fVlvUtUf7Y569OkbjBQQhuoEv45gjU6RG6eaA=="
     ### add hashmark to skip verification.
-    comment_out = ""
+    comment_out = "#"
     # Begin Template
     t = Template()
     t.add_version("2010-09-09")
@@ -249,6 +249,9 @@ def main():
             },
             "licenseKey1": {
                 "default": "License Key1"
+            },
+            "licenseKey2": {
+                "default": "License Key2"
             },
             "restrictedSrcAddress": {
                 "default": "Source Address(es) for SSH Access"
@@ -1485,7 +1488,7 @@ def main():
     "inheritedDevicegroup": "true", \
     "inheritedTrafficGroup": "true", \
     "strictUpdates": "enabled", \
-    "template": "/Common/f5.aws_advanced_ha.v1.2.0.tmpl", \
+    "template": "/Common/f5.aws_advanced_ha.v1.3.0.tmpl", \
     "templateModified": "no", \
     "tables": [ \
         { \
@@ -1571,6 +1574,7 @@ def main():
                             "        }",
                             "    }",
                             "    script-signature " + str(SCRIPT_SIGNATURE),
+                            "    signing-key /Common/f5-irule",
                             "}",
                             "",
                         ]
@@ -1589,21 +1593,21 @@ def main():
                       "    sleep 10",
                       "done",
                       "echo loading verifyHash script",
-                      "if ! tmsh load sys config merge file /config/verifyHash; then",
-                      "    echo cannot validate signature of /config/verifyHash",
-                      "    exit",
-                      "fi",
-                      "echo loaded verifyHash",
-                      "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
-                      "for fileToVerify in \"${filesToVerify[@]}\"",
-                      "do",
-                      "    echo verifying \"$fileToVerify\"",
-                      "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-                      "        echo \"$fileToVerify\" is not valid",
-                      "        exit 1",
-                      "    fi",
-                      "    echo verified \"$fileToVerify\"",
-                      "done",
+                      str(comment_out) + "if ! tmsh load sys config merge file /config/verifyHash; then",
+                      str(comment_out) + "    echo cannot validate signature of /config/verifyHash",
+                      str(comment_out) + "    exit",
+                      str(comment_out) + "fi",
+                      str(comment_out) + "echo loaded verifyHash",
+                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+                      str(comment_out) + "for fileToVerify in \"${filesToVerify[@]}\"",
+                      str(comment_out) + "do",
+                      str(comment_out) + "    echo verifying \"$fileToVerify\"",
+                      str(comment_out) + "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+                      str(comment_out) + "        echo \"$fileToVerify\" is not valid",
+                      str(comment_out) + "        exit 1",
+                      str(comment_out) + "    fi",
+                      str(comment_out) + "    echo verified \"$fileToVerify\"",
+                      str(comment_out) + "done",
                       "mkdir -p /config/cloud/aws/node_modules",
                       "echo expanding f5-cloud-libs.tar.gz",
                       "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -1958,7 +1962,8 @@ def main():
                             custom_sh +=    [
                                                 "tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
                                                 "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                                                "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",                                            
+                                                "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
+                                                "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
                                             ]
                 if 'waf' in components:
                     # 12.1.0 requires "first match legacy"
@@ -1991,9 +1996,9 @@ def main():
                                             ]
                 if ha_type == "across-az":
                     custom_sh +=    [
-                                    "curl -sSk -o /config/cloud/aws/f5.aws_advanced_ha.v1.2.0rc1.tmpl --max-time 15 " + str(ha_across_az_iapp_url) + "\n",
-                                    "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.2.0rc1.tmpl\n",
-                                    "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.2.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
+                                    "curl -sSk -o /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl --max-time 15 " + str(ha_across_az_iapp_url) + "\n",
+                                    "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
+                                    "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.3.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                     "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                                     "tmsh run cm config-sync to-group across_az_failover_group\n",
                                     ]

@@ -531,12 +531,12 @@ def main():
                 MaxLength="255",
                 ConstraintDescription="Verify your BIG-IQ Password",
             ))
-            bigiqLicensePoolUUID = t.add_parameter(Parameter(
-                "bigiqLicensePoolUUID",
+            bigiqLicensePoolName = t.add_parameter(Parameter(
+                "bigiqLicensePoolName",
                 MinLength="1",
-                ConstraintDescription="Verify your BIG-IQ License Pool UUID",
+                ConstraintDescription="Verify your BIG-IQ License Pool Name",
                 Type="String",
-                Description="BIG-IQ License Pool UUID",
+                Description="BIG-IQ License Pool Name",
                 MaxLength="255",
             ))
     if (stack == "existing" or stack == "security_groups") and not import_eni:
@@ -1479,7 +1479,7 @@ def main():
                                         "BIGIQ_ADDRESS='", Ref(bigiqAddress), "'\n",
                                         "BIGIQ_USERNAME='", Ref(bigiqUsername), "'\n",
                                         "BIGIQ_PASSWORD='", Ref(bigiqPassword), "'\n",
-                                        "BIGIQ_LICENSE_POOL_UUID='", Ref(bigiqLicensePoolUUID), "'\n"
+                                        "BIGIQ_LICENSE_POOL_NAME='", Ref(bigiqLicensePoolName), "'\n"
                                     ]
 
                     if num_nics == 1:
@@ -1962,11 +1962,30 @@ def main():
                                 "tmsh create net vlan external interfaces add { 1.1 } \n",
                               ]
                 if ha_type == "standalone":
+
+                    # repeat of above ???
+
+                    custom_sh += [
+                        "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+                               
+                                 ]
+                    if license_type == "byol":
+                        custom_sh += [ ]
+                    elif license_type == "bigiq":
+                        custom_sh += [ 
+                            "BIGIQ_HOST='", Ref(bigiqAddress), "'\n",
+                            "BIGIQ_USER='", Ref(bigiqUsername), "'\n",
+                            "BIGIQ_PASSWORD='", Ref(bigiqPassword), "'\n",
+                            "BIGIQ_LICENSE_POOL_NAME='", Ref(bigiqLicensePoolName), "'\n"
+                            ]
                     if import_eni:
                         extip = ImportValue(Sub("${EniStackName}-Bigip1ExternalInterfacePrivateIp"))
+                        mgmtip = ImportValue(Sub("${EniStackName}-Bigip1ExternalInterfacePrivateIp"))
                     else:
                         extip = GetAtt(ExternalInterface, "PrimaryPrivateIpAddress")
+                        mgmtip = GetAtt(ManagementInterface, "PrimaryPrivateIpAddress")
                     custom_sh += [
+                        "BIGIP_MGMT_ADDRESS='", mgmtip, "'\n",
                         "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                         "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
                         "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
@@ -2055,7 +2074,14 @@ def main():
             if license_type == "byol":
                 onboard_BIG_IP += license_byol
             elif license_type == "bigiq":
-                custom_sh += license_from_bigiq
+                onboard_BIG_IP += [ "--license-pool",
+                                    "--big-iq-host ${BIGIQ_HOST}",
+                                    "--big-iq-user ${BIGIQ_USER}",
+                                    "--big-iq-password ${BIGIQ_PASSWORD}",
+                                    "--license-pool-name ${BIGIQ_LICENSE_POOL_NAME}",
+                                    "--big-ip-mgmt-address ${BIGIP_MGMT_ADDRESS}"
+                                    ]
+
             # Wait until licensing finishes
             if license_type == "hourly":
                 custom_sh +=    [
@@ -2165,7 +2191,7 @@ def main():
                                 "### START CUSTOM TMSH CONFIGURTION\n",
                                 "### END CUSTOM TMSH CONFIGURATION"
                          ]
-            if license_type == "bigiq":
+            if license_type == "bigiq_bad":
                 metadata = Metadata(
                         Init({
                             'config': InitConfig(
@@ -2177,24 +2203,24 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/config/cloud/aws/firstrun.utils': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/cloud/aws/license_from_bigiq.sh': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh',
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/cloud/aws/remove_license_from_bigiq.sh': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh',
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),                                        
+#                                        '/config/cloud/aws/firstrun.utils': InitFile(
+#                                            source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
+#                                            mode='000755',
+#                                            owner='root',
+#                                            group='root'
+#                                        ),
+#                                        '/config/cloud/aws/license_from_bigiq.sh': InitFile(
+#                                            source='http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh',
+#                                            mode='000755',
+#                                            owner='root',
+#                                            group='root'
+#                                        ),
+#                                        '/config/cloud/aws/remove_license_from_bigiq.sh': InitFile(
+#                                            source='http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh',
+#                                            mode='000755',
+#                                            owner='root',
+#                                            group='root'
+#                                        ),                                        
                                         '/config/cloud/aws/custom-config.sh': InitFile(
                                             content=Join('', custom_sh ),
                                             mode='000755',

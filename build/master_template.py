@@ -1984,7 +1984,7 @@ def main():
                             ]
                     if import_eni:
                         extip = ImportValue(Sub("${EniStackName}-Bigip1ExternalInterfacePrivateIp"))
-                        mgmtip = ImportValue(Sub("${EniStackName}-Bigip1ExternalInterfacePrivateIp"))
+                        mgmtip = ImportValue(Sub("${EniStackName}-Bigip1ManagementInterfacePrivateIp"))
                     else:
                         extip = GetAtt(ExternalInterface, "PrimaryPrivateIpAddress")
                         mgmtip = GetAtt(ManagementInterface, "PrimaryPrivateIpAddress")
@@ -2079,11 +2079,11 @@ def main():
                 onboard_BIG_IP += license_byol
             elif license_type == "bigiq":
                 onboard_BIG_IP += [ "--license-pool",
-                                    "--big-iq-host ${BIGIQ_HOST}",
-                                    "--big-iq-user ${BIGIQ_USER}",
-                                    "--big-iq-password ${BIGIQ_PASSWORD}",
-                                    "--license-pool-name ${BIGIQ_LICENSE_POOL_NAME}",
-                                    "--big-ip-mgmt-address ${BIGIP_MGMT_ADDRESS}"
+                                    "--big-iq-host", Ref(bigiqAddress),
+                                    "--big-iq-user", Ref(bigiqUsername),
+                                    "--big-iq-password", Ref(bigiqPassword),
+                                    "--license-pool-name", Ref(bigiqLicensePoolName),
+                                    "--big-ip-mgmt-address",mgmtip
                                     ]
 
             # Wait until licensing finishes

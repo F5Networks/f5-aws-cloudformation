@@ -2564,7 +2564,10 @@ section intro {
     message prereqs "The iApp template itself is not responsible for allocating/de-allocating EIPs or adding/deleting associations. It simply remaps (or re-associates) existing EIPs. Make sure Secondary Private IPs associated with the BIG-IP Virtual Servers have Allow Re-Association attribute checked upon first provisioning. This setting is found at EC2 Dashboard > Network and Security > Interfaces > Manage Private IP Addresses."
     message prereqs2 "See the Help tab and the deployment guide for additional prerequisites."
     message deployment_guide "Because of the extensive amount of configuration required before running this iApp template, we strongly recommend you review the associated Deployment Guide: http://f5.com/pdf/deployment-guides/f5-aws-ha-dg.pdf."
+
     optional ( "HIDE" == "THIS" ) {
+        choice is_v13_0              tcl { expr { [tmsh::run_proc f5.iapp.1.5.2.cli:iapp_tmos_version >= 13.0] ? "yes" : "no" }}
+
         choice ltm_provisioned tcl {
             
             return [expr {[tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned ltm] ? "yes" : "no" }]
@@ -2684,7 +2687,7 @@ section intro {
     }
 
     # Some general validation checks if using HA clusters in AWS
-    optional ( intro.alert_aws_keys == "yes" ) {
+    optional ( intro.alert_aws_keys == "yes" && intro.is_v13_0 == "no") {
         message ALERT_AWS_credentials "NO AWS Credentials found! To configure the AWS settings on the BIG-IP system, go to: System > Configuration > AWS > Global Settings."
     }
     optional ( intro.alert_dhcp_configured == "yes" ) {

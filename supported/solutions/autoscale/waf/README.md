@@ -5,7 +5,7 @@
 
  - [Introduction](#introduction) 
  - [Prerequisites](#prerequisites-and-notes)
- - [Quick Start] (#quick-start-for-launching-the-template)
+ - [Quick Start](#quick-start-for-launching-the-template)
  - [Getting Help](#help)
  - [Additional BIG-IP VE Deployment and Configuration Details](#additional-big-ip-ve-deployment-and-configuration-details)
  - [Security](#security)

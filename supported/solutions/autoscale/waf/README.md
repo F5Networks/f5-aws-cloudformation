@@ -4,8 +4,8 @@
 **Contents**             
 
  - [Introduction](#introduction) 
- - [Prerequisites](#prerequisites)
- - [Quick Start] (#quick-start-)
+ - [Prerequisites](#prerequisites-and-notes)
+ - [Quick Start] (#quick-start-for-launching-the-template)
  - [Getting Help](#help)
  - [Additional BIG-IP VE Deployment and Configuration Details](#additional-big-ip-ve-deployment-and-configuration-details)
  - [Security](#security)
@@ -15,29 +15,32 @@
 This solution implements auto scaling of BIG-IP Virtual Edition (VE) Web Application Firewall (WAF) systems in Amazon Web Services. The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) and <a href="https://f5.com/products/big-ip/application-security-manager-asm">Application Security Manager</a> (ASM) modules enabled to provide advanced traffic management and web application security functionality.  As traffic increases or decreases, the number of BIG-IP VE WAF instances automatically increases or decreases accordingly. 
 
 
-## Prerequisites
+## Prerequisites and notes
 The following are prerequisites for this solution:
  - The appropriate permission in AWS to launch CloudFormation templates. This template creates Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles, so the account you are using must have permission to create these objects.
+ - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
-   - The classic ELB in front of the BIG-IP VEs must be pre-configured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
+   - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
  - Access to **Best** BIG-IP images in the Amazon region within which you are working.
- - Accepted the EULA for all Images in the AWS marketplace. If you have not accepted the EULAs, you may experience an unspecified error when trying to launch the configuration. 
- - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS)
+ - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and accept the EULA there. 
+ - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS).
  - An AWS Security Group with the following inbound rules:
-    - Port 22 for SSH access to the BIG-IP VE *(source = Intra-VPC and/or mgmt networks)*
+    - Port 22 for SSH access to the BIG-IP VE *(source = Intra-VPC and/or mgmt networks)*.
     - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility *(source = Intra-VPC and/or mgmt networks)*. See the [Configuration Utility note](#note) for an important note about accessing the Configuration utility.
-    - Port 4353 and 6123-6128 for cluster communication *(source = Intra-VPC or the public subnet of the peer)* 
-    - Port 80 accessing your applications via the BIG-IP virtual server *(source = any)*
+    - Port 4353 and 6123-6128 for cluster communication *(source = Intra-VPC or the public subnet of the peer)*.
+    - Port 80 accessing your applications via the BIG-IP virtual server *(source = any)*.
  
  
-## Quick Start 
-This readme file describes launching from the AWS Marketplace.  If you are using another method, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/solutions/autoscale.
+## Quick Start for launching the template
+This Readme file describes launching from the AWS Marketplace.  If you are using another method, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/solutions/autoscale.
 
-For the Marketplace, 
-- From the **For Region** list, select your Region 
-- From the **Delivery Methods** list, select **Auto Scale Cluster Deployment using AWS CFT**
+From the Marketplace: 
+- From the **For Region** list, select your Region. 
+- From the **Delivery Methods** list, select **Auto Scale via CFT**
 - Click **Continue**
-- Launch the CloudFormation template.
+- Select either the **Hourly** or **Yearly** Subscription Term.
+- Select the appropriate version.
+- Click **Launch the CloudFormation template**.
 
 
 ### Template Parameters ###
@@ -59,7 +62,7 @@ One you have launched the CFT from the marketplace, you need to complete the tem
 | managementGuiPort | x | Port of BIG-IP management Configuration utility (the default is 8443) |
 | timezone | x | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
 | ntpServer | x | NTP server for this implementation (Default 0.pool.ntp.org) |
-| scalingMinSize | x | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (the default is 1) |
+| scalingMinSize | x | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack] (#restoring-or-upgrading-the-solution)) |
 | scalingMaxSize | x | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scaling Group (the default is 3) |
 | scaleDownBytesThreshold | x | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
 | scaleUpBytesThreshold | x | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
@@ -77,15 +80,20 @@ One you have launched the CFT from the marketplace, you need to complete the tem
 
 
 <sup>1</sup> Note about the Scaling Up/Down Thresholds:
-The default values are set artificially low for testing. We recommend adjusting as a ratio to utility size (optional).
-For example, 80% of Throughput:
+The default values are set to 80% and 20% respectively.  To adjust the thresholds,  set them according to the utility size (optional).
+For example, if you wanted use different percentages in the scaling threshold(s), modify the ***.80*** or ***.20*** in the following calculations to represent the percentage you want to use. Then take the result and use that as the appropriate threshold value in the CFT.
 
-Scale Up Bytes Threshold = <br>
-25 Mbps   = 3276800 bytes   * .80 =   2621440<br>
-200 Mbps  = 26214400 bytes  * .80 =  20971520<br>
-1000 Mbps = 131072000 bytes * .80 = 104857600<br>
-5000 Mbps = 655360000 bytes * .80 = 524288000
+*Scale Up Bytes Thresholds:* <br>
+25 Mbps   = 3276800 bytes   * ***.80*** =   2621440<br>
+200 Mbps  = 26214400 bytes  * ***.80*** =  20971520<br>
+1000 Mbps = 131072000 bytes * ***.80*** = 104857600<br>
+ 
+*Scale Down Bytes Thresholds:*<br>
+25 Mbps   = 3276800 bytes   * ***.20*** =   655360<br>
+200 Mbps  = 26214400 bytes  * ***.20*** =  5242880<br>
+1000 Mbps = 131072000 bytes * ***.20*** = 26214400<br>
 
+---
 
 
 
@@ -109,7 +117,7 @@ Once you have completed the template and the BIG-IP system instantiates, use the
 You can now configure the BIG-IP VE as applicable for your configuration.  See the BIG-IP documentation for details (https://support.f5.com/csp/tech-documents)
 
 
-
+---
 
 ### Help <a name="help"></a>
 Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support.
@@ -141,7 +149,7 @@ The following is a simple configuration diagram deployment.
 #### Detailed clustering information
 This solution creates a clustered system with "AutoSync" enabled, so any change is immediately propagated throughout the cluster. Each cluster member instance reports "Active" and "Actively" processes traffic.  Although Autosync is enabled and technically you can make changes to any existing clustered member, for consistency we recommend you make any changes to the original, primary instance.
 
-We also recommended you launch the cluster with one member instance to start. This instance registers itself as the primary and sets "Scale In" protection to Enabled. 
+We recommend you launch the cluster with two instances to start. To determine the master instance, look for instance with *Scale-In Protection*.  You can find the Scale-In Protection value in AWS by clicking **Auto Scaling Groups** > *Click your Auto Scale group* > **Instances Tab**, and then under the Protected From tab, look for the instance with **Scale-In**.  
 
 When the first auto scale instance is launched, a Device Group called "autoscale-group" is automatically created. 
 
@@ -151,6 +159,7 @@ This deployment creates an initial BIG-IP configuration using an [iApp](https://
 
 After the first instance is launched, you can log in and customize the configuration.
 
+---
 
 ### How this solution works
 
@@ -174,36 +183,22 @@ The CloudFormation Template creates and leverages several AWS resources to suppo
   - Cloudwatch Alarms<br>
   These alarms are used to trigger scale Up / Down events.
   - Auto Scale Group<br>
-  By default, the number of auto scaled instances is set to 1 and the Max is set to 8. We recommend you launch the solution with 1 instance to start. 
+  By default, the number of auto scaled instances is set to 1 and the maximum is set to 8. We recommend you launch the solution with 1 instance to start, and increasing this to at least two by [updating the stack] (#restoring-or-upgrading-the-solution). 
 
+---
 
 ### Restoring or upgrading the solution
 Certain elements of this deployment can be updated with the CloudFormation stack itself. This is referred to as *updating the Stack*. For instance, anything that causes the Auto Scale Launch Configuration to update, like changing the AMI IDs (to upgrade from one BIG-IP version to another), instance sizes, scaling thresholds, and many others, requires updating the stack. 
-
+ 
 Clustering is only done within a Launch Configuration ID basis, so any changes that result in a new Launch Configuration require the following procedure.
+ 
+  1. Backup your BIG-IP configuration (ideally the cluster primary) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive and store it in the S3 bucket created by the solution in folder called /backup:<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
+    
+  2. Update the Stack in AWS (click **CloudFormation > Action > Update Stack**).  
+ 
+  3. The first instance from the new Launch Config becomes the new cluster primary and looks for a UCS in that backup folder for the latest configuration. NOTE: It selects the UCS with the latest timestamp. All subsequent instances from that launch config then sync the latest configuration from the cluster primary as usual. 
 
-  1.  Backup your BIG-IP configuration (ideally the cluster primary, but must be run on an instance created from the original stack configuration) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive and store it in a secure location (such as the S3 bucket created by this solution):<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
-  
-  2.  On AWS, take note of the Instance IDs in your existing Auto Scaling Group. This is optional, but helps to differentiate the new Instances from the existing ones after you update the stack in step 3. To view the existing Instance IDs, click Auto Scaling Groups and then click the Auto Scale group that was created. This name uses the syntax *(deployment-name)-bigip-BigipAutoscaleGroup-("id")*, such as **my-deployment-autoscale-bigip-BigipAutoscaleGroup-1V6U160O0Q2UM**.  Click the Instances tab, and then note the Instance IDs and the Launch Configuration Name.  
-
-  3. Update the Stack in AWS (click **CloudFormation > Action > Update Stack**).  
-
-  4. If you have modified the BIG-IP configuration from the original launch configuration, remove the first instance that launches from the new Launch Configuration. This is only required if you have manually modified the BIG-IP configuration.<br> **Important** After you click Update Stack, you have 60 minutes to upload the UCS archive to the new machine before the old one is deleted. Use the following procedure.
-
-     - Identify the new instance<br>
-     Click **Auto Scaling Groups** and then click the new Auto Scale group that was just created. Click the Instances tab, and then note the Instance ID with new Launch Configuration Name.  
-  
-     -  Temporarily remove the instance from the ELB by clicking **Load Balancers** and then the name of the ELB you used for this deployment. Click the Instances tab,  and then click the newly created instance with the new Instance ID, and then click **Remove from Load Balancer**
-     -  After performing steps 5 and 6, you add the instance back in step 7.
-
-  5. From the BIG-IP, upload the UCS to the new instance created by the updated stack configuration and run the UCS Update Utility using the following command:<br> ```# python /config/cloud/aws/node_modules/f5-cloud-libs/scripts/updateAutoScaleUcs --original-ucs original.ucs --updated-ucs updated.ucs```
-
-  6. On the new instance, load the updated UCS:<br> ```tmsh load /sys ucs /shared/tmp/updated.ucs no-license```
-
-  7. If you removed the instance from the load balancer in step 4, you must add new instance back to the ELB.<br>
-  From the AWS console, click **Load Balancers > Name of your ELB > Instances tab > Edit Instances** and then click the button for the new instance to add it back to ELB and click Save.
-
-
+---
 ### Removing the deployment
 
 To remove the deployment, there are few objects that need to be removed manually before you can delete the stack associated with the clustered auto scale BIG-IP CloudFormation template.  
@@ -218,6 +213,7 @@ This deployment creates an S3 bucket using the following naming convention: *(yo
 3. Delete the CloudFormation stack
 In the AWS Console, navigate to the CloudFormation page, select the stack created with the f5-autoscale-bigip.template and delete the stack by right-clicking or (selecting the Actions tab) and then clicking **Delete Stack**.
 
+---
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. To verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Detail](#securitydetail) for the exact code in each of the following sections.
@@ -227,6 +223,8 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
 Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
 
 In order to form a cluster of devices, a secure trust must be established between BIG-IP systems. To establish this trust, we generate and store credentials in an Amazon S3 bucket. You must not delete these credentials from the S3 bucket.
+
+---
 
 ### Security blocking levels <a name="blocking"></a>
 The security blocking level you choose when you configure the template determines how much traffic is blocked and alerted by the F5 WAF.
@@ -242,7 +240,7 @@ Attack signatures are rules that identify attacks on a web application and its c
 All traffic that is not being blocked is being used by the WAF for learning. Over time, if the WAF determines that traffic is safe, it allows it through to the application. Alternately, the WAF can determine that traffic is unsafe and block it from the application.
 
 
-
+---
 
 
 
@@ -352,6 +350,8 @@ Note the hashes and script-signature may be different in your template. It is im
                 "group": "root"
               }
 ```
+
+
 
 ---
 

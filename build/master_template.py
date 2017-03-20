@@ -1636,7 +1636,6 @@ def main():
             get_nameserver =    [
                                     "INTERFACE=$1",
                                     "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-                                    "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
                                     "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
                                     "VPC_NET=${VPC_CIDR_BLOCK%/*}",
                                     "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
@@ -1654,26 +1653,40 @@ def main():
                                 "    tmsh create auth user \"$1\" password ${PASSWORD} shell bash partition-access replace-all-with { all-partitions { role admin } }",
                                 "fi"
                             ]
+            generate_password = [
+                              "nohup /config/waitThenRun.sh",
+                              " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                                ]                
             admin_user  =   [
                                     "nohup /config/waitThenRun.sh",
                                     " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
                             ]
             if num_nics == 1:
-                admin_user +=   [
-                                    " --wait-for 1_NIC_SETUP_DONE",
-                                ]
+                generate_password +=    [
+                                            " --wait-for 1_NIC_SETUP_DONE",
+                                        ]
+            generate_password +=    [
+                                        " --signal PASSWORD_CREATED",
+                                        " --file f5-rest-node",
+                                        " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
+                                        " --log-level verbose",
+                                        " -o /var/log/generatePassword.log",
+                                        " &>> /var/log/cloudlibs-install.log < /dev/null",
+                                        " &"
+                                    ]
+                                    
             admin_user +=   [    
-                                    " --signal ADMIN_CREATED",
-                                    " --file /config/cloud/aws/createUser.sh",
+                              " --wait-for PASSWORD_CREATED",
+                              " --signal ADMIN_CREATED",
+                              " --file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/createUser.sh",
+                              " --cl-args '--user admin",
+                              " --password-file /config/cloud/aws/.adminPassword",
+                              "'",
+                              " --log-level verbose",
+                              " -o /var/log/createUser.log",
+                              " &>> /var/log/cloudlibs-install.log < /dev/null",
+                              " &"
                             ]
-            admin_user +=   [
-                                " --cl-args admin", 
-                            ]
-            admin_user +=   [                    
-                                    " --log-level debug",
-                                    " -o /var/log/createUser.log",
-                                    " &>> /var/log/cloudlibs-install.log < /dev/null &"  
-                            ]    
             unpack_libs =       [
                                     "nohup /config/installCloudLibs.sh",
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
@@ -1804,14 +1817,15 @@ def main():
                                  ]
                    
                 onboard_BIG_IP += [
-                                    "NAME_SERVER=`/config/getNameServer.sh eth0`;",
+                                    "NAME_SERVER=`/config/cloud/aws/getNameServer.sh mgmt`;",
                                     "nohup /config/waitThenRun.sh",
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+                                    "--port 8443",
                                     "--ssl-port ", Ref(managementGuiPort),
                                   ]
             if num_nics > 1:
                 onboard_BIG_IP += [
-                                    "NAME_SERVER=`/config/getNameServer.sh eth1`;",
+                                    "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
                                     "nohup /config/waitThenRun.sh",
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
                                   ]
@@ -2118,24 +2132,18 @@ def main():
                                             owner='root',
                                             group='root'
                                         ),
-                                        '/config/getNameServer.sh': InitFile(
-                                            content=Join('\n', get_nameserver ),
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/cloud/aws/createUser.sh': InitFile(
-                                            content=Join('\n', create_user ),
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
                                         '/config/cloud/aws/custom-config.sh': InitFile(
                                             content=Join('', custom_sh ),
                                             mode='000755',
                                             owner='root',
                                             group='root'
-                                        ),
+                                        ),                                        
+                                        '/config/cloud/aws/getNameServer.sh': InitFile(
+                                            content=Join('\n', get_nameserver ),
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),                                         
                                         '/config/cloud/aws/rm-password.sh': InitFile(
                                             content=Join('', rm_password_sh ),
                                             mode='000755',
@@ -2159,31 +2167,37 @@ def main():
                                                                  ]
                                                 }
                                             },
-                                            "004-create-admin-user": {
+                                            "004-generate-password": {
+                                                "command": { 
+                                                    "Fn::Join" : [ "", generate_password
+                                                                 ]
+                                                }
+                                            },
+                                            "005-create-admin-user": {
                                                 "command": { 
                                                     "Fn::Join" : [ "", admin_user
                                                                  ]
                                                 }
                                             },
-                                            "005-onboard-BIG-IP": {
+                                            "006-onboard-BIG-IP": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", onboard_BIG_IP
                                                                  ]
                                                 }
                                             },
-                                            "006-custom-config": {
+                                            "007-custom-config": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", custom_command
                                                                  ]
                                                 }
                                             },
-                                            "007-cluster": {
+                                            "008-cluster": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", cluster_command
                                                                  ]
                                                 }
                                             },
-                                            "008-rm-password": {
+                                            "009-rm-password": {
                                                 "command": { 
                                                     "Fn::Join" : [ " ", rm_password_command
                                                                  ]

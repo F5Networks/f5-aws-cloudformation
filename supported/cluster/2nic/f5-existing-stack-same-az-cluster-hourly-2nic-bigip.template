@@ -1,106 +1,161 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.0.0: AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.1.0: AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Best1000Mbps": "ami-acf82acd",
-    "Best200Mbps": "ami-6bfc2e0a",
-    "Best25Mbps": "ami-a6f92bc7",
-    "Better1000Mbps": "ami-aff82ace",
-    "Better200Mbps": "ami-69f92b08",
-    "Better25Mbps": "ami-1afd2f7b",
-    "Good1000Mbps": "ami-3ef82a5f",
-    "Good200Mbps": "ami-62fc2e03",
-    "Good25Mbps": "ami-3af82a5b"
+    "Best1000Mbps": "ami-bd5306da",
+    "Best200Mbps": "ami-fa5d089d",
+    "Best25Mbps": "ami-25500542",
+    "Better1000Mbps": "ami-845207e3",
+    "Better200Mbps": "ami-37520750",
+    "Better25Mbps": "ami-055d0862",
+    "Good1000Mbps": "ami-62530605",
+    "Good200Mbps": "ami-b55306d2",
+    "Good25Mbps": "ami-935d08f4"
+   },
+   "ap-northeast-2": {
+    "Best1000Mbps": "ami-4f3cec21",
+    "Best200Mbps": "ami-8538e8eb",
+    "Best25Mbps": "ami-ac39e9c2",
+    "Better1000Mbps": "ami-1e3cec70",
+    "Better200Mbps": "ami-c23bebac",
+    "Better25Mbps": "ami-8438e8ea",
+    "Good1000Mbps": "ami-8238e8ec",
+    "Good200Mbps": "ami-493cec27",
+    "Good25Mbps": "ami-753beb1b"
+   },
+   "ap-south-1": {
+    "Best1000Mbps": "ami-601a6a0f",
+    "Best200Mbps": "ami-16166679",
+    "Best25Mbps": "ami-931767fc",
+    "Better1000Mbps": "ami-631a6a0c",
+    "Better200Mbps": "ami-1d166672",
+    "Better25Mbps": "ami-8b1767e4",
+    "Good1000Mbps": "ami-ba1969d5",
+    "Good200Mbps": "ami-621a6a0d",
+    "Good25Mbps": "ami-ca1868a5"
    },
    "ap-southeast-1": {
-    "Best1000Mbps": "ami-ab78ddc8",
-    "Best200Mbps": "ami-d37edbb0",
-    "Best25Mbps": "ami-4e79dc2d",
-    "Better1000Mbps": "ami-d47fdab7",
-    "Better200Mbps": "ami-7f78dd1c",
-    "Better25Mbps": "ami-4278dd21",
-    "Good1000Mbps": "ami-d87cd9bb",
-    "Good200Mbps": "ami-da7cd9b9",
-    "Good25Mbps": "ami-d47cd9b7"
+    "Best1000Mbps": "ami-fb12a398",
+    "Best200Mbps": "ami-3314a550",
+    "Best25Mbps": "ami-7914a51a",
+    "Better1000Mbps": "ami-9e12a3fd",
+    "Better200Mbps": "ami-0115a462",
+    "Better25Mbps": "ami-d913a2ba",
+    "Good1000Mbps": "ami-4612a325",
+    "Good200Mbps": "ami-7e14a51d",
+    "Good25Mbps": "ami-7d14a51e"
    },
    "ap-southeast-2": {
-    "Best1000Mbps": "ami-c2e8d8a1",
-    "Best200Mbps": "ami-c4e8d8a7",
-    "Best25Mbps": "ami-bdecdcde",
-    "Better1000Mbps": "ami-6febdb0c",
-    "Better200Mbps": "ami-b1ebdbd2",
-    "Better25Mbps": "ami-42e8d821",
-    "Good1000Mbps": "ami-bcebdbdf",
-    "Good200Mbps": "ami-dbebdbb8",
-    "Good25Mbps": "ami-58e9d93b"
+    "Best1000Mbps": "ami-bb383bd8",
+    "Best200Mbps": "ami-e53a3986",
+    "Best25Mbps": "ami-183b387b",
+    "Better1000Mbps": "ami-443a3927",
+    "Better200Mbps": "ami-3a3a3959",
+    "Better25Mbps": "ami-2c383b4f",
+    "Good1000Mbps": "ami-123b3871",
+    "Good200Mbps": "ami-453a3926",
+    "Good25Mbps": "ami-57393a34"
+   },
+   "ca-central-1": {
+    "Best1000Mbps": "ami-c871ccac",
+    "Best200Mbps": "ami-1d70cd79",
+    "Best25Mbps": "ami-fc73ce98",
+    "Better1000Mbps": "ami-3f6dd05b",
+    "Better200Mbps": "ami-0373ce67",
+    "Better25Mbps": "ami-6470cd00",
+    "Good1000Mbps": "ami-d276cbb6",
+    "Good200Mbps": "ami-ba72cfde",
+    "Good25Mbps": "ami-3972cf5d"
    },
    "eu-central-1": {
-    "Best1000Mbps": "ami-2157aa4e",
-    "Best200Mbps": "ami-8055a8ef",
-    "Best25Mbps": "ami-2c56ab43",
-    "Better1000Mbps": "ami-2f57aa40",
-    "Better200Mbps": "ami-2854a947",
-    "Better25Mbps": "ami-2657aa49",
-    "Good1000Mbps": "ami-e357aa8c",
-    "Good200Mbps": "ami-2557aa4a",
-    "Good25Mbps": "ami-cb55a8a4"
+    "Best1000Mbps": "ami-cbc510a4",
+    "Best200Mbps": "ami-c9c510a6",
+    "Best25Mbps": "ami-82c510ed",
+    "Better1000Mbps": "ami-97d80df8",
+    "Better200Mbps": "ami-22d80d4d",
+    "Better25Mbps": "ami-5ec11431",
+    "Good1000Mbps": "ami-a8d90cc7",
+    "Good200Mbps": "ami-f0da0f9f",
+    "Good25Mbps": "ami-f6da0f99"
    },
    "eu-west-1": {
-    "Best1000Mbps": "ami-8af48ef9",
-    "Best200Mbps": "ami-fbeb9188",
-    "Best25Mbps": "ami-cbf58fb8",
-    "Better1000Mbps": "ami-c8f58fbb",
-    "Better200Mbps": "ami-51f18b22",
-    "Better25Mbps": "ami-7bf38908",
-    "Good1000Mbps": "ami-b5f68cc6",
-    "Good200Mbps": "ami-65f58f16",
-    "Good25Mbps": "ami-91f18be2"
+    "Best1000Mbps": "ami-50ddf236",
+    "Best200Mbps": "ami-15dbf473",
+    "Best25Mbps": "ami-fed9f698",
+    "Better1000Mbps": "ami-8dd8f7eb",
+    "Better200Mbps": "ami-2ed8f748",
+    "Better25Mbps": "ami-f5d9f693",
+    "Good1000Mbps": "ami-8ed8f7e8",
+    "Good200Mbps": "ami-3edaf558",
+    "Good25Mbps": "ami-3fdaf559"
+   },
+   "eu-west-2": {
+    "Best1000Mbps": "ami-4dc5d029",
+    "Best200Mbps": "ami-77c4d113",
+    "Best25Mbps": "ami-e7c5d083",
+    "Better1000Mbps": "ami-95c6d3f1",
+    "Better200Mbps": "ami-31c4d155",
+    "Better25Mbps": "ami-4bdacf2f",
+    "Good1000Mbps": "ami-bdc6d3d9",
+    "Good200Mbps": "ami-bec6d3da",
+    "Good25Mbps": "ami-9bc7d2ff"
    },
    "sa-east-1": {
-    "Best1000Mbps": "ami-7142d11d",
-    "Best200Mbps": "ami-8b5fcce7",
-    "Best25Mbps": "ami-8a5ecde6",
-    "Better1000Mbps": "ami-955fccf9",
-    "Better200Mbps": "ami-c142d1ad",
-    "Better25Mbps": "ami-c342d1af",
-    "Good1000Mbps": "ami-335dce5f",
-    "Good200Mbps": "ami-1359ca7f",
-    "Good25Mbps": "ami-1f59ca73"
+    "Best1000Mbps": "ami-a9b7d1c5",
+    "Best200Mbps": "ami-adabcdc1",
+    "Best25Mbps": "ami-96abcdfa",
+    "Better1000Mbps": "ami-5babcd37",
+    "Better200Mbps": "ami-22b7d14e",
+    "Better25Mbps": "ami-2ea8ce42",
+    "Good1000Mbps": "ami-23b7d14f",
+    "Good200Mbps": "ami-6ba9cf07",
+    "Good25Mbps": "ami-50a8ce3c"
    },
    "us-east-1": {
-    "Best1000Mbps": "ami-1d057e0a",
-    "Best200Mbps": "ami-0b7a011c",
-    "Best25Mbps": "ami-ce047fd9",
-    "Better1000Mbps": "ami-83047f94",
-    "Better200Mbps": "ami-84017a93",
-    "Better25Mbps": "ami-8f007b98",
-    "Good1000Mbps": "ami-98017a8f",
-    "Good200Mbps": "ami-a2017ab5",
-    "Good25Mbps": "ami-130c7704"
+    "Best1000Mbps": "ami-48aa755e",
+    "Best200Mbps": "ami-4aa9765c",
+    "Best25Mbps": "ami-f2aa75e4",
+    "Better1000Mbps": "ami-d9ab74cf",
+    "Better200Mbps": "ami-84ad7292",
+    "Better25Mbps": "ami-3ba6792d",
+    "Good1000Mbps": "ami-dbac73cd",
+    "Good200Mbps": "ami-d8ab74ce",
+    "Good25Mbps": "ami-10ab7406"
+   },
+   "us-east-2": {
+    "Best1000Mbps": "ami-35b99c50",
+    "Best200Mbps": "ami-e0bb9e85",
+    "Best25Mbps": "ami-f4b89d91",
+    "Better1000Mbps": "ami-40be9b25",
+    "Better200Mbps": "ami-86b99ce3",
+    "Better25Mbps": "ami-edbb9e88",
+    "Good1000Mbps": "ami-f9be9b9c",
+    "Good200Mbps": "ami-6eb99c0b",
+    "Good25Mbps": "ami-e6bb9e83"
    },
    "us-west-1": {
-    "Best1000Mbps": "ami-812668e1",
-    "Best200Mbps": "ami-05246a65",
-    "Best25Mbps": "ami-f0256b90",
-    "Better1000Mbps": "ami-822668e2",
-    "Better200Mbps": "ami-44226c24",
-    "Better25Mbps": "ami-8b256beb",
-    "Good1000Mbps": "ami-49256b29",
-    "Good200Mbps": "ami-a72769c7",
-    "Good25Mbps": "ami-e5246a85"
+    "Best1000Mbps": "ami-51663831",
+    "Best200Mbps": "ami-c36638a3",
+    "Best25Mbps": "ami-cc6638ac",
+    "Better1000Mbps": "ami-dc6638bc",
+    "Better200Mbps": "ami-07693767",
+    "Better25Mbps": "ami-0d68366d",
+    "Good1000Mbps": "ami-03693763",
+    "Good200Mbps": "ami-59663839",
+    "Good25Mbps": "ami-5d66383d"
    },
    "us-west-2": {
-    "Best1000Mbps": "ami-012ef261",
-    "Best200Mbps": "ami-8633efe6",
-    "Best25Mbps": "ami-792ff319",
-    "Better1000Mbps": "ami-5b29f53b",
-    "Better200Mbps": "ami-a031edc0",
-    "Better25Mbps": "ami-a731edc7",
-    "Good1000Mbps": "ami-6a2df10a",
-    "Good200Mbps": "ami-532ff333",
-    "Good25Mbps": "ami-dc2ef2bc"
+    "Best1000Mbps": "ami-833ebde3",
+    "Best200Mbps": "ami-7c39ba1c",
+    "Best25Mbps": "ami-0c3cbf6c",
+    "Better1000Mbps": "ami-b738bbd7",
+    "Better200Mbps": "ami-373dbe57",
+    "Better25Mbps": "ami-f839ba98",
+    "Good1000Mbps": "ami-673cbf07",
+    "Good200Mbps": "ami-6f3ebd0f",
+    "Good25Mbps": "ami-133ebd73"
    }
   }
  },
@@ -135,9 +190,7 @@
       "licenseKey2",
       "managementGuiPort",
       "sshKey",
-      "restrictedSrcAddress",
-      "iamAccessKey",
-      "iamSecretKey"
+      "restrictedSrcAddress"
      ]
     },
     {
@@ -184,12 +237,6 @@
     "group": {
      "default": "Group"
     },
-    "iamAccessKey": {
-     "default": "IAM Access Key"
-    },
-    "iamSecretKey": {
-     "default": "IAM Secret Key"
-    },
     "imageName": {
      "default": "Image Name"
     },
@@ -198,6 +245,9 @@
     },
     "licenseKey1": {
      "default": "License Key1"
+    },
+    "licenseKey2": {
+     "default": "License Key2"
     },
     "managementGuiPort": {
      "default": "Management Port"
@@ -225,7 +275,7 @@
     }
    }
   },
-  "Version": "2.0.0"
+  "Version": "2.1.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -512,7 +562,6 @@
  },
  "Resources": {
   "Bigip1Instance": {
-   "DependsOn": "Bigip2Instance",
    "Metadata": {
     "AWS::CloudFormation::Init": {
      "config": {
@@ -539,29 +588,51 @@
          ]
         }
        },
-       "004-create-admin-user": {
+       "004-generate-password": {
         "command": {
          "Fn::Join": [
           "",
           [
            "nohup /config/waitThenRun.sh",
            " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
-           " --signal ADMIN_CREATED",
-           " --file /config/cloud/aws/createUser.sh",
-           " --cl-args admin",
-           " --log-level debug",
-           " -o /var/log/createUser.log",
-           " &>> /var/log/cloudlibs-install.log < /dev/null &"
+           " --signal PASSWORD_CREATED",
+           " --file f5-rest-node",
+           " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
+           " --log-level verbose",
+           " -o /var/log/generatePassword.log",
+           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " &"
           ]
          ]
         }
        },
-       "005-onboard-BIG-IP": {
+       "005-create-admin-user": {
+        "command": {
+         "Fn::Join": [
+          "",
+          [
+           "nohup /config/waitThenRun.sh",
+           " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           " --wait-for PASSWORD_CREATED",
+           " --signal ADMIN_CREATED",
+           " --file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/createUser.sh",
+           " --cl-args '--user admin",
+           " --password-file /config/cloud/aws/.adminPassword",
+           "'",
+           " --log-level verbose",
+           " -o /var/log/createUser.log",
+           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " &"
+          ]
+         ]
+        }
+       },
+       "006-onboard-BIG-IP": {
         "command": {
          "Fn::Join": [
           " ",
           [
-           "NAME_SERVER=`/config/getNameServer.sh eth1`;",
+           "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
            "nohup /config/waitThenRun.sh",
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
            "--wait-for ADMIN_CREATED",
@@ -583,7 +654,7 @@
          ]
         }
        },
-       "006-custom-config": {
+       "007-custom-config": {
         "command": {
          "Fn::Join": [
           " ",
@@ -601,11 +672,12 @@
          ]
         }
        },
-       "007-cluster": {
+       "008-cluster": {
         "command": {
          "Fn::Join": [
           " ",
           [
+           "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`;",
            "nohup /config/waitThenRun.sh",
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
            "--wait-for CUSTOM_CONFIG_DONE",
@@ -621,6 +693,7 @@
             "Ref": "S3Bucket"
            },
            "'",
+           "--master",
            "--config-sync-ip",
            {
             "Fn::GetAtt": [
@@ -628,21 +701,18 @@
              "PrimaryPrivateIpAddress"
             ]
            },
-           "--join-group",
+           "--create-group",
            "--device-group across_az_failover_group",
-           "--remote-host ",
-           {
-            "Fn::GetAtt": [
-             "Bigip2Instance",
-             "PrivateDnsName"
-            ]
-           },
+           "--sync-type sync-failover",
+           "--network-failover",
+           "--device ${HOSTNAME}",
+           "--auto-sync",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        },
-       "008-rm-password": {
+       "009-rm-password": {
         "command": {
          "Fn::Join": [
           " ",
@@ -661,26 +731,6 @@
        }
       },
       "files": {
-       "/config/cloud/aws/createUser.sh": {
-        "content": {
-         "Fn::Join": [
-          "\n",
-          [
-           "#!/bin/bash",
-           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
-           "PASSWORD=$(/bin/sed -e $'s:[\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
-           "if [ \"$1\" = admin ]; then",
-           "    tmsh modify auth user \"$1\" password ${PASSWORD}",
-           "else",
-           "    tmsh create auth user \"$1\" password ${PASSWORD} shell bash partition-access replace-all-with { all-partitions { role admin } }",
-           "fi"
-          ]
-         ]
-        },
-        "group": "root",
-        "mode": "000755",
-        "owner": "root"
-       },
        "/config/cloud/aws/custom-config.sh": {
         "content": {
          "Fn::Join": [
@@ -689,6 +739,7 @@
            "#!/bin/bash\n",
            "date\n",
            "echo 'starting tmsh config'\n",
+           "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
            "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
@@ -720,10 +771,29 @@
            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
            "tmsh create net route default gw ${GATEWAY}\n",
            "tmsh modify sys db dhclient.mgmt { value disable }\n",
+           "tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
            "tmsh save /sys config\n",
            "date\n",
            "### START CUSTOM TMSH CONFIGURTION\n",
            "### END CUSTOM TMSH CONFIGURATION"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/getNameServer.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "INTERFACE=$1",
+           "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
+           "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+           "VPC_NET=${VPC_CIDR_BLOCK%/*}",
+           "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
+           "echo $NAME_SERVER"
           ]
          ]
         },
@@ -752,32 +822,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.0.1/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.1.0/dist/f5-cloud-libs.tar.gz"
-       },
-       "/config/getNameServer.sh": {
-        "content": {
-         "Fn::Join": [
-          "\n",
-          [
-           "INTERFACE=$1",
-           "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-           "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-           "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
-           "VPC_NET=${VPC_CIDR_BLOCK%/*}",
-           "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
-           "echo $NAME_SERVER"
-          ]
-         ]
-        },
-        "group": "root",
-        "mode": "000755",
-        "owner": "root"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/develop/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -798,21 +849,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "if ! tmsh load sys config merge file /config/verifyHash; then",
-           "    echo cannot validate signature of /config/verifyHash",
-           "    exit",
-           "fi",
-           "echo loaded verifyHash",
-           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
-           "for fileToVerify in \"${filesToVerify[@]}\"",
-           "do",
-           "    echo verifying \"$fileToVerify\"",
-           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "        echo \"$fileToVerify\" is not valid",
-           "        exit 1",
-           "    fi",
-           "    echo verified \"$fileToVerify\"",
-           "done",
+           "#if ! tmsh load sys config merge file /config/verifyHash; then",
+           "#    echo cannot validate signature of /config/verifyHash",
+           "#    exit",
+           "#fi",
+           "#echo loaded verifyHash",
+           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+           "#for fileToVerify in \"${filesToVerify[@]}\"",
+           "#do",
+           "#    echo verifying \"$fileToVerify\"",
+           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "#        echo \"$fileToVerify\" is not valid",
+           "#        exit 1",
+           "#    fi",
+           "#    echo verified \"$fileToVerify\"",
+           "#done",
            "mkdir -p /config/cloud/aws/node_modules",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -835,7 +886,7 @@
            "cli script /Common/verifyHash {",
            "    proc script::run {} {",
            "        if {[catch {",
-           "            set hashes(f5-cloud-libs.tar.gz) a6a9db3b89bbd014413706f22fa619c3717fac41fc99ffe875589c90e9b85a05cea227c134ea6e5b519c8fee0d12f2175368e75917f31f447ece3d92f31814af",
+           "            set hashes(f5-cloud-libs.tar.gz) 2fe3a932e1195be3ba5c272bbdf5eefd963b838470c48205d3fa0730cb7836a3b76dd927944aa3261a92e53518ce10aebc5a445f93b43f3b5c12fac884106ae4",
            "            set hashes(f5-cloud-libs-aws.tar.gz) 22b554337b27802b7794206462bb98d346a7241622c11bcf9e834a06bcd1bd1b5b99efee512ac6eebe64e9d34f3024bcb569371fd4ee79006761bc5e5a74a59c",
            "            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0",
            "            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034",
@@ -861,7 +912,8 @@
            "            exit 1",
            "        }",
            "    }",
-           "    script-signature QmpupbE2kzw2T7LO/Hp6NtscwZnEXjq8U0xOQLOfFIid1pdvsis6HOphdKyXjY+uzFnHktSy/Xe2LdwxjKmKRaMy5ZuE8NR+MJyUGLR3OwgVj1sGVZgwDCWvkBLyNKDQFkFfuTBk6TTN7q58+dJ3qulOv7KWkpKq/m8+8VXyQ4pj+96bHWwrs8kYRtHX5wc7cSJE/3thNWCF8v9BAyFFUFEyy6z7mFhH8iD2i+OEnqpK+0VAY1irspmaCigo3NmJXfZXIo2cWIopORqWsCATsVT6lunpV6z7h2FipnMJpAhVWqlzezSAOCHI0juPeGDAHIyNX8uLlTOpWJSgP1d4YQ==",
+           "    script-signature dTsQJ2YdaaLJ3TzuB1XPi8fAeghkTUTdltfuW0cMndHHeLXMZBX/KSN+Dhnb0aFb1QCpDYJvZ38DmBy9gq1ETqcfxpoa1yj2Id144/JyFkIAyzD6sIslsCsFnwfpXWk1+Rqdrn1WoEjtyOZ7OSadhzVUQTctczVzwrK+SHoNKOZR2xtoQfpL0sBTj/g2cMioyk9bE9Y2hL2tfYGJTrgUM7hnKcyqL4dkDjurnBYOMWy+/SmYc/NvrbyA53xx6W9gNqGDd6j7+zqg3cmpCZFD+ca96wj0iiKAZcM0vYLaxp9LWEWX/fVlvUtUf7Y569OkbjBQQhuoEv45gjU6RG6eaA==",
+           "    signing-key /Common/f5-irule",
            "}",
            ""
           ]
@@ -1110,6 +1162,7 @@
    "Type": "AWS::EC2::EIPAssociation"
   },
   "Bigip2Instance": {
+   "DependsOn": "Bigip1Instance",
    "Metadata": {
     "AWS::CloudFormation::Init": {
      "config": {
@@ -1136,29 +1189,51 @@
          ]
         }
        },
-       "004-create-admin-user": {
+       "004-generate-password": {
         "command": {
          "Fn::Join": [
           "",
           [
            "nohup /config/waitThenRun.sh",
            " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
-           " --signal ADMIN_CREATED",
-           " --file /config/cloud/aws/createUser.sh",
-           " --cl-args admin",
-           " --log-level debug",
-           " -o /var/log/createUser.log",
-           " &>> /var/log/cloudlibs-install.log < /dev/null &"
+           " --signal PASSWORD_CREATED",
+           " --file f5-rest-node",
+           " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
+           " --log-level verbose",
+           " -o /var/log/generatePassword.log",
+           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " &"
           ]
          ]
         }
        },
-       "005-onboard-BIG-IP": {
+       "005-create-admin-user": {
+        "command": {
+         "Fn::Join": [
+          "",
+          [
+           "nohup /config/waitThenRun.sh",
+           " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           " --wait-for PASSWORD_CREATED",
+           " --signal ADMIN_CREATED",
+           " --file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/createUser.sh",
+           " --cl-args '--user admin",
+           " --password-file /config/cloud/aws/.adminPassword",
+           "'",
+           " --log-level verbose",
+           " -o /var/log/createUser.log",
+           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " &"
+          ]
+         ]
+        }
+       },
+       "006-onboard-BIG-IP": {
         "command": {
          "Fn::Join": [
           " ",
           [
-           "NAME_SERVER=`/config/getNameServer.sh eth1`;",
+           "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
            "nohup /config/waitThenRun.sh",
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
            "--wait-for ADMIN_CREATED",
@@ -1180,7 +1255,7 @@
          ]
         }
        },
-       "006-custom-config": {
+       "007-custom-config": {
         "command": {
          "Fn::Join": [
           " ",
@@ -1198,12 +1273,11 @@
          ]
         }
        },
-       "007-cluster": {
+       "008-cluster": {
         "command": {
          "Fn::Join": [
           " ",
           [
-           "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`;",
            "nohup /config/waitThenRun.sh",
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
            "--wait-for CUSTOM_CONFIG_DONE",
@@ -1219,7 +1293,6 @@
             "Ref": "S3Bucket"
            },
            "'",
-           "--master",
            "--config-sync-ip",
            {
             "Fn::GetAtt": [
@@ -1227,17 +1300,21 @@
              "PrimaryPrivateIpAddress"
             ]
            },
-           "--create-group",
+           "--join-group",
            "--device-group across_az_failover_group",
-           "--sync-type sync-failover",
-           "--device ${HOSTNAME}",
-           "--auto-sync",
+           "--remote-host ",
+           {
+            "Fn::GetAtt": [
+             "Bigip1Instance",
+             "PrivateDnsName"
+            ]
+           },
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        },
-       "008-rm-password": {
+       "009-rm-password": {
         "command": {
          "Fn::Join": [
           " ",
@@ -1256,26 +1333,6 @@
        }
       },
       "files": {
-       "/config/cloud/aws/createUser.sh": {
-        "content": {
-         "Fn::Join": [
-          "\n",
-          [
-           "#!/bin/bash",
-           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
-           "PASSWORD=$(/bin/sed -e $'s:[\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
-           "if [ \"$1\" = admin ]; then",
-           "    tmsh modify auth user \"$1\" password ${PASSWORD}",
-           "else",
-           "    tmsh create auth user \"$1\" password ${PASSWORD} shell bash partition-access replace-all-with { all-partitions { role admin } }",
-           "fi"
-          ]
-         ]
-        },
-        "group": "root",
-        "mode": "000755",
-        "owner": "root"
-       },
        "/config/cloud/aws/custom-config.sh": {
         "content": {
          "Fn::Join": [
@@ -1284,6 +1341,7 @@
            "#!/bin/bash\n",
            "date\n",
            "echo 'starting tmsh config'\n",
+           "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
            "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
@@ -1315,10 +1373,29 @@
            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
            "tmsh create net route default gw ${GATEWAY}\n",
            "tmsh modify sys db dhclient.mgmt { value disable }\n",
+           "tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
            "tmsh save /sys config\n",
            "date\n",
            "### START CUSTOM TMSH CONFIGURTION\n",
            "### END CUSTOM TMSH CONFIGURATION"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/getNameServer.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "INTERFACE=$1",
+           "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
+           "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+           "VPC_NET=${VPC_CIDR_BLOCK%/*}",
+           "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
+           "echo $NAME_SERVER"
           ]
          ]
         },
@@ -1347,32 +1424,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.0.1/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.1.0/dist/f5-cloud-libs.tar.gz"
-       },
-       "/config/getNameServer.sh": {
-        "content": {
-         "Fn::Join": [
-          "\n",
-          [
-           "INTERFACE=$1",
-           "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-           "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-           "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
-           "VPC_NET=${VPC_CIDR_BLOCK%/*}",
-           "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
-           "echo $NAME_SERVER"
-          ]
-         ]
-        },
-        "group": "root",
-        "mode": "000755",
-        "owner": "root"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/develop/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -1393,21 +1451,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "if ! tmsh load sys config merge file /config/verifyHash; then",
-           "    echo cannot validate signature of /config/verifyHash",
-           "    exit",
-           "fi",
-           "echo loaded verifyHash",
-           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
-           "for fileToVerify in \"${filesToVerify[@]}\"",
-           "do",
-           "    echo verifying \"$fileToVerify\"",
-           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "        echo \"$fileToVerify\" is not valid",
-           "        exit 1",
-           "    fi",
-           "    echo verified \"$fileToVerify\"",
-           "done",
+           "#if ! tmsh load sys config merge file /config/verifyHash; then",
+           "#    echo cannot validate signature of /config/verifyHash",
+           "#    exit",
+           "#fi",
+           "#echo loaded verifyHash",
+           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+           "#for fileToVerify in \"${filesToVerify[@]}\"",
+           "#do",
+           "#    echo verifying \"$fileToVerify\"",
+           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "#        echo \"$fileToVerify\" is not valid",
+           "#        exit 1",
+           "#    fi",
+           "#    echo verified \"$fileToVerify\"",
+           "#done",
            "mkdir -p /config/cloud/aws/node_modules",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -1430,7 +1488,7 @@
            "cli script /Common/verifyHash {",
            "    proc script::run {} {",
            "        if {[catch {",
-           "            set hashes(f5-cloud-libs.tar.gz) a6a9db3b89bbd014413706f22fa619c3717fac41fc99ffe875589c90e9b85a05cea227c134ea6e5b519c8fee0d12f2175368e75917f31f447ece3d92f31814af",
+           "            set hashes(f5-cloud-libs.tar.gz) 2fe3a932e1195be3ba5c272bbdf5eefd963b838470c48205d3fa0730cb7836a3b76dd927944aa3261a92e53518ce10aebc5a445f93b43f3b5c12fac884106ae4",
            "            set hashes(f5-cloud-libs-aws.tar.gz) 22b554337b27802b7794206462bb98d346a7241622c11bcf9e834a06bcd1bd1b5b99efee512ac6eebe64e9d34f3024bcb569371fd4ee79006761bc5e5a74a59c",
            "            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0",
            "            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034",
@@ -1456,7 +1514,8 @@
            "            exit 1",
            "        }",
            "    }",
-           "    script-signature QmpupbE2kzw2T7LO/Hp6NtscwZnEXjq8U0xOQLOfFIid1pdvsis6HOphdKyXjY+uzFnHktSy/Xe2LdwxjKmKRaMy5ZuE8NR+MJyUGLR3OwgVj1sGVZgwDCWvkBLyNKDQFkFfuTBk6TTN7q58+dJ3qulOv7KWkpKq/m8+8VXyQ4pj+96bHWwrs8kYRtHX5wc7cSJE/3thNWCF8v9BAyFFUFEyy6z7mFhH8iD2i+OEnqpK+0VAY1irspmaCigo3NmJXfZXIo2cWIopORqWsCATsVT6lunpV6z7h2FipnMJpAhVWqlzezSAOCHI0juPeGDAHIyNX8uLlTOpWJSgP1d4YQ==",
+           "    script-signature dTsQJ2YdaaLJ3TzuB1XPi8fAeghkTUTdltfuW0cMndHHeLXMZBX/KSN+Dhnb0aFb1QCpDYJvZ38DmBy9gq1ETqcfxpoa1yj2Id144/JyFkIAyzD6sIslsCsFnwfpXWk1+Rqdrn1WoEjtyOZ7OSadhzVUQTctczVzwrK+SHoNKOZR2xtoQfpL0sBTj/g2cMioyk9bE9Y2hL2tfYGJTrgUM7hnKcyqL4dkDjurnBYOMWy+/SmYc/NvrbyA53xx6W9gNqGDd6j7+zqg3cmpCZFD+ca96wj0iiKAZcM0vYLaxp9LWEWX/fVlvUtUf7Y569OkbjBQQhuoEv45gjU6RG6eaA==",
+           "    signing-key /Common/f5-irule",
            "}",
            ""
           ]
@@ -1699,57 +1758,70 @@
     },
     "Path": "/",
     "Policies": [
-                {
-                 "PolicyName": "BigipClusterAcccessPolicy",
-                 "PolicyDocument": {
-                  "Version": "2012-10-17",
-                  "Statement": [
-                  {
-                   "Effect": "Allow",
-                   "Action": [
-                   "s3:ListBucket"
-                   ],
-                   "Resource": {
-                    "Fn::Join": [
-                    "",
-                    [
-                     "arn:aws:s3:::",
-                     {
-                      "Ref": "S3Bucket"
-                     }
-                    ]
-                    ]
-                   }
-                  },
-                  {
-                   "Effect": "Allow",
-                   "Action": [
-                   "s3:PutObject",
-                   "s3:GetObject",
-                   "s3:DeleteObject"
-                   ],
-                   "Resource": {
-                    "Fn::Join": [
-                    "",
-                    [
-                    "arn:aws:s3:::",
-                    {
-                     "Ref": "S3Bucket"
-                    },
-                    "/*"
-                    ]
-                    ]
-                    }
-                   }
-                   ]
-                  }
-                 }
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:s3:::",
+            {
+             "Ref": "S3Bucket"
+            }
+           ]
+          ]
+         }
+        },
+        {
+         "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:s3:::",
+            {
+             "Ref": "S3Bucket"
+            },
+            "/*"
+           ]
+          ]
+         }
+        },
+        {
+         "Action": [
+          "ec2:DescribeInstances",
+          "ec2:DescribeInstanceStatus",
+          "ec2:DescribeAddresses",
+          "ec2:AssociateAddress",
+          "ec2:DisassociateAddress",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeNetworkInterfaceAttributes",
+          "ec2:DescribeRouteTables",
+          "ec2:ReplaceRoute",
+          "ec2:assignprivateipaddresses"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "BigipClusterAcccessPolicy"
+     }
     ]
-   },
-   "Metadata": {
-    "AWS::CloudFormation::Designer": {
-     "id": "61f03e7b-b3f0-4f0d-bf6b-6a6ddef6b31e"
-    }    
    },
    "Type": "AWS::IAM::Role"
   },

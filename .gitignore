@@ -65,5 +65,4 @@ docs/_build/
 
 # PyBuilder
 target/
-
-sbuild.sh
+build/sbuild.sh

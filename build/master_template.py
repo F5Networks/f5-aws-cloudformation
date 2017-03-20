@@ -123,19 +123,29 @@ def main():
     # Build variables used for QA
     ### Template Version
     version = "2.1.0"
-    ### Cloudlib Download Location
+    ### Cloudlib Branch
+    branch_cloud = "release-2.3.0"
+    branch_aws = "release-1.2.0"
+    ### Cloudlib and iApp URL
     ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/develop/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
-    # https://cdn.f5.com/product/templates/f5.aws_advanced_ha.v1.2.0rc1.tmpl
-    cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/develop/dist/f5-cloud-libs.tar.gz"
-    cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz"    
-    CLOUD_HASH = "2fe3a932e1195be3ba5c272bbdf5eefd963b838470c48205d3fa0730cb7836a3b76dd927944aa3261a92e53518ce10aebc5a445f93b43f3b5c12fac884106ae4"
-    CLOUD_AWS_HASH = "22b554337b27802b7794206462bb98d346a7241622c11bcf9e834a06bcd1bd1b5b99efee512ac6eebe64e9d34f3024bcb569371fd4ee79006761bc5e5a74a59c"
-    ASM_POLICY = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
+    cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
+    cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"    
+    ### Verify Hash
+    CLOUD_HASH = "09eba5f10cec4758d70e3b692a03d5102b9ba96553c1224782a4846b913fc3bae43af3d9565f1b9cd9d0faf812fa10fce66c1779933f7bbb12f51204f853c828"
+    CLOUD_AWS_HASH = "03aef6b45b1af222cde9fa05967518646cc4a9b37d7ec1f399cba697c0ae898290e46682d8332402154e6d9d3f9dacc43c70d5b3eb76856144649bbaaef969e6"
+    CLOUD_AZURE_HASH = "16d2ce2086883ed5b47a3ba4e79541fd1a4bb64513222cf3a459297c2474d0bfc71a161ba2b8571707e1a6b273badaaf2c847993d0e60a4b52cd8c62cb03aba6"
+    ASM_POLICY_LINUX = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
     HTTP_IAPP_RC4 = "47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034"
     HTTP_IAPP_RC6 = "811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe"
-    SCRIPT_SIGNATURE ="dTsQJ2YdaaLJ3TzuB1XPi8fAeghkTUTdltfuW0cMndHHeLXMZBX/KSN+Dhnb0aFb1QCpDYJvZ38DmBy9gq1ETqcfxpoa1yj2Id144/JyFkIAyzD6sIslsCsFnwfpXWk1+Rqdrn1WoEjtyOZ7OSadhzVUQTctczVzwrK+SHoNKOZR2xtoQfpL0sBTj/g2cMioyk9bE9Y2hL2tfYGJTrgUM7hnKcyqL4dkDjurnBYOMWy+/SmYc/NvrbyA53xx6W9gNqGDd6j7+zqg3cmpCZFD+ca96wj0iiKAZcM0vYLaxp9LWEWX/fVlvUtUf7Y569OkbjBQQhuoEv45gjU6RG6eaA=="
+    HTTP_IAPP_RC7 = "21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d"
+    ADVANCED_HA = "9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d"
+    ASM_POLICY = "2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6"
+    DEPLOY_WAF = "4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a"
+    POLICY_CREATOR = "54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a"
+   
+    SCRIPT_SIGNATURE ="gOI4SUzKbJQFTN5nC+ZbV8cLTnQoq9a94DBh4jNQ5MxcGl/ASRWXFE0J+ANT1p4kP4+37GOMyACW7gdTVju79upI/EGhW6SyCCYUTvDpy0XJeQu52ghNx3t0xFnYKGt4+/rgnFM8CmjUeMc4irjdaW4/005rietj8UrvVylD++bKeAi5sNNwcGB6aoY3qE7FUF28jIOxFdZIRmyHtYq5lU4UgeIQW6/C0GH+S/gfAQGml0/tMHXQiIheTS2oBOl+MRcOdJYzgaoEiqoaBVFm8nMbyhKj6XIEJgRkICiTXowXSJIexZF8zjQbAC/HZ9UGC9n6CSFfuOzdLGVizNDNSQ=="
     ### add hashmark to skip verification.
-    comment_out = "#"
+    comment_out = ""
     # Begin Template
     t = Template()
     t.add_version("2010-09-09")
@@ -1354,100 +1364,7 @@ def main():
 
                         Description="Internal Interface for the BIG-IP",
                     ))
-            # Build custom_sh
-            custom_sh = [
-                            "#!/bin/bash\n",
-                            "date\n",
-                            "echo 'starting tmsh config'\n",
-                            ]            
-            if ha_type != "standalone":
-                custom_sh += [
-                                    "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
-                               
-                                 ]
-                if license_type == "byol":
-                    custom_sh += [ ]
-                elif license_type == "bigiq":
-                    custom_sh += [ 
-                                        "BIGIQ_ADDRESS='", Ref(bigiqAddress), "'\n",
-                                        "BIGIQ_USERNAME='", Ref(bigiqUsername), "'\n",
-                                        "BIGIQ_PASSWORD='", Ref(bigiqPassword), "'\n",
-                                        "BIGIQ_LICENSE_POOL_UUID='", Ref(bigiqLicensePoolUUID), "'\n"
-                                    ]
-
-                    if num_nics == 1:
-                        custom_sh += [ "BIGIP_DEVICE_ADDRESS='", Ref(ExternalSelfEipAddress),"'\n" ] 
-                    if num_nics > 1:
-                        custom_sh += [ "BIGIP_DEVICE_ADDRESS='", Ref(ManagementEipAddress),"'\n" ] 
-
-
-                if num_nics == 1:
-                    custom_sh += [ 
-                                        "MANAGEMENT_GUI_PORT='", Ref(managementGuiPort), "'\n",  
-                                        "GATEWAY_MAC=`ifconfig eth0 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                     ]
-
-                if num_nics > 1:
-                    custom_sh += [ 
-                                        "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                     ]
-
-                custom_sh += [
-                                    "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
-                                    "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
-                                    "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
-                                    "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                                    #"VPC_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-block`\n",
-                                    #"VPC_NET=${VPC_CIDR_BLOCK%/*}\n",
-                                    #"VPC_PREFIX=${VPC_CIDR_BLOCK#*/}\n",
-                                    #"NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+2 }'`\n", 
-                                ]
-                if num_nics > 1:
-                    custom_sh += [ 
-                                    #"MGMTIP='", GetAtt(ManagementInterface, "PrimaryPrivateIpAddress"), "'\n", 
-                                    "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n", 
-                                    "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n", 
-                                    "EXTMASK=${GATEWAY_PREFIX}\n",
-                                    ]
-                if num_nics > 2:
-                    custom_sh += [ 
-                                    "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
-                                    "INTMASK='24'\n", 
-                                   ]
-
-
-            if stack == "full":
-                custom_sh +=  [              
-                                    "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n", 
-                                    "POOLMEMPORT=80\n", 
-                                    ]
-    
-                custom_sh +=  [
-                                    "APPNAME='demo-app-1'\n", 
-                                    "VIRTUALSERVERPORT=80\n",
-                                    "CRT='default.crt'\n", 
-                                    "KEY='default.key'\n",
-                                ]
-            if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
-                custom_sh +=  [
-                                    #"PEER_HOSTNAME='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "Instance", "PrivateDnsName"), "'\n",
-                                    #"PEER_MGMTIP='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "ManagementInterface", "PrimaryPrivateIpAddress"), "'\n",
-                                    ]
-                
-                if num_nics > 1:
-                    if ha_type == "across-az":
-                        custom_sh +=  [
-                                            "PEER_EXTPRIVIP='", Select("0", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "subnet1" + "Az" + str(BIGIP_INDEX + 2) + "Interface", "SecondaryPrivateIpAddresses")), "'\n", 
-                                            "VIPEIP='",Ref(VipEipAddress),"'\n",
-
-                                            ]
-                    if ha_type == "same-az":
-                         custom_sh +=  [
-                                            #"PEER_EXTPRIVIP='", Select("0", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "subnet1" + "Az1Interface", "SecondaryPrivateIpAddresses")), "'\n", 
-                                            #"VIPEIP='",Ref(VipEipAddress),"'\n",
-
-                                            ]                   
-
+        
             # build custom-confg.sh vars
 
             license_byol =  [ 
@@ -1549,9 +1466,15 @@ def main():
                             "        if {[catch {",
                             "            set hashes(f5-cloud-libs.tar.gz) " + str(CLOUD_HASH),
                             "            set hashes(f5-cloud-libs-aws.tar.gz) " + str(CLOUD_AWS_HASH),
-                            "            set hashes(asm-policy-linux.tar.gz) " + str(ASM_POLICY),
+                            "            set hashes(f5-cloud-libs-azure.tar.gz) " + str(CLOUD_AZURE_HASH),
+                            "            set hashes(asm-policy-linux.tar.gz) " + str(ASM_POLICY_LINUX),
                             "            set hashes(f5.http.v1.2.0rc4.tmpl) " + str(HTTP_IAPP_RC4),
                             "            set hashes(f5.http.v1.2.0rc6.tmpl) " + str(HTTP_IAPP_RC6),
+                            "            set hashes(f5.http.v1.2.0rc7.tmpl) " + str(HTTP_IAPP_RC7),
+                            "            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) " + str(ADVANCED_HA),
+                            "            set hashes(asm-policy.tar.gz) " + str(ASM_POLICY),
+                            "            set hashes(deploy_waf.sh) " + str(DEPLOY_WAF),
+                            "            set hashes(f5.policy_creator.tmpl) " + str(POLICY_CREATOR),
                             "",
                             "            set file_path [lindex $tmsh::argv 1]",
                             "            set file_name [file tail $file_path]",
@@ -1802,8 +1725,6 @@ def main():
                                 ]
 
             # Global Settings
-            custom_sh += [
-                         ]
             if num_nics == 1:
                 one_nic_setup += [
                                     "nohup /config/waitThenRun.sh",
@@ -1848,7 +1769,17 @@ def main():
                                         "--dns ${NAME_SERVER}",
                                         "--module ltm:nominal",
                                     ]
- 
+            ### Build Custom Script
+            custom_sh = [
+                            "#!/bin/bash\n",
+                            "date\n",
+                            "echo 'starting tmsh config'\n",            
+                        ]
+            if ha_type != "standalone":
+                custom_sh += [
+                                    "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+                               
+                             ]            
             if num_nics == 1:
                 # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
                 if 'waf' in components:
@@ -1856,18 +1787,28 @@ def main():
                                     "tmsh modify net self-allow defaults add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
                                     ]
             # Network Settings
+            if stack == "full":
+                custom_sh +=  [              
+                                    "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n", 
+                                    "POOLMEMPORT=80\n",
+                                    #"EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n", 
+                                    "APPNAME='demo-app-1'\n", 
+                                    "VIRTUALSERVERPORT=80\n",
+                                    #"CRT='default.crt'\n", 
+                                    #"KEY='default.key'\n",
+                              ]            
             if num_nics > 1:
                 custom_sh +=  [ 
-                                #"GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                #"GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
-                                #"GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
-                                #"GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
-                                #"GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                                #"EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n", 
-                                #"EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n", 
-                                #"EXTMASK=${GATEWAY_PREFIX}\n",
-                                "tmsh create net vlan external interfaces add { 1.1 } \n",
+                                "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+                                "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                                "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+                                "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+                                "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+                                "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
+                                "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",                                 
+                                "EXTMASK=${GATEWAY_PREFIX}\n",                                
                               ]
+                              
                 if ha_type == "standalone":
                     if 'waf' not in components:
                         custom_sh +=  [ 

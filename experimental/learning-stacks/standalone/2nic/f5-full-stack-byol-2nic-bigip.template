@@ -882,6 +882,7 @@
            },
            "'\n",
            "EXTMASK=${GATEWAY_PREFIX}\n",
+           "tmsh create net vlan external interfaces add { 1.1 } \n",
            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
            "tmsh create net route default gw ${GATEWAY}\n",
            "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",

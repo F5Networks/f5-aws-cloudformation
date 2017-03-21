@@ -1806,12 +1806,13 @@ def main():
                                 "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
                                 "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
                                 "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",                                 
-                                "EXTMASK=${GATEWAY_PREFIX}\n",                                
+                                "EXTMASK=${GATEWAY_PREFIX}\n",
+                                "tmsh create net vlan external interfaces add { 1.1 } \n",                                
                               ]
                               
                 if ha_type == "standalone":
                     if 'waf' not in components:
-                        custom_sh +=  [ 
+                        custom_sh +=  [                                         
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
                                         ]
                     if 'waf' in components:                    

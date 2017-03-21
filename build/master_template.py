@@ -131,8 +131,8 @@ def main():
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"    
     ### Verify Hash
-    CLOUD_HASH = "09eba5f10cec4758d70e3b692a03d5102b9ba96553c1224782a4846b913fc3bae43af3d9565f1b9cd9d0faf812fa10fce66c1779933f7bbb12f51204f853c828"
-    CLOUD_AWS_HASH = "03aef6b45b1af222cde9fa05967518646cc4a9b37d7ec1f399cba697c0ae898290e46682d8332402154e6d9d3f9dacc43c70d5b3eb76856144649bbaaef969e6"
+    CLOUD_HASH = "489d460d2e5fcd401ce12f19b1d753a6bee30483cd0bf2b7548b7f8fe3caf5b727af96f013733cbd08b0c109e0cf535a29288d473b84cc834369204d5be5edc9"
+    CLOUD_AWS_HASH = "0b602d069a6647e8268c7afc5201259058c4df545cdee5212bf1f6c2d24b11421201282c11e047b1df9b144a012312de45a07fcf28bd0d8cd3d3a86698774925"
     CLOUD_AZURE_HASH = "16d2ce2086883ed5b47a3ba4e79541fd1a4bb64513222cf3a459297c2474d0bfc71a161ba2b8571707e1a6b273badaaf2c847993d0e60a4b52cd8c62cb03aba6"
     ASM_POLICY_LINUX = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
     HTTP_IAPP_RC4 = "47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034"
@@ -143,7 +143,7 @@ def main():
     DEPLOY_WAF = "4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a"
     POLICY_CREATOR = "54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a"
    
-    SCRIPT_SIGNATURE ="gOI4SUzKbJQFTN5nC+ZbV8cLTnQoq9a94DBh4jNQ5MxcGl/ASRWXFE0J+ANT1p4kP4+37GOMyACW7gdTVju79upI/EGhW6SyCCYUTvDpy0XJeQu52ghNx3t0xFnYKGt4+/rgnFM8CmjUeMc4irjdaW4/005rietj8UrvVylD++bKeAi5sNNwcGB6aoY3qE7FUF28jIOxFdZIRmyHtYq5lU4UgeIQW6/C0GH+S/gfAQGml0/tMHXQiIheTS2oBOl+MRcOdJYzgaoEiqoaBVFm8nMbyhKj6XIEJgRkICiTXowXSJIexZF8zjQbAC/HZ9UGC9n6CSFfuOzdLGVizNDNSQ=="
+    SCRIPT_SIGNATURE ="prKQi8FeX98kCcFaMwIdwgYADdAjZo6iNTnnckguwe5IVysTEVe4vR2HPLJlDzU25dU17sQvDNIX52K0VYN4LEkAuSMeMTmr2LnlRWcGEJ4YUo9lKMdKzMzJaznlScwaR4P5mEdJC0ygq8jinOIlkauLbqmAElNtxWpb+XLnR2R83vMl/y9/LGxCxrvqE3ZuXvyuKqpAlhS+AN5ZQBDFvlTgQi52KJWpw+3i7oalz5dsjbAs2gRARtZ57Pa8OD5Oz54Q1UDxuzPVNH+CY4vt93JKmduMBsT3F41RUFDmRzosjmBY/Ic9O7oLVlKwOusDeqqqlfOM5CxcVMXwB3oxxQ=="
     ### add hashmark to skip verification.
     comment_out = ""
     # Begin Template
@@ -1797,6 +1797,25 @@ def main():
                                     #"CRT='default.crt'\n", 
                                     #"KEY='default.key'\n",
                               ]            
+            if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
+                custom_sh +=  [
+                                    #"PEER_HOSTNAME='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "Instance", "PrivateDnsName"), "'\n",
+                                    #"PEER_MGMTIP='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "ManagementInterface", "PrimaryPrivateIpAddress"), "'\n",
+                                    ]
+                
+                if num_nics > 1:
+                    if ha_type == "across-az":
+                        custom_sh +=  [
+                                            "PEER_EXTPRIVIP='", Select("0", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "subnet1" + "Az" + str(BIGIP_INDEX + 2) + "Interface", "SecondaryPrivateIpAddresses")), "'\n", 
+                                            "VIPEIP='",Ref(VipEipAddress),"'\n",
+
+                                            ]
+                    if ha_type == "same-az":
+                         custom_sh +=  [
+                                            "PEER_EXTPRIVIP='", Select("0", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "subnet1" + "Az1Interface", "SecondaryPrivateIpAddresses")), "'\n", 
+                                            "VIPEIP='",Ref(VipEipAddress),"'\n",
+
+                                            ] 
             if num_nics > 1:
                 custom_sh +=  [ 
                                 "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",

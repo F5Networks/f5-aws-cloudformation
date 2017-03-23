@@ -81,7 +81,8 @@ After clicking the Launch button, you must specify the following parameters.
 
 <br>
 <br>
-  <a name="byol"></a>**BYOL deploy button**
+  <a name="byol"></a>
+**BYOL deploy button**
 
 Use this button to deploy the **BYOL** template: 
 

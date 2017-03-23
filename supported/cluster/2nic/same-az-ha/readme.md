@@ -94,8 +94,6 @@ After clicking the Launch button, you must specify the following parameters.
 | --- | --- | --- |
 | bigipExternalSecurityGroup | x | Public or External Security Group ID |
 | bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
-| iamAccessKey | x | Type the IAM Access Key |
-| iamSecretKey | x | Type the IAM Secret Key for BIG-IP |
 | imageName | x | F5 BIG-IP Performance Type |
 | instanceType | x | BIG-IP virtual instance type |
 | licenseKey1 | x | Type or paste your F5 BYOL regkey here |
@@ -112,7 +110,7 @@ After clicking the Launch button, you must specify the following parameters.
 
 ## Configuration Example <a name="config">
 
-The following is a simple configuration diagram for this clustered, 2-NIC deployment. <br>
+The following is a simple configuration diagram for this clustered, 2-NIC deployment. This solution creates the instance with the BIG-IP v13.0 AMI image, and uses IAM roles for authentication.<br>
 ![Clustered 2-NIC configuration example](images/cluster2nic-same-az.png)
 
 

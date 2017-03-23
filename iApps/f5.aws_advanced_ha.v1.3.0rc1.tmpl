@@ -1449,8 +1449,128 @@ set script_tgrefresh_awscli {#!/bin/sh
       fi
     fi
 }
-set script_tgrefresh_awscli [string map "<APP> $app" $script_tgrefresh_awscli]
 
+set aws_parse_network_description {#!/usr/bin/env python
+# Parse the output of ec2-describe-network-interfaces to return the ENI
+# for a specified private address and instance ID.
+#
+# The output of ec2-describe-network-interfaces (as of ec2-api-tools-1.6.5.4 )
+#
+# NETWORKINTERFACE        eni-62dd430b            subnet-a757c7ce vpc-ad57c7c4 us-west-2a      133968671134            false   in-use  02:84:43:10:77:8d 10.0.1.42               true
+# GROUP   sg-321f025e     allow-all-traffic
+# ATTACHMENT      i-43a1b570      eni-attach-09c36060     attached        true
+# ASSOCIATION     50.112.166.158  133968671134    eipassoc-bb492bd2 10.0.1.145
+# ASSOCIATION     50.112.161.213  133968671134    eipassoc-e44c2e8d 10.0.1.146
+# PRIVATEIPADDRESS        10.0.1.42
+# PRIVATEIPADDRESS        10.0.1.243
+# PRIVATEIPADDRESS        10.0.1.145
+# PRIVATEIPADDRESS        10.0.1.146
+# PRIVATEIPADDRESS        10.0.1.147
+# PRIVATEIPADDRESS        10.0.1.148
+# PRIVATEIPADDRESS        10.0.1.149
+# PRIVATEIPADDRESS        10.0.1.150
+# PRIVATEIPADDRESS        10.0.1.151
+# PRIVATEIPADDRESS        10.0.1.152
+
+import getopt, sys
+
+def PrintUsageAndExit():
+   sys.stderr.write("Usage: -i <Instance ID> -p <Private IP address> -f <Output of ec2-describe-network-interfaces>\n")
+   sys.exit()
+
+def GetSubNetByIP(InFile, PrivateIP):
+   subnet = None
+   privateip = None
+   for line in InFile:
+       """Lines starting with "NETWORKINTERFACE" describe a new network
+          interface entry."""
+       if line.split()[0] == "NETWORKINTERFACE":
+           """Locate and copy the subnet."""
+           subnet = line.split("subnet-")[1].split()[0]
+       """Lines starting with "PRIVATEIPADDRESS" have private IP addresses"""
+       if line.split()[0] == "PRIVATEIPADDRESS":
+           privateip = line.split()[1]
+           if privateip == PrivateIP:
+               return "subnet-" + subnet
+   return None
+
+def GetENIBySubNet(InFile, InstanceID, SubNet):
+   ENI = None
+   subnet = None
+   instance = None
+   for line in InFile:
+       """Lines starting with "NETWORKINTERFACE" describe a new network
+          interface entry."""
+       if line.split()[0] == "NETWORKINTERFACE":
+           """Locate and copy the ENI"""
+           ENI = "eni-" + line.split("eni-")[1].split()[0]
+           """Locate and copy the subnet."""
+           subnet = "subnet-" + line.split("subnet-")[1].split()[0]
+       """Lines starting with "ATTACHMENT" have the instance ID"""
+       if line.split()[0] == "ATTACHMENT":
+           instance = line.split()[1]
+           """Is this a match?"""
+           if instance == InstanceID:
+               if subnet == SubNet:
+                   return ENI
+   return None
+
+def main():
+   try:
+       options, args = getopt.getopt(sys.argv[1:], "hi:p:f:")
+   except getopt.error:
+       PrintUsageAndExit()
+   InstanceID = None
+   PrivateIPAddr = None
+   InFilePath = None
+   for option, arg in options:
+       if option in ("-h"):
+           PrintUsageAndExit()
+       elif option in ("-i"):
+           InstanceID = arg
+       elif option in ("-p"):
+           PrivateIPAddr = arg
+       elif option in ("-f"):
+           InFilePath = arg
+
+   if InstanceID == None:
+       PrintUsageAndExit()
+   if PrivateIPAddr == None:
+       PrintUsageAndExit()
+   if InFilePath == None:
+       PrintUsageAndExit()
+
+   """Locate the subnet for the specified private IP address"""
+   try:
+       InFile = open(InFilePath, "rb")
+   except IOError:
+       sys.stderr.write("Unable to open file.")
+       sys.exit(1)
+
+   SubNet = GetSubNetByIP(InFile, PrivateIPAddr)
+   if SubNet == None:
+       sys.stderr.write("Unable to locate subnet.")
+       sys.exit(2)
+
+   """Locate the ENI on this instance corresponding to the subnet above"""
+   try:
+       InFile.seek(0)
+   except IOError:
+       sys.stderr.write("Unable to rewind file.")
+       sys.exit(3)
+
+   ENI = GetENIBySubNet(InFile, InstanceID, SubNet)
+   if ENI == None:
+       sys.stderr.write("Unable to locate ENI.")
+       sys.exit(4)
+
+   """Print to stdout"""
+   print ENI
+
+if __name__ == "__main__":
+   main()
+}
+set script_tgrefresh_awscli [string map "<APP> $app" $script_tgrefresh_awscli]
 set failover_script {#!/usr/bin/python
 import glob
 import os
@@ -2168,7 +2288,7 @@ def aws_eip_address_takeover(EIPMapping, instance, region,
         logLTM.logDebug("VIP is " + VIP)
 
         (successful, ENI) = execDoNotDie(
-            "/usr/libexec/aws/aws-parse-network-description -i " + \
+            "/config/failover/aws-parse-network-description -i " + \
             instance + " -p " + VIP + " -f " + networkDescriptionCache.name,
             extraMessage = "Check to make sure secondary address exists on target ENI")
         logLTM.logDebug("ENI is " + ENI)
@@ -2278,7 +2398,7 @@ def routeManagment(destinations, interfaceVLAN, instance, region,
 
     # get BIG-IP ENI
     (successful, ENI) = execDoNotDie(
-        '/usr/libexec/aws/aws-parse-network-description -i ' +  instance +
+        '/config/failover/aws-parse-network-description -i ' +  instance +
         ' -p ' + selfIP + ' -f ' + networkDescriptionCache.name,
         extraMessage =
             'Check to make sure self IP exists on BIG-IP interface (vlan)')
@@ -2382,7 +2502,7 @@ if __name__ == '__main__' :
 # end of failover script
 }
 
-proc create_failover_script { script_active_contents failover_script_contents script_tgrefresh_contents } {
+proc create_failover_script { aws_parse_contents script_active_contents failover_script_contents script_tgrefresh_contents } {
     # overwrite script active only on the first download of the app script active (across all versions of the app)
     if { [file exists /config/failover/aws_advanced_failover.py] == 0} {
         set script_name /config/failover/active
@@ -2390,6 +2510,10 @@ proc create_failover_script { script_active_contents failover_script_contents sc
         puts $fn $script_active_contents
         close $fn
     }
+    set script_name /config/failover/aws-parse-network-description
+    set fn [open "$script_name" "w" "0755"]
+    puts $fn $aws_parse_contents
+    close $fn
 
     set script_name /config/failover/aws_advanced_failover.py
     set fn [open "$script_name" "w" "0755"]
@@ -2411,9 +2535,9 @@ proc create_failover_script { script_active_contents failover_script_contents sc
 
 # Add File
 if { $is_v13_0 } {
-    create_failover_script $script_active $failover_script $script_tgrefresh_awscli
+    create_failover_script $aws_parse_network_description $script_active $failover_script $script_tgrefresh_awscli
 } else {
-     create_failover_script $script_active $failover_script $script_tgrefresh
+     create_failover_script $aws_parse_network_description $script_active $failover_script $script_tgrefresh
 }
 
 catch {
@@ -2440,7 +2564,10 @@ section intro {
     message prereqs "The iApp template itself is not responsible for allocating/de-allocating EIPs or adding/deleting associations. It simply remaps (or re-associates) existing EIPs. Make sure Secondary Private IPs associated with the BIG-IP Virtual Servers have Allow Re-Association attribute checked upon first provisioning. This setting is found at EC2 Dashboard > Network and Security > Interfaces > Manage Private IP Addresses."
     message prereqs2 "See the Help tab and the deployment guide for additional prerequisites."
     message deployment_guide "Because of the extensive amount of configuration required before running this iApp template, we strongly recommend you review the associated Deployment Guide: http://f5.com/pdf/deployment-guides/f5-aws-ha-dg.pdf."
+
     optional ( "HIDE" == "THIS" ) {
+        choice is_v13_0              tcl { expr { [tmsh::run_proc f5.iapp.1.5.2.cli:iapp_tmos_version >= 13.0] ? "yes" : "no" }}
+
         choice ltm_provisioned tcl {
             
             return [expr {[tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned ltm] ? "yes" : "no" }]
@@ -2560,7 +2687,7 @@ section intro {
     }
 
     # Some general validation checks if using HA clusters in AWS
-    optional ( intro.alert_aws_keys == "yes" ) {
+    optional ( intro.alert_aws_keys == "yes" && intro.is_v13_0 == "no") {
         message ALERT_AWS_credentials "NO AWS Credentials found! To configure the AWS settings on the BIG-IP system, go to: System > Configuration > AWS > Global Settings."
     }
     optional ( intro.alert_dhcp_configured == "yes" ) {

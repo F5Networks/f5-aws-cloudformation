@@ -124,8 +124,8 @@ def main():
     ### Template Version
     version = "2.1.0"
     ### Cloudlib Branch
-    branch_cloud = "release-2.3.0"
-    branch_aws = "release-1.2.0"
+    branch_cloud = "v2.3.0"
+    branch_aws = "v1.2.0"
     ### Cloudlib and iApp URL
     ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/develop/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"

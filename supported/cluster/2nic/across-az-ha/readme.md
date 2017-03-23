@@ -90,7 +90,8 @@ After clicking the Launch button, you must specify the following parameters.
 
 <br>
 <br>
-  <a name="byol"></a>**BYOL deploy button**
+  <a name="byol"></a>
+  **BYOL deploy button**
 
 Use this button to deploy the **BYOL** template: 
 
@@ -119,8 +120,6 @@ After clicking the Launch button, you must specify the following parameters.
 
 
 
-### <a name="cli"></a>AWS CLI Usage
-Coming soon
 
 ## Configuration Example <a name="config">
 

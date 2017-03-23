@@ -46,7 +46,9 @@ We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.c
 
 
 ## Installation using the AWS deploy buttons
-The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.
+The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.<br>
+**Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
+
  - Hourly, which uses pay-as-you-go hourly billing
  - [BYOL](#byol) (bring your own license), which allows you to use an existing BIG-IP license.
 <br><br>
@@ -110,7 +112,7 @@ After clicking the Launch button, you must specify the following parameters.
 
 ## Configuration Example <a name="config">
 
-The following is a simple configuration diagram for this clustered, 2-NIC deployment. This solution creates the instance with the BIG-IP v13.0 AMI image, and uses IAM roles for authentication.<br>
+The following is a simple configuration diagram for this clustered, 2-NIC deployment. This solution creates the instances with the BIG-IP v13.0 AMI image, and uses IAM roles for authentication.<br>
 ![Clustered 2-NIC configuration example](images/cluster2nic-same-az.png)
 
 

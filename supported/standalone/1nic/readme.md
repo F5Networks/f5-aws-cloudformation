@@ -40,7 +40,9 @@ We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.c
 
 
 ## Installation using the AWS Launch Stack buttons
-The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch Stack button.
+The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch Stack button.<br>
+**Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
+
  - Hourly, which uses pay-as-you-go hourly billing
  - [BYOL](#byol) (bring your own license), which allows you to use an existing BIG-IP license.
 <br><br>
@@ -101,6 +103,7 @@ After clicking the Launch button, you must specify the following parameters.
 ## Configuration Example <a name="config"></a>
 
 The following is a simple configuration diagram for this single NIC deployment. In this scenario, all access to the BIG-IP VE appliance is through the same IP address and virtual network interface (vNIC).  This interface processes both management and data plane traffic.
+This solution uses the BIG-IP v13.0 AMI image.
 
 ![Single NIC configuration example](images/AWS-1nic.png)
 ### Documentation

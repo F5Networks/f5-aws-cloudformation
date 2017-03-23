@@ -1,4 +1,4 @@
-# Deploying the BIG-IP in AWS - Clustered 2 NIC
+# Deploying the BIG-IP in AWS - Clustered 2 NIC - Same Availability Zone
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
  

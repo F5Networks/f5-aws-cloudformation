@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Template Version 0.0.0: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
+  "Description": "Template Version 2.1.0: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -31,7 +31,6 @@
           "Parameters": [
             "sshKey",
             "instanceType",
-            "throughput",
             "adminUsername",
             "managementGuiPort",
             "timezone",
@@ -57,7 +56,8 @@
           "Parameters": [
             "virtualServicePort",
             "applicationPort",
-            "appInternalDnsName"
+            "appInternalDnsName",
+            "policyLevel"
           ]
         },
         {
@@ -98,9 +98,6 @@
         "instanceType": {
           "default": "AWS Instance Size"
         },
-        "throughput": {
-          "default": "Maximum Throughput"
-        },
         "adminUsername": {
           "default": "BIG-IP Admin User for clustering"
         },
@@ -137,6 +134,9 @@
         "appInternalDnsName": {
           "default": "Application Pool DNS"
         },
+        "policyLevel": {
+          "default": "Web Application Firewall Policy Level"
+        },
         "application": {
           "default": "Application"
         },
@@ -154,14 +154,14 @@
         }
       }
     },
-  "Version": "0.0.0"
+  "Version": "2.1.0"
   },
   "Parameters": {
     "deploymentName" : {
       "Description" : "Name the template uses to create object names",
       "Type" : "String",
       "MaxLength": 25,
-      "Default": "<replace>example<replace>"
+      "Default": "example"
     },
     "vpc": {
       "Description": "VPC where you want to deploy the BIG-IP VEs",
@@ -182,7 +182,7 @@
     "bigipElasticLoadBalancer": {
       "Description": "AWS Elastic Load Balancer for BIG-IP VEs",
       "Type": "String",
-      "Default": "<replace>ExampleBigipELB<replace>"
+      "Default": "ExampleBigipELB"
     },
     "sshKey": {
       "Description": "EC2 KeyPair to enable SSH access to the BIG-IP instance",
@@ -191,38 +191,19 @@
     "instanceType": {
       "Description": "AWS Instance Size",
       "Type": "String",
-      "Default": "m3.large",
+      "Default": "m4.xlarge",
       "AllowedValues": [
-        "m3.large",
-        "m3.xlarge",
         "m3.2xlarge",
-        "m4.large",
         "m4.xlarge",
         "m4.2xlarge",
         "m4.4xlarge",
         "m4.10xlarge",
-        "m4.16xlarge",
-        "c3.xlarge",
-        "c3.2xlarge",
         "c3.4xlarge",
         "c3.8xlarge",
-        "c4.xlarge",
-        "c4.2xlarge",
         "c4.4xlarge",
         "c4.8xlarge"
       ],
       "ConstraintDescription": "Must be a valid BIG-IP BEST virtual EC2 instance type."
-    },
-    "throughput": {
-      "Description": "Maximum amount of throughput for BIG-IP VE",
-      "Type": "String",
-      "Default": "1000Mbps",
-      "AllowedValues": [
-        "25Mbps",
-        "200Mbps",
-        "1000Mbps"
-      ],
-      "ConstraintDescription": "Select the BIG-IP throughput you want to use"
     },
     "adminUsername": {
       "ConstraintDescription": "Verify your BIG-IP admin username. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). The user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa.",
@@ -267,17 +248,18 @@
     },
     "scaleDownBytesThreshold": {
       "Description": "Incoming bytes threshold to begin scaling down BIG-IP VE instances",
-      "Default": "10000",   
+      "Default": "655360",   
       "Type": "Number"
     },
     "scaleUpBytesThreshold": {
       "Description": "Incoming bytes threshold to begin scaling up BIG-IP VE instances",
-      "Default": "35000",
+      "Default": "2621440",
       "Type": "Number"
     },
     "notificationEmail": {
       "Description": "Valid email address to send Auto Scaling event notifications (optional)",
       "ConstraintDescription": "Must be a valid email address.",
+      "AllowedPattern": ".+@.+",
       "Type": "String"
     },
     "virtualServicePort": {
@@ -299,7 +281,18 @@
     "appInternalDnsName": {
       "Description": "DNS name for the application pool",
       "Type": "String",
-      "Default": "<replace>poolapp.example.com<replace>"
+      "Default": "poolapp.example.com"
+    },
+    "policyLevel": {
+      "Description": "WAF Policy Level you want to use to protect the applications",
+      "Type": "String",
+      "Default": "high",
+      "AllowedValues": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "ConstraintDescription": "Select the WAF Policy Level you want to use"
     },
     "application": {
       "Default": "f5app",
@@ -330,175 +323,46 @@
   "Mappings": {
     "BigipRegionMap": {
       "ap-northeast-1": {
-        "Best1000Mbps": "ami-c64204a1", 
-        "Best200Mbps": "ami-c54503a2", 
-        "Best25Mbps": "ami-d54305b2", 
-        "Better1000Mbps": "ami-8f4204e8", 
-        "Better200Mbps": "ami-ff440298", 
-        "Better25Mbps": "ami-7a387e1d", 
-        "Good1000Mbps": "ami-7d44021a", 
-        "Good200Mbps": "ami-38387e5f", 
-        "Good25Mbps": "ami-fe440299"
+        "Best25Mbps": "ami-d54305b2"
       }, 
       "ap-northeast-2": {
-        "Best1000Mbps": "ami-7359881d", 
-        "Best200Mbps": "ami-4358892d", 
-        "Best25Mbps": "ami-4058892e", 
-        "Better1000Mbps": "ami-d65687b8", 
-        "Better200Mbps": "ami-4258892c", 
-        "Better25Mbps": "ami-e554858b", 
-        "Good1000Mbps": "ami-fb598895", 
-        "Good200Mbps": "ami-d15687bf", 
-        "Good25Mbps": "ami-3c588952"
+        "Best25Mbps": "ami-4058892e"
       }, 
       "ap-south-1": {
-        "Best1000Mbps": "ami-fd671692", 
-        "Best200Mbps": "ami-816213ee", 
-        "Best25Mbps": "ami-d86716b7", 
-        "Better1000Mbps": "ami-3d651452", 
-        "Better200Mbps": "ami-f8671697", 
-        "Better25Mbps": "ami-3465145b", 
-        "Good1000Mbps": "ami-9e6514f1", 
-        "Good200Mbps": "ami-966415f9", 
-        "Good25Mbps": "ami-0462136b"
+        "Best25Mbps": "ami-d86716b7"
       }, 
       "ap-southeast-1": {
-        "Best1000Mbps": "ami-92db6ff1", 
-        "Best200Mbps": "ami-94da6ef7", 
-        "Best25Mbps": "ami-38c6725b", 
-        "Better1000Mbps": "ami-1bc57178", 
-        "Better200Mbps": "ami-afdb6fcc", 
-        "Better25Mbps": "ami-36c67255", 
-        "Good1000Mbps": "ami-dbc470b8", 
-        "Good200Mbps": "ami-0ac47069", 
-        "Good25Mbps": "ami-17c57174"
+        "Best25Mbps": "ami-38c6725b"
       }, 
       "ap-southeast-2": {
-        "Best1000Mbps": "ami-d51d1bb6", 
-        "Best200Mbps": "ami-311d1b52", 
-        "Best25Mbps": "ami-8e1b1ded", 
-        "Better1000Mbps": "ami-ae1a1ccd", 
-        "Better200Mbps": "ami-f31a1c90", 
-        "Better25Mbps": "ami-451a1c26", 
-        "Good1000Mbps": "ami-281d1b4b", 
-        "Good200Mbps": "ami-891b1dea", 
-        "Good25Mbps": "ami-f41a1c97"
+        "Best25Mbps": "ami-8e1b1ded"
       }, 
       "ca-central-1": {
-        "Best1000Mbps": "ami-dac07dbe", 
-        "Best200Mbps": "ami-adc07dc9", 
-        "Best25Mbps": "ami-51c37e35", 
-        "Better1000Mbps": "ami-d9c07dbd", 
-        "Better200Mbps": "ami-e8c37e8c", 
-        "Better25Mbps": "ami-d1c479b5", 
-        "Good1000Mbps": "ami-5bc77a3f", 
-        "Good200Mbps": "ami-d0c479b4", 
-        "Good25Mbps": "ami-dec17cba"
+        "Best25Mbps": "ami-51c37e35"
       }, 
       "eu-central-1": {
-        "Best1000Mbps": "ami-cd0dc4a2", 
-        "Best200Mbps": "ami-560fc639", 
-        "Best25Mbps": "ami-0d0cc562", 
-        "Better1000Mbps": "ami-000fc66f", 
-        "Better200Mbps": "ami-a80bc2c7", 
-        "Better25Mbps": "ami-090cc566", 
-        "Good1000Mbps": "ami-bc09c0d3", 
-        "Good200Mbps": "ami-cb0dc4a4", 
-        "Good25Mbps": "ami-df0cc5b0"
+        "Best25Mbps": "ami-0d0cc562"
       }, 
       "eu-west-1": {
-        "Best1000Mbps": "ami-25663d43", 
-        "Best200Mbps": "ami-00613a66", 
-        "Best25Mbps": "ami-a9663dcf", 
-        "Better1000Mbps": "ami-b1673cd7", 
-        "Better200Mbps": "ami-40673c26", 
-        "Better25Mbps": "ami-b8663dde", 
-        "Good1000Mbps": "ami-ba663ddc", 
-        "Good200Mbps": "ami-1b613a7d", 
-        "Good25Mbps": "ami-2e613a48"
+        "Best25Mbps": "ami-a9663dcf"
       }, 
       "eu-west-2": {
-        "Best1000Mbps": "ami-f6465392", 
-        "Best200Mbps": "ami-53465337", 
-        "Best25Mbps": "ami-f7465393", 
-        "Better1000Mbps": "ami-04425760", 
-        "Better200Mbps": "ami-5c415438", 
-        "Better25Mbps": "ami-13425777", 
-        "Good1000Mbps": "ami-12425776", 
-        "Good200Mbps": "ami-3d405559", 
-        "Good25Mbps": "ami-ae4154ca"
+        "Best25Mbps": "ami-f7465393"
       }, 
       "sa-east-1": {
-        "Best1000Mbps": "ami-c85c38a4", 
-        "Best200Mbps": "ami-ce5c38a2", 
-        "Best25Mbps": "ami-1751357b", 
-        "Better1000Mbps": "ami-a05337cc", 
-        "Better200Mbps": "ami-fd5c3891", 
-        "Better25Mbps": "ami-805236ec", 
-        "Good1000Mbps": "ami-3053375c", 
-        "Good200Mbps": "ami-0052366c", 
-        "Good25Mbps": "ami-835236ef"
+        "Best25Mbps": "ami-1751357b"
       }, 
       "us-east-1": {
-        "Best1000Mbps": "ami-fe16eee8", 
-        "Best200Mbps": "ami-190af20f", 
-        "Best25Mbps": "ami-4f0af259", 
-        "Better1000Mbps": "ami-4617ef50", 
-        "Better200Mbps": "ami-c315edd5", 
-        "Better25Mbps": "ami-9f17ef89", 
-        "Good1000Mbps": "ami-7c08f06a", 
-        "Good200Mbps": "ami-fa14ecec", 
-        "Good25Mbps": "ami-d815edce"
+        "Best25Mbps": "ami-4f0af259"
       }, 
       "us-east-2": {
-        "Best1000Mbps": "ami-810326e4", 
-        "Best200Mbps": "ami-25002540", 
-        "Best25Mbps": "ami-6901240c", 
-        "Better1000Mbps": "ami-860326e3", 
-        "Better200Mbps": "ami-36002553", 
-        "Better25Mbps": "ami-ba0025df", 
-        "Good1000Mbps": "ami-840326e1", 
-        "Good200Mbps": "ami-9b0124fe", 
-        "Good25Mbps": "ami-870326e2"
+        "Best25Mbps": "ami-6901240c"
       }, 
       "us-west-1": {
-        "Best1000Mbps": "ami-ffb9e49f", 
-        "Best200Mbps": "ami-5dbbe63d", 
-        "Best25Mbps": "ami-c7b8e5a7", 
-        "Better1000Mbps": "ami-11b8e571", 
-        "Better200Mbps": "ami-b2bee3d2", 
-        "Better25Mbps": "ami-11bfe271", 
-        "Good1000Mbps": "ami-24bee344", 
-        "Good200Mbps": "ami-25bee345", 
-        "Good25Mbps": "ami-23bee343"
+        "Best25Mbps": "ami-c7b8e5a7"
       }, 
       "us-west-2": {
-        "Best1000Mbps": "ami-3157ec51", 
-        "Best200Mbps": "ami-fc51ea9c", 
-        "Best25Mbps": "ami-5e50eb3e", 
-        "Better1000Mbps": "ami-fb53e89b", 
-        "Better200Mbps": "ami-3d57ec5d", 
-        "Better25Mbps": "ami-6c50eb0c", 
-        "Good1000Mbps": "ami-6d50eb0d", 
-        "Good200Mbps": "ami-6f50eb0f", 
-        "Good25Mbps": "ami-935ce7f3"
-      }
-    },
-    "AWSBigipThrougput": {
-      "25Mbps": {
-        "Good": "Good25Mbps",
-        "Better": "Better25Mbps",
-        "Best": "Best25Mbps"
-      },
-      "200Mbps": {
-        "Good": "Good200Mbps",
-        "Better": "Better200Mbps",
-        "Best": "Best200Mbps"
-      },
-      "1000Mbps": {
-        "Good": "Good1000Mbps",
-        "Better": "Better1000Mbps",
-        "Best": "Best1000Mbps"
+        "Best25Mbps": "ami-5e50eb3e"
       }
     }
   },
@@ -633,6 +497,12 @@
         "AWS::CloudFormation::Init": {
           "config": {
             "files": {
+              "/config/cloud/asm-policy-linux.tar.gz": {
+                "source": "http://cdn.f5.com/product/blackbox/aws/asm-policy-linux.tar.gz",
+                "mode": "000644",
+                "owner": "root",
+                "group": "root"
+              },
               "/config/cloud/f5.http.v1.2.0rc4.tmpl": {
                 "source": "http://cdn.f5.com/product/blackbox/aws/f5.http.v1.2.0rc4.tmpl",
                 "mode": "000644",
@@ -640,13 +510,13 @@
                 "group": "root"
               },
               "/config/cloud/f5-cloud-libs.tar.gz": {
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/develop/dist/f5-cloud-libs.tar.gz",
+                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.2.1/dist/f5-cloud-libs.tar.gz",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
               },
               "/config/cloud/f5-cloud-libs-aws.tar.gz": {
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz",
+                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.1.1/dist/f5-cloud-libs-aws.tar.gz",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
@@ -657,6 +527,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
+                      "# Generated from Template Version 2.1.0\n",
                       "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                       "deploymentName='",
                       {
@@ -698,6 +569,11 @@
                         "Ref": "appInternalDnsName"
                       },
                       "'\n",
+                      "policyLevel='",
+                      {
+                        "Ref": "policyLevel"
+                      },
+                      "'\n",
                       "s3Bucket='",
                       {
                         "Ref": "S3Bucket"
@@ -715,8 +591,8 @@
                       "cli script /Common/verifyHash {",
                       "proc script::run {} {",
                       "        if {[catch {",
-                      "            set hashes(f5-cloud-libs.tar.gz) 4d07ca201743657042b13a2d2e463689ccd3bd9a92a06bf173d51a2bad860928fbc6d33f93c1fd4156f7172ec5add702f4a674f23fb5df4f822549b6548d8115",
-                      "            set hashes(f5-cloud-libs-aws.tar.gz) 22b554337b27802b7794206462bb98d346a7241622c11bcf9e834a06bcd1bd1b5b99efee512ac6eebe64e9d34f3024bcb569371fd4ee79006761bc5e5a74a59c",
+                      "            set hashes(f5-cloud-libs.tar.gz) 240e78c11c42f3044f1cb38824eccdb03c184d67f195d0a980f49efc9105981b04ce6215a573af761de6dd62e8627f034a40c0a1f68ca1cb1fda6a39ab6b6db6",
+                      "            set hashes(f5-cloud-libs-aws.tar.gz) 3e9bd2e56bc7c40f6c0621d71b6b0e854f2061f66b433d75f836b4db6e7375acd7664558a60b05de5861a905ec791e2e57362031d3084a9556e98d9ade262a8b",
                       "            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0",
                       "            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034",
                       "            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe",
@@ -741,7 +617,7 @@
                       "            exit 1",
                       "        }",
                       "    }",
-                      "    script-signature f/uV0eJ2W5TpHEew9apC5mUTvM3tFjq6JN1zz9parKVWJgDkPPb2hJwfY1KHHXIINC/i2RTwooRMRZIKI9HeCm8husaXkAQpBiDWVMKmtCNEcd6Soeueixbyg6hDm3/NgBbq/3tIZKPsuNnRy3JKA0aHX4ixYu93VRaiNz5Pjf6i9sWpYh/TP97TtdZleRFTG4fpc29tBeUJVysR6QPsTTpAUBvnaZjR+kcF6XPLgqIBsy5hzefkSOyxIHp0Md/+H9u3pjLdGMlcVPMLtyoIpBxwdcQ1Y77Yc5ENbwxePr5QOdrjAp7GpiiICPFaU2o8Cq5EW8vWfgBQ4fzw0nsjsw==",
+                      "    script-signature k/PBOWrsY+LM/EAgf+ZsDH5xVRxKlFA9wLv8LvxcSsQgiJ/pt1LMpRUb2SjeviwI4/bKOIJfzIGzJJeIaekyON7Nsry6Zh4f8ZG4ipnHH0n9Lx7+hounTnveYdWeW8Jsoumx0gPKL2SP2Qlh9T9//e6OlSC3sOHKNyhgpUnrxmPzWIz9IyHM3zI0KUIkUQNafbN7zE245td7VBxwFyG6vhL4P09a04e2zkLEAZOqJEtwYD92ngOqWNYmUQ6+UYCrS+l5z9LcUyAASR8Bwob+quTeuN9c/o7xip96tk213G5yE8IYe1A0uR6oeETYP2sUhOPTrZ94Is7DHQuXinimVA==",
                       "    signing-key /Common/f5-irule",
                       "}"
                     ]
@@ -757,7 +633,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 0.0.0\n",
+                      "# Generated from Template Version 2.1.0\n",
                       "date\n",
                       ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
@@ -766,20 +642,31 @@
                       "tmsh create sys icall handler periodic /Common/metricUploadHandler { first-occurrence now interval 60 script /Common/uploadMetrics }\n",
                       "echo 'Attempting to Join or Initiate Autoscale Cluster' \n",
                       "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort} --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group --block-sync -c join --log-level info --output /var/log/aws-autoscale.log\n",
-                      "if [ -f /config/cloud/aws/master ]; then \n",
-                      "   echo 'SELF-SELECTED as Master ... Initiated Autoscale Cluster ... Loading default config'\n",
-                      "   tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",
-                      " --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group -c update --log-level info --output /var/log/aws-autoscale.log }\n",
-                      "   tmsh create sys icall handler periodic /Common/ClusterUpdateHandler { first-occurrence now interval 600 script /Common/ClusterUpdate }\n",
-                      "   tmsh save /sys config\n",
-                      "   tmsh create ltm node ${deploymentName} fqdn { name ${appInternalDnsName} }\n",
-                      "   tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
-                      "   ### START CUSTOM TMSH CONFIGURTION:  \n",
-                      "   tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http10 } }}\n",
-                      "   ### END CUSTOM TMSH CONFIGURATION\n",
-                      "   tmsh save /sys config\n",
-                      "   f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",
+                      "if [ -f /config/cloud/master ]; then \n",
+                      "  if `jq '.ucsLoaded' < /config/cloud/master`; then \n",
+                      "    echo \"UCS backup loaded from backup folder in S3 bucket ${s3Bucket}.\"\n",
+                      "  else\n",                      
+                      "    echo 'SELF-SELECTED as Master ... Initiated Autoscale Cluster ... Loading default config'\n",
+                      "    tmsh modify cm device-group autoscale-group asm-sync enabled\n",
+                      "    tmsh create sys icall script ClusterUpdate definition { exec f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",
+                      "      --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --device-group autoscale-group -c update --log-level info --output /var/log/aws-autoscale.log }\n",
+                      "    tmsh create sys icall handler periodic /Common/ClusterUpdateHandler { first-occurrence now interval 600 script /Common/ClusterUpdate }\n",
+                      "    tmsh save /sys config\n",
+                      "    tmsh create ltm node ${deploymentName} fqdn { name ${appInternalDnsName} }\n",
+                      "    tmsh load sys application template /config/cloud/f5.http.v1.2.0rc4.tmpl\n",
+                      "    ### START CUSTOM TMSH CONFIGURTION:  Policy Name/Policy URL, etc. \n",
+                      "    tmsh load asm policy file /config/cloud/asm-policy-linux-${policyLevel}.xml\n",
+                      "    # modify asm policy names below (ex. /Common/linux-${policyLevel}) to match policy name in the xml file\n",
+                      "    tmsh modify asm policy /Common/linux-${policyLevel} active\n",
+                      "    tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
+                      "    tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
+                      "    tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-${policyLevel} } } } }\n",
+                      "    tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc4 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http10 } }}\n",
+                      "    ### END CUSTOM TMSH CONFIGURATION\n",
+                      "    tmsh save /sys config\n",
+                      "    f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",
                       "      --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword -c unblock-sync\n",
+                      "  fi\n",
                       "fi\n",
                       "date\n",
                       "echo 'custom-config.sh complete'\n"
@@ -796,6 +683,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
+                      "# Generated from Template Version 2.1.0\n",
                       "echo about to execute",
                       "checks=0",
                       "while [ $checks -lt 120 ]; do echo checking mcpd",
@@ -809,25 +697,26 @@
                       "    sleep 10",
                       "done",
                       "echo loading verifyHash script",
-                      "#if ! tmsh load sys config merge file /config/verifyHash; then",
-                      "#    echo cannot validate signature of /config/verifyHash",
-                      "#    exit",
-                      "#fi",
-                      "#echo loaded verifyHash",
-                      "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
-                      "#for fileToVerify in \"${filesToVerify[@]}\"",
-                      "#do",
-                      "#    echo verifying \"$fileToVerify\"",
-                      "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-                      "#        echo \"$fileToVerify\" is not valid",
-                      "#        exit 1",
-                      "#    fi",
-                      "#    echo verified \"$fileToVerify\"",
-                      "#done",
+                      "if ! tmsh load sys config merge file /config/verifyHash; then",
+                      "    echo cannot validate signature of /config/verifyHash",
+                      "    exit",
+                      "fi",
+                      "echo loaded verifyHash",
+                      "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+                      "for fileToVerify in \"${filesToVerify[@]}\"",
+                      "do",
+                      "    echo verifying \"$fileToVerify\"",
+                      "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+                      "        echo \"$fileToVerify\" is not valid",
+                      "        exit 1",
+                      "    fi",
+                      "    echo verified \"$fileToVerify\"",
+                      "done",
                       "mkdir -p /config/cloud/aws/node_modules",
                       "echo expanding f5-cloud-libs.tar.gz",
                       "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
                       "echo installing dependencies",
+                      "tar xvfz /config/cloud/asm-policy-linux.tar.gz -C /config/cloud",
                       "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/f5-cloud-libs/node_modules",
                       "echo cloud libs install complete",
                       "touch /config/cloud/cloudLibsReady"
@@ -843,6 +732,7 @@
                       "Fn::Join": [
                           "\n",
                           [
+                              "# Generated from Template Version 2.1.0\n",
                               "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                               "PASSWORD=$(/bin/sed -e $'s:[!\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                               "if [ \"$1\" == admin ]; then",
@@ -863,8 +753,8 @@
                   "Fn::Join": [
                     "\n",
                     [
+                      "# Generated from Template Version 2.1.0\n",
                       "INTERFACE=$1",
-                      "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
                       "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
                       "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
                       "VPC_NET=${VPC_CIDR_BLOCK%/*}",
@@ -883,6 +773,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
+                      "# Generated from Template Version 2.1.0\n",
                       "while true; do echo waiting for cloud libs install to complete",
                       "    if [ -f /config/cloud/cloudLibsReady ]; then",
                       "        echo cloud libs installed",
@@ -914,6 +805,7 @@
                     [
                       "nohup /config/cloud/waitThenRun.sh",
                       "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                      "--log-level info",
                       "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh",
                       "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws",
                       "-o /var/log/1nicSetup.log",
@@ -931,12 +823,12 @@
                           [
                               "nohup /config/cloud/waitThenRun.sh",
                               " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                              " --log-level info",
                               " --signal ADMIN_CREATED",
                               " --file /config/cloud/aws/createUser.sh",
                               " --cl-args '",
                               { "Ref": "adminUsername" },
                               "'",
-                              " --log-level info",
                               " -o /var/log/createUser.log",
                               " &>> /var/log/cloudlibs-install.log < /dev/null",
                               " &"
@@ -952,6 +844,7 @@
                       "NAME_SERVER=`/config/cloud/getNameServer.sh eth0`;",
                       "nohup /config/cloud/waitThenRun.sh",
                       "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+                      "--log-level info",
                       "--wait-for 1_NIC_SETUP_DONE",
                       "-o /var/log/onboard.log",
                       "--host localhost",
@@ -967,6 +860,7 @@
                       "--ssl-port ",
                       { "Ref": "managementGuiPort" },
                       "--module ltm:nominal",
+                      "--module asm:nominal",
                       "--ping",
                       "&>> /var/log/cloudlibs-install.log < /dev/null",
                       "&"
@@ -981,6 +875,7 @@
                     [
                       "nohup /config/cloud/waitThenRun.sh",
                       "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                      "--log-level info",
                       "--file /config/cloud/aws/custom-config.sh",
                       "--cwd /config/cloud/aws",
                       "-o /var/log/custom-config.log",
@@ -1003,15 +898,7 @@
             {
               "Ref": "AWS::Region"
             },
-            {
-              "Fn::FindInMap": [
-                "AWSBigipThrougput",
-                {
-                  "Ref": "throughput"
-                },
-                  "Best"
-              ]
-            }
+            "Best25Mbps"
           ]
         },
         "InstanceMonitoring": false,
@@ -1148,11 +1035,9 @@
       },
       "UpdatePolicy": {
         "AutoScalingRollingUpdate": {
-          "MaxBatchSize": "2",
-          "MinInstancesInService": {
-            "Ref": "scalingMinSize"
-          },
-          "PauseTime": "PT25M"
+          "MaxBatchSize": "1",
+          "MinInstancesInService": "1",
+          "PauseTime": "PT30M"
         }
       }
     },

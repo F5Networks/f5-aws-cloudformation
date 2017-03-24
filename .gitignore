@@ -65,4 +65,5 @@ docs/_build/
 
 # PyBuilder
 target/
-
+build/sbuild.sh
+checksum.sh

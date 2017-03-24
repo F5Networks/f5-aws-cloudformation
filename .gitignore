@@ -67,3 +67,4 @@ docs/_build/
 target/
 
 sbuild.sh
+checksum.sh

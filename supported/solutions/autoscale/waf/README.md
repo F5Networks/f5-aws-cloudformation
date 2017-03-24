@@ -5,11 +5,7 @@
 
  - [Introduction](#introduction) 
  - [Prerequisites](#prerequisites-and-notes)
-<<<<<<< HEAD:supported/solutions/autoscale/waf/README.md
  - [Quick Start] (#quick-start-for-launching-the-template)
-=======
- - [Quick Start](#quick-start-for-launching-the-template)
->>>>>>> readme-cleanup:supported/solutions/autoscale/waf/README.md
  - [Getting Help](#help)
  - [Additional BIG-IP VE Deployment and Configuration Details](#additional-big-ip-ve-deployment-and-configuration-details)
  - [Security](#security)
@@ -21,11 +17,7 @@ This solution implements auto scaling of BIG-IP Virtual Edition (VE) Web Applica
 
 ## Prerequisites and notes
 The following are prerequisites for this solution:
-<<<<<<< HEAD:supported/solutions/autoscale/waf/README.md
  - The appropriate permission in AWS to launch CloudFormation templates. This template creates Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles, so the account you are using must have permission to create these objects.
-=======
- - The appropriate permission in AWS to launch CloudFormation (CFT) templates. This template creates Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles, so the account you are using must have permission to create these objects.
->>>>>>> readme-cleanup:supported/solutions/autoscale/waf/README.md
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
    - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
@@ -40,11 +32,7 @@ The following are prerequisites for this solution:
  
  
 ## Quick Start for launching the template
-<<<<<<< HEAD:supported/solutions/autoscale/waf/README.md
 This Readme file describes launching from the AWS Marketplace.  If you are using another method, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/solutions/autoscale.
-=======
-This Readme file describes launching from the AWS Marketplace.
->>>>>>> readme-cleanup:supported/solutions/autoscale/waf/README.md
 
 From the Marketplace: 
 - From the **For Region** list, select your Region. 
@@ -69,16 +57,12 @@ One you have launched the CFT from the marketplace, you need to complete the tem
 | bigipElasticLoadBalancer | x | AWS Elastic Load Balancer group for the BIG-IP VEs |
 | sshKey | x | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | instanceType | x | AWS Instance Type (the default is m3.2xlarge) |
-| throughput | x | For CFTs not launched from the AWS Marketplace: The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
+| throughput | x | Maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
 | adminUsername | x | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
 | managementGuiPort | x | Port of BIG-IP management Configuration utility (the default is 8443) |
 | timezone | x | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
 | ntpServer | x | NTP server for this implementation (Default 0.pool.ntp.org) |
-<<<<<<< HEAD:supported/solutions/autoscale/waf/README.md
 | scalingMinSize | x | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack] (#restoring-or-upgrading-the-solution)) |
-=======
-| scalingMinSize | x | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack](#update) |
->>>>>>> readme-cleanup:supported/solutions/autoscale/waf/README.md
 | scalingMaxSize | x | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scaling Group (the default is 3) |
 | scaleDownBytesThreshold | x | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
 | scaleUpBytesThreshold | x | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
@@ -96,7 +80,6 @@ One you have launched the CFT from the marketplace, you need to complete the tem
 
 
 <sup>1</sup> Note about the Scaling Up/Down Thresholds:
-<<<<<<< HEAD:supported/solutions/autoscale/waf/README.md
 The default values are set to 80% and 20% respectively.  To adjust the thresholds,  set them according to the utility size (optional).
 For example, if you wanted use different percentages in the scaling threshold(s), modify the ***.80*** or ***.20*** in the following calculations to represent the percentage you want to use. Then take the result and use that as the appropriate threshold value in the CFT.
 
@@ -110,38 +93,21 @@ For example, if you wanted use different percentages in the scaling threshold(s)
 200 Mbps  = 26214400 bytes  * ***.20*** =  5242880<br>
 1000 Mbps = 131072000 bytes * ***.20*** = 26214400<br>
 
-=======
-
-The default template values are set artificially low for testing.<br>
-The Marketplace templates defaults are set to 80% and 20% respectively.<br> 
-To adjust the thresholds,  set them according to the utility size (optional).<br> 
-For example, if you wanted use different percentages in the scaling threshold(s), modify the ***.80*** or ***.20*** in the following calculations to represent the percentage you want to use. Then take the result and use that as the appropriate threshold value in the CFT.
-
-*Scale Up Bytes Thresholds:* <br>
-25 Mbps   = 3276800 bytes   * ***.80*** =   2621440<br>
-200 Mbps  = 26214400 bytes  * ***.80*** =  20971520<br>
-1000 Mbps = 131072000 bytes * ***.80*** = 104857600<br>
- 
-*Scale Down Bytes Thresholds:*<br>
-25 Mbps   = 3276800 bytes   * ***.20*** =   655360<br>
-200 Mbps  = 26214400 bytes  * ***.20*** =  5242880<br>
-1000 Mbps = 131072000 bytes * ***.20*** = 26214400<br>
-
->>>>>>> readme-cleanup:supported/solutions/autoscale/waf/README.md
 ---
 
 
 
 ### Logging into the BIG-IP device
 
-Once you have completed the template and the BIG-IP system instantiates *(estimated at about 20 minutes)*, use the following guidance to access the BIG-IP VE.
+Once you have completed the template and the BIG-IP system instantiates, use the following guidance to access the BIG-IP VE.
 
   - Find the IP address of the BIG-IP VE<br> You can find the BIG-IP IP address (Instance IP or Public IP) on the Instances tab of the Auto Scale group created by the template (From the AWS console, click **EC2 > Auto Scaling > Auto Scaling Groups > Instances tab > Instance ID**)
 
   - SSH to the Instance or Public IP address using the following syntax:<br>``` >ssh -i ~/.ssh/<YOUR-PRIVATE-SSH-KEY-HERE> admin@<INSTANCE IP> ```
   - Create a custom-admin user using the following syntax:<br> ``` #tmsh create auth user my-custom-admin partition-access add { all-partitions { role admin } } prompt-for-password```
  
-  - Once you have accessed the BIG-IP using SSH, you can log into the BIG-IP web-based Configuration utility using: **https://(IP Address of the instance):8443**. 
+
+  - Once you have accessed the BIG-IP using SSH, you can log into the BIG-IP web-based Configuration utility using: **https://(IP Address of the instance):8443**
 
 <a name="note"></a>
 <br>
@@ -172,7 +138,7 @@ All BIG-IP VE instances deploy with a single interface (NIC) attached to a publi
   - Create an initial HTTP virtual server with a basic Web Application Firewall policy (Low, Medium, High)
     - See the [Security Blocking Levels](##security-blocking-levels-) section for a description of the blocking levels for the Web Application Firewall presented in the template.
 
-The CloudFormation template uses the default **Best** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
+The CloudFormation template uses the default **Best 1000Mbps** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
 
 #### Configuration Example <a name="config"></a>
 
@@ -183,11 +149,7 @@ The following is a simple configuration diagram deployment.
 #### Detailed clustering information
 This solution creates a clustered system with "AutoSync" enabled, so any change is immediately propagated throughout the cluster. Each cluster member instance reports "Active" and "Actively" processes traffic.  Although Autosync is enabled and technically you can make changes to any existing clustered member, for consistency we recommend you make any changes to the original, primary instance.
 
-<<<<<<< HEAD:supported/solutions/autoscale/waf/README.md
 We recommend you launch the cluster with two instances to start. To determine the master instance, look for instance with *Scale-In Protection*.  You can find the Scale-In Protection value in AWS by clicking **Auto Scaling Groups** > *Click your Auto Scale group* > **Instances Tab**, and then under the Protected From tab, look for the instance with **Scale-In**.  
-=======
-Note: There is no indication of the "primary" instance in the BIG-IP Configuration utility itself; this is simply an administrative designation in this deployment. To determine the primary instance, look for instance with *Scale-In Protection*.  You can find the Scale-In Protection value in AWS by clicking **Auto Scaling Groups** > *Click your Auto Scale group* > **Instances Tab**, and then under the Protected From tab, look for the instance with **Scale-In**.  
->>>>>>> readme-cleanup:supported/solutions/autoscale/waf/README.md
 
 When the first auto scale instance is launched, a Device Group called "autoscale-group" is automatically created. 
 
@@ -195,7 +157,7 @@ Whenever a new instance is launched, it joins the cluster. If those instances ar
 
 This deployment creates an initial BIG-IP configuration using an [iApp](https://devcentral.f5.com/iapps) that includes a basic virtual service (listening on 0.0.0.0:80) with a WAF policy.   
 
-After the first instance is launched, you can log in and customize the configuration (for example substitute a custom policy, add logging, and much more).
+After the first instance is launched, you can log in and customize the configuration.
 
 ---
 
@@ -207,7 +169,7 @@ The CloudFormation Template creates and leverages several AWS resources to suppo
     The S3 bucket acts as persistent storage for the cluster database. It contains:
       - *Records*<br>
       Records, named for the instance ID contain metadata for each instance. For example  ```{"privateIp":"10.0.11.190","mgmtIp":"10.0.11.190","hostname":"ip-10-0-11-190.ec2.internal","isMaster":true}```<br>
-      Newly launched instances query this bucket for an existing cluster and use information found here to join the cluster. If it it the first member launched in the group, it creates a record with "isMaster":true. Otherwise, it enters itself as "isMaster":false.
+      Newly launched instances query this bucket for an existing cluster and use information found here to join the cluster. If it it the first member launched in the group, it creates a record with "is Master":true. Otherwise, it enters itself as "isMaster":false.
       - *Auto-generated credentials for clustering*<br>
       The S3 bucket also contains auto-generated credentials for clustering, for example 
       ```
@@ -221,7 +183,6 @@ The CloudFormation Template creates and leverages several AWS resources to suppo
   - Cloudwatch Alarms<br>
   These alarms are used to trigger scale Up / Down events.
   - Auto Scale Group<br>
-<<<<<<< HEAD:supported/solutions/autoscale/waf/README.md
   By default, the number of auto scaled instances is set to 1 and the maximum is set to 8. We recommend you launch the solution with 1 instance to start, and increasing this to at least two by [updating the stack] (#restoring-or-upgrading-the-solution). 
 
 ---
@@ -230,16 +191,6 @@ The CloudFormation Template creates and leverages several AWS resources to suppo
 Certain elements of this deployment can be updated with the CloudFormation stack itself. This is referred to as *updating the Stack*. For instance, anything that causes the Auto Scale Launch Configuration to update, like changing the AMI IDs (to upgrade from one BIG-IP version to another), instance sizes, scaling thresholds, and many others, requires updating the stack. 
  
 Clustering is only done within a Launch Configuration ID basis, so any changes that result in a new Launch Configuration require the following procedure.
-=======
-  By default, the number of auto scaled instances is set to 1 and the maximum is set to 8. We recommend you launch the solution with 1 instance to start, and increasing this to at least two by [updating the stack](#update). 
-
----
-
-### Restoring or upgrading the solution <a name="update"></a>
-Certain elements of this deployment can be updated with the CloudFormation stack itself. This is referred to as *Updating the Stack*. For instance, anything that causes the Auto Scale Launch Configuration to update, like changing the AMI IDs (to upgrade from one BIG-IP version to another), instance sizes, scaling thresholds, and many others, requires updating the stack. 
- 
-Clustering is only done within a Launch Configuration ID basis, so any changes that result in a new Launch Configuration ID require the following procedure.
->>>>>>> readme-cleanup:supported/solutions/autoscale/waf/README.md
  
   1. Backup your BIG-IP configuration (ideally the cluster primary) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive and store it in the S3 bucket created by the solution in folder called /backup:<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
     

@@ -1,77 +1,161 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.1.0: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.1.0: AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Best": "ami-da5f0abd",
-    "Better": "ami-eb5d088c",
-    "Good": "ami-ba5207dd"
+    "Best1000Mbps": "ami-bd5306da",
+    "Best200Mbps": "ami-fa5d089d",
+    "Best25Mbps": "ami-25500542",
+    "Better1000Mbps": "ami-845207e3",
+    "Better200Mbps": "ami-37520750",
+    "Better25Mbps": "ami-055d0862",
+    "Good1000Mbps": "ami-62530605",
+    "Good200Mbps": "ami-b55306d2",
+    "Good25Mbps": "ami-935d08f4"
    },
    "ap-northeast-2": {
-    "Best": "ami-c73beba9",
-    "Better": "ami-6a3beb04",
-    "Good": "ami-fd3aea93"
+    "Best1000Mbps": "ami-4f3cec21",
+    "Best200Mbps": "ami-8538e8eb",
+    "Best25Mbps": "ami-ac39e9c2",
+    "Better1000Mbps": "ami-1e3cec70",
+    "Better200Mbps": "ami-c23bebac",
+    "Better25Mbps": "ami-8438e8ea",
+    "Good1000Mbps": "ami-8238e8ec",
+    "Good200Mbps": "ami-493cec27",
+    "Good25Mbps": "ami-753beb1b"
    },
    "ap-south-1": {
-    "Best": "ami-bd1969d2",
-    "Better": "ami-6b196904",
-    "Good": "ami-4418682b"
+    "Best1000Mbps": "ami-601a6a0f",
+    "Best200Mbps": "ami-16166679",
+    "Best25Mbps": "ami-931767fc",
+    "Better1000Mbps": "ami-631a6a0c",
+    "Better200Mbps": "ami-1d166672",
+    "Better25Mbps": "ami-8b1767e4",
+    "Good1000Mbps": "ami-ba1969d5",
+    "Good200Mbps": "ami-621a6a0d",
+    "Good25Mbps": "ami-ca1868a5"
    },
    "ap-southeast-1": {
-    "Best": "ami-e612a385",
-    "Better": "ami-6414a507",
-    "Good": "ami-6017a603"
+    "Best1000Mbps": "ami-fb12a398",
+    "Best200Mbps": "ami-3314a550",
+    "Best25Mbps": "ami-7914a51a",
+    "Better1000Mbps": "ami-9e12a3fd",
+    "Better200Mbps": "ami-0115a462",
+    "Better25Mbps": "ami-d913a2ba",
+    "Good1000Mbps": "ami-4612a325",
+    "Good200Mbps": "ami-7e14a51d",
+    "Good25Mbps": "ami-7d14a51e"
    },
    "ap-southeast-2": {
-    "Best": "ami-81383be2",
-    "Better": "ami-e73a3984",
-    "Good": "ami-4d3a392e"
+    "Best1000Mbps": "ami-bb383bd8",
+    "Best200Mbps": "ami-e53a3986",
+    "Best25Mbps": "ami-183b387b",
+    "Better1000Mbps": "ami-443a3927",
+    "Better200Mbps": "ami-3a3a3959",
+    "Better25Mbps": "ami-2c383b4f",
+    "Good1000Mbps": "ami-123b3871",
+    "Good200Mbps": "ami-453a3926",
+    "Good25Mbps": "ami-57393a34"
    },
    "ca-central-1": {
-    "Best": "ami-6570cd01",
-    "Better": "ami-4a71cc2e",
-    "Good": "ami-bb72cfdf"
+    "Best1000Mbps": "ami-c871ccac",
+    "Best200Mbps": "ami-1d70cd79",
+    "Best25Mbps": "ami-fc73ce98",
+    "Better1000Mbps": "ami-3f6dd05b",
+    "Better200Mbps": "ami-0373ce67",
+    "Better25Mbps": "ami-6470cd00",
+    "Good1000Mbps": "ami-d276cbb6",
+    "Good200Mbps": "ami-ba72cfde",
+    "Good25Mbps": "ami-3972cf5d"
    },
    "eu-central-1": {
-    "Best": "ami-7ac71215",
-    "Better": "ami-09c71266",
-    "Good": "ami-e9db0e86"
+    "Best1000Mbps": "ami-cbc510a4",
+    "Best200Mbps": "ami-c9c510a6",
+    "Best25Mbps": "ami-82c510ed",
+    "Better1000Mbps": "ami-97d80df8",
+    "Better200Mbps": "ami-22d80d4d",
+    "Better25Mbps": "ami-5ec11431",
+    "Good1000Mbps": "ami-a8d90cc7",
+    "Good200Mbps": "ami-f0da0f9f",
+    "Good25Mbps": "ami-f6da0f99"
    },
    "eu-west-1": {
-    "Best": "ami-fed7f898",
-    "Better": "ami-9bd8f7fd",
-    "Good": "ami-26d6f940"
+    "Best1000Mbps": "ami-50ddf236",
+    "Best200Mbps": "ami-15dbf473",
+    "Best25Mbps": "ami-fed9f698",
+    "Better1000Mbps": "ami-8dd8f7eb",
+    "Better200Mbps": "ami-2ed8f748",
+    "Better25Mbps": "ami-f5d9f693",
+    "Good1000Mbps": "ami-8ed8f7e8",
+    "Good200Mbps": "ami-3edaf558",
+    "Good25Mbps": "ami-3fdaf559"
    },
    "eu-west-2": {
-    "Best": "ami-b9c6d3dd",
-    "Better": "ami-b8c6d3dc",
-    "Good": "ami-bfc6d3db"
+    "Best1000Mbps": "ami-4dc5d029",
+    "Best200Mbps": "ami-77c4d113",
+    "Best25Mbps": "ami-e7c5d083",
+    "Better1000Mbps": "ami-95c6d3f1",
+    "Better200Mbps": "ami-31c4d155",
+    "Better25Mbps": "ami-4bdacf2f",
+    "Good1000Mbps": "ami-bdc6d3d9",
+    "Good200Mbps": "ami-bec6d3da",
+    "Good25Mbps": "ami-9bc7d2ff"
    },
    "sa-east-1": {
-    "Best": "ami-58abcd34",
-    "Better": "ami-2fa8ce43",
-    "Good": "ami-a7b7d1cb"
+    "Best1000Mbps": "ami-a9b7d1c5",
+    "Best200Mbps": "ami-adabcdc1",
+    "Best25Mbps": "ami-96abcdfa",
+    "Better1000Mbps": "ami-5babcd37",
+    "Better200Mbps": "ami-22b7d14e",
+    "Better25Mbps": "ami-2ea8ce42",
+    "Good1000Mbps": "ami-23b7d14f",
+    "Good200Mbps": "ami-6ba9cf07",
+    "Good25Mbps": "ami-50a8ce3c"
    },
    "us-east-1": {
-    "Best": "ami-f6a976e0",
-    "Better": "ami-8fa97699",
-    "Good": "ami-19a9760f"
+    "Best1000Mbps": "ami-48aa755e",
+    "Best200Mbps": "ami-4aa9765c",
+    "Best25Mbps": "ami-f2aa75e4",
+    "Better1000Mbps": "ami-d9ab74cf",
+    "Better200Mbps": "ami-84ad7292",
+    "Better25Mbps": "ami-3ba6792d",
+    "Good1000Mbps": "ami-dbac73cd",
+    "Good200Mbps": "ami-d8ab74ce",
+    "Good25Mbps": "ami-10ab7406"
    },
    "us-east-2": {
-    "Best": "ami-83b99ce6",
-    "Better": "ami-fabe9b9f",
-    "Good": "ami-e1bb9e84"
+    "Best1000Mbps": "ami-35b99c50",
+    "Best200Mbps": "ami-e0bb9e85",
+    "Best25Mbps": "ami-f4b89d91",
+    "Better1000Mbps": "ami-40be9b25",
+    "Better200Mbps": "ami-86b99ce3",
+    "Better25Mbps": "ami-edbb9e88",
+    "Good1000Mbps": "ami-f9be9b9c",
+    "Good200Mbps": "ami-6eb99c0b",
+    "Good25Mbps": "ami-e6bb9e83"
    },
    "us-west-1": {
-    "Best": "ami-a96b35c9",
-    "Better": "ami-6b68360b",
-    "Good": "ami-75683615"
+    "Best1000Mbps": "ami-51663831",
+    "Best200Mbps": "ami-c36638a3",
+    "Best25Mbps": "ami-cc6638ac",
+    "Better1000Mbps": "ami-dc6638bc",
+    "Better200Mbps": "ami-07693767",
+    "Better25Mbps": "ami-0d68366d",
+    "Good1000Mbps": "ami-03693763",
+    "Good200Mbps": "ami-59663839",
+    "Good25Mbps": "ami-5d66383d"
    },
    "us-west-2": {
-    "Best": "ami-723ebd12",
-    "Better": "ami-203ebd40",
-    "Good": "ami-683ebd08"
+    "Best1000Mbps": "ami-833ebde3",
+    "Best200Mbps": "ami-7c39ba1c",
+    "Best25Mbps": "ami-0c3cbf6c",
+    "Better1000Mbps": "ami-b738bbd7",
+    "Better200Mbps": "ami-373dbe57",
+    "Better25Mbps": "ami-f839ba98",
+    "Good1000Mbps": "ami-673cbf07",
+    "Good200Mbps": "ami-6f3ebd0f",
+    "Good25Mbps": "ami-133ebd73"
    }
   }
  },
@@ -292,7 +376,7 @@
    "Description": "Internally routable IP of the public interface on BIG-IP",
    "Value": {
     "Fn::GetAtt": [
-     "Bigip2subnet1Az2Interface",
+     "Bigip2subnet1Az1Interface",
      "PrimaryPrivateIpAddress"
     ]
    }
@@ -341,16 +425,16 @@
     ]
    }
   },
-  "Bigip2subnet1Az2Interface": {
+  "Bigip2subnet1Az1Interface": {
    "Description": "External interface Id on BIG-IP",
    "Value": {
-    "Ref": "Bigip2subnet1Az2Interface"
+    "Ref": "Bigip2subnet1Az1Interface"
    }
   },
-  "Bigip2subnet1Az2SelfEipAddress": {
+  "Bigip2subnet1Az1SelfEipAddress": {
    "Description": "IP Address of the External interface attached to BIG-IP",
    "Value": {
-    "Ref": "Bigip2subnet1Az2SelfEipAddress"
+    "Ref": "Bigip2subnet1Az1SelfEipAddress"
    }
   },
   "availabilityZone1": {
@@ -409,13 +493,19 @@
   },
   "imageName": {
    "AllowedValues": [
-    "Good",
-    "Better",
-    "Best"
+    "Good25Mbps",
+    "Good200Mbps",
+    "Good1000Mbps",
+    "Better25Mbps",
+    "Better200Mbps",
+    "Better1000Mbps",
+    "Best25Mbps",
+    "Best200Mbps",
+    "Best1000Mbps"
    ],
    "ConstraintDescription": "Must be a valid F5 BIG-IP VE image type",
-   "Default": "Best",
-   "Description": "F5 BIG-IP Performance Type",
+   "Default": "Best1000Mbps",
+   "Description": "F5 BIG-IP VE image",
    "Type": "String"
   },
   "instanceType": {
@@ -441,28 +531,7 @@
    "Description": "Size of the F5 BIG-IP Virtual Instance",
    "Type": "String"
   },
-  "licenseKey1": {
-   "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
-   "ConstraintDescription": "Verify your F5 BYOL regkey.",
-   "Description": "F5 BYOL license key",
-   "MaxLength": "255",
-   "MinLength": "1",
-   "Type": "String"
-  },
-  "licenseKey2": {
-   "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
-   "ConstraintDescription": "Verify your F5 BYOL regkey.",
-   "Description": "F5 BYOL license key",
-   "MaxLength": "255",
-   "MinLength": "1",
-   "Type": "String"
-  },
   "managementSubnetAz1": {
-   "ConstraintDescription": "The subnet ID must be within an existing VPC",
-   "Description": "Management Subnet ID",
-   "Type": "AWS::EC2::Subnet::Id"
-  },
-  "managementSubnetAz2": {
    "ConstraintDescription": "The subnet ID must be within an existing VPC",
    "Description": "Management Subnet ID",
    "Type": "AWS::EC2::Subnet::Id"
@@ -486,11 +555,6 @@
    "Type": "AWS::EC2::KeyPair::KeyName"
   },
   "subnet1Az1": {
-   "ConstraintDescription": "The subnet ID must be within an existing VPC",
-   "Description": "Public or External subnet",
-   "Type": "AWS::EC2::Subnet::Id"
-  },
-  "subnet1Az2": {
    "ConstraintDescription": "The subnet ID must be within an existing VPC",
    "Description": "Public or External subnet",
    "Type": "AWS::EC2::Subnet::Id"
@@ -584,10 +648,6 @@
            "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
-           "--license ",
-           {
-            "Ref": "licenseKey1"
-           },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
@@ -680,6 +740,24 @@
            "date\n",
            "echo 'starting tmsh config'\n",
            "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+           "PEER_EXTPRIVIP='",
+           {
+            "Fn::Select": [
+             "0",
+             {
+              "Fn::GetAtt": [
+               "Bigip2subnet1Az1Interface",
+               "SecondaryPrivateIpAddresses"
+              ]
+             }
+            ]
+           },
+           "'\n",
+           "VIPEIP='",
+           {
+            "Ref": "Bigip1VipEipAddress"
+           },
+           "'\n",
            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
            "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
@@ -707,16 +785,11 @@
            },
            "'\n",
            "EXTMASK=${GATEWAY_PREFIX}\n",
+           "tmsh create net vlan external interfaces add { 1.1 } \n",
            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
-           "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
-           "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
+           "tmsh create net route default gw ${GATEWAY}\n",
            "tmsh modify sys db dhclient.mgmt { value disable }\n",
            "tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
-           "curl -sSk -o /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl --max-time 15 https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/develop/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
-           "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
-           "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.3.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
-           "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
-           "tmsh run cm config-sync to-group across_az_failover_group\n",
            "tmsh save /sys config\n",
            "date\n",
            "### START CUSTOM TMSH CONFIGURTION\n",
@@ -767,13 +840,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/release-1.2.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.2.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/release-2.3.0/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.3.0/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -831,8 +904,8 @@
            "cli script /Common/verifyHash {",
            "    proc script::run {} {",
            "        if {[catch {",
-           "            set hashes(f5-cloud-libs.tar.gz) 09eba5f10cec4758d70e3b692a03d5102b9ba96553c1224782a4846b913fc3bae43af3d9565f1b9cd9d0faf812fa10fce66c1779933f7bbb12f51204f853c828",
-           "            set hashes(f5-cloud-libs-aws.tar.gz) 03aef6b45b1af222cde9fa05967518646cc4a9b37d7ec1f399cba697c0ae898290e46682d8332402154e6d9d3f9dacc43c70d5b3eb76856144649bbaaef969e6",
+           "            set hashes(f5-cloud-libs.tar.gz) 489d460d2e5fcd401ce12f19b1d753a6bee30483cd0bf2b7548b7f8fe3caf5b727af96f013733cbd08b0c109e0cf535a29288d473b84cc834369204d5be5edc9",
+           "            set hashes(f5-cloud-libs-aws.tar.gz) 2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72",
            "            set hashes(f5-cloud-libs-azure.tar.gz) 16d2ce2086883ed5b47a3ba4e79541fd1a4bb64513222cf3a459297c2474d0bfc71a161ba2b8571707e1a6b273badaaf2c847993d0e60a4b52cd8c62cb03aba6",
            "            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0",
            "            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034",
@@ -863,7 +936,7 @@
            "            exit 1",
            "        }",
            "    }",
-           "    script-signature gOI4SUzKbJQFTN5nC+ZbV8cLTnQoq9a94DBh4jNQ5MxcGl/ASRWXFE0J+ANT1p4kP4+37GOMyACW7gdTVju79upI/EGhW6SyCCYUTvDpy0XJeQu52ghNx3t0xFnYKGt4+/rgnFM8CmjUeMc4irjdaW4/005rietj8UrvVylD++bKeAi5sNNwcGB6aoY3qE7FUF28jIOxFdZIRmyHtYq5lU4UgeIQW6/C0GH+S/gfAQGml0/tMHXQiIheTS2oBOl+MRcOdJYzgaoEiqoaBVFm8nMbyhKj6XIEJgRkICiTXowXSJIexZF8zjQbAC/HZ9UGC9n6CSFfuOzdLGVizNDNSQ==",
+           "    script-signature TfKrOEqc87cScx2may5bKnQQ5/TdygM6935wXkUnsf0/119c3C0WPjXQ1X86JMiInrjQ9oZjEkDejA41nwf46eWljvF0YTqdUU37XVpLi0plAOUyVCwjegra6vmY7F3DOKVC2b32SllF6rpBHECj6gAnSr6K/UQo044TEf1bXk/AHx8vw3+kuySMrutkIMHPlmxvsYyvWinjHAk5bdXepH+xspynZwLlOYuRYlTt2XVwSUyjzi1O1BLzm/oa3p4XkTkpDK0IYDTGFE/uFUyUaeNJQvBEDs6G+pQHgTIF67Zl3Ij0w/Pu6IoOkVjygmrQkz3BFlOrCyMtOIUmFItxiQ==",
            "    signing-key /Common/f5-irule",
            "}",
            ""
@@ -1200,10 +1273,6 @@
            "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
-           "--license ",
-           {
-            "Ref": "licenseKey2"
-           },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
@@ -1251,7 +1320,7 @@
            "--config-sync-ip",
            {
             "Fn::GetAtt": [
-             "Bigip2subnet1Az2Interface",
+             "Bigip2subnet1Az1Interface",
              "PrimaryPrivateIpAddress"
             ]
            },
@@ -1305,7 +1374,7 @@
            "EXTIP='",
            {
             "Fn::GetAtt": [
-             "Bigip2subnet1Az2Interface",
+             "Bigip2subnet1Az1Interface",
              "PrimaryPrivateIpAddress"
             ]
            },
@@ -1316,7 +1385,7 @@
              "0",
              {
               "Fn::GetAtt": [
-               "Bigip2subnet1Az2Interface",
+               "Bigip2subnet1Az1Interface",
                "SecondaryPrivateIpAddresses"
               ]
              }
@@ -1324,9 +1393,9 @@
            },
            "'\n",
            "EXTMASK=${GATEWAY_PREFIX}\n",
+           "tmsh create net vlan external interfaces add { 1.1 } \n",
            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
-           "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
-           "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
+           "tmsh create net route default gw ${GATEWAY}\n",
            "tmsh modify sys db dhclient.mgmt { value disable }\n",
            "tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
            "tmsh save /sys config\n",
@@ -1366,7 +1435,6 @@
            "#!/bin/bash\n",
            "date\n",
            "echo 'starting rm-password.sh'\n",
-           "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
            "rm /config/cloud/aws/.adminPassword\n",
            "date\n"
           ]
@@ -1380,13 +1448,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/release-1.2.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.2.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/release-2.3.0/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.3.0/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -1444,8 +1512,8 @@
            "cli script /Common/verifyHash {",
            "    proc script::run {} {",
            "        if {[catch {",
-           "            set hashes(f5-cloud-libs.tar.gz) 09eba5f10cec4758d70e3b692a03d5102b9ba96553c1224782a4846b913fc3bae43af3d9565f1b9cd9d0faf812fa10fce66c1779933f7bbb12f51204f853c828",
-           "            set hashes(f5-cloud-libs-aws.tar.gz) 03aef6b45b1af222cde9fa05967518646cc4a9b37d7ec1f399cba697c0ae898290e46682d8332402154e6d9d3f9dacc43c70d5b3eb76856144649bbaaef969e6",
+           "            set hashes(f5-cloud-libs.tar.gz) 489d460d2e5fcd401ce12f19b1d753a6bee30483cd0bf2b7548b7f8fe3caf5b727af96f013733cbd08b0c109e0cf535a29288d473b84cc834369204d5be5edc9",
+           "            set hashes(f5-cloud-libs-aws.tar.gz) 2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72",
            "            set hashes(f5-cloud-libs-azure.tar.gz) 16d2ce2086883ed5b47a3ba4e79541fd1a4bb64513222cf3a459297c2474d0bfc71a161ba2b8571707e1a6b273badaaf2c847993d0e60a4b52cd8c62cb03aba6",
            "            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0",
            "            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034",
@@ -1476,7 +1544,7 @@
            "            exit 1",
            "        }",
            "    }",
-           "    script-signature gOI4SUzKbJQFTN5nC+ZbV8cLTnQoq9a94DBh4jNQ5MxcGl/ASRWXFE0J+ANT1p4kP4+37GOMyACW7gdTVju79upI/EGhW6SyCCYUTvDpy0XJeQu52ghNx3t0xFnYKGt4+/rgnFM8CmjUeMc4irjdaW4/005rietj8UrvVylD++bKeAi5sNNwcGB6aoY3qE7FUF28jIOxFdZIRmyHtYq5lU4UgeIQW6/C0GH+S/gfAQGml0/tMHXQiIheTS2oBOl+MRcOdJYzgaoEiqoaBVFm8nMbyhKj6XIEJgRkICiTXowXSJIexZF8zjQbAC/HZ9UGC9n6CSFfuOzdLGVizNDNSQ==",
+           "    script-signature TfKrOEqc87cScx2may5bKnQQ5/TdygM6935wXkUnsf0/119c3C0WPjXQ1X86JMiInrjQ9oZjEkDejA41nwf46eWljvF0YTqdUU37XVpLi0plAOUyVCwjegra6vmY7F3DOKVC2b32SllF6rpBHECj6gAnSr6K/UQo044TEf1bXk/AHx8vw3+kuySMrutkIMHPlmxvsYyvWinjHAk5bdXepH+xspynZwLlOYuRYlTt2XVwSUyjzi1O1BLzm/oa3p4XkTkpDK0IYDTGFE/uFUyUaeNJQvBEDs6G+pQHgTIF67Zl3Ij0w/Pu6IoOkVjygmrQkz3BFlOrCyMtOIUmFItxiQ==",
            "    signing-key /Common/f5-irule",
            "}",
            ""
@@ -1545,7 +1613,7 @@
       "Description": "Public or External Interface",
       "DeviceIndex": "1",
       "NetworkInterfaceId": {
-       "Ref": "Bigip2subnet1Az2Interface"
+       "Ref": "Bigip2subnet1Az1Interface"
       }
      }
     ],
@@ -1648,12 +1716,12 @@
      }
     ],
     "SubnetId": {
-     "Ref": "managementSubnetAz2"
+     "Ref": "managementSubnetAz1"
     }
    },
    "Type": "AWS::EC2::NetworkInterface"
   },
-  "Bigip2subnet1Az2Interface": {
+  "Bigip2subnet1Az1Interface": {
    "Properties": {
     "Description": "Public External Interface for the BIG-IP",
     "GroupSet": [
@@ -1663,31 +1731,31 @@
     ],
     "SecondaryPrivateIpAddressCount": "1",
     "SubnetId": {
-     "Ref": "subnet1Az2"
+     "Ref": "subnet1Az1"
     }
    },
    "Type": "AWS::EC2::NetworkInterface"
   },
-  "Bigip2subnet1Az2SelfEipAddress": {
+  "Bigip2subnet1Az1SelfEipAddress": {
    "Properties": {
     "Domain": "vpc"
    },
    "Type": "AWS::EC2::EIP"
   },
-  "Bigip2subnet1Az2SelfEipAssociation": {
+  "Bigip2subnet1Az1SelfEipAssociation": {
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
-      "Bigip2subnet1Az2SelfEipAddress",
+      "Bigip2subnet1Az1SelfEipAddress",
       "AllocationId"
      ]
     },
     "NetworkInterfaceId": {
-     "Ref": "Bigip2subnet1Az2Interface"
+     "Ref": "Bigip2subnet1Az1Interface"
     },
     "PrivateIpAddress": {
      "Fn::GetAtt": [
-      "Bigip2subnet1Az2Interface",
+      "Bigip2subnet1Az1Interface",
       "PrimaryPrivateIpAddress"
      ]
     }

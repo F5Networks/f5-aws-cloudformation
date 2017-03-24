@@ -1,0 +1,2842 @@
+# Copyright 2016. F5 Networks, Inc. See End User License Agreement (EULA) for
+# license terms. Notwithstanding anything to the contrary in the EULA, Licensee
+# may copy and modify this software product for its internal business purposes.
+# Further, Licensee may upload, publish and distribute the modified version of
+# the software product on devcentral.f5.com.
+
+cli script f5.iapp.1.5.2.cli {
+ 
+#  Initialization proc for all templates.
+#  Parameters "start" and "stop" or "end".
+proc iapp_template { action } {
+    switch $action {
+        start {
+            catch { tmsh::modify sys scriptd log-level debug }
+            set ::clock_clicks [clock clicks]
+            puts "\nStarting iApp $tmsh::app_template_name [clock format \
+                [clock seconds] -format {%m/%d/%Y %T}]\n"
+            tmsh::log info "Starting iApp template $tmsh::app_template_name"
+        }
+        stop -
+        end {
+            if { [info exists ::substa_debug] } {
+                puts $::substa_debug
+            }
+            puts "\nEnding iApp $tmsh::app_template_name [clock format \
+                [clock seconds] -format {%m/%d/%Y %T}]\nRun time [expr \
+                { ([clock clicks] - $::clock_clicks) / 1000 }] msec\n"
+            tmsh::log info "Ending iApp template $tmsh::app_template_name"
+        }
+    }
+    set ::HTTP_CONTENT_TYPES { application/(css\|css-stylesheet\|doc\|excel\|javascript\|json\|lotus123\|mdb\|mpp\|msaccess\|msexcel\|ms-excel\|mspowerpoint\|ms-powerpoint\|msproject\|msword\|ms-word\|photoshop\|postscript\|powerpoint\|ps\|psd\|quarkexpress\|rtf\|txt\|visio\|vnd\\.excel\|vnd\\.msaccess\|vnd\\.ms-access\|vnd\\.msexcel\|vnd\\.ms-excel\|vnd\\.mspowerpoint\|vnd\\.ms-powerpoint\|vnd\\.ms-pps\|vnd\\.ms-project\|vnd\\.msword\|vnd\\.ms-word\|vnd\\.ms-works\|vnd\\.ms-works-db\|vnd\\.powerpoint\|vnd\\.visio\|vnd\\.wap\\.cmlscriptc\|vnd\\.wap\\.wmlc\|vnd\\.wap\\.xhtml\\+xml\|vnd\\.word\|vsd\|winword\|wks\|word\|x-excel\|xhtml\\+xml\|x-java-jnlp-file\|x-javascript\|x-json\|x-lotus123\|xls\|x-mdb\|xml\|x-mscardfile\|x-msclip\|x-msexcel\|x-ms-excel\|x-mspowerpoint\|x-msproject\|x-ms-project\|x-msword\|x-msworks-db\|x-msworks-wps\|x-photoshop\|x-postscript\|x-powerpoint\|x-ps\|x-quark-express\|x-rtf\|x-vermeer-rpc\|x-visio\|x-vsd\|x-wks\|x-word\|x-xls\|x-xml) image/(photoshop\|psd\|x-photoshop\|x-vsd) text/(css\|html\|javascript\|json\|plain\|postscript\|richtext\|rtf\|vnd\\.wap\\.wml\|vnd\\.wap\\.wmlscript\|wap\|wml\|x-component\|xml\|x-vcalendar\|x-vcard) }
+}
+
+proc iapp_is { args } {
+    set up_var [lindex $args 0]
+    upvar $up_var var
+    if { [info exists var] } {
+        foreach val [lrange $args 1 end] {
+            if { [subst $var] eq $val } {
+                return 1
+            }
+        }
+    }
+    return 0
+}
+
+proc iapp_substa { args } {
+    upvar substa_in  argx \
+          substa_out rval
+    set   argx $args
+
+    # check the explicit value first.
+    # multiple layers of variable substitution requires multiple subst.
+    # error occurs here if any of the substituted variables do not exist
+    # valid wildcard (*) array entries will fail here first.
+    uplevel {
+        append ::substa_debug "\n$substa_in"
+        if { [info exists [set substa_in]] } {
+            set substa_out [subst $$substa_in]
+            set substa_out [subst $substa_out]
+        } else {
+            # since explicit value did not exist, try a wildcard value.
+            # substitute "*" as the array key and repeat.
+            set substa_tmp [split $substa_in "()"]
+            set substa_in "[lindex $substa_tmp 0](*)"
+            append ::substa_debug "*"
+            if { [info exists [set substa_in]] } {
+                set substa_out [subst $$substa_in]
+                set substa_out [subst $substa_out]
+            } else {
+                error "substa \"$substa_in\" array value not found"
+            }
+        }
+    }
+    return $rval
+}
+
+proc iapp_conf { args } {
+
+    # Return value $object_name is set to the first word in $arg that
+    # contains an underscore, since the position of the object name in
+    # tmsh syntax is not consistent.
+    set args [join $args]
+    set object_name [lindex $args [lsearch -glob $args "*_*"]]
+
+    # Global array ::tmsh_history persists between calls to iapp_conf
+    # in order to suppress duplicate commands.
+    if { ![info exists ::tmsh_history($args)] } {
+        set ::tmsh_history($args) 1
+        iapp_debug $args
+        switch -exact -- [string range $args 0 5] {
+            create { tmsh::create [string range $args 7 end] }
+            modify { tmsh::modify [string range $args 7 end] }
+            delete { tmsh::delete [string range $args 7 end] }
+            default { error "iapp_conf illegal parameter" }
+        }
+    }
+    return $object_name
+}
+
+proc iapp_make_safe_password { password } {
+    return [string map { \' \\\' \" \\\" \{ \\\{ \} \\\} \; \\\; \| \\\| \# \\\# \  \\\  \\ \\\\ } $password]
+}
+
+proc iapp_pull { loc items_list } {
+    upvar $items_list items
+    if { [set item [lindex $items $loc]] != "" } {
+        set items [lreplace $items $loc $loc]
+    }
+    return $item
+}
+
+proc iapp_process_flags { flags_array args_list } {
+    upvar $flags_array flags
+    upvar $args_list args
+
+    if { [set dubdash [lsearch $args "--"]] != -1 } {
+        set args [lreplace $args $dubdash $dubdash];
+    } else {
+        set dubdash end
+    }
+
+    foreach flag [array names flags] {
+        while { [set ptr [lsearch [lrange $args 0 $dubdash] $flag]] != -1 } {
+            set args [lreplace $args $ptr $ptr];
+
+            # we want to run the code in the flags_array at the calling
+            # proc's level so that the variables that it sets up are
+            # available there.
+            set access_var [format "$%s(%s)" $flags_array $flag]
+            set command [subst -nocommands { set ptr $ptr ; subst $access_var }]
+
+            uplevel 1 $command
+        }
+    }
+    return $args
+}
+
+proc iapp_tmos_version { args } {
+    set cversion [tmsh::version]
+    if { $cversion eq "" } {
+        tmsh::log err "unable to determine TMOS version"
+        error "unable to determine TMOS version"
+    }
+
+    # if no op+version was specified, just return the version
+    if { $args eq "" } { return $cversion }
+    if { [llength $args] > 2 } {
+        error "Too many arguments"
+    }
+
+    set op [lindex $args 0]; # operator
+    set NOTFOUND -1
+    # constrain to valid operators - adding more is fine as long as
+    # they are supported by [expr] (and makes sense)
+    if { [lsearch -exact { < > <= >= == != } $op] == $NOTFOUND } {
+        tmsh::log err "illegal operator: $op"
+        error "illegal operator: $op"
+    }
+
+    set tversion [lindex $args 1]; # target version
+    # one or two decimal digits, optionally followed by 0-2 complete groups of
+    # dots followed by one or two decimal digits with nothing before or after
+    set regex {^\d{1,2}(\.\d{1,2}){0,2}$}
+    if { ! [regexp -- $regex $tversion] } {
+        tmsh::log err "cannot parse version from: $tversion"
+        error "cannot parse version from: $tversion"
+    }
+
+    # p=>prefix, c=>current, t=>target
+    foreach p { c t } {
+        # extract major/minor/point components
+        scan [set [set p]version] "%d.%d.%d" [set p]mjr [set p]mnr [set p]pnt
+        # ensure that these are each set to at least 0
+        foreach level { mjr mnr pnt } {
+            if { ! [info exists [set p]${level}] } { set [set p]${level} 0 }
+        }
+        # turn them into one big number that we can compare
+        # leave room in-between just to be safe
+        set [set p]num [expr {
+            [set [set p]mjr]*1000000 +
+            [set [set p]mnr]*10000 +
+            [set [set p]pnt]*100
+        }]
+    }
+    # a simple numeric comparison is all that is needed at this point
+    return [eval expr $cnum $op $tnum ]
+}
+
+proc iapp_safe_display { args } {
+    # strings sent to APL must be truncated to 65535 bytes, see BZ435592
+    if { [string length [set [set args]]] > 65535 } {
+        set last_newline [string last "\n" [set [set args]] 65500]
+        return "[string range [set [set args]] 0 $last_newline]Error: Too many items for display"
+    } else {
+        return [set [set args]]
+    }
+}
+
+proc iapp_get_items { args } {
+
+    # Set default values.
+    set error_msg  "iapp_get_items $args:"
+    set do_binary  0
+    set nocomplain 0
+    set items      ""
+    set join_char  "\n"
+    set recursive  "recursive"
+    set com_dir    "/Common"
+    set loc_dir    "[tmsh::pwd]"
+
+    # Set up flag-related work.
+    array set flags  {
+        -exists      { [set do_binary 1] }
+        -nocomplain  { [set nocomplain 1] }
+        -list        { [set join_char " "] }
+        -norecursive { [set recursive ""] }
+        -local       { [set com_dir   ""] }
+        -dir         { [set loc_dir      [iapp_pull $ptr args]] }
+        -filter      { [set filter_field [iapp_pull $ptr args]] \
+                       [set filter_op    [iapp_pull $ptr args]] \
+                       [set filter_value [iapp_pull $ptr args]] }
+    }
+    iapp_process_flags flags args
+
+    # Get system object names in all requested directories.
+    set save_dir [tmsh::pwd]
+    foreach dir [lsort -unique "$com_dir $loc_dir"] {
+        tmsh::cd $dir
+        set tmsh_rval [catch {
+            foreach obj [tmsh::get_config $args $recursive] {
+
+                if { [info exists filter_field] } {
+                    if { $filter_field eq "NAME" } {
+                        set val [tmsh::get_name $obj]
+                    } else {
+                        # If get_field_value throws error, assume "none" value
+                        if { [catch {
+                            set val [tmsh::get_field_value $obj $filter_field]
+                            # strip quotes per BZ442531
+                            set val [string map {\" ""} $val]
+                        }]} { set val none }
+                    }
+                    # Non-Tcl operators =~ and !~ added for extra flexibility
+                    if { $filter_op eq "=~" } {
+                        set filter "\[regexp \"$filter_value\" \"$val\"\]"
+                    } elseif { $filter_op eq "!~" } {
+                        set filter "!\[regexp \"$filter_value\" \"$val\"\]"
+                    } else {
+                        set filter "\\\"$val\\\" $filter_op \\\"$filter_value\\\""
+                    }
+                    # If filter fails, skip to next object
+                    if { ![eval expr $filter] } {
+                        continue
+                    }
+                }
+                # string map catches /Common added by ltm profile ntlm,
+                # which is unlike all other ltm profile return values.
+                lappend items $dir/[string map {/Common/ ""} [tmsh::get_name $obj]]
+            }
+        } err ]
+    }
+    tmsh::cd $save_dir
+
+    # array keys: $do_binary,$tmsh_rval,$nocomplain. Do not insert whitespace.
+    array set rval {
+        0,0,0 {[join $items $join_char]}
+        0,0,1 {[join $items $join_char]}
+        0,1,0 {[error "$error_msg $err"]}
+        0,1,1 {}
+        1,0,0 {[llength $items]}
+        1,0,1 {[llength $items]}
+        1,1,0 {0}
+        1,1,1 {0}
+    }
+
+    return [subst $rval($do_binary,$tmsh_rval,$nocomplain)]
+}
+
+proc iapp_get_provisioned { args } {
+
+    array set lnum {
+        none      0
+        minimum   1
+        nominal   2
+        dedicated 3
+    }
+
+    # Set defaults.
+    set required minimum
+    set do_binary 1
+
+    # Set up flag-related work.
+    array set flags  {
+        -is          { [set required [iapp_pull $ptr args]] }
+        -level       { [set do_binary 0] }
+    }
+    iapp_process_flags flags args
+    if { [llength $args] > 1 } {
+        error "Too many arguments"
+    }
+
+    # If checking for AM provisioning on TMOS < 11.4,
+    # check for WAM provisioning instead.
+    if { $args eq "am" && [iapp_tmos_version < 11.4] } {
+        set args "wam"
+    }
+
+    # Get the provisioning level. If blank, assume none.
+    # Proc only checks 1 module at a time, so only 1 object is returned.
+    if { [catch {
+        set obj [tmsh::get_config sys provision $args]
+        set level [tmsh::get_field_value [lindex $obj 0] level]
+    }]} { set level none }
+
+    if { $do_binary } {
+        return [expr { $lnum($level) >= $lnum($required) }]
+    } else {
+        return $level
+    }
+}
+
+proc iapp_get_user { args } {
+
+    # Set defaults.
+    set do_role 0
+    set do_binary 0
+
+    # Set up flag-related work.
+    array set flags  {
+        -is_admin    { [set do_binary 1] }
+    }
+    iapp_process_flags flags args
+    if { [llength $args] > 1 } {
+        error "Too many arguments"
+    }
+
+    # Show user auth was introduced in v11.6
+    set user "unknown"
+    catch {
+        set user [tmsh::show auth user field-fmt]
+    } err
+    if { $do_binary } {
+        return [expr { $user == "unknown"
+        || [string first "role " $user] == -1
+        || [string first "role admin" $user] != -1
+        || [string first "role resource-admin" $user] != -1 }]
+    } else {
+        return $user
+    }
+}
+
+proc iapp_destination { args } {
+    # Set defaults. Flag actions may overwrite defaults later.
+    set route_domain    0
+    set do_mask         0
+    set port            0
+
+    # Set up flag-based actions.
+    array set flags  {
+        -route_domain { [set route_domain [iapp_pull $ptr args]] }
+        -mask         { [set do_mask 1] }
+        -length       { [set cidr_bits [iapp_pull $ptr args]] }
+    }
+
+    if { [llength [set non_switches [iapp_process_flags flags args]]] > 2 } {
+        error "Too many arguments"
+    }
+    if { [llength $non_switches] == 2 } { set port [lindex $non_switches 1] }
+    set addr [lindex $non_switches 0]
+
+
+    # Detect a CIDR mask and pull it off the addr string
+    if { [set loc [string first "/" $addr end-4]] != -1 } {
+        set cidr_bits [string range $addr [expr {$loc + 1}] end]
+        set addr [string range $addr 0 [expr {$loc - 1}]]
+    }
+
+    # Pull the route-domain off the addr string, but only use it as the
+    # route domain if it wasn't overridden by -route_domain flag.
+    if { [string first "%" $addr] != -1 } {
+        if { $route_domain == 0 } {
+            # route-domain is still default, so use value from addr string
+            set route_domain [lindex [split $addr "%"] 1]
+        }
+        set addr [lindex [split $addr "%"] 0]
+    }
+
+    if { $do_mask } {
+
+        # Define the delta between ipv4 and ipv6.
+        # length: ipv4 mask is 32 bits, ipv6 is 128 bits.
+        # group: ipv4 is grouped in octets, ipv6 as 16 bit words.
+        # format: ipv4 is decimal notation, ipv6 is hex.
+        # format1 also has the delimiter, format2 does not.
+        array set v {
+            0,length  32
+            0,group   8
+            0,format1 d.
+            0,format2 d
+            1,length  128
+            1,group   16
+            1,format1 .4x:
+            1,format2 .4x
+        }
+        set is_ipv6 [string match "*:*:*" $addr]
+
+        # Soften result of an illegal -length parameter.
+        if { ![info exists cidr_bits] || $cidr_bits > $v($is_ipv6,length) } {
+            set cidr_bits $v($is_ipv6,length)
+        } elseif { $cidr_bits < 0 } {
+            set cidr_bits 0
+        }
+
+        # Loop on the full length of the mask: 32 bits for ipv4, 128 for ipv6
+        for { set octet 0; set i 0 } { $i < $v($is_ipv6,length) } { incr i } {
+
+           # Take a break at intervals to save the grouping and add delimiter.
+           # Interval is 8 bits for ipv4 and 16 bits for ipv6.
+           if { $i && ![expr {$i % $v($is_ipv6,group)}] } {
+
+               # Add the grouping and delimiter to the mask, then reset.
+               append mask [format %$v($is_ipv6,format1) $octet]
+               set octet 0
+           }
+           # Shift the prior bits left by multiplying by 2.
+           # Then add the current bit, which is 1 if part of the mask, 0 if not.
+           # Current bit is part of the mask if $i < number of bits in the mask.
+           set octet [expr { 2 * $octet + ($i < $cidr_bits) }]
+        }
+        # Add the final grouping, then return the finished mask.
+        set ret_val [format $mask%$v($is_ipv6,format2) $octet]
+
+    } else {
+
+        # calculate a destination
+        # the route domain might be a name and we need a number.
+        if { ![string is integer $route_domain] } {
+            set route_domains [tmsh::get_config "/ net route-domain $route_domain"]
+            if { [llength $route_domains] != 1 } {
+                error "no such route domain: $route_domain"
+            }
+            # since we have already determined that the list is 1 long,
+            # this explicit reference to element 0 is safe
+            set route_domain [tmsh::get_field_value [lindex $route_domains 0] "id"]
+        }
+
+        set route_domain [expr { $route_domain == 0 ? "" : "%$route_domain" }]
+
+        # 0 and * represent wildcard port assignments in the GUI,
+        # but TMSH requires the string 'any' to specify a wildcard.
+        if { $port == 0 || $port == "*" } {
+            set port any
+        }
+
+        # Build the final destination. Use ":" for node names even if ipv6.
+        set is_ipv6_literal [string match "*:*:*" $addr]
+        set addr_delimiter  [expr { $is_ipv6_literal ? "." : ":" }]
+        set ret_val ${addr}${route_domain}${addr_delimiter}${port}
+    }
+    return $ret_val
+}
+
+proc iapp_pool_members { args } {
+
+    # Set defaults.
+    array set fields {
+        address          addr
+        port             port
+        port-secure      port_secure
+        connection-limit connection_limit
+        priority-group   priority
+        ratio            ratio
+    }
+    set route_domain ""
+    set port_override -1
+    set aaa_domain 0
+    set aaa_priority -1
+    set app_service ""
+    # Set up flag-related work.
+    array set flags {
+        -fields       { [array set fields  [iapp_pull $ptr args]] }
+        -route_domain { [set route_domain  [iapp_pull $ptr args]] }
+        -port         { [set port_override [iapp_pull $ptr args]] }
+        -aaa_domain   { [set aaa_domain    1] }
+        -aaa_pool     { [set aaa_priority  0] }
+        -noapp        { [set app_service " app-service none"] }
+    }
+    iapp_process_flags flags args
+
+    # Identify the non-address/non-port fields. These go inside braces in tmsh.
+    set nonport_fields [lsearch -all -not -inline -regexp \
+        [array names fields] {address|port|port-secure}]
+
+    set members ""
+    foreach row [join $args] {
+
+        # Skip invalid table rows.
+        if { [llength [join $row]] %2 == 1 } {
+            continue
+        }
+
+        # Import APL table into an array for processing.
+        array unset columns
+        array set columns [join $row]
+        set addr $columns($fields(address))
+
+        # Identify the port number, either from table columns or by -port flag.
+        if { $port_override != -1 } {
+            set port $port_override
+        } elseif { [info exists columns($fields(port))] } {
+            set port $columns($fields(port))
+        } elseif { [info exists columns($fields(port-secure))] } {
+            set port $columns($fields(port-secure))
+        } else {
+            set port 80
+        }
+
+        # If specified, strip entered route domain and append the flag value.
+        if { $route_domain != "" } {
+            set addr [lindex [split $addr "%"] 0]
+            set addr "$addr%$route_domain"
+        }
+
+        # If -aaa_domain, use domain controller format, otherwise use pool format
+        if { $aaa_domain } {
+            append members " $columns($fields(host)) \{ ip $addr $app_service \}"
+        } else {
+            append members " [iapp_destination $addr $port] \{"
+
+            # Transfer non-port fields from the table to the tmsh string.
+            foreach name $nonport_fields {
+                if { [info exists columns($fields($name))] } {
+                    append members " $name $columns($fields($name))"
+                }
+            }
+
+            # If -aaa_pool, add priority field with incrementing value.
+            # This is required by APM.
+            if { $aaa_priority >= 0 } {
+                append members " priority-group [incr aaa_priority]$app_service"
+            }
+            append members " \}"
+        }
+    }
+
+    return "[expr { $aaa_domain ? "" : "members " }][expr { $members eq "" \
+        ? "none" : "replace-all-with \{ $members \}" }]"
+}
+
+proc iapp_debug { args } {
+
+    # Passwords should be obscured in all logs. Fields shown here are handled
+    # in this proc, but the global variable may be overwritten if alternate
+    # fields should be obscured.
+    if { ![info exists ::SENSITIVES] } {
+        set ::SENSITIVES {
+            account-password
+            admin-encrypted-password
+            PASSWORD
+            password
+            passwd
+            proxy-ca-passphrase
+            secret
+        }
+    }
+
+    # look for any of the sensitive words, and replace the word that follows it
+    set regex "(\\m([join $::SENSITIVES |])\\M)\\s+\[^\\s\]*"
+    regsub -all $regex [join $args] {\1 -OBSCURED-} args
+    regsub -all "(<Password.*>).*(</Password>)" $args {\1-OBSCURED-\2} args
+
+    set lev [tmsh::get_field_value [lindex [tmsh::get_config sys scriptd \
+        log-level] 0] log-level]
+    if { $lev eq {debug} } {
+        puts $args
+    }
+}
+
+# The apm_config proc provides a tmsh pre-processor for APM
+# configuration, which in most cases will drastically reduce
+# implementation code. To configure APM with this proc, pass
+# it an array of object names and associated meta-tag substitutions.
+# Each object must be categorized as a profile, a resource, or
+# a policy-item. APM agents and customization-groups are derived
+# from these 3 categories as needed.
+#
+# apm_config's return value is a list of the APM profiles defined
+# in the argument and instantiated by the proc. This allows the
+# procedure call to be embedded directly into a virtual server
+# definition.
+#
+# These universal meta-tags may be placed anywhere in the array:
+# <ITEM> The object name, eg. apm_access
+# <PREFIX> The app name, including folder, eg. /Common/my_app.app/my_app
+#
+# Profile objects require the following meta-tags:
+# <PROFILE_TYPE> The tmsh object type, eg. "apm profile access"
+# <PROFILE_DEF>  The body of the object, eg.:
+#     "access-policy <PREFIX>
+#      defaults-from /Common/access
+#      eps-group <PREFIX>_eps
+#      errormap-group <PREFIX>_errormap
+#      general-ui-group <PREFIX>_general_ui"
+#
+# apm_config will automatically create default customization-groups
+# for the "-group" lines specified in access profile definitions.
+# In the above example, there is no need to additionally specify a
+# customization-group for errormap and general-ui.
+#
+# <PROFILE_TYPE> is a catch-all for other APM types, eg:
+#      apm_sso {
+#          <PROFILE_TYPE> {apm sso kerberos}
+#          <PROFILE_DEF>  "account-name <USER>
+#                          account-password <PASS>
+#                          realm <REALM>" }
+#
+# In the example above, <PROFILE_TYPE> and <PROFILE_DEF> are
+# apm_config meta-tags, while <USER>, <PASS>, and <REALM> must
+# be substituted before calling apm_config, eg. if these tags are
+# defined in $pre_proc_map, they may be substituted with:
+# array set apm_map [string map [subst $pre_proc_map] [array get apm_map]]
+#
+# Resource objects require the following meta-tags:
+# <RESOURCE_TYPE> The apm resource object type, eg. "webtop"
+# <RESOURCE_DEF>  The body of the object, eg.:
+#     "customization-group <ITEM>
+#      minimize-to-tray false
+#      webtop-type full"
+#
+# In the above example, a customization-group is specified. Any
+# customization-group is assumed to be blank unless further defined by the
+# <GROUP_DEF> meta-tag, eg. <GROUP_DEF> {type webtop}
+#
+# Policy-item objects are defined by the following meta-tags:
+# <AGENT_TYPE>   default "resource-assign"
+# <AGENT_DEF>    default "customization-group <ITEM>"
+# <ITEM_AGENT>   default "agents { <ITEM>_ag { type <AGENT_TYPE> }}"
+# <ITEM_CAPTION> default "<ITEM>"
+# <ITEM_COLOR>   default "1"
+# <ITEM_TYPE>    default "action"
+# <ITEM_RULES>   defaults to a set of expressions/next-items where specified
+# <RULE_CAPTION_0> default "fallback"
+# <RULE_CAPTION_1> default "Successful"
+# <RULE_CAPTION_2> default "successful"
+#
+# apm_config generates the APM agent and customization-group definitions
+# as required for each policy-item, but specific objects may be defined
+# by using the <AGENT_DEF> and <GROUP_DEF> meta-tags.
+# To suppress the formation of an APM agent, specify <ITEM_AGENT> {}.
+
+proc iapp_apm_config { args } {
+
+    set app_service ""
+    array set flags  {
+        -noapp       { [set app_service "app-service none\n   "] }
+    }
+    iapp_process_flags flags args
+
+    upvar [lindex $args 0] map_array
+
+    # Pull $prefix from the array
+    set prefix $map_array(prefix)
+    unset map_array(prefix)
+
+    # Stencils for creating apm objects
+    set access_form \
+       "<TMSH_CREATE> apm policy access-policy <ITEM> {\n   \
+          $app_service    caption general\n   \
+          start-item <ACCESS_START_ITEM>\n   \
+          default-ending <ACCESS_ENDING>\n   \
+          items replace-all-with {\n<ACCESS_ITEMS>    }\n}"
+
+    set profile_form "<TMSH_CREATE> <PROFILE_TYPE> <ITEM> {\n   \
+        $app_service    <PROFILE_DEF>\n}"
+
+    set resource_form "<TMSH_CREATE> apm resource <RESOURCE_TYPE> <ITEM> {\n   \
+        $app_service    <RESOURCE_DEF>\n}"
+
+    set agent_form "<TMSH_CREATE> apm policy agent <AGENT_TYPE> <ITEM>_ag {\n   \
+        $app_service    <AGENT_DEF>\n}"
+
+    set group_form "<TMSH_CREATE> apm policy customization-group <ITEM> {\
+        $app_service    <GROUP_DEF>}"
+
+    set agent_group_form "<TMSH_CREATE> apm policy customization-group <ITEM>_ag {\
+        $app_service    <GROUP_DEF>}"
+
+    set policy_item_form "<TMSH_CREATE> apm policy policy-item <ITEM> {
+    $app_service    <ITEM_AGENT>caption <ITEM_CAPTION>
+    color <ITEM_COLOR>
+    <ITEM_TYPE>
+    <ITEM_RULES>\n}"
+
+    # 1st round apm string map
+    set default_map_1 {
+        <ACCESS_ITEM> {}
+        <AGENT_DEF> "customization-group <ITEM>_ag"
+        <ITEM_AGENT> "agents replace-all-with {
+        <ITEM>_ag { type <AGENT_TYPE> }}\n    "
+        <ITEM_CAPTION> <ITEM>
+        <ITEM_COLOR> {1}
+        <ITEM_TYPE> "item-type action"
+        <ITEM_RULES> "rules
+        {[expr {[string first <RULE_NEXT_2> $map_array($item)] != -1 ? "{
+            caption <RULE_CAPTION_2>
+            expression <RULE_EXPR_2>
+            next-item ${prefix}_<RULE_NEXT_2>
+        }":""}][expr {[string first <RULE_NEXT_1> $map_array($item)] != -1 ? "{
+            caption <RULE_CAPTION_1>
+            expression <RULE_EXPR_1>
+            next-item ${prefix}_<RULE_NEXT_1>
+        }":""}]{
+            caption <RULE_CAPTION_0>
+            next-item ${prefix}_<RULE_NEXT_0>
+        }}"
+    }
+
+    # 2nd round apm string map
+    set default_map_2 {
+        <ITEM> [expr { $item eq {default} ? "$prefix" : "${prefix}_$item" }]
+        <PREFIX> $prefix
+        <LOCAL_PATH> [string map {/ :} $prefix]
+        <GROUP_DEF> ""
+        <AGENT_TYPE> "resource-assign"
+        <RULE_CAPTION_2> "successful"
+        <RULE_CAPTION_1> "Successful"
+        <RULE_CAPTION_0> "fallback"
+    }
+
+    # Build APM access profile and access-policy from the access_form.
+    # Tags <ACCESS_ITEM> and <ACCESS_ENDING> are picked up from
+    # $map_array items. <ITEM> and <GROUP_DEF> are picked up from
+    # $default_map_2.
+    foreach item [lsort [array names map_array]] {
+
+        # Pick up the <ACCESS_ENDING> tag. There should be just 1.
+        set access_form [string map $map_array($item) $access_form]
+
+        # Filter out items that do not belong in the access-policy.
+        # Anything with an ITEM_xxx tag belongs
+        if { [string first <ITEM_ $map_array($item)] == -1 } {
+            continue
+        }
+
+        # Add to the items list for the access-policy, e.g. priority
+        append access_items "        ${prefix}_$item {<ACCESS_ITEM>}\n"
+        set access_items [string map $map_array($item) $access_items]
+        set access_items [string map [subst $default_map_1] $access_items]
+    }
+
+    # Build APM resources, policy-items, agents, and customization-groups from
+    # the policy_item_form and resource_form.
+    foreach item [lsort [array names map_array]] {
+
+        # Each item starts as a profile, a resource, or a policy-item.
+        # Profiles are free-form, so other apm objects can use the profile form.
+        # In most cases, a policy-item spawns an agent.
+        # Any definition specifying a customization-group will spawn that group.
+        if { [string first "<PROFILE_DEF>" $map_array($item)] != -1 } {
+
+            # Collect profile names for attachment to the virtual server
+            if { [string first "apm profile " $map_array($item)] != -1 } {
+                lappend profiles [expr { $item eq {default}
+                                 ? "$prefix" : "${prefix}_$item" }]
+                # When an access profile is found, built a policy of the same name
+                if { [string first "apm profile access" $map_array($item)] != -1 } {
+                    set def [string map "<ACCESS_ITEMS> {$access_items}" $access_form]
+                    append cmds "[string map [subst $default_map_2] $def]\n"
+                }
+            }
+            set def $profile_form
+        } elseif { [string first "<RESOURCE_DEF>" $map_array($item)] != -1 } {
+            set def $resource_form
+        } else {
+            set def $policy_item_form
+            if { [string first "<ITEM_AGENT> {}" $map_array($item)] == -1 } {
+                append def $agent_form
+            }
+        }
+
+        # Apply 1st pass of string maps
+        set def [string map $map_array($item) $def]
+        set def [string map [subst $default_map_1] $def]
+
+        # If a customization-group is specified, add its definition
+        if { [string first "customization-group" $def] != -1 } {
+            if { [string first "apm policy agent" $def] != -1 } {
+                append def $agent_group_form
+            } elseif { [string first "apm profile access" $def] == -1 } {
+                append def $group_form
+            }
+        }
+
+        # Apply 2nd pass of string maps
+        set def [string map $map_array($item) $def]
+        append cmds [string map [subst $default_map_2] $def]
+    }
+
+    # Divide and execute tmsh commands
+    set tag "<TMSH_CREATE>"
+    set tag_length [string length $tag]
+    set last [expr { [string first $tag $cmds] + $tag_length }]
+    while { [set pos [string first $tag $cmds $last]] != -1 } {
+        incr pos -1
+        iapp_conf create [string range $cmds $last $pos]
+        set last [expr { $pos + $tag_length + 1 }]
+    }
+    iapp_conf create [string range $cmds $last end]
+    return $profiles
+}
+
+proc iapp_upgrade_template { upgrade_var upgrade_trans } {
+    upvar $upgrade_var   upgrade_var_arr
+    upvar $upgrade_trans upgrade_trans_arr
+
+    # create the new variables from the old
+    foreach { var } [array names upgrade_var_arr] {
+
+        # substitute old variable name for abbreviation "##"
+        regsub -all {##} $upgrade_var_arr($var) \$$var map_cmd
+
+        # run the mapping command from inside the array
+        if { [catch { subst $map_cmd } err] } {
+            if { [string first "no such variable" $err] == -1 } {
+                puts "ERROR $err"
+            }
+        }
+    }
+
+    # move variables over and apply translations
+    set var_mods ""
+    set var_adds ""
+    foreach var [array names vx] {
+
+        # if the APL variable name is in the translation array,
+        # then use the custom translation built for that variable.
+        if { [info exists upgrade_trans_arr($var)] } {
+            array set sub_arr [subst $upgrade_trans_arr($var)]
+            if { [info exists sub_arr($vx($var))] } {
+                set vx($var) $sub_arr($vx($var))
+            }
+            array unset sub_arr
+        # else, if the APL variable value is in the translation array,
+        # then use the generic translation of that value.
+        } elseif { [info exists upgrade_trans_arr($vx($var))] } {
+            set vx($var) [subst $upgrade_trans_arr($vx($var))]
+        }
+
+        # add to tmsh command string
+        if { [info exists ::$var] } {
+            append var_mods "\n $var \{ value \"$vx($var)\" \} "
+        } else {
+            append var_adds "\n $var \{ value \"$vx($var)\" \} "
+        }
+    }
+
+    # move tables over
+    set tbl_mods ""
+    set tbl_adds ""
+    foreach tbl [array names tx] {
+
+        # convert table from APL format to TMSH format
+        if { ![llength $tx($tbl)] } {
+            set tbl_def "column-names none"
+        } else {
+            set rows_def ""
+            foreach apl_row $tx($tbl) {
+                array set row_arr [join $apl_row]
+                append rows_def "\n  \{ row \{ "
+                foreach apl_col [array names row_arr] {
+                    append rows_def "$row_arr($apl_col) "
+                }
+                append rows_def "\}\}"
+            }
+            set tbl_def \
+            "\n  column-names \{ [array names row_arr] \} rows \{ $rows_def \}"
+            array unset row_arr
+        }
+
+        # add to tmsh command string
+        if { [info exists ::$tbl] } {
+            append tbl_mods "\n $tbl \{ $tbl_def \} "
+        } else {
+            append tbl_adds "\n $tbl \{ $tbl_def \} "
+        }
+    }
+
+    # construct the "tmsh modify" command
+    set cmd "sys application service $tmsh::app_name "
+    if { [llength $var_mods] } {
+        append cmd "\nvariables modify { $var_mods }"
+    }
+    if { [llength $var_adds] } {
+        append cmd "\nvariables add { $var_adds }"
+    }
+    if { [llength $tbl_mods] } {
+        append cmd "\ntables modify { $tbl_mods }"
+    }
+    if { [llength $tbl_adds] } {
+        append cmd "\ntables add { $tbl_adds }"
+    }
+
+    # Execute with debug output. This conversion takes place within the
+    # existing ASO, so tmsh modify is used instead of tmsh create.
+    iapp_debug "TEMPLATE UPGRADE"
+    iapp_conf modify $cmd
+    return
+}
+
+proc iapp_downgrade_template { pivot_var upgrade_var downgrade_table } {
+    upvar $downgrade_table downgrade_tbl_arr
+
+    # The ASO variable "offload_history" is used to recover the legacy
+    # choice a user made about SSL offload. It should be present in all cases.
+    # This conditional only handles the case where a user has deliberately
+    # deleted it by manipulating the ASO directly from tmsh.
+    if { ![info exists ::offload_history] } {
+        set ::offload_history "No"
+    }
+
+    # BIG-IP erases table contents when the APL optional hides the table.
+    # Since the prior data is not available, this downgrade must back-convert
+    # existing table data. Unlike tables, variables remain intact from the
+    # legacy ASO.
+    set tbl_def ""
+    foreach tbl [array names downgrade_tbl_arr] {
+        # Check for existence of each table in the current context.
+        # If not, skip to next.
+        if { ![info exists [set tbl]] } {
+            continue
+        }
+        # Check for existence of each table in the legacy context.
+        # If not, add an empty table so "tmsh tables modify" does not fail.
+        if { ![info exists ::$downgrade_tbl_arr($tbl)] } {
+            iapp_conf modify sys app ser $tmsh::app_name tables add \{ $downgrade_tbl_arr($tbl) \}
+        }
+        append tbl_def "$downgrade_tbl_arr($tbl) \{ "
+        if { [llength [subst $$tbl]] } {
+            set rows_def ""
+            foreach apl_row [subst $$tbl] {
+                array set row_arr [join $apl_row]
+                append rows_def "\n  \{ row \{ "
+                foreach apl_col [array names row_arr] {
+                    append rows_def "$row_arr($apl_col) "
+                }
+                append rows_def "\}\}"
+            }
+            append tbl_def \
+            "column-names \{ [array names row_arr] \} rows \{ $rows_def \}"
+            array unset row_arr
+        } else {
+            append tbl_def "rows none"
+        }
+        append tbl_def " \} "
+    }
+    regsub -all "\n" $tbl_def {} tbl_def
+    set cmd "sys app ser $tmsh::app_name \
+        variables modify \{ \
+            $pivot_var \{ value $::offload_history \} \
+            $upgrade_var \{ value No \} \
+        \} \
+        tables modify \{ $tbl_def \}"
+    iapp_debug "TEMPLATE DOWNGRADE"
+    iapp_conf modify $cmd
+    return
+}
+
+proc iapp_get_ca_certs { args } {
+    # Procedure formats and returns ca-bundle 509 certificates from ca-bundle.bak
+    # (copy of tmos supplied ca-bundle.crt)
+    # Returns backup files when using -files flag
+    # Returns specified restore file certificates when using -restore -return flags
+    # Returns specified restore file table certificates when using -restore -tablename
+    # Returns selected certificates
+    #
+    # Set defaults. Flag actions may overwrite defaults later.
+    set rest_files         0
+    set do_restore         0
+    set restore_return     0
+    set restore_table_name 0
+    set do_certs 0
+    set user_get [iapp_get_user]
+    set username [string range $user_get [expr {[string last user $user_get] +5 }] end-3 ]
+    # Set up flag-based actions.
+    array set flags  {
+        -files     { [set rest_files 1] }
+        -return    { [set do_restore 1] [set restore_return 1] }
+        -tablename { [set do_restore 1] [set restore_table_name 1] }
+        -certs     { [set do_certs 1] }
+    }
+    iapp_process_flags flags args
+    set fn_ca_bundle "[lindex $args 0]"
+    set cert_choices "[lindex $args 1]"
+    set duplicate " "
+    if { $rest_files eq 0 || $do_restore } {
+        set fh_ca_bundle [open $fn_ca_bundle r]
+        set ca_bundle_data [read $fh_ca_bundle]
+        close $fh_ca_bundle
+        set ca_bundle_split [split [string map "{-----END CERTIFICATE-----} \001" $ca_bundle_data] "\001"]
+        set final ""
+        # Grab Subject Name and Serial number from each certificate
+        foreach subject $ca_bundle_split {
+            if {$subject eq {}} {
+                continue
+            }
+            set a [string first Subject: $subject]
+            set b [string first \n $subject $a]
+            set ab [string range $subject $a $b]
+            set c [expr {[string first O= $ab] +2}]
+            if { $c < 2 }{
+                set c [expr {[string first CN= $ab] +2}]
+            }
+            set d [expr {[string first , $ab $c] -1}]
+            # Deal with case were comma is not present after subject name
+            if { $d < 0 }{
+                set dc [string range $ab $c end-1]
+            # Deal with case were text is not able to be located using common name, just grab the first 30 characters
+            } elseif { $d > 2000 }{
+                set dc [string range $ab $c 47]
+            } else {
+                set dc [string range $ab $c $d]
+            }
+            set f [expr {[string first Number: $subject] +7}]
+            set g [expr {[string first Signature $subject $f] -1}]
+            set fg [string range $subject $f $g]
+            # Remove spaces and new line characters from serial number
+            set fg_nospace [string map {" " "" "\n" "" ":" ""} $fg]
+            set first_5 [string map {"(" ""} [string range $fg_nospace 0 4]]
+            # -cert flag returns list of selected root certificates
+            if { $do_certs }{
+                foreach selection $cert_choices {
+                    if { $first_5 eq $selection }{
+                        # setup to remove duplicate root certificates - tmos supplied ca-bundle can have duplicates
+                        set i 0
+                        set duplicate_split [split [string map "{ } \001" $duplicate] "\001"]
+                        foreach dup $duplicate_split {
+                            if { $dup eq $first_5 }{
+                                incr i
+                            }
+                        }
+                        # add certificate if not a duplicate
+                        if { $i < 1 }{
+                            append final "${subject}-----END CERTIFICATE-----\n"
+                            puts [tmsh::log notice "User:'${username}' Modified CA-Bundle, adding the following Root CA:(SN) ${fg_nospace} Name:${dc}"]
+                            append duplicate "$first_5 "
+                        }
+                    }
+                }
+            } elseif { $dc !="" || $fg_nospace !="" || $restore_table_name eq 1 }{
+                if { $restore_return eq 0 && $restore_table_name eq 0 }{
+                    append final "${dc},SN:${fg_nospace}\t${first_5}\n"
+                } elseif { $restore_table_name eq 1 }{
+                    set table_cert [string first ### $subject]
+                    if { $table_cert > -1 && $table_cert < 500 } {
+                        set ending "$subject-----END CERTIFICATE-----"
+                        set table_certificate [string range $ending [string first -----BEGIN $ending] [ expr { [string first -----END $ending] +24 }]]
+                        append final  "{ row { \"[string map {"\n" " "} $table_certificate]\" \"[string range $subject 4 [expr { [string first \n $subject 1] -1 }]]\" } }"
+                    }
+
+                } else {
+                    set table_cert [string first ### $subject]
+                    if { $table_cert < 0 || $table_cert > 500 } {
+                        append final "${first_5} "
+                    }
+                }
+            }
+        }
+        if { $do_restore && $restore_table_name eq 0 }{
+            set final [string map {"(" ""} $final]
+        }
+        return $final
+    }
+    if { $rest_files }{
+        # Pull TMOS ca-bundle file into list
+        catch { set fn_bak_ca_bundle [exec ls -t /config/ssl/ssl.crt/] } err
+        if { $::errorCode != "" } {
+            puts "Error during file lookup in ssl certificate directory: ${err}"
+            error "Error during file lookup in ssl certificate directory: ${err}"
+        }
+        foreach bak [join "$fn_bak_ca_bundle"] {
+            set full_path "/config/ssl/ssl.crt/$bak"
+            if { [iapp_is full_path $fn_ca_bundle] }{
+                set fn_bak_exists 1
+                break
+            } else {
+                set fn_bak_exists 0
+            }
+        }
+        if { $fn_bak_exists }{
+            puts "Backup of factory TMOS ca-bundle /config/ssl/ssl.crt/ca-bundle.crt, at:${fn_ca_bundle}, already exists. No need to backup"
+        } elseif { $fn_bak_exists eq 0 }{
+            puts "Backing up factory TMOS ca-bundle /config/ssl/ssl.crt/ca-bundle.crt, to ${fn_ca_bundle}."
+            catch { exec cp /config/ssl/ssl.crt/ca-bundle.crt ${fn_ca_bundle} } err
+            if { $::errorCode != "" } {
+                puts "Error creating backup file:${fn_ca_bundle}: ${err}"
+                error "Error creating backup file:${fn_ca_bundle}: ${err}"
+            }
+        }
+        set restore_list [lsearch -all -inline $fn_bak_ca_bundle *_bak*]
+        set restore_final ""
+        foreach res $restore_list {
+            append restore_final "${res}\t${res}\n"
+        }
+        if { $restore_final == "" }{
+            return "No restore files found"
+        } else {
+            return $restore_final
+        }
+    }
+}
+}
+
+
+sys application template f5.aws_advanced_ha.v1.3.0rc1 {
+    actions {
+        definition {
+            html-help {
+<p><strong>AWS Advanced HA iApp Template</strong></p>
+<p>This template facilitates deploying a HA Cluster Across AZs and/or Managing AWS Routes to the BIG-IP cluster.<br></br>
+For a complete walkthrough of this iApp, as well as detailed information and help, see the deployment guide at http://f5.com/pdf/deployment-guides/f5-aws-ha-dg.pdf<br></br>
+All of the help for this iApp template is found inline. Select <b>Yes, show inline help</b> from the inline help question.<br></br>
+</p>
+BEFORE YOU START:<br></br>
+<i>General</i>
+<ul>
+    <li>Ensure that only one instance of the aws_advanced_ha iApp is running at a time</li>
+    <li>Ensure that LTM (Local Traffic Manager) is provisioned. Go to: System > Resource Provisioning</li>
+    <li>Ensure your AWS Access and Secret Keys are configured on the BIG-IP. Go to: System > Configuration > AWS > Global Settings </li>
+    <li>Ensure DHCP is disabled. BIG-IPs VEs use DHCP by default but Device Service Clustering does not currently support DHCP. Go to: System > Platform > Management Port Configuration </li>
+    <li>Ensure Security Groups and your port allow list on Self IP for your public interface allows UDP 1026 and TCP 4353. Go to: Network > Self IPs > Port Lockdown </li>
+    <li>Ensure you can successfully ConfigSync your cluster.</li>
+</ul>
+<i>HA Cluster Across AZs:</i>
+<ul>
+    <li>Ideally, this is suited for deployment with a single Traffic interface (i.e. the external (or 'public') nic)</li>
+    <li>Configure a default gateway in a LOCAL_ONLY partition. Ensure the partition is set to Device Group None and Traffic Group is set traffic-group-local-only. Go to: System > Users : Partition List</li>
+    <li>Ensure you have NO Floating Addresses (VIPs, Self IPs, SNATs, etc.). Note: One exception is 0.0.0.0 is allowed in Traffic Group 1 if allowing outbound traffic. Go to: Device Management > Traffic Groups > traffic-group-1</li>
+    <li>Configure a Virtual Server for each AZ</li>
+    <li>Ensure Virtual Addresses for those VIPs to be placed in special Traffic Group None. Go to: Local Traffic > Virtual Servers > Virtual Address List</li>
+    <li>See associated AWS Advanced HA Deployment documentation for more details</li>
+</ul>
+            }
+            implementation {
+                tmsh::include f5.iapp.1.5.2.cli
+iapp_template start
+
+set is_v13_0        [iapp_tmos_version >= 13.0]
+set app $tmsh::app_name
+set az1_vs_addr ""
+set az2_vs_addr ""
+set script_active {#!/bin/sh
+#
+# NOTE:
+# This file will be installed in /config/failover/active and it will
+# be called by /usr/lib/failover/f5active
+#
+# - This file is for customer additions for tasks
+#   to be performed when failover goes to active
+#
+# - It is possible for this script to be called multiple times, so it
+#   should not persist on the system so it won't fill up the process table
+#
+
+python /config/failover/aws_advanced_failover.py
+}
+set script_tgrefresh {#!/bin/sh
+    #
+    # NOTE:
+    # This file will be installed in /config/failover/tgrefresh and it will
+    # be called by /usr/lib/failover/f5tgrefresh
+    #
+    # - This file is for customer additions for tasks
+    #   to be performed when failover resolves an active/active conflict.
+    #
+    # - Refer to /usr/lib/failover/f5tgrefresh for more information
+    #
+    # Grab AWS access and secret keys
+
+    logger -p local0.notice "$0 : Starting tgrefresh script."
+    export AWS_ACCESS_KEY=$(tmsh list sys global-settings aws-access-key | grep "aws" | sed "s/aws-access-key //g")
+    global_access_error=$?
+    if [ $global_access_error != 0 ]
+     then
+     logger -p local0.notice "$0 : global-settings command failed, unable to retrieve aws access key. Error code $global_access_error"
+     elif [ $AWS_ACCESS_KEY = "none" ]
+      then
+       logger -p local0.notice "$0 : global-settings aws-access-key field is empty, verify you have entered your aws access key."
+    fi
+    export AWS_SECRET_KEY=$(tmsh list sys global-settings aws-secret-key | grep "aws" | sed "s/aws-secret-key //g")
+    global_secret_error=$?
+    if [ $global_secret_error != 0 ]
+     then
+     logger -p local0.notice "$0 : global-settings command failed, unable to retrieve aws secret key. Error code $global_secret_error"
+    elif [ $AWS_SECRET_KEY = "none" ]
+    then
+     logger -p local0.notice "$0 : global-settings aws-secret-key field is empty, verify you have entered your aws secret key."
+    fi
+    # Locate ec2 version and directory
+    version=$(ls /opt/aws/ | grep ec2)
+    ls_error=$?
+    if [ $ls_error != 0 ]
+     then
+     logger -p local0.notice "$0 : unable to locate ec2 directory, list directory command failed (ls). Error code $ls_error"
+    fi
+    # Set home directory paths
+    export EC2_HOME=/opt/aws/$version
+    export PATH=$PATH:$EC2_HOME/bin
+    export JAVA_HOME=/usr/lib/jvm/java
+    export JAVA_HOME=/usr/lib/jvm/jre
+    # Set variable defaults
+    az=0
+    eip=
+    az1=
+    az2=
+    e=0
+    # Grab iApps current application service EIP table settings and parse each column into correct variable
+    for eip_map in $(tmsh list sys application service <APP>.app/<APP> tables { eip_mappings__mappings } | grep "row " | sed -e "s/row {\(.*\)}/\1/")
+    do
+    if [ $e = 0 ]
+     then
+      eip=$(echo "$eip${eip_map},")
+      e=1
+    elif [ $e = 1 ]
+     then
+     eip_map=$(echo $eip_map | sed -e "s/\(\/\).*\(\/\)//")
+     az1=$(echo "$az1${eip_map},")
+     e=2
+    elif [ $e = 2 ]
+     then
+      eip_map=$(echo $eip_map | sed -e "s/\(\/\).*\(\/\)//")
+      az2=$(echo "$az2${eip_map},")
+      e=0
+    else
+     break
+    fi
+    done
+    # Check each Availability Zone 1 IP addressess to determine if BIG-IP is local to az1
+    for ip in $( echo $az1 | sed "s/,/ /g"); do
+     rt_lookup_output=$(tmsh show net route lookup $ip | grep 'connected')
+     rt_error=$?
+     if [ $rt_error != 0 ]
+     then
+      logger -p local0.notice "$0 : Route lookup command failed, unable to retrieve route list. Error code $rt_error"
+      break
+     elif [ -n "$rt_lookup_output" ]
+      then
+       logger -p local0.notice "$0 : $ip is directly connected"
+      # at least one ip is local, so set az equal to az1
+       az=az1
+       break
+     else
+      logger -p local0.notice "$0 : $ip is not directly connected"
+    fi
+   done
+   # Check each Availability Zone 2 IP addressess to determine if BIG-IP is local to az2 (only if az is still equal to 0).
+   if [ $az = 0 ]
+    then
+    for ip in $( echo $az2 | sed "s/,/ /g"); do
+     rt_lookup_output=$(tmsh show net route lookup $ip | grep 'connected')
+     rt_error=$?
+     if [ $rt_error != 0 ]
+     then
+      logger -p local0.notice "$0 : Route lookup command failed, unable to retrieve route list. Error code $rt_error"
+      break
+     elif [ -n "$rt_lookup_output" ]
+      then
+       logger -p local0.notice "$ip is directly connected"
+        # at least one ip is local, so set az equal to az2
+       az=az2
+       break
+      else
+       logger -p local0.notice "$ip is not directly connected"
+     fi
+    done
+   fi
+   # Match non local az addressess (standby ip addresses) against AWS EIP assignment to determine if standby BIG-IP owns any EIP addressess.
+   if [ $az = az1 ]
+    then
+     eip_output=$(ec2-describe-addresses --filter private-ip-address=$az2 --filter public-ip=$eip)
+     standby_vs=$az2
+   elif [ $az = az2 ]
+    then
+     eip_output=$(ec2-describe-addresses --filter private-ip-address=$az1 --filter public-ip=$eip)
+     standby_vs=$az1
+   elif [ $az = 0 ]
+    then
+     logger -p local0.notice "No local routes detected"
+   else
+    logger -p local0.notice "Error in route lookup, unable to determine which BIG-IP should be active."
+   fi
+   ec2_error=$?
+   if [ $ec2_error != 0 ]
+    then
+     logger -p local0.notice "$0 : EC2 command failed, unable to retrieve EIP list. Error code $ec2_error"
+    else
+     if [ -n "$eip_output" ]
+      then
+       logger -p local0.notice "$0 : Standby unit still owns EIPs (Returned EIP's associated with $standby_vs = $eip_output). Forcing Active unit to Standby NOW!"
+       hostname=$(echo $HOSTNAME)
+       hostnametg=/Common/"$hostname"-traffic-group
+       tmsh run sys failover standby traffic-group "$hostname"-traffic-group
+      else
+       logger -p local0.notice "$0 : Standby unit does not own any EIPs (Returned EIP's associated with $standby_vs = $eip_output). No Action required"
+     fi
+    fi
+}
+set script_tgrefresh [string map "<APP> $app" $script_tgrefresh]
+
+set script_tgrefresh_awscli {#!/bin/sh
+    #!/bin/sh
+    #
+    # NOTE:
+    # This file will be installed in /config/failover/tgrefresh and it will
+    # be called by /usr/lib/failover/f5tgrefresh
+    #
+    # - This file is for customer additions for tasks
+    #   to be performed when failover resolves an active/active conflict.
+    #
+    # - Refer to /usr/lib/failover/f5tgrefresh for more information
+
+    logger -p local0.notice "$0 : Starting tgrefresh script."
+
+    # Locate aws version and directory
+    version=$(ls /opt/aws/ | grep awscli)
+    ls_error=$?
+    if [ $ls_error != 0 ]
+     then
+     logger -p local0.notice "$0 : unable to locate awscli directory, list directory command failed (ls). Error code $ls_error"
+    fi
+    # Set home directory paths for awscli site package
+    AWSCLI=/opt/aws/$version
+    export PATH=$PATH:$AWSCLI/bin
+    export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib64/python2.6/site-packages
+    export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib/python2.6/site-packages
+
+    # Set variable defaults
+    az=0
+    eip=
+    az1=
+    az2=
+    e=0
+
+    # Grab iApps current application service EIP table settings and parse each column into correct variable
+    for eip_map in $(tmsh list sys application service HA_Across_AZs.app/HA_Across_AZs tables { eip_mappings__mappings } | grep "row " | sed -e "s/row {\(.*\)}/\1/"); do
+     if [ $e = 0 ]
+      then
+       eip=$(echo "$eip${eip_map}")
+       e=1
+     elif [ $e = 1 ]
+      then
+       eip_map=$(echo $eip_map | sed -e "s/\(\/\).*\(\/\)//")
+       az1=$(echo "$az1${eip_map}")
+       e=2
+     elif [ $e = 2 ]
+      then
+       eip_map=$(echo $eip_map | sed -e "s/\(\/\).*\(\/\)//")
+       az2=$(echo "$az2${eip_map}")
+       e=0
+     else
+      break
+     fi
+    done
+
+    # Check each Availability Zone 1 IP addressess to determine if BIG-IP is local to az1
+    for ip in $( echo $az1 | sed "s/,/ /g"); do
+     rt_lookup_output=$(tmsh show net route lookup $ip | grep 'connected')
+     rt_error=$?
+     if [ $rt_error != 0 ]
+      then
+       logger -p local0.notice "$0 : Route lookup command failed, unable to retrieve route list. Error code $rt_error"
+       break
+     elif [ -n "$rt_lookup_output" ]
+      then
+       logger -p local0.notice "$0 : $ip is directly connected"
+      # at least one ip is local, so set az equal to az1
+       local=$ip
+       az=az1
+       break
+     else
+      logger -p local0.notice "$0 : $ip is not directly connected"
+     fi
+    done
+
+    # Check each Availability Zone 2 IP addressess to determine if BIG-IP is local to az2 (only if az is still equal to 0).
+    if [ $az = 0 ]
+     then
+      for ip in $( echo $az2 | sed "s/,/ /g"); do
+       rt_lookup_output=$(tmsh show net route lookup $ip | grep 'connected')
+       rt_error=$?
+       if [ $rt_error != 0 ]
+        then
+         logger -p local0.notice "$0 : Route lookup command failed, unable to retrieve route list. Error code $rt_error"
+         break
+       elif [ -n "$rt_lookup_output" ]
+        then
+         logger -p local0.notice "$ip is directly connected"
+         # at least one ip is local, so set az equal to az2
+         local=$ip
+         az=az2
+         break
+       else
+        logger -p local0.notice "$ip is not directly connected"
+       fi
+      done
+    fi
+
+    # Match non local az addressess (standby ip addresses) against AWS EIP assignment to determine if standby BIG-IP owns any EIP addressess.
+    region=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep -oP '\"region\" : \"\K[^\"]+')
+    if [ $az = az1 ]
+     then
+      eip_output=$(aws ec2 describe-addresses --region $region --filters "Name=public-ip,Values=$eip" |grep PrivateIpAddress |cut -f 2 -d ':' |cut -f 2 -d '"')
+      if [ $az2 = $eip_output ]
+        then
+            standby_vs=$az2
+        else
+            standby_vs=""
+      fi
+    elif [ $az = az2 ]
+     then
+      eip_output=$(aws ec2 describe-addresses --region $region --filters "Name=public-ip,Values=$eip" |grep PrivateIpAddress |cut -f 2 -d ':' |cut -f 2 -d '"')
+      if [ $az1 = $eip_output ]
+        then
+            standby_vs=$az1
+      else
+        standby_vs=""
+      fi
+
+    elif [ $az = 0 ]
+     then
+      logger -p local0.notice "No local routes detected"
+    else
+      logger -p local0.notice "Error in route lookup, unable to determine which BIG-IP should be active."
+    fi
+    ec2_error=$?
+    if [ $ec2_error != 0 ]
+     then
+      logger -p local0.notice "$0 : EC2 command failed, unable to retrieve EIP list. Error code $ec2_error"
+    else
+     if [ -n "$standby_vs" ]
+      then
+       logger -p local0.notice "$0 : Standby unit still owns EIPs (Local address is ip:$local EIP:$eip associated with ip:$eip_output). Forcing Active unit to Standby NOW!"
+       #hostname=$(echo $HOSTNAME)
+       #hostnametg=/Common/"$hostname"-traffic-group
+       #tmsh run sys failover standby traffic-group "$hostname"-traffic-group
+       tmsh run sys failover standby traffic-group "traffic-group-1"
+      else
+       logger -p local0.notice "$0 : Standby unit does not own any EIPs (Local address is ip:$local EIP:$eip associated with $eip_output). No Action required"
+      fi
+    fi
+}
+
+set aws_parse_network_description {#!/usr/bin/env python
+# Parse the output of ec2-describe-network-interfaces to return the ENI
+# for a specified private address and instance ID.
+#
+# The output of ec2-describe-network-interfaces (as of ec2-api-tools-1.6.5.4 )
+#
+# NETWORKINTERFACE        eni-62dd430b            subnet-a757c7ce vpc-ad57c7c4 us-west-2a      133968671134            false   in-use  02:84:43:10:77:8d 10.0.1.42               true
+# GROUP   sg-321f025e     allow-all-traffic
+# ATTACHMENT      i-43a1b570      eni-attach-09c36060     attached        true
+# ASSOCIATION     50.112.166.158  133968671134    eipassoc-bb492bd2 10.0.1.145
+# ASSOCIATION     50.112.161.213  133968671134    eipassoc-e44c2e8d 10.0.1.146
+# PRIVATEIPADDRESS        10.0.1.42
+# PRIVATEIPADDRESS        10.0.1.243
+# PRIVATEIPADDRESS        10.0.1.145
+# PRIVATEIPADDRESS        10.0.1.146
+# PRIVATEIPADDRESS        10.0.1.147
+# PRIVATEIPADDRESS        10.0.1.148
+# PRIVATEIPADDRESS        10.0.1.149
+# PRIVATEIPADDRESS        10.0.1.150
+# PRIVATEIPADDRESS        10.0.1.151
+# PRIVATEIPADDRESS        10.0.1.152
+
+import getopt, sys
+
+def PrintUsageAndExit():
+   sys.stderr.write("Usage: -i <Instance ID> -p <Private IP address> -f <Output of ec2-describe-network-interfaces>\n")
+   sys.exit()
+
+def GetSubNetByIP(InFile, PrivateIP):
+   subnet = None
+   privateip = None
+   for line in InFile:
+       """Lines starting with "NETWORKINTERFACE" describe a new network
+          interface entry."""
+       if line.split()[0] == "NETWORKINTERFACE":
+           """Locate and copy the subnet."""
+           subnet = line.split("subnet-")[1].split()[0]
+       """Lines starting with "PRIVATEIPADDRESS" have private IP addresses"""
+       if line.split()[0] == "PRIVATEIPADDRESS":
+           privateip = line.split()[1]
+           if privateip == PrivateIP:
+               return "subnet-" + subnet
+   return None
+
+def GetENIBySubNet(InFile, InstanceID, SubNet):
+   ENI = None
+   subnet = None
+   instance = None
+   for line in InFile:
+       """Lines starting with "NETWORKINTERFACE" describe a new network
+          interface entry."""
+       if line.split()[0] == "NETWORKINTERFACE":
+           """Locate and copy the ENI"""
+           ENI = "eni-" + line.split("eni-")[1].split()[0]
+           """Locate and copy the subnet."""
+           subnet = "subnet-" + line.split("subnet-")[1].split()[0]
+       """Lines starting with "ATTACHMENT" have the instance ID"""
+       if line.split()[0] == "ATTACHMENT":
+           instance = line.split()[1]
+           """Is this a match?"""
+           if instance == InstanceID:
+               if subnet == SubNet:
+                   return ENI
+   return None
+
+def main():
+   try:
+       options, args = getopt.getopt(sys.argv[1:], "hi:p:f:")
+   except getopt.error:
+       PrintUsageAndExit()
+   InstanceID = None
+   PrivateIPAddr = None
+   InFilePath = None
+   for option, arg in options:
+       if option in ("-h"):
+           PrintUsageAndExit()
+       elif option in ("-i"):
+           InstanceID = arg
+       elif option in ("-p"):
+           PrivateIPAddr = arg
+       elif option in ("-f"):
+           InFilePath = arg
+
+   if InstanceID == None:
+       PrintUsageAndExit()
+   if PrivateIPAddr == None:
+       PrintUsageAndExit()
+   if InFilePath == None:
+       PrintUsageAndExit()
+
+   """Locate the subnet for the specified private IP address"""
+   try:
+       InFile = open(InFilePath, "rb")
+   except IOError:
+       sys.stderr.write("Unable to open file.")
+       sys.exit(1)
+
+   SubNet = GetSubNetByIP(InFile, PrivateIPAddr)
+   if SubNet == None:
+       sys.stderr.write("Unable to locate subnet.")
+       sys.exit(2)
+
+   """Locate the ENI on this instance corresponding to the subnet above"""
+   try:
+       InFile.seek(0)
+   except IOError:
+       sys.stderr.write("Unable to rewind file.")
+       sys.exit(3)
+
+   ENI = GetENIBySubNet(InFile, InstanceID, SubNet)
+   if ENI == None:
+       sys.stderr.write("Unable to locate ENI.")
+       sys.exit(4)
+
+   """Print to stdout"""
+   print ENI
+
+if __name__ == "__main__":
+   main()
+}
+set script_tgrefresh_awscli [string map "<APP> $app" $script_tgrefresh_awscli]
+set failover_script {#!/usr/bin/python
+import glob
+import os
+import shlex
+import subprocess
+import sys
+import commands
+import tempfile
+import logging
+import logging.handlers
+
+
+def setEnvironmentVariables() :
+    ec2Paths = execSuccessOrDie("""find /opt/aws -maxdepth 1 -name "ec2-api-tools-*" -type d""")
+    ec2Paths = ec2Paths.split('\n')
+    if len(ec2Paths) == 1 :
+        os.environ["EC2_HOME"] = ec2Paths[0];
+    else :
+        ec2Versions = list()
+        for line in ec2Paths :
+            if line.startswith("/opt/aws/ec2-api-tools-") :
+                ec2Versions.append(line.replace("/opt/aws/ec2-api-tools-", "", 1))
+
+        if len(ec2Versions) == 0 :
+            logLTM.logErrorAndFail("/opt/aws/ec2-api-tools* is empty.")
+
+        filteredVersions = list()
+        for version in ec2Versions :
+            try:
+                map(int, version.split('.'))
+            except :
+                logLTM.logDebug( \
+                    "Unexpected format of path /opt/aws/ec2-api-tools-" + \
+                    version)
+            else :
+                filteredVersions.append(version)
+
+        if len(filteredVersions) == 0 :
+            # pick any path
+            ec2Choice = ec2Versions[0]
+        else :
+            filteredVersions.sort(key=lambda s: map(int, s.split('.')))
+            ec2Choice = filteredVersions[len(filteredVersions) - 1]
+
+        os.environ["EC2_HOME"] = "/opt/aws/ec2-api-tools-" + ec2Choice
+        if len(ec2Versions) > 1 :
+            logLTM.logDebug( \
+                "multiple versions of ec2 tools were installed; using one of them: " + \
+                os.environ["EC2_HOME"])
+
+    os.environ["EC2_JVM_ARGS"] = "-Xss256k -Xms8m -XX:+UseSerialGC"
+    os.environ["JAVA_HOME"] = "/usr/java/openjdk/"
+    os.environ["PATH"] += os.pathsep + os.environ["EC2_HOME"] + "/bin"
+
+
+def commandOutput(command) :
+    # execute command and return status, output and error of the command
+
+    list = shlex.split(command)
+    try:
+        proc = subprocess.Popen(list, stdout = subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        (output, error) = proc.communicate()
+        status = proc.returncode
+    except Exception, ex:
+        exceptionName = type(ex).__name__
+        exceptionValue = str(sys.exc_info()[1])
+        logLTM.log(logging.ERROR, "An exception of type " + exceptionName + \
+            " with message " + exceptionValue + \
+            " occured while executing command '" + command + "'")
+        return (-1, exceptionValue, exceptionName)
+
+    if status != 0 or error :
+        message = " command: " + command + " ended with status " + \
+            str(status) + " had stdout: " + output + " and stderr: " + error
+        logLTM.log(logging.DEBUG, message)
+
+    return (status, output[:-1], error)
+
+
+# encompasses the common use of commandOutput
+# (when specific reason of an a failure is not important)
+# do not call directly, call execSuccessOrDie or execDoNotDie instead
+# TODO: consider grouping commandOutput, executeCommand, execSuccessOrDie,
+# and execDoNotDie into class without variables (after beta)
+def executeCommand(command, extraMessage = "") :
+    (status, output, error) = commandOutput(command)
+    if status != 0 :
+        if extraMessage :
+            extraMessage = " " + extraMessage
+
+        errorMessage = "Failed command: \"" + command + "\"" + extraMessage
+        return (False, output, errorMessage)
+
+    return (True, output, "")
+
+
+# execute command, return output
+# in case of an error: log and exit the script
+def execSuccessOrDie(command, extraMessage = "") :
+    (successful, output, errorMessage) = executeCommand(command, extraMessage)
+    if not successful :
+        logLTM.logErrorAndFail(errorMessage)
+
+    return output   # supposed to be reachable only if the command was successful
+
+
+# execute command, return output and if command executed successfully
+# in case of an error: log and continue
+def execDoNotDie(command, extraMessage = "") :
+    (successful, output, errorMessage) = executeCommand(command, extraMessage)
+    if not successful :
+        logLTM.log(logging.ERROR, errorMessage)
+
+    return (successful, output)
+
+
+class logWrapper :
+    LoggerHolder = logging.getLogger(__name__)
+    debugLogging = False
+
+    def __init__(self, logFacility):
+        self.LoggerHolder.setLevel(logging.DEBUG)
+        handler = logging.handlers.SysLogHandler(facility=logFacility,
+            address='/dev/log')
+        self.LoggerHolder.addHandler(handler)
+        self.debugLogging = False
+
+    def log(self, type, message) :
+        # send message to the log
+        module = "aws_advanced_failover:"
+        self.LoggerHolder.log(type, module + " " + message)
+
+    def logDebug(self, message):
+        # log debug message when debugLogging is True
+        if self.debugLogging :
+            self.log(logging.DEBUG, message)
+
+    def logMajorRouteManagementError(self, message) :
+        # log major non-fatal route management error
+        self.log(logging.ERROR, message +
+            ' Cannot continue with the route management.')
+
+    def logErrorAndFail(self, message):
+        # log error message and fail
+        self.log(logging.ERROR, message + " Failed to complete failover.")
+        sys.exit(1)
+
+    def setDebugLogging(self, value) :
+        self.debugLogging = value
+
+
+def getAWSKey(key) :
+    # Authorization credentials for the AWS EC2 API tools
+
+    # invalid keys if tmsh lets you set them),
+    # show that you get the right access key / secret key out.
+    awsKeyInfo = execSuccessOrDie("tmsh -a list sys global-settings " + key)
+    awsKeyLines = awsKeyInfo.split('\n')
+    awsKeyFound = False
+    for line in awsKeyLines :
+        tokens = line.split()
+        if len(tokens) == 2 and tokens[0] == key :
+            awsKeyFound = True
+            awsKey = tokens[1]
+            break
+
+    if awsKeyFound != True :
+        logLTM.logErrorAndFail(key + " is not set. Use 'tmsh sys global-settings " + \
+            key + "' to set it in order for HA to work on AWS.")
+
+    return (awsKey)
+
+
+def readIID(awsIID) :
+    # read parameters from IID
+    try:
+        fo = open(awsIID, "r")
+        iid = fo.read()
+        fo.close
+    except:
+        logLTM.logErrorAndFail("Could not read IID at " + awsIID)
+
+    # cannot use json or simplejson because they are not installed on 11.5
+    # input of interest looks like:
+    # "region" : "us-east-1"
+    iidDictionary = {};
+    iidLines = iid.split('\n')
+    for line in iidLines :
+        tokens = line.split('"')
+        if len(tokens) == 5 :
+             iidDictionary[tokens[1]] = tokens[3]
+
+    return (iidDictionary)
+
+
+def getIIDValue(iidDictionary, key) :
+    # get a single value for iid dictionary
+    try:
+        value = iidDictionary[key]
+    except KeyError:
+        logLTM.logErrorAndFail("Could not find value for " + key + " in IID dictionary")
+    except Exception, ex:
+        logLTM.logErrorAndFail("An exception of type " + type(ex).__name__ + \
+            " with message " + str(sys.exc_info()[1]) + \
+            " occured while getting value for " + key + " in IID dictionary.")
+
+    logLTM.logDebug(key + " is " + value)
+    return (str(value))
+
+
+def instanceSanityCheck(awsIID, instance, region) :
+    # verify that AWS keys are correct
+
+    # Check that extracted instance-id and region as well as
+    # user entered aws-access-key and aws-secret-key are correct.
+    (status, instanceStatus, error) = \
+        commandOutput("ec2-describe-instance-status " + instance + " --region " + \
+            region + " --show-empty-fields")
+
+    if status != 0 :
+        if error.find("Client.AuthFailure") != -1 :
+            logLTM.logErrorAndFail( \
+                """Incorrect aws-access-key or aws-secret-key provided. Use 'tmsh sys global-settings aws-access-key' or 'tmsh sys global-settings aws-secret-key' to correct it.""")
+
+        logLTM.log(logging.ERROR, awsIID + \
+            " document is invalid. Re-download it from http://169.254.169.254/latest/dynamic/instance-identity/document")
+        logLTM.logErrorAndFail("Instance sanity check failed with error: " + error)
+
+
+def readIApp(EIPMapping, destinations, iAppName) :
+    # read data provided by user through iApp
+    interfaceVLAN = ''
+    iAppData = execSuccessOrDie("tmsh list sys application service " + iAppName)
+    AppDataByLines = iAppData.split('\n')
+
+    # do a separate pass to check for debug logging setting
+    # to allow debug logging of parsing
+    insideDebugLogging = False
+    for line in AppDataByLines :
+        tokens = line.split()
+        if len(tokens) == 2 and tokens[0] == "options__log_debug" and\
+                tokens[1] == "{" : # balancing brace }
+            insideDebugLogging = True
+
+        elif insideDebugLogging == True and len(tokens) == 2 and\
+                tokens[0] == "value" :
+            insideDebugLogging = False
+            if tokens[1] == "yes" :
+                logLTM.setDebugLogging(True)
+
+    # the main pass
+    tableFound = False
+    insideEIPMappings = False
+    insideSubnetRoutes = False
+    depth = 0
+    EIPColumn = -1
+    VIP1Column = -1
+    VIP2Column = -1
+    routeTableColumn = -1
+    destinationCIDRColumn = -1
+    ColumnIndicesForEIPAreKnown = False
+    ColumnIndicesForRoutesAreKnown = False
+    insideVLANInterface = False
+    for line in AppDataByLines :
+        # for example, about EIP format
+        tokens = line.split()
+        if tableFound == False and len(tokens) == 2 and tokens[0] == "tables" and \
+                tokens[1] == "{" : # balancing brace }
+            tableFound = True
+
+        elif tableFound == True and len(tokens) == 2 and\
+                (tokens[0] == "eip_mappings__mappings" or\
+                tokens[0] == "subnet_routes__cidr_blocks") and\
+                tokens[1] == "{" : # balancing brace }
+            depth = 1
+            if tokens[0] == "eip_mappings__mappings" :
+                insideEIPMappings = True
+            else :
+                insideSubnetRoutes = True
+
+        elif insideEIPMappings == True and len(tokens) == 6 and \
+            tokens[0] == "column-names" and \
+            tokens[1] == "{" and tokens[5] == "}" :
+            # parsing the "header" line that looks like:
+            # column-names { eip az1_vip az2_vip }
+            # it defines order of the columns in the IP table
+            # the column names are dictated by the application,
+            # so exceptions are not expected here
+            try :
+                EIPColumn = tokens.index("eip")
+            except ValueError:
+                logLTM.logErrorAndFail("Could not find EIP column in the iApp description.")
+
+            try :
+                VIP1Column = tokens.index("az1_vip")
+            except ValueError:
+                logLTM.logErrorAndFail("Could not find VIP1 column in the iApp description.")
+
+            try :
+                VIP2Column = tokens.index("az2_vip")
+            except ValueError:
+                logLTM.logErrorAndFail("Could not find VIP2 column in the iApp description.")
+
+            if EIPColumn == -1 or VIP1Column == -1 or VIP2Column == -1 :
+                logLTM.logErrorAndFail( \
+                    "Unexpected error: eip or az1_vip or az2_vip2 columns are missing in the iApp description.")
+
+            ColumnIndicesForEIPAreKnown = True
+            logLTM.logDebug("columns: EIP " + str(EIPColumn) + \
+                ", AZ1 " + str (VIP1Column) + ", AZ2 " + str(VIP2Column))
+
+        elif insideEIPMappings == True and ColumnIndicesForEIPAreKnown == True and \
+            len(tokens) == 6 and tokens[0] == "row" and tokens[1] == "{" and \
+            tokens[5] == "}" :
+            # there is one line per EIP; it looks like
+            # row { 52.3.33.44 /Common/10.0.1.44 /Common/10.0.11.44 }
+            # order of the columns is dictated by the "header" line
+            EIP = tokens[EIPColumn]
+            VIP1 = tokens[VIP1Column]
+            slashIndex = VIP1.rfind("/")
+            if slashIndex != -1 :
+                VIP1 = VIP1[slashIndex + 1 :]
+
+            VIP2 = tokens[VIP2Column]
+            slashIndex = VIP2.rfind("/")
+            if slashIndex != -1 :
+                VIP2 = VIP2[slashIndex + 1 :]
+
+            logLTM.logDebug("IPs from iApp: " + EIP + " " + VIP1 + " " + VIP2)
+            SingleEIPMapping = [EIP, VIP1, VIP2, -1]
+            EIPMapping.append(SingleEIPMapping)
+
+        elif insideSubnetRoutes == True and len(tokens) == 5 and\
+                tokens[0] == "column-names" and  tokens[1] == "{" and\
+                tokens[4] == "}" :
+            # parsing the "header" line that looks like:
+            # column-names { route_table_id dest_cidr_block }
+            # it defines order of the columns in the subnet table
+            # the column names are dictated by the application,
+            # so exceptions are not expected here
+            try :
+                routeTableColumn = tokens.index("route_table_id")
+            except ValueError:
+                logLTM.logErrorAndFail(\
+                    "Could not find route table column in the iApp description.")
+
+            try :
+                destinationCIDRColumn = tokens.index("dest_cidr_block")
+            except ValueError:
+                logLTM.logErrorAndFail(\
+                    "Could not find destination CIDR column in the iApp description.")
+
+            if routeTableColumn == -1 or destinationCIDRColumn == -1 :
+                logLTM.logErrorAndFail(\
+                    "Unexpected error: route table or destination CIDR" +\
+                    " columns are missing in the iApp description.")
+
+            ColumnIndicesForRoutesAreKnown = True
+            logLTM.logDebug("columns: route table " + str(routeTableColumn) +\
+                ", destination CIDR " + str (destinationCIDRColumn))
+
+        elif insideSubnetRoutes == True and\
+                ColumnIndicesForRoutesAreKnown == True and\
+                len(tokens) == 5 and tokens[0] == "row" and\
+                tokens[1] == "{" and  tokens[4] == "}" :
+            # there is one line per destination CIDR; it looks like
+            # row { rtb-7f297c1d 10.0.17.0/24 }
+            # order of the columns is dictated by the "header" line
+            routeTable = tokens[routeTableColumn]
+            destinationCIDR = tokens[destinationCIDRColumn]
+
+            logLTM.logDebug("Destinations from iApp: " + routeTable + " " +\
+                destinationCIDR)
+            singleCIDR = [routeTable, destinationCIDR]
+            destinations.append(singleCIDR)
+
+        elif insideEIPMappings == True or insideSubnetRoutes == True :
+            # insideEIPMappings and insideSubnetRoutes are not expected
+            # to be True at the same time
+            openCount = line.count("{")
+            closeCount = line.count("}")
+            depth += openCount - closeCount
+            if depth <= 0 :
+                insideEIPMappings = False
+                insideSubnetRoutes = False
+
+        elif len(tokens) == 2 and tokens[0] == "subnet_routes__interface" and\
+                tokens[1] == "{" : # balancing brace }
+            insideVLANInterface = True
+
+        elif insideVLANInterface == True and len(tokens) == 2 and\
+                tokens[0] == "value" :
+            insideVLANInterface = False
+            interfaceVLAN = tokens[1]
+            slashIndex = interfaceVLAN.rfind("/")
+            if slashIndex != -1 :
+                interfaceVLAN = interfaceVLAN[slashIndex + 1 :]
+            logLTM.logDebug("interface VLAN from iApp: " + interfaceVLAN)
+
+    return interfaceVLAN
+
+
+def isVIPLocal(VIP) :
+    # checks if VIP is local to this machine
+    (successful, routes) = execDoNotDie("tmsh show net route lookup " + VIP)
+    if not successful :
+        logLTM.logDebug("could not determine route for VIP: " + VIP)
+        return False
+
+    routesByLines = routes.split('\n')
+    for line in routesByLines :
+        tokens = line.split()
+        if len(tokens) > 2 and tokens[2] == "interface" :
+            return True
+
+    return False
+
+
+def findMatchingVIPs(EIPMapping) :
+    # for each EIP find matching (local) VIP
+    anyMatches = 0
+    logLTM.logDebug("size of EIP mapping array is " + str(len(EIPMapping)))
+
+    for i in range(len(EIPMapping)) :
+        logLTM.logDebug("considering row " + str(i) + ", EIP " + EIPMapping[i][0] + \
+            ", VIP1 " + EIPMapping[i][1] + ", VIP2 " + EIPMapping[i][2])
+
+        if isVIPLocal(EIPMapping[i][1]) :
+            EIPMapping[i][3] = 1
+            anyMatches = 1
+        elif isVIPLocal(EIPMapping[i][2]) :
+            EIPMapping[i][3] = 2
+            anyMatches = 1
+        else :
+            logLTM.log(logging.ERROR, "There is no good matching VIP for EIP " + \
+                EIPMapping[i][0])
+
+    for i in range(len(EIPMapping)) :
+        logLTM.logDebug("EIP " + str(EIPMapping[i][0]) + \
+            ", chosen AZ " + str(EIPMapping[i][3]))
+
+    if anyMatches == 0 :
+        logLTM.log(logging.INFO, "No VIP to EIP mapping exists.")
+
+    return anyMatches
+
+
+def createNetworkDescriptionCache(instance, region) :
+    # return network description cache
+    # file (cache) has to be closed by the caller
+    try :
+        networkDescriptionCache = tempfile.NamedTemporaryFile()
+    except Exception, ex:
+        logLTM.logErrorAndFail( \
+            "Attempt to create networkDescriptionCache caused an exception of type " + \
+            type(ex).__name__ + " with message " + str(sys.exc_info()[1]))
+
+    logLTM.logDebug("networkDescriptionCache is at " + \
+        networkDescriptionCache.name)
+
+    (status, networkDescription, error) = \
+        commandOutput("""ec2-describe-network-interfaces --filter "attachment.instance-id=""" + \
+        instance + """" --region """ + region + " --show-empty-fields")
+    f = open(networkDescriptionCache.name, 'w')
+    f.write(networkDescription)
+    f.flush()
+    if os.stat(networkDescriptionCache.name).st_size == 0 :
+        logLTM.logErrorAndFail("Temporary network description file is empty.")
+
+    return networkDescriptionCache
+
+
+def verifyDeviceGroupConstraints() :
+    # verify that
+    # 1. there is exactly one failover device group
+    # 2. there are no sync-only device groups with exception of "gtm" and
+    #    "device_trust_group" which created by default
+    # 3. the failover group has exactly two devices
+    # return:
+    #   number of sync-failover groups or -1
+    #   number of sync-only groups or -1 (up to two predefined groups are not
+    #       counted)
+    #   number of devices in the only failover device group or -1
+    listDeviceGroups = 'tmsh list cm device-group type devices'
+    (successful, deviceGroups) = execDoNotDie(listDeviceGroups)
+    if not successful :
+        logLTM.log(logging.ERROR, 'Unexpected error.' +
+            ' Could not execute "' + listDeviceGroups + '".')
+        return (-1, -1, -1)
+
+    # expected output per device group looks like:
+    #   cm device-group FailoverGroup {
+    #       devices {
+    #           bigip-A { }
+    #           bigip-B { }
+    #       }
+    #       type sync-failover
+    #   }
+    # there will be several device groups (of different types)
+    deviceGroupsByLines = deviceGroups.split('\n')
+
+    # for simplicity do two passes
+    # the first pass: check limitation 1 and 2
+    failoverDeviceGroups = 0
+    syncOnlyDeviceGroups = 0
+    depth = 0
+    name = ''
+    for line in deviceGroupsByLines :
+        tokens = line.split()
+        depth += line.count('{')
+        depth -= line.count('}')
+        if depth == 1 and len(tokens) == 4 and tokens[0] == 'cm' and\
+                tokens[1] == 'device-group' and\
+                tokens[3] == '{' :  # balancing brace }
+            # new device-group block
+            name = tokens[2]
+        elif depth == 1 and len(tokens) == 2 and tokens[0] == 'type' :
+            if tokens[1] == 'sync-failover' :
+                failoverDeviceGroups += 1
+            elif tokens[1] == 'sync-only' and name != 'gtm' and\
+                    name != 'device_trust_group' :
+                logLTM.log(logging.ERROR, 'sync-only device groups' +
+                    ' are not expected in the advanced failover.' +
+                    ' Check device group ' + name)
+                syncOnlyDeviceGroups += 1
+        # for the next line: balancing brace {
+        elif depth == 0 and len(tokens) == 1 and tokens[0] == '}' :
+            # end of device-group block
+            name = ''
+
+    if failoverDeviceGroups != 1 :
+        logLTM.log(logging.ERROR, 'exactly one sync-failover device group' +
+            ' is expected in the advanced failover, found ' +
+            str(failoverDeviceGroups))
+        # no point to count devices if we do not know what device
+        # group we are talking about
+        return (failoverDeviceGroups, syncOnlyDeviceGroups, -1)
+
+    # the second pass: check limitation 3
+    failover = False
+    withinDevicesSection = False
+    doneWithDevicesSection = False
+    numberOfDevices = 0
+    deviceDepth = 0 # to check if we are inside curly braces assotiated with a
+                    # single device, although have not see any text there.
+                    # so it might be an overkill
+    for line in deviceGroupsByLines :
+        tokens = line.split()
+        if len(tokens) == 4 and tokens[0] == 'cm' and\
+                tokens[1] == 'device-group' and\
+                tokens[3] == '{' :  # balancing brace }
+            # new device group
+            failover = False
+            withinDevicesSection = False
+            doneWithDevicesSection = False
+        elif not withinDevicesSection and len(tokens) == 2 and\
+                tokens[0] == 'devices' and\
+                tokens[1] == '{' :   # balancing brace }
+            withinDevicesSection = True
+            numberOfDevices = 0
+            deviceDepth = 0
+        elif withinDevicesSection :
+            # accommodating two inputs: actually observed and potential
+            # bigip-A { }
+            # or
+            # bigip-A {
+            #   something unknown
+            # }
+            if deviceDepth == 0 and len(tokens) > 1 and\
+                     tokens[1] == '{' :    # balancing brace }
+                numberOfDevices += 1
+
+            deviceDepth += line.count('{')
+            deviceDepth -= line.count('}')
+            if deviceDepth < 0 :
+                withinDevicesSection = False  # reached end of device section
+                doneWithDevicesSection = True
+                # there is exactly one failover group if we are in this loop
+                if failover :
+                    break
+
+        elif not withinDevicesSection and len(tokens) == 2 and\
+                tokens[0] == 'type' and tokens[1] == 'sync-failover' :
+            failover = True
+            if doneWithDevicesSection :
+                break
+
+    if doneWithDevicesSection and failover and numberOfDevices != 2 :
+        logLTM.log(logging.ERROR, 'exactly two devices are expected in' +
+            ' the sync-failover device group, found ' + str(numberOfDevices))
+
+    return (failoverDeviceGroups, syncOnlyDeviceGroups, numberOfDevices)
+
+
+def verifyVirtualAddresses(EIPMappings, routes) :
+    # EIPMappings is true if there are EIP to be reassigned
+    # routes are true if there are routes to be redirected
+    # return number of virtual addresses with violations or
+    # return -1 in case of unrecoverable error
+    # limitation apply only if there are EIP to be reassigned
+    # and disregard status of routes
+    # the high level idea is that
+    # 1. no wildcard servers are associated with traffic group none
+    # 2. virtual address with mask 255.255.255.255 can be associated with
+    #   traffic group none only
+
+    # limitation apply only if there are EIP to be reassigned
+    if not EIPMappings :
+        return 0
+
+    listVirtualAddresses =\
+        'tmsh list ltm virtual-address address mask traffic-group'
+    (successful, virtualAddresses) = execDoNotDie(listVirtualAddresses)
+    if not successful :
+        logLTM.log(logging.ERROR, 'Unexpected error.' +
+            ' Could not execute "' + listVirtualAddresses + '".')
+        return -1
+
+    # expected output per virtual address looks like:
+    #   ltm virtual-address 10.0.1.78 {
+    #       address 10.0.1.78
+    #       mask 255.255.255.255
+    #       traffic-group none
+    #   }
+    virtualAddressesByLines = virtualAddresses.split('\n')
+    VA = '' # virtual address
+    TG = '' # traffic group
+    violations = 0
+    for line in virtualAddressesByLines :
+        tokens = line.split()
+        if len(tokens) == 4 and tokens[0] == 'ltm' and\
+                tokens[1] == 'virtual-address' and\
+                tokens[3] == '{' :
+            # new virtual address
+            VA_name = tokens[2]
+            VA = ''
+            mask = ''
+            TG = ''
+        elif len(tokens) == 2 and tokens[0] == 'address' :
+            VA = tokens[1]
+        elif len(tokens) == 2 and tokens[0] == 'mask' :
+            mask = tokens[1]
+        elif len(tokens) == 2 and tokens[0] == 'traffic-group' :
+            TG = tokens[1]
+        elif len(tokens) == 1 and tokens[0] == '}' :
+            # end of virtual address section
+            if TG == 'none' and (VA.lower() == 'any' or VA == '0.0.0.0'):
+                violations += 1
+                logLTM.log(logging.ERROR, 'Wildcard virtual servers' +
+                    ' cannot be assigned to traffic group "none",' +
+                    ' when Elastic IP Mappings section is configured.' +
+                    ' Check virtual-address ' + VA_name)
+            if mask == '255.255.255.255' and TG != 'none' :
+                violations += 1
+                logLTM.log(logging.ERROR, 'No virtual addresses with mask' +
+                    ' 255.255.255.255 are expected out of traffic group' +
+                    ' "none", when Elastic IP Mappings section is configured.' +
+                    ' Check virtual-address ' + VA_name)
+            VA = ''
+            mask = ''
+            TG = ''
+        else :
+            logLTM.log(logging.ERROR, 'Unexpected output "' + line +
+                '" produced by command "' + listVirtualAddresses + '".')
+
+    return violations
+
+
+def verifyGeneralConstraints(EIPMappings, routes) :
+    # EIPMappings is true if there are EIP to be reassigned
+    # routes are true if there are routes to redirected
+    # Check some general constraints on advanced failover
+    # Since we cannot envision all possible customer configurations,
+    # we do not want to be too restrictive
+    # and just produce an error in the case of violations
+    # without exiting the script
+    verifyDeviceGroupConstraints()
+    verifyVirtualAddresses(EIPMappings, routes)
+
+
+def getAllocationId(EIP, region) :
+    # get allocation id for EIP
+    (successful, addressDescription) = execDoNotDie("ec2-describe-addresses " + \
+        EIP + " --region " + region + " --show-empty-fields")
+    logLTM.logDebug("addressDescription is " + addressDescription)
+
+    if successful :
+        tokens = addressDescription.split()
+        if len(tokens) < 5 :
+            logLTM.log(logging.ERROR, "Too few columns in the address description for EIP " + \
+                EIP + " . Description: " + addressDescription)
+            return (False, "")
+
+        return (True, tokens[4])
+
+    else :
+        return (False, "")
+
+
+def aws_eip_address_takeover(EIPMapping, instance, region,
+        networkDescriptionCache) :
+    # reassign EIPs to the local VIPs
+    for i in range(len(EIPMapping)) :
+        EIP = EIPMapping[i][0]
+        logLTM.logDebug("reassigning EIP " + EIP + ", row " + str(i))
+
+        BIGIP = EIPMapping[i][3]
+        if BIGIP != 1 and BIGIP != 2 :
+            logLTM.log(logging.ERROR, "Could not find VIP matching EIP " + EIP)
+            logLTM.log(logging.ERROR, "Could not transfer EIP " + EIP)
+            continue
+
+        VIP = EIPMapping[i][BIGIP]
+        logLTM.logDebug("VIP is " + VIP)
+
+        (successful, ENI) = execDoNotDie(
+            "/config/failover/aws-parse-network-description -i " + \
+            instance + " -p " + VIP + " -f " + networkDescriptionCache.name,
+            extraMessage = "Check to make sure secondary address exists on target ENI")
+        logLTM.logDebug("ENI is " + ENI)
+        if not successful :
+             logLTM.log(logging.ERROR, "Could not transfer EIP " + EIP)
+             continue
+
+        (successful, EIPAllocationId) = getAllocationId(EIP, region)
+        logLTM.logDebug("EIPAllocationId for EIP " + EIP + " is " + \
+            EIPAllocationId)
+        if not successful :
+             logLTM.log(logging.ERROR, "Check if " + EIP + " is an EIP allocated by AWS")
+             logLTM.log(logging.ERROR, "Could not transfer EIP " + EIP)
+             continue
+
+        (successful, ec2AssociateAddress) = execDoNotDie("ec2-associate-address -a " + \
+            EIPAllocationId + " -n " + ENI + " -p " + VIP + \
+            " --allow-reassociation --region " + region + " --show-empty-fields")
+        logLTM.logDebug("ec2AssociateAddress " + ec2AssociateAddress)
+        if not successful :
+             logLTM.log(logging.ERROR, "Could not transfer EIP " + EIP)
+             continue
+
+        logLTM.log(logging.INFO, "Reassigned EIP " + EIP + \
+            " to VIP " + VIP + " on interface " + ENI)
+
+
+def getSelfIPFromVLAN(interfaceVLAN) :
+    # selfIP of the VLAN is not known by it's name
+    # Instead, print out info about all selfIps and
+    # choose one that has matching VLAN
+
+    listNetSelf = 'tmsh list net self address vlan'
+    (successful, selfIPs) = execDoNotDie(listNetSelf)
+    if not successful :
+        logLTM.logMajorRouteManagementError('Unexpected error.' +
+            ' Could not execute "' + listNetSelf + '".')
+        return ''
+
+    # expected output per selfIp looks like:
+    # net self external-self {
+    #     address 10.0.11.53/24
+    #     vlan external-vlan
+    # }
+    # there might be several selfIPs
+    selfIPsByLines = selfIPs.split('\n')
+    selfIP = ''
+    foundVLAN = False
+    for line in selfIPsByLines :
+        tokens = line.split()
+        if len(tokens) == 4 and tokens[0] == 'net' and tokens[1] == 'self' :
+            # new selfIP
+            selfIP = ''
+            foundVLAN = False
+        elif len(tokens) == 2 and tokens[0] == 'address' :
+            selfIP = tokens[1]
+            if foundVLAN :
+                break
+        elif len(tokens) == 2 and tokens[0] == 'vlan' and\
+                tokens[1] == interfaceVLAN :
+            foundVLAN = True
+            if selfIP != '' :
+                break
+        # for the next line: balancing brace {
+        elif len(tokens) == 1 and tokens[0] == '}' :
+            # end of selfIP block
+            selfIP = ''
+            foundVLAN = False
+
+    if foundVLAN and selfIP != '' :
+        # get rid of mask portion
+        slashIndex = selfIP.find("/")
+        if slashIndex != -1 :
+            selfIP = selfIP[: slashIndex]
+        return selfIP
+    else :
+        logLTM.logMajorRouteManagementError(
+            'Could not find self IP corresponding to VLAN "' + interfaceVLAN +
+            '". Use "tmsh list net self address vlan" to review self IPs.')
+        return ''
+
+
+def routeManagment(destinations, interfaceVLAN, instance, region,
+        networkDescriptionCache) :
+    # set interface for destination CIDR from AWS route tables
+
+    # check that both interface VLAN and routes are provided
+    if destinations == [] :
+        if interfaceVLAN == '' :
+            logLTM.log(logging.INFO,
+                'No reconfiguration of AWS routes was requested.')
+            return
+        else :
+            logLTM.logMajorRouteManagementError(
+                'No AWS routes were specified.')
+            return
+    elif interfaceVLAN == '' :
+        logLTM.logMajorRouteManagementError(
+            'No BIG_IP interface was selected as a gateway.')
+        return
+
+    # get self IP for the interce VLAN
+    selfIP = getSelfIPFromVLAN(interfaceVLAN)
+    if selfIP == '' :
+        return
+    logLTM.logDebug('selfIP is ' + selfIP)
+
+    # get BIG-IP ENI
+    (successful, ENI) = execDoNotDie(
+        '/config/failover/aws-parse-network-description -i ' +  instance +
+        ' -p ' + selfIP + ' -f ' + networkDescriptionCache.name,
+        extraMessage =
+            'Check to make sure self IP exists on BIG-IP interface (vlan)')
+    logLTM.logDebug('ENI is ' + ENI)
+    if not successful :
+        logLTM.log(logging.ERROR, 'Could not find ENI for ' + selfIP)
+
+    # set ENI for all routes one by one
+    for i in range(len(destinations)) :
+        rtb = destinations[i][0]
+        destination = destinations[i][1]
+        (successful, output) = execDoNotDie('ec2-replace-route ' + rtb +
+            ' -r ' + destination + ' -n ' + ENI  + ' --region ' + region +
+            ' --show-empty-fields')
+        if successful :
+            logLTM.log(logging.INFO, 'Successfully set interface ' + ENI +
+                ' for destination ' + destination + ' of route table ' + rtb)
+        else :
+            logLTM.log(logging.ERROR, 'Could not set interface ' + ENI +
+                ' for destination ' + destination + ' of route table ' + rtb)
+
+
+# The top level operations start from here.
+try:
+    # logger is not initialized yet, has to be handled separately
+    logLTM = logWrapper(logging.handlers.SysLogHandler.LOG_LOCAL0)
+except Exception, ex:
+    os.system( \
+        "logger -p local0.error aws_advanced_failover: Initializing logging An exception of type " + \
+        type(ex).__name__ + " with message " + str(sys.exc_info()[1]) + \
+        " Failed to complete failover.")
+    sys.exit(1)
+
+def main() :
+    try:
+        logLTM.log(logging.INFO, "EIP takeover started.")
+
+        # Store the EIP <=> VIP mapping here.
+        # column 1: EIP
+        # column 2: VIP of AZ1
+        # column 3: VIP of AZ2
+        # column 4: result - index of AZ (-1 reserved for "not found")
+        EIPMapping = []
+
+        # store route tables and destination CIDRs
+        # column 1: route table
+        # column 2: destination CIDR
+        destinations = []
+        interfaceVLAN = '' # VLAN to be used as an interface to the destinations
+
+        iAppName = ""
+        try:
+            fo = open(r"/config/failover/aws_advanced_failover.dat", "r")
+            iAppName = fo.read()
+            iAppName = iAppName[:-1]
+            fo.close
+        except:
+            logLTM.logErrorAndFail( \
+                "Could not read iApp name from /config/failover/aws_advanced_failover.dat file.")
+
+        interfaceVLAN = readIApp(EIPMapping, destinations,\
+            iAppName + ".app/" + iAppName)
+        setEnvironmentVariables()
+        if getAWSKey("aws-access-key") != "none":
+            logLTM.log(logging.INFO, "AWS secret and access key found, setting environment variables.")
+            os.environ["AWS_ACCESS_KEY"] = getAWSKey("aws-access-key")
+            os.environ["AWS_SECRET_KEY"] = getAWSKey("aws-secret-key")
+        else:
+            logLTM.log(logging.INFO, "No Secret and Key found, attempting to use IAM")
+
+        # awsIID is created at system boot by scripts in /etc/vadc-init
+        awsIID = "/shared/vadc/aws/iid-document"
+        iidDictionary = readIID(awsIID)
+        instance = getIIDValue(iidDictionary, 'instanceId')
+        region = getIIDValue(iidDictionary, 'region')
+        instanceSanityCheck(awsIID, instance, region)
+        networkDescriptionCache = createNetworkDescriptionCache(instance,
+            region)
+        verifyGeneralConstraints(len(EIPMapping) > 0, len(destinations) > 0)
+
+        # reassign elastic IPs to VIPs of this AZ
+        anyMatches = findMatchingVIPs(EIPMapping)
+        if (anyMatches > 0) :
+            aws_eip_address_takeover(EIPMapping, instance, region,
+                networkDescriptionCache)
+
+        # route management
+        routeManagment(destinations, interfaceVLAN, instance, region,
+            networkDescriptionCache)
+
+        networkDescriptionCache.file.close()
+        logLTM.log(logging.INFO, "EIP takeover completed.")
+    except Exception, ex:
+        logLTM.logErrorAndFail("An exception of type " + type(ex).__name__ + \
+            " with message " + str(sys.exc_info()[1]))
+
+if __name__ == '__main__' :
+    main()
+
+
+# end of failover script
+}
+
+proc create_failover_script { aws_parse_contents script_active_contents failover_script_contents script_tgrefresh_contents } {
+    # overwrite script active only on the first download of the app script active (across all versions of the app)
+    if { [file exists /config/failover/aws_advanced_failover.py] == 0} {
+        set script_name /config/failover/active
+        set fn [open "$script_name" "w" "0755"]
+        puts $fn $script_active_contents
+        close $fn
+    }
+    set script_name /config/failover/aws-parse-network-description
+    set fn [open "$script_name" "w" "0755"]
+    puts $fn $aws_parse_contents
+    close $fn
+
+    set script_name /config/failover/aws_advanced_failover.py
+    set fn [open "$script_name" "w" "0755"]
+    puts $fn $failover_script_contents
+    close $fn
+
+    set script_name /config/failover/tgrefresh
+    set fn [open "$script_name" "w" "0755"]
+    puts $fn $script_tgrefresh_contents
+    close $fn
+
+    set fname "/config/failover/aws_advanced_failover.dat"
+    set fh2 [open $fname w]
+    puts $fh2 $tmsh::app_name
+    close $fh2
+
+    return $script_name
+}
+
+# Add File
+if { $is_v13_0 } {
+    create_failover_script $aws_parse_network_description $script_active $failover_script $script_tgrefresh_awscli
+} else {
+     create_failover_script $aws_parse_network_description $script_active $failover_script $script_tgrefresh
+}
+
+catch {
+    set dir2 [tmsh::pwd]
+    set fn2 "/var/tmp/iapp_${app}_tgrefresh.sh"
+    set fh2 [open $fn2 w]
+    puts $fh2 "sleep 5"
+    puts $fh2 "sh /config/failover/tgrefresh"
+    close $fh2
+    exec chmod 777 $fn2
+    exec $fn2 &
+} err
+
+iapp_template stop
+            }
+            macro {
+            }
+            presentation {
+section intro {
+    
+    message early_release "This template has not yet been fully tested at F5, and therefore has limited support. When testing is complete, it will move from the RELEASE CANDIDATE directory to parent directory of the iApp template package." 
+    message hello "Use this template to configure HA Across Availability Zones in AWS and/or managing AWS routes to the BIG-IP"
+    message check_for_updates "Ensure you are using the most recent template before continuing. Check for newer versions either at https://downloads.f5.com/esd/index.jsp or DevCentral: https://devcentral.f5.com/codeshare/topic/iapps"
+    message prereqs "The iApp template itself is not responsible for allocating/de-allocating EIPs or adding/deleting associations. It simply remaps (or re-associates) existing EIPs. Make sure Secondary Private IPs associated with the BIG-IP Virtual Servers have Allow Re-Association attribute checked upon first provisioning. This setting is found at EC2 Dashboard > Network and Security > Interfaces > Manage Private IP Addresses."
+    message prereqs2 "See the Help tab and the deployment guide for additional prerequisites."
+    message deployment_guide "Because of the extensive amount of configuration required before running this iApp template, we strongly recommend you review the associated Deployment Guide: http://f5.com/pdf/deployment-guides/f5-aws-ha-dg.pdf."
+
+    optional ( "HIDE" == "THIS" ) {
+        choice is_v13_0              tcl { expr { [tmsh::run_proc f5.iapp.1.5.2.cli:iapp_tmos_version >= 13.0] ? "yes" : "no" }}
+
+        choice ltm_provisioned tcl {
+            
+            return [expr {[tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned ltm] ? "yes" : "no" }]
+        }
+        choice asm_provisioned tcl {
+            
+            return [expr {[tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned asm] ? "yes" : "no"}]
+        }
+        choice afm_provisioned tcl {
+            
+            return [expr { [tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned afm] ? "yes" : "no"}]
+        }
+        choice analytics_provisioned tcl {
+            
+            return [expr {[tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned avr] ? "yes" : "no"}]
+        }
+
+        choice unsupported_module tcl {
+            
+            if {   [tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned am]
+                || [tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned gtm]
+                || [tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned lc]
+                || [tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned apm]
+                || [tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned pem]
+                || [tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_provisioned swg] } {
+                    return "yes"
+            }
+        }
+
+        choice alert_aws_keys tcl {
+            set aws_access_key_obj [lindex [ tmsh::get_config sys global-settings "aws-access-key"] 0]
+            set aws_secret_key_obj [lindex [ tmsh::get_config sys global-settings "aws-secret-key"] 0]
+            set aws_access_key_value [tmsh::get_field_value $aws_access_key_obj "aws-access-key"]
+            set aws_secret_key_value [tmsh::get_field_value $aws_secret_key_obj "aws-secret-key"]
+            if {   $aws_access_key_value == "none"
+                || $aws_secret_key_value == "none" } {
+                    return "yes"
+            }
+        }
+
+        choice alert_dhcp_configured tcl {
+            set mgmt_dhcp_obj [lindex [tmsh::get_config sys global-settings "mgmt-dhcp"] 0]
+            set mgmt_dhcp_value [tmsh::get_field_value $mgmt_dhcp_obj "mgmt-dhcp"]
+            if {  $mgmt_dhcp_value != "disabled" } {
+                return "yes"
+            }
+        }
+
+        choice alert_shared_routes tcl {
+            set net_route_list [tmsh::get_config net route]
+            set count [llength $net_route_list]
+            if { $count > 0 } {
+                return "yes"
+            }
+        }
+
+        choice alert_floating_addresses tcl {
+            # no need to check for floating self ips as won't even sync
+            set snat_list [tmsh::get_config ltm snat-translation]
+            set nat_list [tmsh::get_config ltm nat]
+            set self_ip_list [tmsh::get_config net self]
+
+            set snat_count [llength $snat_list]
+            set nat_count [llength $nat_list]
+            set self_ip_count [llength $self_ip_list]
+
+            set floating_self_ip_count 0
+            set inx 0
+            while { $inx < $self_ip_count } {
+                set self_ip [lindex $self_ip_list $inx]
+                set address [tmsh::get_field_value $self_ip "address"]
+                set traffic_group [tmsh::get_field_value $self_ip "traffic-group"]
+                if { $traffic_group != "traffic-group-local-only"  } {
+                    incr floating_self_ip_count;
+                }
+                incr inx;
+            }
+
+            if { $snat_count > 0 || $nat_count > 0 || $floating_self_ip_count > 0 } {
+                return "yes"
+            }
+        }
+
+        choice warning_virtual_address tcl {
+            set virtual_address_list [ tmsh::get_config / ltm virtual-address ]
+            set inx 0
+            set count [llength $virtual_address_list]
+            while { $inx < $count } {
+                set virtual_address [lindex $virtual_address_list $inx]
+                set mask [tmsh::get_field_value $virtual_address "mask"]
+                set traffic_group [tmsh::get_field_value $virtual_address "traffic-group"]
+                if { $traffic_group != "none" && $mask == "255.255.255.255" } {
+                    return "yes";
+                }
+                incr inx;
+            }
+        }
+
+        choice warning_num_interfaces tcl {
+            set interfaces [ tmsh::get_config / net interface ]
+            set inx 0
+            set count [llength $interfaces]
+            set tmm_int_count 0
+            while { $inx < $count } {
+                set interface [lindex $interfaces $inx]
+                set interface_name [tmsh::get_name $interface]
+                if { $interface_name != "mgmt" } {
+                    incr tmm_int_count;
+                }
+                incr inx;
+            }
+            if { $tmm_int_count > 1 } {
+                return "yes"
+            }
+        }
+
+    }
+
+    # Some general validation checks if using HA clusters in AWS
+    optional ( intro.alert_aws_keys == "yes" && intro.is_v13_0 == "no") {
+        message ALERT_AWS_credentials "NO AWS Credentials found! To configure the AWS settings on the BIG-IP system, go to: System > Configuration > AWS > Global Settings."
+    }
+    optional ( intro.alert_dhcp_configured == "yes" ) {
+        message ALERT_DHCP_enabled "Clustering is not compatible with DHCP. To disable, go to: System > Platform > Management Port Configuration, and click the Manual button in the Management Port Configuration section."
+    }
+}
+
+section options {
+
+    choice display_help display "xlarge" default "hide" {
+        "Yes, show inline help text"         => "show"  ,
+        "No, do not show inline help text"  => "hide"
+    }
+
+    optional ( options.display_help == "show" ) {
+        message display_help_inline_help "This template offers inline assistance, notes, and configuration tips. We strongly recommend reading the inline help presented in the template until you are familiar with the functionality and implications of the deployment options. Important notes are always shown no matter which selection you make here."
+    }
+
+    choice log_debug display "xlarge" default "no" {
+        "No, do not log debug messages" => "no"  ,
+        "Yes, log debug messages" => "yes"
+    }
+
+    optional ( options.display_help == "show" ) {
+        message log_debug_inline_help "Important messages related to this iApp are always logged to /var/log/ltm. Enabling debug log will allow additional logging that may help in debugging of problems."
+    }
+
+}
+section eip_mappings {
+    choice inbound display "xxlarge" default "no" {
+                    "No, do not configure high availability across Availability zones" => "no"  ,
+                    "Yes, configure high availability across Availability Zones" => "yes"
+                }
+    optional ( options.display_help == "show" ) {
+        message inbound_max "Choose this option if you are deploying public/Internet-facing services on a HA Cluster across Availability Zones (AZs). See Help Tab and iApp deployment guide for full requirements. Once you have created a virtual server for each AZ, this section allows you to map Elastic IPs (EIPs) to the virtual addresses associated with those virtual servers. A virtual address can only be mapped to one EIP. Currently, only the following modules are supported for this implementation: LTM, ASM, AFM and Analytics(AVR)."
+    }
+
+    optional (inbound == "yes") {
+        # Some validation checks if using the HA Across AZ deployment
+        optional (intro.alert_shared_routes == "yes") {
+            message ALERT_shared_routes "You have shared routes on this system. Routes should be local only. See Help Tab or Deployment Guide for more information. See the Deployment Guide for details."
+        }
+        optional (intro.alert_floating_addresses == "yes") {
+            message ALERT_floating_addresses "You have floating addresses on this system. Addresses can not be shared across AZs/subnets. Ensure there are no SNATs, NATs or floating Self IPs. See the Deployment Guide for details."
+        }
+        optional (intro.warning_virtual_address == "yes") {
+            message WARNING_virtual_address "You have virtual-addresses that are floating on this system. Ideally virtual addresses in this deployment should be in traffic-group-none.  See the Deployment Guide for details."
+        }
+        optional (intro.warning_num_interfaces == "yes") {
+            message WARNING_number_of_interfaces "This BIG-IP system has more than one TMM interface. This deployment is ideally suited for a one-armed deployment. i.e. a single traffic interface. See the Deployment Guide for details."
+        }
+        optional (intro.unsupported_module == "yes") {
+            message WARNING_unsupported_module "You have modules on this system that have not been tested for this implementation.  This solution has only been tested with LTM, ASM, AFM and Analytics (AVR)."
+        }
+
+        table mappings {
+            string eip required validator "IpAddress"
+            editchoice az1_vip display "xlarge" tcl {
+                
+                    tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_items ltm virtual-address
+            }
+            editchoice az2_vip display "xlarge" tcl {
+                
+                tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_items ltm virtual-address
+            }
+        }
+        optional ( options.display_help == "show" ) {
+            message eip_mappings_max "Enter the EIP address (ex. format = 55.55.55.55) that you would like mapped to your application. Select the Virtual Address for each AZ associated with the virtual servers for your application."
+        }
+    }
+}
+
+section subnet_routes{
+    choice route_management display "xxlarge" default "no" {
+                    "No, do not configure this BIG-IP cluster to own AWS routes" => "no"  ,
+                    "Yes, configure this BIG-IP cluster to own AWS routes" => "yes"
+                }
+    optional ( options.display_help == "show" ) {
+        message routes_max_1 "Choose this option if the BIG-IP will own routes for your clients and/or applications. This will enable the Active BIG-IP to take over these routes and point them to the interface selected."
+        message routes_max_2 "For example, if the BIG-IP systems become the default route for your application servers, this allows the virtual servers to preserve the client IP not have to SNAT. Make sure to disable SRC/DST check on the ENI properties for the BIG-IPs interfaces. A route can only point to one ENI at a time so this only works on an Active/Standby cluster, regardless if the cluster members are in the same Availability Zone (AZ) or spread across AZs."
+        message routes_max_3 "You would also choose this option if you are using the BIG-IP system to manage outbound traffic (for example NAT/Proxy).  See the Deployment Guide for specific information."
+    }
+
+    optional (route_management == "yes") {
+        table cidr_blocks {
+            string route_table_id required
+            string dest_cidr_block required
+        }
+
+        optional ( options.display_help == "show" ) {
+            message cidr_blocks_max "This is a list of route table ids and subnets you want the Active BIG-IP to own. Enter the Route Table ID (ex. format = rtb-80fae8e5) that contains the subnet. Enter the destination CIDR block string for that subnet (ex. format = 0.0.0.0/0, 172.16.4.0/24, etc.). You may enter the same route table multiple times if necessary. For instance, if you have two subnets in the same route table."
+        }
+
+        editchoice interface display "xlarge" tcl {
+            
+            tmsh::run_proc f5.iapp.1.5.2.cli:iapp_get_items net vlan
+        }
+
+        optional ( options.display_help == "show" ) {
+            message interface_max "Select the interface that corresponds to the BIG-IP's ENI to which you would like routes to point."
+        }
+    }
+}
+            text {
+                 intro.early_release "EARLY RELEASE" 
+                intro "Welcome to the AWS Advanced HA template"
+                intro.hello "Introduction"
+                intro.check_for_updates "Check for updates"
+                intro.prereqs "Prerequisites"
+                intro.prereqs2 ""
+                intro.deployment_guide "IMPORTANT"
+
+                options "Template Options"
+                options.display_help "Do you want to see inline help?"
+                options.display_help_inline_help ""
+                options.log_debug "Do you want to log debug messages?"
+                options.log_debug_inline_help ""
+
+                eip_mappings "High Availability across AWS Availability Zones"
+                eip_mappings.inbound "Would you like to configure high availability for Internet-facing services across Availability Zones?" 
+                eip_mappings.inbound_max ""
+                eip_mappings.mappings "How should the Elastic IPs and BIG-IP virtual addresses be mapped?"
+                eip_mappings.mappings.eip "Elastic IP:"
+                eip_mappings.mappings.az1_vip "AZ1 VIP:"
+                eip_mappings.mappings.az2_vip "AZ2 VIP:"
+                eip_mappings.eip_mappings_max ""
+                eip_mappings.WARNING_virtual_address "WARNING"
+                eip_mappings.WARNING_number_of_interfaces "WARNING"
+                eip_mappings.ALERT_shared_routes "ALERT"
+                eip_mappings.ALERT_floating_addresses "ALERT"
+                eip_mappings.WARNING_unsupported_module "WARNING"
+
+                subnet_routes "Route Management"
+                subnet_routes.route_management "Would you like to configure this BIG-IP cluster to own AWS routes?" 
+                subnet_routes.routes_max_1 ""
+                subnet_routes.routes_max_2 ""
+                subnet_routes.routes_max_3 ""
+                subnet_routes.cidr_blocks "Which routes should the BIG-IP cluster own?"
+                subnet_routes.cidr_blocks_max ""
+                subnet_routes.cidr_blocks.dest_cidr_block "DST CIDR block"
+                subnet_routes.cidr_blocks.route_table_id "Route Table ID"
+                subnet_routes.interface "Which BIG-IP interface should be the gateway?"
+                subnet_routes.interface_max ""
+
+            }
+    }
+}
+}
+    requires-bigip-version-max none
+    requires-bigip-version-min 12.1.0
+    requires-modules { }
+}

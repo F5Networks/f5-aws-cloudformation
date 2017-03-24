@@ -42,7 +42,9 @@ We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.c
 
 
 ## Installation using the AWS deploy buttons
-The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.
+The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.<br>
+**Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
+
  - Hourly, which uses pay-as-you-go hourly billing
  - [BYOL](#byol) (bring your own license), which allows you to use an existing BIG-IP license.
 <br>
@@ -65,8 +67,7 @@ After clicking the Launch button, you must specify the following parameters.
 | bigipExternalSecurityGroup | x | Public or External Security Group ID |
 | bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
 | imageName | x | F5 BIG-IP Performance Type |
-| instanceType | x | BIG-IP virtual instance type |
-| licenseKey1 | x | Type or paste your F5 BYOL regkey |
+| instanceType | x | BIG-IP virtual instance size in AWS |
 | managementSubnetAz1 | x | Management subnet ID |
 | restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
 | sshKey | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
@@ -107,7 +108,7 @@ After clicking the Launch button, you must specify the following parameters.
 
 ## Configuration Example <a name="config">
 
-The following is a simple configuration diagram for this 2-NIC deployment. In this diagram, the IP addresses are provided as examples.<br>
+The following is a simple configuration diagram for this 2-NIC deployment. In this diagram, the IP addresses are provided as examples. This solution uses the BIG-IP v13.0 AMI image.<br>
 ![2-NIC configuration example](images/aws-2nic.png)
 
 ### Documentation

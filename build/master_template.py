@@ -124,15 +124,15 @@ def main():
     ### Template Version
     version = "2.1.0"
     ### Cloudlib Branch
-    branch_cloud = "release-2.3.0"
-    branch_aws = "release-1.2.0"
+    branch_cloud = "v2.3.0"
+    branch_aws = "v1.2.0"
     ### Cloudlib and iApp URL
     ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/develop/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"    
     ### Verify Hash
-    CLOUD_HASH = "09eba5f10cec4758d70e3b692a03d5102b9ba96553c1224782a4846b913fc3bae43af3d9565f1b9cd9d0faf812fa10fce66c1779933f7bbb12f51204f853c828"
-    CLOUD_AWS_HASH = "03aef6b45b1af222cde9fa05967518646cc4a9b37d7ec1f399cba697c0ae898290e46682d8332402154e6d9d3f9dacc43c70d5b3eb76856144649bbaaef969e6"
+    CLOUD_HASH = "489d460d2e5fcd401ce12f19b1d753a6bee30483cd0bf2b7548b7f8fe3caf5b727af96f013733cbd08b0c109e0cf535a29288d473b84cc834369204d5be5edc9"
+    CLOUD_AWS_HASH = "2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72"
     CLOUD_AZURE_HASH = "16d2ce2086883ed5b47a3ba4e79541fd1a4bb64513222cf3a459297c2474d0bfc71a161ba2b8571707e1a6b273badaaf2c847993d0e60a4b52cd8c62cb03aba6"
     ASM_POLICY_LINUX = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
     HTTP_IAPP_RC4 = "47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034"
@@ -142,8 +142,8 @@ def main():
     ASM_POLICY = "2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6"
     DEPLOY_WAF = "4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a"
     POLICY_CREATOR = "54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a"
-   
-    SCRIPT_SIGNATURE ="gOI4SUzKbJQFTN5nC+ZbV8cLTnQoq9a94DBh4jNQ5MxcGl/ASRWXFE0J+ANT1p4kP4+37GOMyACW7gdTVju79upI/EGhW6SyCCYUTvDpy0XJeQu52ghNx3t0xFnYKGt4+/rgnFM8CmjUeMc4irjdaW4/005rietj8UrvVylD++bKeAi5sNNwcGB6aoY3qE7FUF28jIOxFdZIRmyHtYq5lU4UgeIQW6/C0GH+S/gfAQGml0/tMHXQiIheTS2oBOl+MRcOdJYzgaoEiqoaBVFm8nMbyhKj6XIEJgRkICiTXowXSJIexZF8zjQbAC/HZ9UGC9n6CSFfuOzdLGVizNDNSQ=="
+  
+    SCRIPT_SIGNATURE ="TfKrOEqc87cScx2may5bKnQQ5/TdygM6935wXkUnsf0/119c3C0WPjXQ1X86JMiInrjQ9oZjEkDejA41nwf46eWljvF0YTqdUU37XVpLi0plAOUyVCwjegra6vmY7F3DOKVC2b32SllF6rpBHECj6gAnSr6K/UQo044TEf1bXk/AHx8vw3+kuySMrutkIMHPlmxvsYyvWinjHAk5bdXepH+xspynZwLlOYuRYlTt2XVwSUyjzi1O1BLzm/oa3p4XkTkpDK0IYDTGFE/uFUyUaeNJQvBEDs6G+pQHgTIF67Zl3Ij0w/Pu6IoOkVjygmrQkz3BFlOrCyMtOIUmFItxiQ=="
     ### add hashmark to skip verification.
     comment_out = ""
     # Begin Template
@@ -170,7 +170,6 @@ def main():
             description += "AWS CloudFormation Template for creating a Same-AZ cluster of " + str(num_nics) + "NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
         if ha_type == "across-az":
             description += "AWS CloudFormation Template for creating a Across-AZs cluster of " + str(num_nics) + "NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
-
     t.add_description(description)
     t.add_metadata({
         "Version": str(version),
@@ -291,9 +290,7 @@ def main():
         }
     }
     )
-
     ### BEGIN PARAMETERS
-
     application = t.add_parameter (Parameter(
         "application",
             Description="Name of the Application Tag",
@@ -327,7 +324,6 @@ def main():
     if stack != "network": 
         restrictedSrcAddress = t.add_parameter(Parameter(
             "restrictedSrcAddress",
-
             ConstraintDescription="Must be a valid IP CIDR range of the form x.x.x.x/x.",
             Description=" The IP address range that can be used to SSH to the EC2 instances",
             Default="0.0.0.0/0",
@@ -336,15 +332,12 @@ def main():
             MaxLength="18",
             Type="String",
         ))
-
     if stack != "network" and stack != "security_groups":
         sshKey = t.add_parameter(Parameter(
             "sshKey",
             Type="AWS::EC2::KeyPair::KeyName",
             Description="Key pair for accessing the instance",
         ))
-
-
     if network == True:
 
         for INDEX in range(num_azs):
@@ -354,7 +347,6 @@ def main():
             Type="AWS::EC2::AvailabilityZone::Name",
             Description="Name of an Availability Zone in this Region",
         ))
-
     if webserver == True:
         applicationInstanceType = t.add_parameter(Parameter(
             "applicationInstanceType",
@@ -364,8 +356,6 @@ def main():
             Description="Webserver EC2 instance type",
             AllowedValues=["t1.micro", "m3.medium", "m3.xlarge", "m2.xlarge", "m3.2xlarge", "c3.large", "c3.xlarge"],
         ))
-
-
     if bigip == True or security_groups == True:
         if num_nics == 1:
             managementGuiPort = t.add_parameter(Parameter(
@@ -375,7 +365,6 @@ def main():
                 Type="Number",
                 Description="Port for the BIG-IP management Configuration utility",
             ))
-
     if bigip == True:
         if 'waf' in components:
             # Default to 2xlarge
@@ -422,7 +411,6 @@ def main():
                                 "c4.4xlarge",       
                               ],
             ))
-
         if license_type == "hourly" and 'waf' not in components:
             imageName = t.add_parameter(Parameter(
                 "imageName",
@@ -464,7 +452,6 @@ def main():
                 Description="F5 BIG-IP Performance Type",
                 AllowedValues=["Good", "Better", "Best"],
             ))
-
         if license_type == "byol":
             for BIGIP_INDEX in range(num_bigips): 
                 licenseKey = "licenseKey" + str(BIGIP_INDEX + 1)
@@ -517,7 +504,6 @@ def main():
                 ConstraintDescription="This must be an existing VPC within the working region.",
                 Type="AWS::EC2::VPC::Id",
             ))
-
     if stack == "existing":
         for INDEX in range(num_azs):
             ExternalSubnet = "subnet1" + "Az" + str(INDEX + 1)
@@ -563,7 +549,6 @@ def main():
                 Type="AWS::EC2::SecurityGroup::Id",
                 Description="Private or Internal Security Group ID",
             ))
-
     # BEGIN REGION MAPPINGS FOR AMI IDS
     if bigip == True: 
 
@@ -576,7 +561,6 @@ def main():
                 RegionMap = json.load(json_file)
 
         t.add_mapping("BigipRegionMap", RegionMap )
-
     # WEB SERVER MAPPING
     if webserver == True:
 
@@ -584,8 +568,6 @@ def main():
             RegionMap = json.load(json_file)
 
         t.add_mapping("WebserverRegionMap", RegionMap )
-
-
     ### BEGIN RESOURCES
     if network == True:
         Vpc = t.add_resource(VPC(
@@ -602,7 +584,6 @@ def main():
                 Costcenter=Ref("costcenter"),
             ),
         ))
-
         defaultGateway = t.add_resource(InternetGateway(
             "InternetGateway",
             Tags=Tags(
@@ -614,14 +595,12 @@ def main():
                         Costcenter=Ref(costcenter),
             ),
         ))
-
         AttachGateway = t.add_resource(VPCGatewayAttachment(
             "AttachGateway",
 
             VpcId=Ref(Vpc),
             InternetGatewayId=Ref(defaultGateway),
         ))
-
         octet = 1
         for INDEX in range(num_azs):
             ExternalSubnet = "subnet1" + "Az" + str(INDEX + 1)
@@ -642,10 +621,8 @@ def main():
                 AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
             ))
             octet += 10
-
         ExternalRouteTable = t.add_resource(RouteTable(
             "ExternalRouteTable",
-
             VpcId=Ref(Vpc),
             Tags=Tags(
                 Name=Join("", ["External Route Table", Ref("AWS::StackName")] ),
@@ -657,16 +634,13 @@ def main():
                 Network="External",
             ),
         ))
-
         ExternalDefaultRoute = t.add_resource(Route(
             "ExternalDefaultRoute",
-
             DependsOn="AttachGateway",
             GatewayId=Ref(defaultGateway),
             DestinationCidrBlock="0.0.0.0/0",
             RouteTableId=Ref(ExternalRouteTable),
         ))
-
         for INDEX in range(num_azs):
             ExternalSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "ExternalSubnetRouteTableAssociation"
 
@@ -676,14 +650,10 @@ def main():
                 SubnetId=Ref("subnet1" + "Az" + str(INDEX + 1)),
                 RouteTableId=Ref(ExternalRouteTable),
             ))
-           
-
         if num_nics > 1:
             octet = 0
-
             for INDEX in range(num_azs):
                 managementSubnet = "managementSubnet" + "Az" + str(INDEX + 1)
-
                 RESOURCES[managementSubnet] = t.add_resource(Subnet(
                     managementSubnet,
 
@@ -700,10 +670,8 @@ def main():
                     AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
                 ))
                 octet += 10
-
             ManagementRouteTable = t.add_resource(RouteTable(
                 "ManagementRouteTable",
-
                 VpcId=Ref(Vpc),
                 Tags=Tags(
                     Name=Join("", ["Management Route Table", Ref("AWS::StackName")] ),
@@ -715,31 +683,23 @@ def main():
                     Network="Mgmt",
                 ),
             ))
-
             # Depends On
             #https://forums.aws.amazon.com/thread.jspa?threadID=100750
             ManagementDefaultRoute = t.add_resource(Route(
                 "ManagementDefaultRoute",
                 DependsOn="AttachGateway",
-
-
                 GatewayId=Ref(defaultGateway),
                 DestinationCidrBlock="0.0.0.0/0",
                 RouteTableId=Ref(ManagementRouteTable),
             ))
-    
             for INDEX in range(num_azs):
                 ManagementSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "ManagementSubnetRouteTableAssociation"
-
                 RESOURCES[ManagementSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
                     ManagementSubnetRouteTableAssociation,
 
                     SubnetId=Ref("managementSubnet" + "Az" + str(INDEX + 1)),
                     RouteTableId=Ref(ManagementRouteTable),
-
                 ))
-
-
         if num_nics > 2:
             octet = 2
             for INDEX in range(num_azs):
@@ -761,11 +721,8 @@ def main():
                     AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
                 ))
                 octet += 10
-
-
             InternalRouteTable = t.add_resource(RouteTable(
                 "InternalRouteTable",
-
                 VpcId=Ref(Vpc),
                 Tags=Tags(
                     Name=Join("", ["Internal Route Table:", Ref("AWS::StackName")] ),
@@ -777,28 +734,21 @@ def main():
                     Network="Internal",
                 ),
             ))
-
             InternalDefaultRoute = t.add_resource(Route(
                 "InternalDefaultRoute",
                 DependsOn="AttachGateway",
-
-
                 GatewayId=Ref(defaultGateway),
                 DestinationCidrBlock="0.0.0.0/0",
                 RouteTableId=Ref(InternalRouteTable),
             ))
-
             for INDEX in range(num_azs):
                 InternalSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "InternalSubnetRouteTableAssociation"
-
                 RESOURCES[InternalSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
                     InternalSubnetRouteTableAssociation,
-
                     SubnetId=Ref("subnet2" + "Az" + str(INDEX + 1)),
                     RouteTableId=Ref(InternalRouteTable),
 
                 ))
-
         octet = 3
         for INDEX in range(num_azs):
             ApplicationSubnet = "Az" + str(INDEX + 1) + "ApplicationSubnet"
@@ -817,7 +767,6 @@ def main():
                 AvailabilityZone=Ref("availabilityZone" + str(INDEX + 1) ),
             ))
             octet += 10
-
         ApplicationRouteTable = t.add_resource(RouteTable(
             "ApplicationRouteTable",
             VpcId=Ref(Vpc),
@@ -831,7 +780,6 @@ def main():
                 Network="Application",
             ),
         ))
-
         ApplicationDefaultRoute = t.add_resource(Route(
             "ApplicationDefaultRoute",
             DependsOn="AttachGateway",
@@ -839,8 +787,6 @@ def main():
             DestinationCidrBlock="0.0.0.0/0",
             RouteTableId=Ref(ApplicationRouteTable),
         ))
-
-
         for INDEX in range(num_azs):
             ApplicationSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "ApplicationSubnetRouteTableAssociation"
             RESOURCES[ApplicationSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
@@ -848,44 +794,34 @@ def main():
                 SubnetId=Ref("Az" + str(INDEX + 1) + "ApplicationSubnet"),
                 RouteTableId=Ref(ApplicationRouteTable),
             ))
-
     # See SOL13946 for more details
     # Clustering uses UDP 1026 UDP (failover) and TCP 4353 (SYNC) 
     # WAF uses 6123-6128 for SYNC
     # As just examples, not going to break down example Security Groups for Cluster & WAF. 
     # However, could further tighten if Standalone or no WAF.  
-
     if security_groups == True:
-
         # 1 Nic has consolidated rules
         if num_nics == 1:
-
             bigipExternalSecurityGroup = t.add_resource(SecurityGroup(
                 "bigipExternalSecurityGroup",
-
                 SecurityGroupIngress=[
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort="22",
                                 ToPort="22",
                                 CidrIp=Ref(restrictedSrcAddress),
-
                     ),
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort=Ref(managementGuiPort),
                                 ToPort=Ref(managementGuiPort),
                                 CidrIp=Ref(restrictedSrcAddress),
-
-
-
                     ),
                     SecurityGroupRule(
                                 IpProtocol="icmp",
                                 FromPort="-1",
                                 ToPort="-1",
                                 CidrIp=Ref(restrictedSrcAddress),
-
                     ),         
                     SecurityGroupRule(
                                 IpProtocol="tcp",
@@ -939,13 +875,9 @@ def main():
                     Costcenter=Ref("costcenter"),
                 ),
             ))
-
-
         if num_nics > 1:
-
             bigipExternalSecurityGroup = t.add_resource(SecurityGroup(
                 "bigipExternalSecurityGroup",
-
                 SecurityGroupIngress=[
                     # Example port for Virtual Server
                     SecurityGroupRule(
@@ -995,8 +927,6 @@ def main():
                     Costcenter=Ref("costcenter"),
                 ),
             ))
-            
-
             bigipManagementSecurityGroup = t.add_resource(SecurityGroup(
                 "bigipManagementSecurityGroup",
 
@@ -1006,21 +936,18 @@ def main():
                                 FromPort="22",
                                 ToPort="22",
                                 CidrIp=Ref(restrictedSrcAddress),
-
                     ),
                     SecurityGroupRule(
                                 IpProtocol="tcp",
                                 FromPort="443",
                                 ToPort="443",
                                 CidrIp=Ref(restrictedSrcAddress),
-
                     ),
                     SecurityGroupRule(
                                 IpProtocol="icmp",
                                 FromPort="-1",
                                 ToPort="-1",
                                 CidrIp=Ref(restrictedSrcAddress),
-
                     ),
                     # Required for DSC Initial Sync
                     SecurityGroupRule(
@@ -1048,7 +975,6 @@ def main():
                     Costcenter=Ref("costcenter"),
                 ),
             ))
-
         # If a 3 nic with additional Internal interface.
         if num_nics > 2:
 
@@ -1074,9 +1000,7 @@ def main():
                     Costcenter=Ref("costcenter"),
                 ),
             ))
-
         if webserver == True:
-
             WebserverSecurityGroup = t.add_resource(SecurityGroup(
                 "WebserverSecurityGroup",
                 SecurityGroupIngress=[
@@ -1116,9 +1040,7 @@ def main():
                     Costcenter=Ref("costcenter"),
                 ),
             ))
-
     if webserver == True:
-
         Webserver = t.add_resource(Instance(
             "Webserver",
             UserData=Base64(Join("\n", [
@@ -1147,10 +1069,8 @@ def main():
             ),
             ],
         ))
-
     if bigip == True:
         if ha_type != "standalone":
-            
             s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,))            
             bigipClusterAccessRole = t.add_resource(iam.Role(
                 "bigipClusterAccessRole",
@@ -1200,23 +1120,18 @@ def main():
                     ),
                 ],
             ))
-            
             bigipClusterInstanceProfile = t.add_resource(iam.InstanceProfile(
                 "bigipClusterInstanceProfile",
                 Path="/",
                 Roles=[Ref(bigipClusterAccessRole)]
             ))
-            
         for BIGIP_INDEX in range(num_bigips): 
-        
             licenseKey = "licenseKey" + str(BIGIP_INDEX + 1)
             BigipInstance = "Bigip" + str(BIGIP_INDEX + 1) + "Instance"
-
             if num_azs > 1:
                 ExternalSubnet = "subnet1" + "Az" + str(BIGIP_INDEX + 1)
                 managementSubnet = "managementSubnet" + "Az" + str(BIGIP_INDEX + 1)
                 InternalSubnet = "subnet2" + "Az" + str(BIGIP_INDEX + 1)              
-
             else:
                 ExternalSubnet = "subnet1Az1"
                 managementSubnet = "managementSubnetAz1"
@@ -1224,34 +1139,23 @@ def main():
             ExternalSelfEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "SelfEipAddress"            
             ExternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "Interface"
             ExternalSelfEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "SelfEipAssociation"
-
-
             RESOURCES[ExternalInterface] = t.add_resource(NetworkInterface(
                 ExternalInterface,
                 SubnetId=Ref(ExternalSubnet),
                 GroupSet=[Ref(bigipExternalSecurityGroup)],
-
-
-
                 Description="Public External Interface for the BIG-IP",
                 SecondaryPrivateIpAddressCount="1",
             ))
-
             if stack == "full":
                 # External Interface is true on 1nic,2nic,3nic,etc.
                 RESOURCES[ExternalSelfEipAddress] = t.add_resource(EIP(    
                     ExternalSelfEipAddress,
                     DependsOn="AttachGateway",
-
-
                     Domain="vpc",
                 ))
-
                 RESOURCES[ExternalSelfEipAssociation] = t.add_resource(EIPAssociation(
                     ExternalSelfEipAssociation,
                     DependsOn="AttachGateway",
-
-
                     NetworkInterfaceId=Ref(ExternalInterface),
                     AllocationId=GetAtt(ExternalSelfEipAddress, "AllocationId"),
                     PrivateIpAddress=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
@@ -1259,41 +1163,30 @@ def main():
             else:
                 RESOURCES[ExternalSelfEipAddress] = t.add_resource(EIP(    
                     ExternalSelfEipAddress,
-
                     Domain="vpc",
                 ))
-
                 RESOURCES[ExternalSelfEipAssociation] = t.add_resource(EIPAssociation(
                     ExternalSelfEipAssociation,
-
                     NetworkInterfaceId=Ref(ExternalInterface),
                     AllocationId=GetAtt(ExternalSelfEipAddress, "AllocationId"),
                     PrivateIpAddress=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
                 ))
-         
             if num_nics > 1:
-
                 VipEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAddress"
                 VipEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAssociation"
                 ManagementInterface = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementInterface"
                 ManagementEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementEipAddress"
                 ManagementEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementEipAssociation"
-
                 if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
-
                     if stack == "full":
                         RESOURCES[VipEipAddress] = t.add_resource(EIP(
                             VipEipAddress,
                             DependsOn="AttachGateway",
-
-
                             Domain="vpc",
                         ))
                         RESOURCES[VipEipAssociation] = t.add_resource(EIPAssociation(
                             VipEipAssociation,
                             DependsOn="AttachGateway",
-
-
                             NetworkInterfaceId=Ref(ExternalInterface),
                             AllocationId=GetAtt(VipEipAddress, "AllocationId"),
                             PrivateIpAddress=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
@@ -1301,72 +1194,51 @@ def main():
                     else:
                         RESOURCES[VipEipAddress] = t.add_resource(EIP(
                             VipEipAddress,
-
                             Domain="vpc",
                         ))
                         RESOURCES[VipEipAssociation] = t.add_resource(EIPAssociation(
                             VipEipAssociation,
-
                             NetworkInterfaceId=Ref(ExternalInterface),
                             AllocationId=GetAtt(VipEipAddress, "AllocationId"),
                             PrivateIpAddress=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
                         ))
-
                 RESOURCES[ManagementInterface] = t.add_resource(NetworkInterface(
                     ManagementInterface,
                     SubnetId=Ref(managementSubnet),
                     GroupSet=[Ref(bigipManagementSecurityGroup)],
-
-
-
                     Description="Management Interface for the BIG-IP",
                 ))
-
                 if stack == "full":
                     RESOURCES[ManagementEipAddress] = t.add_resource(EIP(
                         ManagementEipAddress,
                         DependsOn="AttachGateway",
-
-
                         Domain="vpc",
                     ))
                     RESOURCES[ManagementEipAssociation] = t.add_resource(EIPAssociation(
                         ManagementEipAssociation,
                         DependsOn="AttachGateway",
-
-
                         NetworkInterfaceId=Ref(ManagementInterface),
                         AllocationId=GetAtt(ManagementEipAddress, "AllocationId"),
                     ))
                 else:
                     RESOURCES[ManagementEipAddress] = t.add_resource(EIP(
                         ManagementEipAddress,
-
                         Domain="vpc",
                     ))
                     RESOURCES[ManagementEipAssociation] = t.add_resource(EIPAssociation(
                         ManagementEipAssociation,
-
                         NetworkInterfaceId=Ref(ManagementInterface),
                         AllocationId=GetAtt(ManagementEipAddress, "AllocationId"),
                     ))
-
                 if num_nics > 2:
-
                     InternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterface"
-
                     RESOURCES[InternalInterface] = t.add_resource(NetworkInterface(
                         InternalInterface,
                         SubnetId=Ref(InternalSubnet),
                         GroupSet=[Ref(bigipInternalSecurityGroup)],
-
-
-
                         Description="Internal Interface for the BIG-IP",
-                    ))
-        
+                    ))       
             # build custom-confg.sh vars
-
             license_byol =  [ 
                                 "--license ",
                                 Ref(licenseKey),
@@ -1394,11 +1266,8 @@ def main():
                                 "done\n",
                                 "echo 'done provisioning asm'\n",
                             ]
-
-
             # TMSH CMD
             # tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.2.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { 52.27.196.185 /Common/10.0.1.100 /Common/10.0.11.100 } } } } } variables add { eip_mappings__inbound { value yes } }
-
             aws_advanced_ha_iapp_rest_payload = '{ \
     "name": "HA_Across_AZs", \
     "partition": "Common", \
@@ -1457,9 +1326,7 @@ def main():
         } \
     ] \
 }'
-
             # begin building custom-config.sh
-
             sig_check = [
                             "cli script /Common/verifyHash {",
                             "    proc script::run {} {",
@@ -1723,7 +1590,6 @@ def main():
             custom_command +=   [                                    
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                 ]
-
             # Global Settings
             if num_nics == 1:
                 one_nic_setup += [
@@ -1797,6 +1663,25 @@ def main():
                                     #"CRT='default.crt'\n", 
                                     #"KEY='default.key'\n",
                               ]            
+            if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
+                custom_sh +=  [
+                                    #"PEER_HOSTNAME='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "Instance", "PrivateDnsName"), "'\n",
+                                    #"PEER_MGMTIP='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "ManagementInterface", "PrimaryPrivateIpAddress"), "'\n",
+                                    ]
+                
+                if num_nics > 1:
+                    if ha_type == "across-az":
+                        custom_sh +=  [
+                                            "PEER_EXTPRIVIP='", Select("0", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "subnet1" + "Az" + str(BIGIP_INDEX + 2) + "Interface", "SecondaryPrivateIpAddresses")), "'\n", 
+                                            "VIPEIP='",Ref(VipEipAddress),"'\n",
+
+                                            ]
+                    if ha_type == "same-az":
+                         custom_sh +=  [
+                                            "PEER_EXTPRIVIP='", Select("0", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "subnet1" + "Az1Interface", "SecondaryPrivateIpAddresses")), "'\n", 
+                                            "VIPEIP='",Ref(VipEipAddress),"'\n",
+
+                                            ] 
             if num_nics > 1:
                 custom_sh +=  [ 
                                 "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
@@ -1806,12 +1691,12 @@ def main():
                                 "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
                                 "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
                                 "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",                                 
-                                "EXTMASK=${GATEWAY_PREFIX}\n",                                
+                                "EXTMASK=${GATEWAY_PREFIX}\n",
+                                "tmsh create net vlan external interfaces add { 1.1 } \n",                                
                               ]
-                              
                 if ha_type == "standalone":
                     if 'waf' not in components:
-                        custom_sh +=  [ 
+                        custom_sh +=  [                                         
                                         "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
                                         ]
                     if 'waf' in components:                    
@@ -1894,7 +1779,6 @@ def main():
                     custom_sh +=    [
                                         "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
                                     ]
-
                     # Add virtual service with simple URI-Routing ltm policy
                     if 'waf' not in components:
                         custom_sh +=    [
@@ -1903,7 +1787,6 @@ def main():
                                             "tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\n",
                                             "tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\n",
                                         ]
-
                         if ha_type != "across-az":
                             if num_nics == 1:
                                 custom_sh +=    [
@@ -1957,7 +1840,6 @@ def main():
                                     "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                                     "tmsh run cm config-sync to-group across_az_failover_group\n",
                                     ]
-
             # If ASM, Need to use overwite Config (SOL16509 / BZID: 487538 )
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 if 'waf' in components:
@@ -2037,7 +1919,6 @@ def main():
                         })
                     )
             else:
-             
                 metadata = Metadata(
                         Init({
                             'config': InitConfig(
@@ -2245,23 +2126,18 @@ def main():
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces
                 ))
-
     ### BEGIN OUTPUT
     if network == True:
         Vpc = t.add_output(Output(
             "Vpc",
-
             Description="VPC ID",
             Value=Ref(Vpc),
         ))
-
         DnsServers = t.add_output(Output(
             "DnsServers",
-
             Description="DNS server for VPC",
             Value="10.0.0.2",
         ))
-
         for INDEX in range(num_azs):
             ApplicationSubnet = "Az" + str(INDEX + 1) + "ApplicationSubnet"
             OUTPUTS[ApplicationSubnet] = t.add_output(Output(
@@ -2269,74 +2145,49 @@ def main():
                 Description="Az" + str(INDEX + 1) +  "Application Subnet Id",
                 Value=Ref(ApplicationSubnet),
             ))
-
         for INDEX in range(num_azs):
             ExternalSubnet = "subnet1" + "Az" + str(INDEX + 1)
-
             OUTPUTS[ExternalSubnet] = t.add_output(Output(
                 ExternalSubnet,
-
                 Description="Az" + str(INDEX + 1) +  "External Subnet Id",
                 Value=Ref(ExternalSubnet),
-
             ))
-
         if num_nics > 1:
             for INDEX in range(num_azs):
                 managementSubnet = "managementSubnet" + "Az" + str(INDEX + 1)
-
                 OUTPUTS[managementSubnet] = t.add_output(Output(
                     managementSubnet,
-
                     Description="Az" + str(INDEX + 1) +  "Management Subnet Id",
                     Value=Ref(managementSubnet),
-
                 ))
-
         if num_nics > 2:
             for INDEX in range(num_azs):
                 InternalSubnet = "subnet2" + "Az" + str(INDEX + 1)
 
                 OUTPUTS[InternalSubnet] = t.add_output(Output(
                     InternalSubnet,
-
                     Description="Az" + str(INDEX + 1) +  "Internal Subnet Id",
                     Value=Ref(InternalSubnet),
-
                 ))
-
     if security_groups == True:
-
         bigipExternalSecurityGroup = t.add_output(Output(
             "bigipExternalSecurityGroup",
-
             Description="Public or External Security Group",
             Value=Ref(bigipExternalSecurityGroup),
-
         ))
-
         if num_nics > 1:
             bigipManagementSecurityGroup = t.add_output(Output(
                 "bigipManagementSecurityGroup",
-
-
                 Description="Management Security Group",
                 Value=Ref(bigipManagementSecurityGroup),
-
             ))
-
         if num_nics > 2:
             bigipInternalSecurityGroup = t.add_output(Output(
                 "bigipInternalSecurityGroup",
-
                 Description="Private or Internal Security Group",
                 Value=Ref(bigipInternalSecurityGroup),
-
             ))
-
-
     if bigip == True:
-
         for BIGIP_INDEX in range(num_bigips):
             if ha_type == "across-az":
                 ExternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "subnet1" + "Az" + str(BIGIP_INDEX + 1) + "Interface"
@@ -2351,72 +2202,55 @@ def main():
             BigipInstanceId = "Bigip" + str(BIGIP_INDEX + 1) + "InstanceId"
             BigipUrl = "Bigip" + str(BIGIP_INDEX + 1) + "Url"
             AvailabilityZone = "availabilityZone" + str(BIGIP_INDEX + 1)
-
             OUTPUTS[BigipInstanceId] = t.add_output(Output(
                 BigipInstanceId,
                 Description="Instance Id of BIG-IP in Amazon",
                 Value=Ref(BigipInstance),
             ))
-
             OUTPUTS[AvailabilityZone] = t.add_output(Output(
                 AvailabilityZone,
                 Description="Availability Zone",
                 Value=GetAtt(BigipInstance, "AvailabilityZone"),
             ))
-
             OUTPUTS[ExternalInterface] = t.add_output(Output(
                 ExternalInterface,
                 Description="External interface Id on BIG-IP",
                 Value=Ref(ExternalInterface),
             ))
-
             OUTPUTS[ExternalInterfacePrivateIp] = t.add_output(Output(
                 ExternalInterfacePrivateIp,
                 Description="Internally routable IP of the public interface on BIG-IP",
                 Value=GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"),
             ))
-
             OUTPUTS[ExternalSelfEipAddress] = t.add_output(Output(
                 ExternalSelfEipAddress,
                 Description="IP Address of the External interface attached to BIG-IP",
                 Value=Ref(ExternalSelfEipAddress),
             ))
-
             if num_nics == 1:
-
                 VipEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAddress"
-
                 OUTPUTS[BigipUrl] = t.add_output(Output(
                     BigipUrl,
-
                     Description="BIG-IP Management GUI",
                     Value=Join("", [ "https://", GetAtt(BigipInstance, "PublicIp"), ":", Ref(managementGuiPort) ]),
                 ))
-
                 OUTPUTS[VipEipAddress] = t.add_output(Output(
                     VipEipAddress,
-
                     Description="EIP address for VIP",
                     Value=Join("", ["http://", GetAtt(BigipInstance, "PublicIp") , ":80"]),
                 ))
-
-
             if num_nics > 1:
-
-
                 ManagementInterface = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementInterface"
                 ManagementInterfacePrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementInterfacePrivateIp"
                 ManagementEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "ManagementEipAddress"
                 VipPrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "VipPrivateIp"
                 VipEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + "VipEipAddress"
-
                 OUTPUTS[BigipUrl] = t.add_output(Output(
                     BigipUrl,
 
                     Description="BIG-IP Management GUI",
                     Value=Join("", ["https://", GetAtt(BigipInstance, "PublicIp")]),
                 ))
-
                 OUTPUTS[ManagementInterface] = t.add_output(Output(
                     ManagementInterface,
 
@@ -2424,33 +2258,26 @@ def main():
                     Value=Ref(ManagementInterface),
 
                 ))
-
                 OUTPUTS[ManagementInterfacePrivateIp] = t.add_output(Output(
                     ManagementInterfacePrivateIp,
 
                     Description="Internally routable IP of the management interface on BIG-IP",
                     Value=GetAtt(ManagementInterface, "PrimaryPrivateIpAddress"),
                 ))
-
                 OUTPUTS[ManagementEipAddress] = t.add_output(Output(
                     ManagementEipAddress,
 
                     Description="IP address of the management port on BIG-IP",
                     Value=Ref(ManagementEipAddress),
-
                 ))
-
                 if ha_type == "standalone":
                     OUTPUTS[VipPrivateIp] = t.add_output(Output(
                         VipPrivateIp,
-
                         Description="VIP on External Interface Secondary IP 1",
                         Value=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
                     ))
-
                     OUTPUTS[VipEipAddress] = t.add_output(Output(
                         VipEipAddress,
-
                         Description="EIP address for VIP",
                         Value=Join("", ["http://", Ref(VipEipAddress), ":80"]),
                     ))
@@ -2459,20 +2286,15 @@ def main():
                     if (BIGIP_INDEX + 1) == CLUSTER_SEED:
                         OUTPUTS[VipPrivateIp] = t.add_output(Output(
                             VipPrivateIp,
-
                             Description="VIP on External Interface Secondary IP 1",
                             Value=Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")),
                         ))
-
                         OUTPUTS[VipEipAddress] = t.add_output(Output(
                             VipEipAddress,
-
                             Description="EIP address for VIP",
                             Value=Join("", ["http://", Ref(VipEipAddress), ":80"]),
                         ))
-
             if num_nics > 2:
-
                 InternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterface"
                 InternalInterfacePrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "InternalInterfacePrivateIp"
 
@@ -2490,7 +2312,6 @@ def main():
                     Description="Internally routable IP of internal interface on BIG-IP",
                     Value=GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),
                 ))
-
     if webserver == True:
         webserverPrivateIp = t.add_output(Output(
             "webserverPrivateIp",
@@ -2509,8 +2330,6 @@ def main():
             Description="Public URL for the Webserver",
             Value=Join("", ["http://", GetAtt(Webserver, "PublicIp")]),
         ))
-
-
     if stack == "full":
         print(t.to_json(indent=1))
     else:

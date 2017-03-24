@@ -17,6 +17,7 @@ For additional information, including how the templates are generated, and assis
 
 
 ## List of F5 CloudFormation templates for AWS deployments
+<<<<<<< HEAD
 The following is a list of the current *supported* F5 CloudFormation templates. Click the links below to view the README files which include the Launch buttons, or click the **Launch Stack** buttons to immediately launch the stack.<br><br>
 <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/standalone/1nic">**Standalone BIG-IP VE - Single NIC**</a><br>
   - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-1nic-bigip.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
@@ -26,9 +27,46 @@ The following is a list of the current *supported* F5 CloudFormation templates. 
 <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/standalone/2nic">**Standalone BIG-IP VE - 2 NICs**</a>
   - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-2nic-bigip.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
   - BYOL<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BYOL&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-2nic-bigip.template">
+=======
+The following is a list of the current *supported* F5 CloudFormation templates. Click the links below to view the README files which include the Launch buttons, or click the **Launch Stack** buttons to immediately launch the stack.
+<br><br>
+<a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/standalone/1nic">**Standalone BIG-IP VE - Single NIC**</a>
+  - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-1nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a><br>
+    
+  - BYOL<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-BYOL&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-1nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+<br>
+
+<a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/standalone/2nic">**Standalone BIG-IP VE - 2 NICs**</a>
+  - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-2nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a><br>
+
+  - BYOL<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BYOL&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
+<br>
 
+<a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/cluster/2nic/same-az-ha">**Clustered BIG-IP VE - 2 NICs- Same Availability Zone**</a>
+  - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Same-Az-Cluster-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a><br>
+    
+  - BYOL<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Same-Az-Cluster-2nic-byol&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-byol-2nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
+</a>
+<br>
+
+<a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/cy17_release2/supported/cluster/2nic/across-az-ha">**Clustered BIG-IP VE - 2 NICs- Across Availability Zones**</a>
+  - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a><br>
+    
+  - BYOL<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-byol&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template">
+>>>>>>> cy17_release2
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
+</a>
+<br>
+
+<<<<<<< HEAD
 <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/cluster/2nic">**Clustered BIG-IP VE - 2 NICs**</a>
   - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-Same-Az-Cluster-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
@@ -36,7 +74,12 @@ The following is a list of the current *supported* F5 CloudFormation templates. 
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
 <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/solutions/autoscale/waf">**Autoscaling the BIG-IP Web Application Firewall in AWS**</a>
+=======
+<a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/solutions/autoscale/waf/">**Autoscaling the BIG-IP Web Application Firewall in AWS**</a>
+>>>>>>> cy17_release2
    
+---
+
 ### Copyright
 
 Copyright 2014-2017 F5 Networks Inc.

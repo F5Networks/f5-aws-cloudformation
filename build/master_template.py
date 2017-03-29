@@ -1725,8 +1725,22 @@ def main():
                                         " &>> /var/log/cloudlibs-install.log < /dev/null",
                                         " &"
                                     ]
-                                    
-            admin_user +=   [    
+            if static_password:
+                generate_password = []
+                admin_user +=   [    
+                              " --signal ADMIN_CREATED",
+                              " --file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/createUser.sh",
+                              " --cl-args '--user admin",
+                              " --password-file /config/cloud/aws/.adminPassword",
+                              "'",
+                              " --log-level verbose",
+                              " -o /var/log/createUser.log",
+                              " &>> /var/log/cloudlibs-install.log < /dev/null",
+                              " &"
+                            ]
+
+            else:
+                admin_user +=   [    
                               " --wait-for PASSWORD_CREATED",
                               " --signal ADMIN_CREATED",
                               " --file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/createUser.sh",
@@ -1944,14 +1958,20 @@ def main():
 
                                             ] 
             if num_nics > 1:
+                if import_eni:
+                    extip = ImportValue(Sub("${EniStackName}-Bigip1ExternalInterfacePrivateIp"))
+                    mgmtip = ImportValue(Sub("${EniStackName}-Bigip1ManagementInterfacePrivateIp"))
+                else:
+                    extip = GetAtt(ExternalInterface, "PrimaryPrivateIpAddress")
+                    mgmtip = GetAtt(ManagementInterface, "PrimaryPrivateIpAddress")
+
                 custom_sh +=  [ 
                                 "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                                 "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
                                 "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
                                 "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
                                 "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                                "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
-                                "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",                                 
+                                "EXTIP='", extip, "'\n",
                                 "EXTMASK=${GATEWAY_PREFIX}\n",
                                 "tmsh create net vlan external interfaces add { 1.1 } \n",                                
                               ]
@@ -1965,12 +1985,6 @@ def main():
                                  ]
                     if license_type == "byol":
                         custom_sh += [ ]
-                    if import_eni:
-                        extip = ImportValue(Sub("${EniStackName}-Bigip1ExternalInterfacePrivateIp"))
-                        mgmtip = ImportValue(Sub("${EniStackName}-Bigip1ManagementInterfacePrivateIp"))
-                    else:
-                        extip = GetAtt(ExternalInterface, "PrimaryPrivateIpAddress")
-                        mgmtip = GetAtt(ManagementInterface, "PrimaryPrivateIpAddress")
                     custom_sh += [
                         "BIGIP_MGMT_ADDRESS='", mgmtip, "'\n",
                         "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
@@ -2902,7 +2916,7 @@ def main():
         print(t.to_json(indent=1))
     else:
         print(t.to_json(indent=1))  
-
+    return t
 if __name__ == "__main__":
-    main()
+    t = main()
 

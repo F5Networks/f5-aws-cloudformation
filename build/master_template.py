@@ -124,8 +124,8 @@ def main():
     ### Template Version
     version = "2.1.0"
     ### Cloudlib Branch
-    branch_cloud = "v2.3.0"
-    branch_aws = "v1.2.0"
+    branch_cloud = "develop"
+    branch_aws = "develop"
     ### Cloudlib and iApp URL
     ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/develop/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
@@ -145,7 +145,7 @@ def main():
   
     SCRIPT_SIGNATURE ="TfKrOEqc87cScx2may5bKnQQ5/TdygM6935wXkUnsf0/119c3C0WPjXQ1X86JMiInrjQ9oZjEkDejA41nwf46eWljvF0YTqdUU37XVpLi0plAOUyVCwjegra6vmY7F3DOKVC2b32SllF6rpBHECj6gAnSr6K/UQo044TEf1bXk/AHx8vw3+kuySMrutkIMHPlmxvsYyvWinjHAk5bdXepH+xspynZwLlOYuRYlTt2XVwSUyjzi1O1BLzm/oa3p4XkTkpDK0IYDTGFE/uFUyUaeNJQvBEDs6G+pQHgTIF67Zl3Ij0w/Pu6IoOkVjygmrQkz3BFlOrCyMtOIUmFItxiQ=="
     ### add hashmark to skip verification.
-    comment_out = ""
+    comment_out = "#"
     # Begin Template
     t = Template()
     t.add_version("2010-09-09")

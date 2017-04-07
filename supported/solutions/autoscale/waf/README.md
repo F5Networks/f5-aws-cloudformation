@@ -17,7 +17,7 @@ This solution implements auto scaling of BIG-IP Virtual Edition (VE) Web Applica
 
 ## Prerequisites and notes
 The following are prerequisites for this solution:
- - The appropriate permission in AWS to launch CloudFormation templates. This template creates Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles, so the account you are using must have permission to create these objects.
+ - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdminstratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
    - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
@@ -66,7 +66,7 @@ One you have launched the CFT from the marketplace, you need to complete the tem
 | scalingMaxSize | x | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scaling Group (the default is 3) |
 | scaleDownBytesThreshold | x | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
 | scaleUpBytesThreshold | x | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
-| notificationEmail |  | Valid email address to send Auto Scaling Event Notifications |
+| notificationEmail | x | Valid email address to send Auto Scaling Event Notifications |
 | virtualServicePort | x | Port on BIG-IP (the default is 80) |
 | applicationPort | x | Application Pool Member Port on BIG-IP (the default is 80) |
 | appInternalDnsName | x | DNS name for the application pool |

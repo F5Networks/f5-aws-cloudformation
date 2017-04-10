@@ -36,7 +36,7 @@ This Readme file describes launching from the AWS Marketplace.  If you are using
 
 From the Marketplace: 
 - From the **For Region** list, select your Region. 
-- From the **Delivery Methods** list, select **Auto Scale via CFT**
+- From the **Delivery Methods** list, select **CloudFormation Stack**
 - Click **Continue**
 - Select either the **Hourly** or **Yearly** Subscription Term.
 - Select the appropriate version.

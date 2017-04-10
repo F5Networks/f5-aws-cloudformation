@@ -20,8 +20,7 @@ The following are prerequisites for this solution:
  - The appropriate permission in AWS to launch CloudFormation (CFT) templates. This template creates Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles, so the account you are using must have permission to create these objects.
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)).
-   - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
- - Access to **Best** BIG-IP images in the Amazon region within which you are working.
+ - Access to BIG-IP images in the Amazon region within which you are working.
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and accept the EULA there.
  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS).
  - An AWS Security Group with the following inbound rules:
@@ -32,15 +31,7 @@ The following are prerequisites for this solution:
 
 
 ## Quick Start for launching the template
-This Readme file describes launching from the AWS Marketplace.
-
-From the Marketplace:
-- From the **For Region** list, select your Region.
-- From the **Delivery Methods** list, select **Auto Scale via CFT**
-- Click **Continue**
-- Select either the **Hourly** or **Yearly** Subscription Term.
-- Select the appropriate version.
-- Click **Launch the CloudFormation template**.
+***THIS SHOULD INCLUDE A STACK DEPLOYMENT BUTTON***
 
 
 ### Template Parameters ###
@@ -58,6 +49,7 @@ One you have launched the CFT from the marketplace, you need to complete the tem
 | sshKey | x | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | instanceType | x | AWS Instance Type (the default is m3.2xlarge) |
 | throughput | x | For CFTs not launched from the AWS Marketplace: The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
+| imageName | x | F5 Image Name to use(Good, Better, Best) |
 | adminUsername | x | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
 | managementGuiPort | x | Port of BIG-IP management Configuration utility (the default is 8443) |
 | timezone | x | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
@@ -70,7 +62,6 @@ One you have launched the CFT from the marketplace, you need to complete the tem
 | virtualServicePort | x | Port on BIG-IP (the default is 80) |
 | applicationPort | x | Application Pool Member Port on BIG-IP (the default is 80) |
 | appInternalDnsName | x | DNS name for the application pool |
-| [policyLevel](#security-blocking-levels-) | x | WAF Policy Level to protect the application (the default is high) |
 | application |  | Application Tag (the default is f5app) |
 | environment |  | Environment Name Tag (the default is f5env) |
 | group |  | Group Tag (the default is f5group) |
@@ -134,11 +125,9 @@ We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.c
 All BIG-IP VE instances deploy with a single interface (NIC) attached to a public subnet. This single interface processes both management and data plane traffic. The LTM and ASM provide advanced traffic management and security functionality. The CloudFormation template collects some initial deployment input parameters and creates an auto scale group of BIG-IP VEs. The instances parameters and configurations are defined by the Auto Scale group's *launch configuration*. The launch configuration is used to:
 
   - Set the BIG-IP system information: hostname, NTP, DNS settings, and so on.
-  - Provision the WAF module: BIG-IP Application Security Manager (ASM)
+  - Provision the LTM module: BIG-IP Local Traffic Manager
   - Join the auto scale cluster
   - Deploy integration with EC2 Auto Scale and CloudWatch services for scaling of the BIG-IP tier.
-  - Create an initial HTTP virtual server with a basic Web Application Firewall policy (Low, Medium, High)
-    - See the [Security Blocking Levels](##security-blocking-levels-) section for a description of the blocking levels for the Web Application Firewall presented in the template.
 
 The CloudFormation template uses the default **Best** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.
 
@@ -146,7 +135,7 @@ The CloudFormation template uses the default **Best** image available in the AWS
 
 The following is a simple configuration diagram deployment.
 
-![Configuration example](images/config-diagram-autoscale-waf.png)
+![Configuration example](images/config-diagram-autoscale-ltm.png)
 
 #### Detailed clustering information
 This solution creates a clustered system with "AutoSync" enabled, so any change is immediately propagated throughout the cluster. Each cluster member instance reports "Active" and "Actively" processes traffic.  Although Autosync is enabled and technically you can make changes to any existing clustered member, for consistency we recommend you make any changes to the original, primary instance.
@@ -157,7 +146,6 @@ When the first auto scale instance is launched, a Device Group called "autoscale
 
 Whenever a new instance is launched, it joins the cluster. If those instances are scaled down, they are removed from the cluster and the original instance remains. The cluster membership is updated once every 10 minutes and sends metrics every 60 seconds using [iCall](https://devcentral.f5.com/icall).
 
-This deployment creates an initial BIG-IP configuration using an [iApp](https://devcentral.f5.com/iapps) that includes a basic virtual service (listening on 0.0.0.0:80) with a WAF policy.
 
 After the first instance is launched, you can log in and customize the configuration (for example substitute a custom policy, add logging, and much more).
 
@@ -225,22 +213,6 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
 Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
 
 In order to form a cluster of devices, a secure trust must be established between BIG-IP systems. To establish this trust, we generate and store credentials in an Amazon S3 bucket. You must not delete these credentials from the S3 bucket.
-
----
-
-### Security blocking levels <a name="blocking"></a>
-The security blocking level you choose when you configure the template determines how much traffic is blocked and alerted by the F5 WAF.
-
-Attack signatures are rules that identify attacks on a web application and its components. The WAF has at least 2600 attack signatures available. The higher the security level you choose, the more traffic that is blocked by these signatures.
-
-| Level | Details |
-| --- | --- | --- |
-| Low | The fewest attack signatures enabled. There is a greater chance of possible security violations making it through to the web applications, but a lesser chance of false positives. |
-| Medium | A balance between logging too many violations and too many false positives. |
-| High | The most attack signatures enabled. A large number of false positives may be recorded; you must correct these alerts for your application to function correctly. |
-
-All traffic that is not being blocked is being used by the WAF for learning. Over time, if the WAF determines that traffic is safe, it allows it through to the application. Alternately, the WAF can determine that traffic is unsafe and block it from the application.
-
 
 ---
 

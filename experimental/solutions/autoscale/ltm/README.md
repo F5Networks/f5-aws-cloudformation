@@ -122,7 +122,7 @@ We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.c
 
 ## Additional BIG-IP VE deployment and configuration details
 
-All BIG-IP VE instances deploy with a single interface (NIC) attached to a public subnet. This single interface processes both management and data plane traffic. The LTM and ASM provide advanced traffic management and security functionality. The CloudFormation template collects some initial deployment input parameters and creates an auto scale group of BIG-IP VEs. The instances parameters and configurations are defined by the Auto Scale group's *launch configuration*. The launch configuration is used to:
+All BIG-IP VE instances deploy with a single interface (NIC) attached to a public subnet. This single interface processes both management and data plane traffic. The LTM module provides advanced traffic management and security functionality. The CloudFormation template collects some initial deployment input parameters and creates an auto scale group of BIG-IP VEs. The instances parameters and configurations are defined by the Auto Scale group's *launch configuration*. The launch configuration is used to:
 
   - Set the BIG-IP system information: hostname, NTP, DNS settings, and so on.
   - Provision the LTM module: BIG-IP Local Traffic Manager

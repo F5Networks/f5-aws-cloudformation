@@ -32,7 +32,8 @@ The following are prerequisites for this solution:
  
  
 ### Installation
-Download the CloudFormation template from https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/solutions/autoscale/waf/f5-autoscale-bigip.template and use it to create a stack in AWS CloudFormation either using the AWS Console or AWS CLI. Note that you **cannot** right-click the link and use "Save as".  You must click **Raw** and save code with the file name **f5-autoscale-bigip.template**.
+Download the CloudFormation template from this repository (https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/solutions/autoscale/waf/f5-autoscale-bigip.template) and use it to create a stack in AWS CloudFormation either using the AWS Console or AWS CLI. 
+Note that you **cannot** right-click the link and use "Save as".  You must click **Raw** and save the code with the file name **f5-autoscale-bigip.template**.
 
 
 **AWS Console**

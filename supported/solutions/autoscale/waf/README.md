@@ -148,11 +148,11 @@ All BIG-IP VE instances deploy with a single interface (NIC) attached to a publi
   - Create an initial HTTP virtual server with a basic Web Application Firewall policy (Low, Medium, High)
     - See the [Security Blocking Levels](##security-blocking-levels-) section for a description of the blocking levels for the Web Application Firewall presented in the template.
 
-The CloudFormation template uses the default **Best** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
+The CloudFormation template uses the default **Best** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this clustergit  and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
 
 #### Configuration Example <a name="config"></a>
 
-The following is a simple configuration diagram deployment. 
+The following is a simple configuration diagram of this deployment. 
 
 ![Configuration example](images/config-diagram-autoscale-waf.png)
 

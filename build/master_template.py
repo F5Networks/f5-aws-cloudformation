@@ -122,10 +122,10 @@ def main():
 
     # Build variables used for QA
     ### Template Version
-    version = "2.1.0"
+    version = "2.2.0"
     ### Cloudlib Branch
-    branch_cloud = "develop"
-    branch_aws = "develop"
+    branch_cloud = "release-3.0.0"
+    branch_aws = "release-3.0.0"
     ### Cloudlib and iApp URL
     ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/develop/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
@@ -1426,7 +1426,7 @@ def main():
             get_nameserver =    [
                                     "INTERFACE=$1",
                                     "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-                                    "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+                                    "VPC_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
                                     "VPC_NET=${VPC_CIDR_BLOCK%/*}",
                                     "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
                                     "echo $NAME_SERVER"
@@ -1565,7 +1565,7 @@ def main():
                                             "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                          ]
                 cluster_command +=   [
-                                        "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`;",
+                                        "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`;",
                                         "nohup /config/waitThenRun.sh",
                                         "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
                                         "--wait-for CUSTOM_CONFIG_DONE",
@@ -1628,7 +1628,7 @@ def main():
                                 ]
             onboard_BIG_IP  +=      [                        
                                         "--password-url file:///config/cloud/aws/.adminPassword",
-                                        "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                                        "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
                                         "--ntp 0.us.pool.ntp.org",
                                         "--ntp 1.us.pool.ntp.org",
                                         "--tz UTC",
@@ -1643,7 +1643,7 @@ def main():
                         ]
             if ha_type != "standalone":
                 custom_sh += [
-                                    "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+                                    "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
                                
                              ]            
             if num_nics == 1:
@@ -1685,7 +1685,7 @@ def main():
             if num_nics > 1:
                 custom_sh +=  [ 
                                 "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                                "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
                                 "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
                                 "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
                                 "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
@@ -1715,7 +1715,7 @@ def main():
             if num_nics > 2:
                 custom_sh +=  [ 
                                 "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                "GATEWAY_CIDR_BLOCK2=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
+                                "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                                 "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}\n",
                                 "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
                                 "INTMASK=${GATEWAY_PREFIX2}\n", 
@@ -1806,7 +1806,7 @@ def main():
                 if 'waf' in components:
                     # 12.1.0 requires "first match legacy"
                     custom_sh += [
-                                    "curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
+                                    "curl -s -f --retry 20 -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
                                     "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
                                     "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
                                     "tmsh modify asm policy /Common/linux-high active\n",
@@ -1834,7 +1834,7 @@ def main():
                                             ]
                 if ha_type == "across-az":
                     custom_sh +=    [
-                                    "curl -sSk -o /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl --max-time 15 " + str(ha_across_az_iapp_url) + "\n",
+                                    "curl -sSkf --retry 20 -o /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl --max-time 15 " + str(ha_across_az_iapp_url) + "\n",
                                     "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
                                     "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.3.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                     "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",

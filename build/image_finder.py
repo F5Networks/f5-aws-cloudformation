@@ -226,6 +226,12 @@ def main():
 
     with open('cached-byol-region-map.json', 'w') as outfile:
         json.dump(ByolRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)
+        
+    # BIG-IQ Region Map:
+    BigiqRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="5.1.0.0.0.631", regions=regions)
+    
+    with open('cached-bigiq-region-map.json', 'w') as outfile:
+        json.dump(BigiqRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)    
 
     #Webserver Region Map:
     #bitnami-lampstack-5.5.13-0-dev-linux-ubuntu-12.04.4-x86_64-ebs-ami-a9f58699-3-ami-9dcd82ad

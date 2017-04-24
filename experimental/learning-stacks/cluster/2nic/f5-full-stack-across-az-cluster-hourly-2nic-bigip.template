@@ -1215,7 +1215,7 @@
            "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
            "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
            "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
-           "curl -sSkf --retry 20 -o /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl --max-time 15 https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/develop/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
+           "curl -sSkf --retry 20 -o /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl --max-time 15 https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/master/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
            "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
            "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.3.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
            "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
@@ -1270,7 +1270,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.2.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
@@ -1897,7 +1897,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.2.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",

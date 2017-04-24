@@ -801,7 +801,7 @@
            "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
            "tmsh modify sys db dhclient.mgmt { value disable }\n",
            "tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
-           "curl -sSkf --retry 20 -o /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl --max-time 15 https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/develop/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
+           "curl -sSkf --retry 20 -o /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl --max-time 15 https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/master/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
            "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
            "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.3.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
            "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
@@ -856,7 +856,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.2.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
@@ -1466,7 +1466,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/develop/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.2.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",

@@ -45,7 +45,7 @@ The following is a list of the current *supported* F5 CloudFormation templates. 
 </a>
 <br>
 
-<a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/cy17_release2/supported/cluster/2nic/across-az-ha">**Clustered BIG-IP VE - 2 NICs- Across Availability Zones**</a>
+<a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/cluster/2nic/across-az-ha">**Clustered BIG-IP VE - 2 NICs- Across Availability Zones**</a>
   - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a><br>
     

@@ -124,16 +124,16 @@ def main():
     ### Template Version
     version = "2.2.0"
     ### Cloudlib Branch
-    branch_cloud = "release-3.0.0"
+    branch_cloud = "v3.0.0"
     branch_aws = "v1.2.0"
     ### Cloudlib and iApp URL
     ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/master/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"    
     ### Verify Hash
-    CLOUD_HASH = "489d460d2e5fcd401ce12f19b1d753a6bee30483cd0bf2b7548b7f8fe3caf5b727af96f013733cbd08b0c109e0cf535a29288d473b84cc834369204d5be5edc9"
+    CLOUD_HASH = "862f7c19396088ab012fda7c2b262621c17f134b1d39d7a4d0b765eaf92f3ddc7354716a4f546fabb866df9876e1baed5799ae4a2c9d0ea6f01f79a38b9d3b3e"
     CLOUD_AWS_HASH = "2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72"
-    CLOUD_AZURE_HASH = "16d2ce2086883ed5b47a3ba4e79541fd1a4bb64513222cf3a459297c2474d0bfc71a161ba2b8571707e1a6b273badaaf2c847993d0e60a4b52cd8c62cb03aba6"
+    CLOUD_AZURE_HASH = "90e9162245f204b0c15e5b30c8d7e9d5f110a03002c0bfeaa83e51252119bfc1c4f711dc85d630c8203dab4a6ec373ae2c3777586a3fb1631dc61d7fa095448e"
     ASM_POLICY_LINUX = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
     HTTP_IAPP_RC4 = "47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034"
     HTTP_IAPP_RC6 = "811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe"
@@ -143,7 +143,7 @@ def main():
     DEPLOY_WAF = "4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a"
     POLICY_CREATOR = "54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a"
   
-    SCRIPT_SIGNATURE ="TfKrOEqc87cScx2may5bKnQQ5/TdygM6935wXkUnsf0/119c3C0WPjXQ1X86JMiInrjQ9oZjEkDejA41nwf46eWljvF0YTqdUU37XVpLi0plAOUyVCwjegra6vmY7F3DOKVC2b32SllF6rpBHECj6gAnSr6K/UQo044TEf1bXk/AHx8vw3+kuySMrutkIMHPlmxvsYyvWinjHAk5bdXepH+xspynZwLlOYuRYlTt2XVwSUyjzi1O1BLzm/oa3p4XkTkpDK0IYDTGFE/uFUyUaeNJQvBEDs6G+pQHgTIF67Zl3Ij0w/Pu6IoOkVjygmrQkz3BFlOrCyMtOIUmFItxiQ=="
+    SCRIPT_SIGNATURE ="ZD1rJSVIZX5kb2K8T9MW9H2Io132Bkr+R5CwvvKTqs6YalAgXftVeS5aApwlh7dkqAalfaGNyRxj+O2Bn6gEZowNaybisRjwxaaqiO6rs5v+/Sfd4jwWi//W5IacjT72uNUsayXb29itSGQt0M9Wqps8T3KHwBcl0q+GaV/COiPKntJCjlfUMfiysf8JnD8Kqo11RRD22rWYcI+3/7TYhkhaDSKFrsSIABWjCKt3xSt8KmzVAF/Vz0W4sCva6ZZeBAv658GwN2adhvX2zdliWm7BwT5gUvFsHJwL4kK8t/ypk/cZ4Zo62MlITLem+JgH+FOinmwutJruvR7xwnwxBQ=="
     ### add hashmark to skip verification.
     comment_out = "#"
     # Begin Template

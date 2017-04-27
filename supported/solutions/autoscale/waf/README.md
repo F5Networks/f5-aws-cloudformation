@@ -32,7 +32,7 @@ The following are prerequisites for this solution:
  
  
 ### Installation
-Download the CloudFormation template from this repository (https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/solutions/autoscale/waf/f5-autoscale-bigip.template) and use it to create a stack in AWS CloudFormation either using the AWS Console or AWS CLI. 
+Download the CloudFormation template from this repository (https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/solutions/autoscale/waf/f5-autoscale-bigip.template) and use it to create a stack in AWS CloudFormation either using the AWS Console or AWS CLI.<br> 
 Note that you **cannot** right-click the link and use "Save as".  You must click **Raw** and save the code with the file name **f5-autoscale-bigip.template**.
 
 
@@ -45,6 +45,7 @@ Note that you **cannot** right-click the link and use "Save as".  You must click
    4. Click **Choose File** and then browse to the **autoscale-bigip.template** file.
  
  <br>
+ 
  **AWS CLI**
  
  From the AWS CLI, use the following command syntax:
@@ -148,11 +149,11 @@ All BIG-IP VE instances deploy with a single interface (NIC) attached to a publi
   - Create an initial HTTP virtual server with a basic Web Application Firewall policy (Low, Medium, High)
     - See the [Security Blocking Levels](##security-blocking-levels-) section for a description of the blocking levels for the Web Application Firewall presented in the template.
 
-The CloudFormation template uses the default **Best** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
+The CloudFormation template uses the default **Best** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this clustergit  and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
 
 #### Configuration Example <a name="config"></a>
 
-The following is a simple configuration diagram deployment. 
+The following is a simple configuration diagram of this deployment. 
 
 ![Configuration example](images/config-diagram-autoscale-waf.png)
 

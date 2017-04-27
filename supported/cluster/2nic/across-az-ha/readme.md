@@ -91,16 +91,19 @@ After clicking the Launch button, you must specify the following parameters.
 <br>
 <br>
   <a name="byol"></a>
-  **BYOL deploy button**
+  
+**BYOL deploy button**
 
 Use this button to deploy the **BYOL** template: 
 
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-byol&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
-
 <br>
+<br>
+
 After clicking the Launch button, you must specify the following parameters.
+<br>
 
 | Parameter | Required | Description |
 | --- | --- | --- |

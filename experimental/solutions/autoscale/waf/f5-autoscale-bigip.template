@@ -654,7 +654,7 @@
                 "group": "root"
               },
               "/config/cloud/f5-cloud-libs.tar.gz": {
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/release-3.0.0/dist/f5-cloud-libs.tar.gz",
+                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.0.0/dist/f5-cloud-libs.tar.gz",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
@@ -975,6 +975,7 @@
                               " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
                               " --log-level debug",
                               " --signal ADMIN_CREATED",
+                              " --wait-for 1_NIC_SETUP_DONE",
                               " --file /config/cloud/aws/createUser.sh",
                               " --cl-args '",
                               { "Ref": "adminUsername" },
@@ -995,7 +996,7 @@
                       "nohup /config/cloud/waitThenRun.sh",
                       "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
                       "--log-level debug",
-                      "--wait-for 1_NIC_SETUP_DONE",
+                      "--wait-for ADMIN_CREATED",
                       "-o /var/log/onboard.log",
                       "--host localhost",
                       "--user",

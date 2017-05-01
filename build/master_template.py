@@ -1836,8 +1836,8 @@ def main():
                 if ha_type == "across-az":
                     custom_sh +=    [
                                     "curl -sSkf --retry 20 -o /config/cloud/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl --max-time 15 " + str(ha_across_az_iapp_url) + "\n",
-                                    "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
-                                    "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.3.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
+                                    "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl\n",
+                                    "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha." + str(iApp_version) + " tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                     "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                                     "tmsh run cm config-sync to-group across_az_failover_group\n",
                                     ]

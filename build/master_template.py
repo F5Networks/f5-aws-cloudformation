@@ -127,7 +127,7 @@ def main():
     branch_cloud = "v3.0.0"
     branch_aws = "v1.2.0"
     ### Cloudlib and iApp URL
-    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/master/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
+    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/master/iApps/f5.aws_advanced_ha.v1.4.0rc1.tmpl"
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"    
     ### Verify Hash

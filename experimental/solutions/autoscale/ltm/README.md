@@ -1,4 +1,4 @@
-# Auto scaling the BIG-IP VE Local Traffic Manager(LTM) in AWS
+# Auto scaling the BIG-IP VE Local Traffic Manager (LTM) in AWS
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 
 **Contents**

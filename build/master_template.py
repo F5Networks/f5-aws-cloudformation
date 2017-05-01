@@ -127,7 +127,8 @@ def main():
     branch_cloud = "v3.0.0"
     branch_aws = "v1.2.0"
     ### Cloudlib and iApp URL
-    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/master/iApps/f5.aws_advanced_ha.v1.4.0rc1.tmpl"
+    iApp_version = "v1.4.0rc1"
+    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/master/iApps/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"    
     ### Verify Hash
@@ -1834,7 +1835,7 @@ def main():
                                             ]
                 if ha_type == "across-az":
                     custom_sh +=    [
-                                    "curl -sSkf --retry 20 -o /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl --max-time 15 " + str(ha_across_az_iapp_url) + "\n",
+                                    "curl -sSkf --retry 20 -o /config/cloud/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl --max-time 15 " + str(ha_across_az_iapp_url) + "\n",
                                     "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
                                     "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.3.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                     "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",

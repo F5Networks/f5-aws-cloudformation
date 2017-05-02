@@ -641,7 +641,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.0.0/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.0.1/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -698,7 +698,7 @@
            "        if {[catch {",
            "            set hashes(f5-cloud-libs.tar.gz) 862f7c19396088ab012fda7c2b262621c17f134b1d39d7a4d0b765eaf92f3ddc7354716a4f546fabb866df9876e1baed5799ae4a2c9d0ea6f01f79a38b9d3b3e",
            "            set hashes(f5-cloud-libs-aws.tar.gz) 2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72",
-           "            set hashes(f5-cloud-libs-azure.tar.gz) 90e9162245f204b0c15e5b30c8d7e9d5f110a03002c0bfeaa83e51252119bfc1c4f711dc85d630c8203dab4a6ec373ae2c3777586a3fb1631dc61d7fa095448e",
+           "            set hashes(f5-cloud-libs-azure.tar.gz) 9d4dc6779a5d25253832598d42681defa54c5f4521a70ba8e053179c262cdf0d5c8d6a3d458ea21da1d95212792b099bf2721ddbe175eed035cd1e00647124cf",
            "            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0",
            "            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034",
            "            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe",
@@ -728,7 +728,7 @@
            "            exit 1",
            "        }",
            "    }",
-           "    script-signature ZD1rJSVIZX5kb2K8T9MW9H2Io132Bkr+R5CwvvKTqs6YalAgXftVeS5aApwlh7dkqAalfaGNyRxj+O2Bn6gEZowNaybisRjwxaaqiO6rs5v+/Sfd4jwWi//W5IacjT72uNUsayXb29itSGQt0M9Wqps8T3KHwBcl0q+GaV/COiPKntJCjlfUMfiysf8JnD8Kqo11RRD22rWYcI+3/7TYhkhaDSKFrsSIABWjCKt3xSt8KmzVAF/Vz0W4sCva6ZZeBAv658GwN2adhvX2zdliWm7BwT5gUvFsHJwL4kK8t/ypk/cZ4Zo62MlITLem+JgH+FOinmwutJruvR7xwnwxBQ==",
+           "    script-signature mV/sGBaG1EVC2prXOPg+n5ExdTMQn2PGlOp1lYn7BfYeeQ6i6TXaIXME4XQ19wdJbGn21k0/P0ofrGxFBrpzGpYg9EZIsT02uvuAp3OZVbEuPQwHfN9ncnxiQfr8pZIInLcLhCmEcxi4C0OlTc5ifvepp6u2zdiPT+4D6Qza4Y9v3JquEXCy63KslVscFJwVvwbq9fWNfyhT2R7LuQf6Id57KJIfaizHeE+xgIBLVUEmPF/PYeqOHyZYFYAVYuUJMvtnIvshFeBz3bnECB8mDQd47t5AZ1lVsn32QytmsMaJBQwzEKqdVbCTKQvDzorH40DSKyfX7F0VFd0N/tRD8w==",
            "    signing-key /Common/f5-irule",
            "}",
            ""

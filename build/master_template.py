@@ -124,12 +124,12 @@ def main():
     ### Template Version
     version = "2.2.0"
     ### Cloudlib Branch
-    branch_cloud = "v3.0.1"
+    branch_cloud = "v3.0.2"
     branch_aws = "v1.2.0"
     ### Cloudlib and iApp URL
     iApp_version = "v1.4.0rc1"
     iapp_branch = "CY17R3"
-    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/" + str(iapp_branch) + "/iApps/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
+    iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl" 
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"    
     ### Verify Hash
@@ -141,13 +141,17 @@ def main():
     HTTP_IAPP_RC6 = "811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe"
     HTTP_IAPP_RC7 = "21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d"
     ADVANCED_HA = "9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d"
+    ADVANCED_HA_1_4_0 = "de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396"
     ASM_POLICY = "2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6"
     DEPLOY_WAF = "4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a"
     POLICY_CREATOR = "54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a"
   
-    SCRIPT_SIGNATURE ="mV/sGBaG1EVC2prXOPg+n5ExdTMQn2PGlOp1lYn7BfYeeQ6i6TXaIXME4XQ19wdJbGn21k0/P0ofrGxFBrpzGpYg9EZIsT02uvuAp3OZVbEuPQwHfN9ncnxiQfr8pZIInLcLhCmEcxi4C0OlTc5ifvepp6u2zdiPT+4D6Qza4Y9v3JquEXCy63KslVscFJwVvwbq9fWNfyhT2R7LuQf6Id57KJIfaizHeE+xgIBLVUEmPF/PYeqOHyZYFYAVYuUJMvtnIvshFeBz3bnECB8mDQd47t5AZ1lVsn32QytmsMaJBQwzEKqdVbCTKQvDzorH40DSKyfX7F0VFd0N/tRD8w=="
+    SCRIPT_SIGNATURE ="VwqAYsu1/TM/B7OPgCB2SXyiQ5s0MJH6qqzrypWaoZcRtXc9w9jNz8YwmqQyFn7TWTqCCLxmnMT4bmLzqNIYWesegv7w5KcBMwA8C0NTOebjHLkqKPzr2P68NiVzPN1/gxp3Y2i2e9zpnvy8PXcWRK3PkauO8lVSE7TJ07/uydvjg9t3GEjN449TUIZ+fx0NhqxS9VD6HDqv66FKgVcAeiomqrB2YQeawE4oShnbV2ULBP9IN8X/Rp9cb2gw1IPYZcLneP/rtgkMHOPmnzPV4u+tEowPzIjAo9mTV2J7e4z50peN3vdD7ThO1aPdcd5dfxbRqWZtlyV/pDPPHVVEdg=="
     ### add hashmark to skip verification.
-    comment_out = "#"
+    comment_out = ""
+
+    
+    
     # Begin Template
     t = Template()
     t.add_version("2010-09-09")
@@ -1329,6 +1333,13 @@ def main():
     ] \
 }'
             # begin building custom-config.sh
+            iApp_verify = ""
+            ha_iapp = "/config/cloud/f5-cloud-libs.tar.gz"
+            ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
+            if ha_type == "across-az":    
+                iApp_verify = " \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\""
+                ha_iapp = "/config/cloud/aws/" + str(iapp_name)
+                ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/" + str(iapp_branch) + "/iApps/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
             sig_check = [
                             "cli script /Common/verifyHash {",
                             "    proc script::run {} {",
@@ -1341,6 +1352,7 @@ def main():
                             "            set hashes(f5.http.v1.2.0rc6.tmpl) " + str(HTTP_IAPP_RC6),
                             "            set hashes(f5.http.v1.2.0rc7.tmpl) " + str(HTTP_IAPP_RC7),
                             "            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) " + str(ADVANCED_HA),
+                            "            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) " + str(ADVANCED_HA_1_4_0),
                             "            set hashes(asm-policy.tar.gz) " + str(ASM_POLICY),
                             "            set hashes(deploy_waf.sh) " + str(DEPLOY_WAF),
                             "            set hashes(f5.policy_creator.tmpl) " + str(POLICY_CREATOR),
@@ -1390,7 +1402,7 @@ def main():
                       str(comment_out) + "    exit",
                       str(comment_out) + "fi",
                       str(comment_out) + "echo loaded verifyHash",
-                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\"" + str(iApp_verify) + ")",
                       str(comment_out) + "for fileToVerify in \"${filesToVerify[@]}\"",
                       str(comment_out) + "do",
                       str(comment_out) + "    echo verifying \"$fileToVerify\"",
@@ -1835,8 +1847,7 @@ def main():
                                                 "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
                                             ]
                 if ha_type == "across-az":
-                    custom_sh +=    [
-                                    "curl -sSkf --retry 20 -o /config/cloud/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl --max-time 15 " + str(ha_across_az_iapp_url) + "\n",
+                    custom_sh +=    [                                    
                                     "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl\n",
                                     "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha." + str(iApp_version) + " tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                     "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
@@ -1934,6 +1945,12 @@ def main():
                                         ),
                                         '/config/cloud/f5-cloud-libs-aws.tar.gz': InitFile(
                                             source=cloudlib_aws_url,
+                                            mode='000755',
+                                            owner='root',
+                                            group='root'
+                                        ),
+                                        str(ha_iapp): InitFile(
+                                            source=ha_across_az_iapp_url,
                                             mode='000755',
                                             owner='root',
                                             group='root'

@@ -127,7 +127,7 @@ After clicking the Launch button, you must specify the following parameters.
 ## Configuration Example <a name="config">
 
 The following is a simple configuration diagram for this clustered, 2-NIC deployment. In this diagram, the IP addresses are provided as examples. This solution creates the instances with the BIG-IP v13.0 AMI image, and uses IAM roles for authentication.<br>
-![Clustered 2-NIC configuration example](images/aws-drawing3-azs.png)
+![Clustered 2-NIC configuration example](images/aws-2nic-cluster-across-azs)
 
 
 

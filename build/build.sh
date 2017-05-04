@@ -56,12 +56,12 @@ python master_template.py -s full -n 1 -l bigiq > ../experimental/learning-stack
 python master_template.py -s full -n 2 -l bigiq > ../experimental/learning-stacks/reference/2nic/bigiq/f5-full-stack-bigiq-license-pool-2nic-bigip.template
 python master_template.py -s full -n 3 -l bigiq > ../experimental/learning-stacks/reference/3nic/bigiq/f5-full-stack-bigiq-license-pool-3nic-bigip.template
 
-#python master_template.py -s existing -n 1 -l bigiq > ../experimental/reference/1nic/bigiq/f5-existing-stack-bigiq-license-pool-1nic-bigip.template
-#python master_template.py -s existing -n 2 -l bigiq > ../experimental/reference/2nic/bigiq/f5-existing-stack-bigiq-license-pool-2nic-bigip.template
+python master_template.py -s existing -n 1 -l bigiq > ../experimental/reference/1nic/bigiq/f5-existing-stack-bigiq-1nic-bigip.template
+python master_template.py -s existing -n 2 -l bigiq > ../experimental/reference/2nic/bigiq/f5-existing-stack-bigiq-2nic-bigip.template
 python master_template.py -s existing -n 3 -l bigiq > ../experimental/reference/3nic/bigiq/f5-existing-stack-bigiq-license-pool-3nic-bigip.template
 
-python master_template.py -s existing -n 1 -l bigiq > ../experimental/standalone/1nic/f5-existing-stack-bigiq-1nic-bigip.template
-python master_template.py -s existing -n 2 -l bigiq > ../experimental/standalone/2nic/f5-existing-stack-bigiq-2nic-bigip.template
+#python master_template.py -s existing -n 1 -l bigiq > ../experimental/standalone/1nic/f5-existing-stack-bigiq-1nic-bigip.template
+#python master_template.py -s existing -n 2 -l bigiq > ../experimental/standalone/2nic/f5-existing-stack-bigiq-2nic-bigip.template
 
 
 # Components 
@@ -95,8 +95,8 @@ python master_template.py -s existing -n 2 -l byol -c waf -H same-az > ../experi
 
 #### BIQ-IQ
 python master_template.py -s full -n 2 -l bigiq -H same-az > ../experimental/learning-stacks/reference/2nic/bigiq/f5-full-stack-same-az-cluster-bigiq-license-pool-2nic-bigip.template
-#python master_template.py -s existing -n 2 -l bigiq -H same-az > ../experimental/reference/2nic/bigiq/f5-existing-stack-same-az-cluster-bigiq-license-pool-2nic-bigip.template
-python master_template.py -s existing -n 2 -l bigiq -H same-az > ../experimental/cluster/2nic/same-az-ha/f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template
+python master_template.py -s existing -n 2 -l bigiq -H same-az > ../experimental/reference/2nic/bigiq/f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template
+#python master_template.py -s existing -n 2 -l bigiq -H same-az > ../experimental/cluster/2nic/same-az-ha/f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template
 #### WITH WAF
 python master_template.py -s full -n 2 -l bigiq -c waf -H same-az > ../experimental/learning-stacks/reference/2nic/bigiq/f5-full-stack-same-az-cluster-bigiq-license-pool-2nic-bigip-w-waf.template
 python master_template.py -s existing -n 2 -l bigiq -c waf -H same-az > ../experimental/reference/2nic/bigiq/f5-existing-stack-same-az-cluster-bigiq-license-pool-2nic-bigip-w-waf.template

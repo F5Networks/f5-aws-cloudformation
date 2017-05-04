@@ -12,7 +12,7 @@
 
 
 ## Introduction
-This solution implements auto scaling of BIG-IP Virtual Edition (VE) LTM systems in Amazon Web Services. The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality.  As traffic increases or decreases, the number of BIG-IP VE LTM instances automatically increases or decreases accordingly.
+This solution implements auto scaling of BIG-IP Virtual Edition (VE) LTM systems in Amazon Web Services. The BIG-IP VEs have the [Local Traffic Manager](https://f5.com/products/big-ip/local-traffic-manager-ltm) (LTM) module enabled to provide advanced traffic management functionality.  As traffic increases or decreases, the number of BIG-IP VE LTM instances automatically increases or decreases accordingly.
 
 
 ## Prerequisites and notes
@@ -31,7 +31,14 @@ The following are prerequisites for this solution:
 
 
 ## Quick Start for launching the template
-***THIS SHOULD INCLUDE A STACK DEPLOYMENT BUTTON***
+The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch Stack button.<br>
+**Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
+
+Use this button to deploy the template: 
+
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Same-Az-Cluster-2nic-bigiq&templateURL=https://s3.amazonaws.com/f5-cft/f5-autoscale-bigip-ltm.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
+</a>
 
 
 ### Template Parameters ###
@@ -430,4 +437,4 @@ under the License.
 Contributor License Agreement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Individuals or business entities who contribute to this project must have
-completed and submitted the `F5 Contributor License Agreement`
+completed and submitted the [F5 Contributor License Agreement](http://f5-openstack-docs.readthedocs.io/en/latest/cla_landing.html)

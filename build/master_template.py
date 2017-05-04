@@ -122,28 +122,31 @@ def main():
 
     # Build variables used for QA
     ### Template Version
-    version = "2.1.0"
+    version = "2.2.0"
     ### Cloudlib Branch
-    branch_cloud = "v2.3.0"
+    branch_cloud = "v3.0.2"
     branch_aws = "v1.2.0"
     ### Cloudlib and iApp URL
-    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/develop/iApps/f5.aws_advanced_ha.v1.3.0rc1.tmpl"
+    iApp_version = "v1.4.0rc1"
+    iapp_branch = "v2.2.0"
+    iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl" 
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"    
     ### Verify Hash
-    CLOUD_HASH = "489d460d2e5fcd401ce12f19b1d753a6bee30483cd0bf2b7548b7f8fe3caf5b727af96f013733cbd08b0c109e0cf535a29288d473b84cc834369204d5be5edc9"
+    CLOUD_HASH = "862f7c19396088ab012fda7c2b262621c17f134b1d39d7a4d0b765eaf92f3ddc7354716a4f546fabb866df9876e1baed5799ae4a2c9d0ea6f01f79a38b9d3b3e"
     CLOUD_AWS_HASH = "2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72"
-    CLOUD_AZURE_HASH = "16d2ce2086883ed5b47a3ba4e79541fd1a4bb64513222cf3a459297c2474d0bfc71a161ba2b8571707e1a6b273badaaf2c847993d0e60a4b52cd8c62cb03aba6"
+    CLOUD_AZURE_HASH = "9d4dc6779a5d25253832598d42681defa54c5f4521a70ba8e053179c262cdf0d5c8d6a3d458ea21da1d95212792b099bf2721ddbe175eed035cd1e00647124cf"
     ASM_POLICY_LINUX = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
     HTTP_IAPP_RC4 = "47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034"
     HTTP_IAPP_RC6 = "811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe"
     HTTP_IAPP_RC7 = "21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d"
     ADVANCED_HA = "9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d"
+    ADVANCED_HA_1_4_0 = "de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396"
     ASM_POLICY = "2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6"
     DEPLOY_WAF = "4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a"
     POLICY_CREATOR = "54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a"
   
-    SCRIPT_SIGNATURE ="TfKrOEqc87cScx2may5bKnQQ5/TdygM6935wXkUnsf0/119c3C0WPjXQ1X86JMiInrjQ9oZjEkDejA41nwf46eWljvF0YTqdUU37XVpLi0plAOUyVCwjegra6vmY7F3DOKVC2b32SllF6rpBHECj6gAnSr6K/UQo044TEf1bXk/AHx8vw3+kuySMrutkIMHPlmxvsYyvWinjHAk5bdXepH+xspynZwLlOYuRYlTt2XVwSUyjzi1O1BLzm/oa3p4XkTkpDK0IYDTGFE/uFUyUaeNJQvBEDs6G+pQHgTIF67Zl3Ij0w/Pu6IoOkVjygmrQkz3BFlOrCyMtOIUmFItxiQ=="
+    SCRIPT_SIGNATURE ="VwqAYsu1/TM/B7OPgCB2SXyiQ5s0MJH6qqzrypWaoZcRtXc9w9jNz8YwmqQyFn7TWTqCCLxmnMT4bmLzqNIYWesegv7w5KcBMwA8C0NTOebjHLkqKPzr2P68NiVzPN1/gxp3Y2i2e9zpnvy8PXcWRK3PkauO8lVSE7TJ07/uydvjg9t3GEjN449TUIZ+fx0NhqxS9VD6HDqv66FKgVcAeiomqrB2YQeawE4oShnbV2ULBP9IN8X/Rp9cb2gw1IPYZcLneP/rtgkMHOPmnzPV4u+tEowPzIjAo9mTV2J7e4z50peN3vdD7ThO1aPdcd5dfxbRqWZtlyV/pDPPHVVEdg=="
     ### add hashmark to skip verification.
     comment_out = ""
     # Begin Template
@@ -218,6 +221,17 @@ def main():
                     "costcenter"
               ]
             },
+            {
+              "Label": {
+                "default": "BIG-IQ LICENSING"
+              },
+              "Parameters": [
+                    "bigiqAddress",
+                    "bigiqLicensePoolName",
+                    "bigiqUsername",
+                    "bigiqPassword"
+              ]
+            },
           ],
           "ParameterLabels": {
            "Vpc": {
@@ -285,6 +299,18 @@ def main():
             },
             "costcenter": {
                 "default": "Cost Center"
+            },
+            "bigiqAddress": {
+                "default": "IP address BIG-IQ License Server"
+            },
+            "bigiqLicensePoolName": {
+                "default": "Name of BIG-IQ License Pool"
+            },
+            "bigiqUsername": {
+                "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
+            },
+            "bigiqPassword": {
+                "default": "Password for BIG-IQ user that will license BIG-IP"
             }
           }
         }
@@ -468,34 +494,34 @@ def main():
             bigiqAddress = t.add_parameter(Parameter(
                 "bigiqAddress",
                 MinLength="1",
-                ConstraintDescription="Verify your BIG-IQ Hostname or IP",
+                ConstraintDescription="Verify IP address BIG-IQ License Server",
                 Type="String",
-                Description="BIG-IQ Hostname or IP",
+                Description="IP address BIG-IQ License Server",
                 MaxLength="255",
             ))
             bigiqUsername = t.add_parameter(Parameter(
                 "bigiqUsername",
                 MinLength="1",
-                ConstraintDescription="Verify your BIG-IQ Username.",
+                ConstraintDescription="Verify BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
                 Type="String",
-                Description="BIG-IQ Username",
+                Description="BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
                 MaxLength="255",
             ))
             bigiqPassword = t.add_parameter(Parameter(
                 "bigiqPassword",
                 Type="String",
-                Description="BIG-IQ Password",
+                Description="Password for BIG-IQ user that will license BIG-IP",
                 MinLength="1",
                 NoEcho=True,
                 MaxLength="255",
-                ConstraintDescription="Verify your BIG-IQ Password",
+                ConstraintDescription="Verify Password for BIG-IQ user that will license BIG-IP",
             ))
-            bigiqLicensePoolUUID = t.add_parameter(Parameter(
-                "bigiqLicensePoolUUID",
+            bigiqLicensePoolName = t.add_parameter(Parameter(
+                "bigiqLicensePoolName",
                 MinLength="1",
-                ConstraintDescription="Verify your BIG-IQ License Pool UUID",
+                ConstraintDescription="Verify Name of BIG-IQ License Pool",
                 Type="String",
-                Description="BIG-IQ License Pool UUID",
+                Description="Name of BIG-IQ License Pool",
                 MaxLength="255",
             ))
     if stack == "existing" or stack == "security_groups":
@@ -1243,13 +1269,18 @@ def main():
                                 "--license ",
                                 Ref(licenseKey),
                             ]
-
-            # License file downloaded remotely from https://cdn.f5.com/product/iapp/utils/license-from-bigiq.sh
-            license_from_bigiq =  [
-                                "echo 'start install biqiq license'\n",
-                                ". /config/cloud/aws/license_from_bigiq.sh\n",
+            # following to add to onboard
+            if license_type == "bigiq":
+                license_bigiq = [
+                                "--license-pool --big-iq-host ",
+                                Ref(bigiqAddress),
+                                " --big-iq-user ",
+                                Ref(bigiqUsername),
+                                " --big-iq-password ",
+                                Ref(bigiqPassword),
+                                " --license-pool-name ",
+                                Ref(bigiqLicensePoolName),
                                 ]
-
             provision_asm = [
                                 "echo 'provisioning asm'\n",
                                 "tmsh modify /sys provision asm level nominal\n",
@@ -1327,6 +1358,13 @@ def main():
     ] \
 }'
             # begin building custom-config.sh
+            iApp_verify = ""
+            ha_iapp = "/config/cloud/f5-cloud-libs.tar.gz"
+            ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
+            if ha_type == "across-az":    
+                iApp_verify = " \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\""
+                ha_iapp = "/config/cloud/aws/" + str(iapp_name)
+                ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/" + str(iapp_branch) + "/iApps/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
             sig_check = [
                             "cli script /Common/verifyHash {",
                             "    proc script::run {} {",
@@ -1339,6 +1377,7 @@ def main():
                             "            set hashes(f5.http.v1.2.0rc6.tmpl) " + str(HTTP_IAPP_RC6),
                             "            set hashes(f5.http.v1.2.0rc7.tmpl) " + str(HTTP_IAPP_RC7),
                             "            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) " + str(ADVANCED_HA),
+                            "            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) " + str(ADVANCED_HA_1_4_0),
                             "            set hashes(asm-policy.tar.gz) " + str(ASM_POLICY),
                             "            set hashes(deploy_waf.sh) " + str(DEPLOY_WAF),
                             "            set hashes(f5.policy_creator.tmpl) " + str(POLICY_CREATOR),
@@ -1388,7 +1427,7 @@ def main():
                       str(comment_out) + "    exit",
                       str(comment_out) + "fi",
                       str(comment_out) + "echo loaded verifyHash",
-                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\"" + str(iApp_verify) + ")",
                       str(comment_out) + "for fileToVerify in \"${filesToVerify[@]}\"",
                       str(comment_out) + "do",
                       str(comment_out) + "    echo verifying \"$fileToVerify\"",
@@ -1426,7 +1465,7 @@ def main():
             get_nameserver =    [
                                     "INTERFACE=$1",
                                     "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-                                    "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+                                    "VPC_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
                                     "VPC_NET=${VPC_CIDR_BLOCK%/*}",
                                     "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
                                     "echo $NAME_SERVER"
@@ -1565,7 +1604,7 @@ def main():
                                             "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                          ]
                 cluster_command +=   [
-                                        "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`;",
+                                        "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`;",
                                         "nohup /config/waitThenRun.sh",
                                         "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
                                         "--wait-for CUSTOM_CONFIG_DONE",
@@ -1628,7 +1667,7 @@ def main():
                                 ]
             onboard_BIG_IP  +=      [                        
                                         "--password-url file:///config/cloud/aws/.adminPassword",
-                                        "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+                                        "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
                                         "--ntp 0.us.pool.ntp.org",
                                         "--ntp 1.us.pool.ntp.org",
                                         "--tz UTC",
@@ -1643,7 +1682,7 @@ def main():
                         ]
             if ha_type != "standalone":
                 custom_sh += [
-                                    "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+                                    "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
                                
                              ]            
             if num_nics == 1:
@@ -1685,7 +1724,7 @@ def main():
             if num_nics > 1:
                 custom_sh +=  [ 
                                 "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+                                "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
                                 "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
                                 "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
                                 "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
@@ -1715,7 +1754,7 @@ def main():
             if num_nics > 2:
                 custom_sh +=  [ 
                                 "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                "GATEWAY_CIDR_BLOCK2=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
+                                "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                                 "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}\n",
                                 "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
                                 "INTMASK=${GATEWAY_PREFIX2}\n", 
@@ -1754,7 +1793,7 @@ def main():
             if license_type == "byol":
                 onboard_BIG_IP += license_byol
             elif license_type == "bigiq":
-                custom_sh += license_from_bigiq
+                onboard_BIG_IP += license_bigiq
             # Wait until licensing finishes
             if license_type == "hourly":
                 custom_sh +=    [
@@ -1806,7 +1845,7 @@ def main():
                 if 'waf' in components:
                     # 12.1.0 requires "first match legacy"
                     custom_sh += [
-                                    "curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
+                                    "curl -s -f --retry 20 -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
                                     "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
                                     "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
                                     "tmsh modify asm policy /Common/linux-high active\n",
@@ -1834,9 +1873,8 @@ def main():
                                             ]
                 if ha_type == "across-az":
                     custom_sh +=    [
-                                    "curl -sSk -o /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl --max-time 15 " + str(ha_across_az_iapp_url) + "\n",
-                                    "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.3.0rc1.tmpl\n",
-                                    "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.3.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
+                                    "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl\n",
+                                    "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha." + str(iApp_version) + " tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
                                     "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
                                     "tmsh run cm config-sync to-group across_az_failover_group\n",
                                     ]
@@ -1853,182 +1891,122 @@ def main():
                                 "### START CUSTOM TMSH CONFIGURTION\n",
                                 "### END CUSTOM TMSH CONFIGURATION"
                          ]
-            if license_type == "bigiq":
-                metadata = Metadata(
-                        Init({
-                            'config': InitConfig(
-                                files=InitFiles(
-                                    {
-                                        '/config/cloud/f5-cloud-libs.tar.gz': InitFile(
-                                            source=cloudlib_url,
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/cloud/aws/firstrun.utils': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/firstrun.utils',
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/cloud/aws/license_from_bigiq.sh': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/license_from_bigiq_v5.0.sh',
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/cloud/aws/remove_license_from_bigiq.sh': InitFile(
-                                            source='http://cdn.f5.com/product/templates/utils/remove_license_from_bigiq_v5.0.sh',
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/cloud/aws/custom-config.sh': InitFile(
-                                            content=Join('', custom_sh ),
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        )
-                                    } 
-                                ),
-                                commands={
-                                            "001-unpack-libs": {
-                                                "command": { "Fn::Join" : [ " ", unpack_libs
-                                                                          ]
-                                                }
-                                            },
-                                            "002-1nic-setup": {
-                                                "command": { 
-                                                    "Fn::Join" : [ " ", one_nic_setup
-                                                                 ]
-                                                }
-                                            },
-                                            "003-onboard-BIG-IP": {
-                                                "command": { "Fn::Join" : [ " ", onboard_BIG_IP
-                                                                          ]
-                                                }
-                                            },
-                                            "005-custom-config": {
-                                                "command": { 
-                                                    "Fn::Join" : [ " ", custom_command
-                                                                 ]
-                                                }
-                                            },
-                                }
-                            ) 
-                        })
-                    )
-            else:
-                metadata = Metadata(
-                        Init({
-                            'config': InitConfig(
-                                files=InitFiles(
-                                    {
-                                        '/config/cloud/f5-cloud-libs.tar.gz': InitFile(
-                                            source=cloudlib_url,
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/cloud/f5-cloud-libs-aws.tar.gz': InitFile(
-                                            source=cloudlib_aws_url,
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/verifyHash': InitFile(
-                                            content=Join('\n', sig_check ),
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/installCloudLibs.sh': InitFile(
-                                            content=Join('\n', cloudlibs_sh ),
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/waitThenRun.sh': InitFile(
-                                            content=Join('\n', waitthenrun_sh ),
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),
-                                        '/config/cloud/aws/custom-config.sh': InitFile(
-                                            content=Join('', custom_sh ),
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),                                        
-                                        '/config/cloud/aws/getNameServer.sh': InitFile(
-                                            content=Join('\n', get_nameserver ),
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        ),                                         
-                                        '/config/cloud/aws/rm-password.sh': InitFile(
-                                            content=Join('', rm_password_sh ),
-                                            mode='000755',
-                                            owner='root',
-                                            group='root'
-                                        )
-                                    } 
-                                ),
-                                commands={  
-                                            "001-disable-1nicautoconfig": {
-                                                "command": "/usr/bin/setdb provision.1nicautoconfig disable"
-                                            },                                            
-                                            "002-install-libs": {
-                                                "command": { "Fn::Join" : [ " ", unpack_libs
-                                                                          ]
-                                                }
-                                            },
-                                            "003-1nic-setup": {
-                                                "command": { 
-                                                    "Fn::Join" : [ " ", one_nic_setup
-                                                                 ]
-                                                }
-                                            },
-                                            "004-generate-password": {
-                                                "command": { 
-                                                    "Fn::Join" : [ "", generate_password
-                                                                 ]
-                                                }
-                                            },
-                                            "005-create-admin-user": {
-                                                "command": { 
-                                                    "Fn::Join" : [ "", admin_user
-                                                                 ]
-                                                }
-                                            },
-                                            "006-onboard-BIG-IP": {
-                                                "command": { 
-                                                    "Fn::Join" : [ " ", onboard_BIG_IP
-                                                                 ]
-                                                }
-                                            },
-                                            "007-custom-config": {
-                                                "command": { 
-                                                    "Fn::Join" : [ " ", custom_command
-                                                                 ]
-                                                }
-                                            },
-                                            "008-cluster": {
-                                                "command": { 
-                                                    "Fn::Join" : [ " ", cluster_command
-                                                                 ]
-                                                }
-                                            },
-                                            "009-rm-password": {
-                                                "command": { 
-                                                    "Fn::Join" : [ " ", rm_password_command
-                                                                 ]
-                                                }
-                                            },
-                                }
-                            ) 
-                        })
-                    )
+            metadata = Metadata(
+                    Init({
+                        'config': InitConfig(
+                            files=InitFiles(
+                                {
+                                    '/config/cloud/f5-cloud-libs.tar.gz': InitFile(
+                                        source=cloudlib_url,
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),
+                                    '/config/cloud/f5-cloud-libs-aws.tar.gz': InitFile(
+                                        source=cloudlib_aws_url,
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),
+                                    str(ha_iapp): InitFile(
+                                        source=ha_across_az_iapp_url,
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),
+                                    '/config/verifyHash': InitFile(
+                                        content=Join('\n', sig_check ),
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),
+                                    '/config/installCloudLibs.sh': InitFile(
+                                        content=Join('\n', cloudlibs_sh ),
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),
+                                    '/config/waitThenRun.sh': InitFile(
+                                        content=Join('\n', waitthenrun_sh ),
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),
+                                    '/config/cloud/aws/custom-config.sh': InitFile(
+                                        content=Join('', custom_sh ),
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),                                        
+                                    '/config/cloud/aws/getNameServer.sh': InitFile(
+                                        content=Join('\n', get_nameserver ),
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),                                         
+                                    '/config/cloud/aws/rm-password.sh': InitFile(
+                                        content=Join('', rm_password_sh ),
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    )
+                                } 
+                            ),
+                            commands={  
+                                        "001-disable-1nicautoconfig": {
+                                            "command": "/usr/bin/setdb provision.1nicautoconfig disable"
+                                        },                                            
+                                        "002-install-libs": {
+                                            "command": { "Fn::Join" : [ " ", unpack_libs
+                                                                      ]
+                                            }
+                                        },
+                                        "003-1nic-setup": {
+                                            "command": { 
+                                                "Fn::Join" : [ " ", one_nic_setup
+                                                             ]
+                                            }
+                                        },
+                                        "004-generate-password": {
+                                            "command": { 
+                                                "Fn::Join" : [ "", generate_password
+                                                             ]
+                                            }
+                                        },
+                                        "005-create-admin-user": {
+                                            "command": { 
+                                                "Fn::Join" : [ "", admin_user
+                                                             ]
+                                            }
+                                        },
+                                        "006-onboard-BIG-IP": {
+                                            "command": { 
+                                                "Fn::Join" : [ " ", onboard_BIG_IP
+                                                             ]
+                                            }
+                                        },
+                                        "007-custom-config": {
+                                            "command": { 
+                                                "Fn::Join" : [ " ", custom_command
+                                                             ]
+                                            }
+                                        },
+                                        "008-cluster": {
+                                            "command": { 
+                                                "Fn::Join" : [ " ", cluster_command
+                                                             ]
+                                            }
+                                        },
+                                        "009-rm-password": {
+                                            "command": { 
+                                                "Fn::Join" : [ " ", rm_password_command
+                                                             ]
+                                            }
+                                        },
+                            }
+                        ) 
+                    })
+                )
             NetworkInterfaces = []
             if num_nics == 1:
                 NetworkInterfaces = [

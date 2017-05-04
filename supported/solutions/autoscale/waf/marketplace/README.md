@@ -31,33 +31,20 @@ The following are prerequisites for this solution:
     - Port 80 accessing your applications via the BIG-IP virtual server *(source = any)*.
  
  
-### Installation
-Download the CloudFormation template from this repository (https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/solutions/autoscale/waf/f5-autoscale-bigip.template) and use it to create a stack in AWS CloudFormation either using the AWS Console or AWS CLI.<br> 
-Note that you **cannot** right-click the link and use "Save as".  You must click **Raw** and save the code with the file name **f5-autoscale-bigip.template**.
+## Quick Start for launching the template
+This Readme file describes launching from the AWS Marketplace.
 
-
-**AWS Console**
-
- From the AWS Console main page: 
-   1. Under AWS Services, click **CloudFormation**.
-   2. Click the **Create Stack** button 
-   3. In the Choose a template area, click **Upload a template to Amazon S3**.
-   4. Click **Choose File** and then browse to the **autoscale-bigip.template** file.
- 
- <br>
-
- 
- **AWS CLI**
- 
- From the AWS CLI, use the following command syntax:
- ```
- aws cloudformation create-stack --stack-name Acme-autoscale-bigip --template-body file:///fullfilepath/autoscale-bigip.template --parameters file:///fullfilepath/autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM`
-```
-<br>
+From the Marketplace: 
+- From the **For Region** list, select your Region. 
+- From the **Delivery Methods** list, select **Auto Scale via CFT**
+- Click **Continue**
+- Select either the **Hourly** or **Yearly** Subscription Term.
+- Select the appropriate version.
+- Click **Launch the CloudFormation template**.
 
 
 ### Template Parameters ###
-One you have launched the CFT, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
+One you have launched the CFT from the marketplace, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
 
 
 | Parameter | Required | Description |
@@ -70,12 +57,12 @@ One you have launched the CFT, you need to complete the template by entering the
 | bigipElasticLoadBalancer | x | AWS Elastic Load Balancer group for the BIG-IP VEs |
 | sshKey | x | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | instanceType | x | AWS Instance Type (the default is m3.2xlarge) |
-| throughput | x | The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
+| throughput | x | For CFTs not launched from the AWS Marketplace: The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
 | adminUsername | x | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
 | managementGuiPort | x | Port of BIG-IP management Configuration utility (the default is 8443) |
 | timezone | x | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
 | ntpServer | x | NTP server for this implementation (Default 0.pool.ntp.org) |
-| scalingMinSize | x | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack] (#restoring-or-upgrading-the-solution)) |
+| scalingMinSize | x | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack](#update) |
 | scalingMaxSize | x | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scaling Group (the default is 3) |
 | scaleDownBytesThreshold | x | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
 | scaleUpBytesThreshold | x | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
@@ -93,7 +80,10 @@ One you have launched the CFT, you need to complete the template by entering the
 
 
 <sup>1</sup> Note about the Scaling Up/Down Thresholds:
-The default values are set to 80% and 20% respectively.  To adjust the thresholds,  set them according to the utility size (optional).
+
+The default template values are set artificially low for testing.<br>
+The Marketplace templates defaults are set to 80% and 20% respectively.<br> 
+To adjust the thresholds,  set them according to the utility size (optional).<br> 
 For example, if you wanted use different percentages in the scaling threshold(s), modify the ***.80*** or ***.20*** in the following calculations to represent the percentage you want to use. Then take the result and use that as the appropriate threshold value in the CFT.
 
 *Scale Up Bytes Thresholds:* <br>
@@ -150,18 +140,21 @@ All BIG-IP VE instances deploy with a single interface (NIC) attached to a publi
   - Create an initial HTTP virtual server with a basic Web Application Firewall policy (Low, Medium, High)
     - See the [Security Blocking Levels](##security-blocking-levels-) section for a description of the blocking levels for the Web Application Firewall presented in the template.
 
-The CloudFormation template uses the default **Best** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this clustergit  and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
+The CloudFormation template uses the default **Best** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
 
 #### Configuration Example <a name="config"></a>
 
+
 The following is a simple configuration diagram of this deployment. 
 
-![Configuration example](images/config-diagram-autoscale-waf.png)
+
+![Configuration example](../images/config-diagram-autoscale-waf.png)
+
 
 #### Detailed clustering information
 This solution creates a clustered system with "AutoSync" enabled, so any change is immediately propagated throughout the cluster. Each cluster member instance reports "Active" and "Actively" processes traffic.  Although Autosync is enabled and technically you can make changes to any existing clustered member, for consistency we recommend you make any changes to the original, primary instance.
 
-We recommend you launch the cluster with two instances to start. To determine the master instance, look for instance with *Scale-In Protection*.  You can find the Scale-In Protection value in AWS by clicking **Auto Scaling Groups** > *Click your Auto Scale group* > **Instances Tab**, and then under the Protected From tab, look for the instance with **Scale-In**.  
+Note: There is no indication of the "primary" instance in the BIG-IP Configuration utility itself; this is simply an administrative designation in this deployment. To determine the primary instance, look for instance with *Scale-In Protection*.  You can find the Scale-In Protection value in AWS by clicking **Auto Scaling Groups** > *Click your Auto Scale group* > **Instances Tab**, and then under the Protected From tab, look for the instance with **Scale-In**.  
 
 When the first auto scale instance is launched, a Device Group called "autoscale-group" is automatically created. 
 
@@ -195,14 +188,14 @@ The CloudFormation Template creates and leverages several AWS resources to suppo
   - Cloudwatch Alarms<br>
   These alarms are used to trigger scale Up / Down events.
   - Auto Scale Group<br>
-  By default, the number of auto scaled instances is set to 1 and the maximum is set to 8. We recommend you launch the solution with 1 instance to start, and increasing this to at least two by [updating the stack] (#restoring-or-upgrading-the-solution). 
+  By default, the number of auto scaled instances is set to 1 and the maximum is set to 8. We recommend you launch the solution with 1 instance to start, and increasing this to at least two by [updating the stack](#update). 
 
 ---
 
-### Restoring or upgrading the solution
-Certain elements of this deployment can be updated with the CloudFormation stack itself. This is referred to as *updating the Stack*. For instance, anything that causes the Auto Scale Launch Configuration to update, like changing the AMI IDs (to upgrade from one BIG-IP version to another), instance sizes, scaling thresholds, and many others, requires updating the stack. 
+### Restoring or upgrading the solution <a name="update"></a>
+Certain elements of this deployment can be updated with the CloudFormation stack itself. This is referred to as *Updating the Stack*. For instance, anything that causes the Auto Scale Launch Configuration to update, like changing the AMI IDs (to upgrade from one BIG-IP version to another), instance sizes, scaling thresholds, and many others, requires updating the stack. 
  
-Clustering is only done within a Launch Configuration ID basis, so any changes that result in a new Launch Configuration require the following procedure.
+Clustering is only done within a Launch Configuration ID basis, so any changes that result in a new Launch Configuration ID require the following procedure.
  
   1. Backup your BIG-IP configuration (ideally the cluster primary) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive and store it in the S3 bucket created by the solution in folder called /backup:<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
     

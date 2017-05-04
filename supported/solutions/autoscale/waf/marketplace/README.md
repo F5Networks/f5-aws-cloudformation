@@ -144,6 +144,7 @@ The CloudFormation template uses the default **Best** image available in the AWS
 
 #### Configuration Example <a name="config"></a>
 
+
 The following is a simple configuration diagram of this deployment. 
 
 

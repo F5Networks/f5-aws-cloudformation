@@ -120,6 +120,17 @@
       "owner",
       "costcenter"
      ]
+    },
+    {
+     "Label": {
+      "default": "BIG-IQ LICENSING"
+     },
+     "Parameters": [
+      "bigiqAddress",
+      "bigiqLicensePoolName",
+      "bigiqUsername",
+      "bigiqPassword"
+     ]
     }
    ],
    "ParameterLabels": {
@@ -143,6 +154,18 @@
     },
     "bigipManagementSecurityGroup": {
      "default": "Management Security Group"
+    },
+    "bigiqAddress": {
+     "default": "IP address BIG-IQ License Server"
+    },
+    "bigiqLicensePoolName": {
+     "default": "Name of BIG-IQ License Pool"
+    },
+    "bigiqPassword": {
+     "default": "Password for BIG-IQ user that will license BIG-IP"
+    },
+    "bigiqUsername": {
+     "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
     },
     "costcenter": {
      "default": "Cost Center"
@@ -319,30 +342,30 @@
    "Type": "AWS::EC2::SecurityGroup::Id"
   },
   "bigiqAddress": {
-   "ConstraintDescription": "Verify your BIG-IQ Hostname or IP",
-   "Description": "BIG-IQ Hostname or IP",
+   "ConstraintDescription": "Verify IP address BIG-IQ License Server",
+   "Description": "IP address BIG-IQ License Server",
    "MaxLength": "255",
    "MinLength": "1",
    "Type": "String"
   },
-  "bigiqLicensePoolUUID": {
-   "ConstraintDescription": "Verify your BIG-IQ License Pool UUID",
-   "Description": "BIG-IQ License Pool UUID",
+  "bigiqLicensePoolName": {
+   "ConstraintDescription": "Verify Name of BIG-IQ License Pool",
+   "Description": "Name of BIG-IQ License Pool",
    "MaxLength": "255",
    "MinLength": "1",
    "Type": "String"
   },
   "bigiqPassword": {
-   "ConstraintDescription": "Verify your BIG-IQ Password",
-   "Description": "BIG-IQ Password",
+   "ConstraintDescription": "Verify Password for BIG-IQ user that will license BIG-IP",
+   "Description": "Password for BIG-IQ user that will license BIG-IP",
    "MaxLength": "255",
    "MinLength": "1",
    "NoEcho": true,
    "Type": "String"
   },
   "bigiqUsername": {
-   "ConstraintDescription": "Verify your BIG-IQ Username.",
-   "Description": "BIG-IQ Username",
+   "ConstraintDescription": "Verify BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
+   "Description": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
    "MaxLength": "255",
    "MinLength": "1",
    "Type": "String"
@@ -392,7 +415,7 @@
     "c4.4xlarge"
    ],
    "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
-   "Default": "m3.2xlarge",
+   "Default": "m4.xlarge",
    "Description": "Size of the F5 BIG-IP Virtual Instance",
    "Type": "String"
   },
@@ -463,7 +486,7 @@
            " --signal PASSWORD_CREATED",
            " --file f5-rest-node",
            " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
-           " --log-level debug",
+           " --log-level verbose",
            " -o /var/log/generatePassword.log",
            " &>> /var/log/cloudlibs-install.log < /dev/null",
            " &"
@@ -484,7 +507,7 @@
            " --cl-args '--user admin",
            " --password-file /config/cloud/aws/.adminPassword",
            "'",
-           " --log-level debug",
+           " --log-level verbose",
            " -o /var/log/createUser.log",
            " &>> /var/log/cloudlibs-install.log < /dev/null",
            " &"
@@ -527,7 +550,7 @@
            },
            " --license-pool-name ",
            {
-            "Ref": "bigiqLicensePoolUUID"
+            "Ref": "bigiqLicensePoolName"
            },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
@@ -674,7 +697,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.0.0/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.0.2/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -695,21 +718,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "#if ! tmsh load sys config merge file /config/verifyHash; then",
-           "#    echo cannot validate signature of /config/verifyHash",
-           "#    exit",
-           "#fi",
-           "#echo loaded verifyHash",
-           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
-           "#for fileToVerify in \"${filesToVerify[@]}\"",
-           "#do",
-           "#    echo verifying \"$fileToVerify\"",
-           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "#        echo \"$fileToVerify\" is not valid",
-           "#        exit 1",
-           "#    fi",
-           "#    echo verified \"$fileToVerify\"",
-           "#done",
+           "if ! tmsh load sys config merge file /config/verifyHash; then",
+           "    echo cannot validate signature of /config/verifyHash",
+           "    exit",
+           "fi",
+           "echo loaded verifyHash",
+           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+           "for fileToVerify in \"${filesToVerify[@]}\"",
+           "do",
+           "    echo verifying \"$fileToVerify\"",
+           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "        echo \"$fileToVerify\" is not valid",
+           "        exit 1",
+           "    fi",
+           "    echo verified \"$fileToVerify\"",
+           "done",
            "mkdir -p /config/cloud/aws/node_modules",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -726,43 +749,44 @@
          "Fn::Join": [
           "\n",
           [
-           "cli script /Common/verifyHash {",
-           "    proc script::run {} {",
-           "        if {[catch {",
-           "            set hashes(f5-cloud-libs.tar.gz) 489d460d2e5fcd401ce12f19b1d753a6bee30483cd0bf2b7548b7f8fe3caf5b727af96f013733cbd08b0c109e0cf535a29288d473b84cc834369204d5be5edc9",
-           "            set hashes(f5-cloud-libs-aws.tar.gz) 2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72",
-           "            set hashes(f5-cloud-libs-azure.tar.gz) 16d2ce2086883ed5b47a3ba4e79541fd1a4bb64513222cf3a459297c2474d0bfc71a161ba2b8571707e1a6b273badaaf2c847993d0e60a4b52cd8c62cb03aba6",
-           "            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0",
-           "            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034",
-           "            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe",
-           "            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d",
-           "            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d",
-           "            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6",
-           "            set hashes(deploy_waf.sh) 4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a",
-           "            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a",
-           "",
-           "            set file_path [lindex $tmsh::argv 1]",
-           "            set file_name [file tail $file_path]",
-           "",
-           "            if {![info exists hashes($file_name)]} {",
-           "                tmsh::log err \"No hash found for $file_name\"",
-           "                exit 1",
-           "            }",
-           "",
-           "            set expected_hash $hashes($file_name)",
-           "            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
-           "            if { $expected_hash eq $computed_hash } {",
-           "                exit 0",
-           "            }",
-           "            tmsh::log err \"Hash does not match for $file_path\"",
-           "            exit 1",
-           "        }]} {",
-           "            tmsh::log err {Unexpected error in verifyHash}",
-           "            exit 1",
-           "        }",
-           "    }",
-           "    script-signature TfKrOEqc87cScx2may5bKnQQ5/TdygM6935wXkUnsf0/119c3C0WPjXQ1X86JMiInrjQ9oZjEkDejA41nwf46eWljvF0YTqdUU37XVpLi0plAOUyVCwjegra6vmY7F3DOKVC2b32SllF6rpBHECj6gAnSr6K/UQo044TEf1bXk/AHx8vw3+kuySMrutkIMHPlmxvsYyvWinjHAk5bdXepH+xspynZwLlOYuRYlTt2XVwSUyjzi1O1BLzm/oa3p4XkTkpDK0IYDTGFE/uFUyUaeNJQvBEDs6G+pQHgTIF67Zl3Ij0w/Pu6IoOkVjygmrQkz3BFlOrCyMtOIUmFItxiQ==",
-           "    signing-key /Common/f5-irule",
+            "cli script /Common/verifyHash {",
+            "proc script::run {} {",
+            "        if {[catch {",
+            "            set hashes(f5-cloud-libs.tar.gz) 862f7c19396088ab012fda7c2b262621c17f134b1d39d7a4d0b765eaf92f3ddc7354716a4f546fabb866df9876e1baed5799ae4a2c9d0ea6f01f79a38b9d3b3e",
+            "            set hashes(f5-cloud-libs-aws.tar.gz) 2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72",
+            "            set hashes(f5-cloud-libs-azure.tar.gz) 9d4dc6779a5d25253832598d42681defa54c5f4521a70ba8e053179c262cdf0d5c8d6a3d458ea21da1d95212792b099bf2721ddbe175eed035cd1e00647124cf",
+            "            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0",
+            "            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034",
+            "            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe",
+            "            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d",
+            "            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d",
+            "            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396",
+            "            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6",
+            "            set hashes(deploy_waf.sh) 4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a",
+            "            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a",
+            "",
+            "            set file_path [lindex $tmsh::argv 1]",
+            "            set file_name [file tail $file_path]",
+            "",
+            "            if {![info exists hashes($file_name)]} {",
+            "                tmsh::log err \"No hash found for $file_name\"",
+            "                exit 1",
+            "            }",
+            "",
+            "            set expected_hash $hashes($file_name)",
+            "            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
+            "            if { $expected_hash eq $computed_hash } {",
+            "                exit 0",
+            "            }",
+            "            tmsh::log err \"Hash does not match for $file_path\"",
+            "            exit 1",
+            "        }]} {",
+            "            tmsh::log err {Unexpected error in verifyHash}",
+            "            exit 1",
+            "        }",
+            "    }",
+            "    script-signature VwqAYsu1/TM/B7OPgCB2SXyiQ5s0MJH6qqzrypWaoZcRtXc9w9jNz8YwmqQyFn7TWTqCCLxmnMT4bmLzqNIYWesegv7w5KcBMwA8C0NTOebjHLkqKPzr2P68NiVzPN1/gxp3Y2i2e9zpnvy8PXcWRK3PkauO8lVSE7TJ07/uydvjg9t3GEjN449TUIZ+fx0NhqxS9VD6HDqv66FKgVcAeiomqrB2YQeawE4oShnbV2ULBP9IN8X/Rp9cb2gw1IPYZcLneP/rtgkMHOPmnzPV4u+tEowPzIjAo9mTV2J7e4z50peN3vdD7ThO1aPdcd5dfxbRqWZtlyV/pDPPHVVEdg==",
+            "    signing-key /Common/f5-irule",
            "}",
            ""
           ]

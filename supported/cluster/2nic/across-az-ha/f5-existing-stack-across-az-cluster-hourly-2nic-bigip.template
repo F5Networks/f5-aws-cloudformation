@@ -820,7 +820,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/CY17R3/iApps/f5.aws_advanced_ha.v1.4.0rc1.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/v2.2.0/iApps/f5.aws_advanced_ha.v1.4.0rc1.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
@@ -1436,7 +1436,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/CY17R3/iApps/f5.aws_advanced_ha.v1.4.0rc1.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/v2.2.0/iApps/f5.aws_advanced_ha.v1.4.0rc1.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {

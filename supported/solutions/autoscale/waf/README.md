@@ -45,7 +45,10 @@ Note that you **cannot** right-click the link and use "Save as".  You must click
    4. Click **Choose File** and then browse to the **autoscale-bigip.template** file.
  
  <br>
+<<<<<<< HEAD
  
+=======
+>>>>>>> master
  **AWS CLI**
  
  From the AWS CLI, use the following command syntax:

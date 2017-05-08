@@ -204,6 +204,7 @@ def main():
                 "managementGuiPort",
                 "sshKey",
                 "restrictedSrcAddress",
+                "ntpServer"
               ]
             },
             {
@@ -285,6 +286,9 @@ def main():
             },
             "costcenter": {
                 "default": "Cost Center"
+            },
+            "ntpServer":{
+                "default": "NTP Server"
             }
           }
         }
@@ -320,7 +324,15 @@ def main():
             Description="Name of the Cost Center Tag",
             Default="f5costcenter",
             Type="String",
-    ))    
+    ))
+
+    if num_nics <= 2 or (num_nics == 2 and ha_type == "same-az"):
+        ntpServer = t.add_parameter(Parameter(
+            "ntpServer",
+                Description="NTP server for this implementation"
+                Default="0.pool.ntp.org",
+                Type= "String"
+        ))
     if stack != "network": 
         restrictedSrcAddress = t.add_parameter(Parameter(
             "restrictedSrcAddress",
@@ -1617,24 +1629,19 @@ def main():
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
                                   ]
             onboard_BIG_IP += [
-                               "--wait-for ADMIN_CREATED",
-                               "-o /var/log/onboard.log",
-                               "--log-level debug",
-                               "--no-reboot",
-                               "--host localhost",
-                              ]
-            onboard_BIG_IP +=   [
-                                    "--user admin",
+                                "--wait-for ADMIN_CREATED",
+                                "-o /var/log/onboard.log",
+                                "--log-level debug",
+                                "--no-reboot",
+                                "--host localhost",
+                                "--user admin",                       
+                                "--password-url file:///config/cloud/aws/.adminPassword",
+                                "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+                                "--ntp ", Ref(ntpServer),
+                                "--tz UTC",
+                                "--dns ${NAME_SERVER}",
+                                "--module ltm:nominal",
                                 ]
-            onboard_BIG_IP  +=      [                        
-                                        "--password-url file:///config/cloud/aws/.adminPassword",
-                                        "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-                                        "--ntp 0.us.pool.ntp.org",
-                                        "--ntp 1.us.pool.ntp.org",
-                                        "--tz UTC",
-                                        "--dns ${NAME_SERVER}",
-                                        "--module ltm:nominal",
-                                    ]
             ### Build Custom Script
             custom_sh = [
                             "#!/bin/bash\n",

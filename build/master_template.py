@@ -204,7 +204,8 @@ def main():
                 "managementGuiPort",
                 "sshKey",
                 "restrictedSrcAddress",
-                "ntpServer"
+                "ntpServer",
+                "timezone"
               ]
             },
             {
@@ -289,6 +290,9 @@ def main():
             },
             "ntpServer":{
                 "default": "NTP Server"
+            },
+            "timezone":{
+                "default": "Timezone (Olson)"
             }
           }
         }
@@ -332,6 +336,13 @@ def main():
                 Description="NTP server for this implementation"
                 Default="0.pool.ntp.org",
                 Type= "String"
+        ))
+    if num_nics <=2 or (num_nics == 2 and ha_type == "same-az"):
+        timezone = t.add_parameter(Parameter(
+            "timezone",
+            Description="Olson timezone string from /usr/share/zoneinfo",
+            Default="UTC",
+            Type="String"
         ))
     if stack != "network": 
         restrictedSrcAddress = t.add_parameter(Parameter(
@@ -1638,7 +1649,7 @@ def main():
                                 "--password-url file:///config/cloud/aws/.adminPassword",
                                 "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
                                 "--ntp ", Ref(ntpServer),
-                                "--tz UTC",
+                                "--tz ", Ref(timezone),
                                 "--dns ${NAME_SERVER}",
                                 "--module ltm:nominal",
                                 ]

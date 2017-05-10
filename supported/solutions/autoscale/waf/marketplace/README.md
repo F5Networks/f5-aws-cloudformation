@@ -144,9 +144,12 @@ The CloudFormation template uses the default **Best** image available in the AWS
 
 #### Configuration Example <a name="config"></a>
 
-The following is a simple configuration diagram deployment. 
 
-![Configuration example](images/config-diagram-autoscale-waf.png)
+The following is a simple configuration diagram of this deployment. 
+
+
+![Configuration example](../images/config-diagram-autoscale-waf.png)
+
 
 #### Detailed clustering information
 This solution creates a clustered system with "AutoSync" enabled, so any change is immediately propagated throughout the cluster. Each cluster member instance reports "Active" and "Actively" processes traffic.  Although Autosync is enabled and technically you can make changes to any existing clustered member, for consistency we recommend you make any changes to the original, primary instance.

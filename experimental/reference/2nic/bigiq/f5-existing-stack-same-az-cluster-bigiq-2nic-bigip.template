@@ -123,9 +123,14 @@
     },
     {
      "Label": {
-      "default": ""
+      "default": "BIG-IQ LICENSING"
      },
-     "Parameters": []
+     "Parameters": [
+      "bigiqAddress",
+      "bigiqLicensePoolName",
+      "bigiqUsername",
+      "bigiqPassword"
+     ]
     }
    ],
    "ParameterLabels": {

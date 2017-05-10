@@ -178,7 +178,7 @@ def main():
     bigiq_parms = [
 
                     ]
-    if license_type == "big-iq":
+    if license_type == "bigiq":
         bigiq_label = "BIG-IQ LICENSING"
         bigiq_parms = [
                     "bigiqAddress",

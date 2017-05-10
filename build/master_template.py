@@ -122,7 +122,7 @@ def main():
 
     # Build variables used for QA
     ### Template Version
-    version = "2.2.0"
+    version = "2.3.0"
     ### Cloudlib Branch
     branch_cloud = "v3.0.2"
     branch_aws = "v1.2.0"
@@ -174,6 +174,19 @@ def main():
         if ha_type == "across-az":
             description += "AWS CloudFormation Template for creating a Across-AZs cluster of " + str(num_nics) + "NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
     t.add_description(description)
+    bigiq_label = ""
+    bigiq_parms = [
+
+                    ]
+    if license_type == "big-iq":
+        bigiq_label = "BIG-IQ LICENSING"
+        bigiq_parms = [
+                    "bigiqAddress",
+                    "bigiqLicensePoolName",
+                    "bigiqUsername",
+                    "bigiqPassword"
+                    ]
+            
     t.add_metadata({
         "Version": str(version),
         "AWS::CloudFormation::Interface": {
@@ -223,14 +236,9 @@ def main():
             },
             {
               "Label": {
-                "default": "BIG-IQ LICENSING"
+                "default": bigiq_label
               },
-              "Parameters": [
-                    "bigiqAddress",
-                    "bigiqLicensePoolName",
-                    "bigiqUsername",
-                    "bigiqPassword"
-              ]
+              "Parameters": bigiq_parms
             },
           ],
           "ParameterLabels": {

@@ -1,77 +1,77 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.2.0: AWS CloudFormation Template for creating a full stack with a 3NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.3.0: AWS CloudFormation Template for creating a full stack with a 3NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Best": "ami-da5f0abd",
-    "Better": "ami-eb5d088c",
-    "Good": "ami-ba5207dd"
+    "Best": "ami-eb1d2c8c",
+    "Better": "ami-54192833",
+    "Good": "ami-c31a2ba4"
    },
    "ap-northeast-2": {
-    "Best": "ami-c73beba9",
-    "Better": "ami-6a3beb04",
-    "Good": "ami-fd3aea93"
+    "Best": "ami-dcdf02b2",
+    "Better": "ami-23a27f4d",
+    "Good": "ami-14de037a"
    },
    "ap-south-1": {
-    "Best": "ami-bd1969d2",
-    "Better": "ami-6b196904",
-    "Good": "ami-4418682b"
+    "Best": "ami-0ed4a661",
+    "Better": "ami-fed9ab91",
+    "Good": "ami-7bd8aa14"
    },
    "ap-southeast-1": {
-    "Best": "ami-e612a385",
-    "Better": "ami-6414a507",
-    "Good": "ami-6017a603"
+    "Best": "ami-9b08b2f8",
+    "Better": "ami-f209b391",
+    "Good": "ami-5b09b338"
    },
    "ap-southeast-2": {
-    "Best": "ami-81383be2",
-    "Better": "ami-e73a3984",
-    "Good": "ami-4d3a392e"
+    "Best": "ami-67d8d304",
+    "Better": "ami-1fdfd47c",
+    "Good": "ami-10dfd473"
    },
    "ca-central-1": {
-    "Best": "ami-6570cd01",
-    "Better": "ami-4a71cc2e",
-    "Good": "ami-bb72cfdf"
+    "Best": "ami-42922e26",
+    "Better": "ami-b2962ad6",
+    "Good": "ami-f98d319d"
    },
    "eu-central-1": {
-    "Best": "ami-7ac71215",
-    "Better": "ami-09c71266",
-    "Good": "ami-e9db0e86"
+    "Best": "ami-c74e91a8",
+    "Better": "ami-524d923d",
+    "Good": "ami-ed518e82"
    },
    "eu-west-1": {
-    "Best": "ami-fed7f898",
-    "Better": "ami-9bd8f7fd",
-    "Good": "ami-26d6f940"
+    "Best": "ami-e8a2af8e",
+    "Better": "ami-62a1ac04",
+    "Good": "ami-1bbfb27d"
    },
    "eu-west-2": {
-    "Best": "ami-b9c6d3dd",
-    "Better": "ami-b8c6d3dc",
-    "Good": "ami-bfc6d3db"
+    "Best": "ami-dba7b3bf",
+    "Better": "ami-faa0b49e",
+    "Good": "ami-4da5b129"
    },
    "sa-east-1": {
-    "Best": "ami-58abcd34",
-    "Better": "ami-2fa8ce43",
-    "Good": "ami-a7b7d1cb"
+    "Best": "ami-7d8ee211",
+    "Better": "ami-248de148",
+    "Good": "ami-2e8de142"
    },
    "us-east-1": {
-    "Best": "ami-f6a976e0",
-    "Better": "ami-8fa97699",
-    "Good": "ami-19a9760f"
+    "Best": "ami-4c76185a",
+    "Better": "ami-46781650",
+    "Good": "ami-44751b52"
    },
    "us-east-2": {
-    "Best": "ami-83b99ce6",
-    "Better": "ami-fabe9b9f",
-    "Good": "ami-e1bb9e84"
+    "Best": "ami-2be6c14e",
+    "Better": "ami-d31a3db6",
+    "Good": "ami-2ae6c14f"
    },
    "us-west-1": {
-    "Best": "ami-a96b35c9",
-    "Better": "ami-6b68360b",
-    "Good": "ami-75683615"
+    "Best": "ami-e56d4b85",
+    "Better": "ami-766c4a16",
+    "Good": "ami-7d6a4c1d"
    },
    "us-west-2": {
-    "Best": "ami-723ebd12",
-    "Better": "ami-203ebd40",
-    "Good": "ami-683ebd08"
+    "Best": "ami-a4bc27c4",
+    "Better": "ami-e3be2583",
+    "Good": "ami-fdb3289d"
    }
   },
   "WebserverRegionMap": {
@@ -167,14 +167,9 @@
     },
     {
      "Label": {
-      "default": "BIG-IQ LICENSING"
+      "default": ""
      },
-     "Parameters": [
-      "bigiqAddress",
-      "bigiqLicensePoolName",
-      "bigiqUsername",
-      "bigiqPassword"
-     ]
+     "Parameters": []
     }
    ],
    "ParameterLabels": {
@@ -258,7 +253,7 @@
     }
    }
   },
-  "Version": "2.2.0"
+  "Version": "2.3.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {

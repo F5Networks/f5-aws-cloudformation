@@ -5,7 +5,7 @@
 
  - [Introduction](#introduction) 
  - [Prerequisites](#prerequisites-and-notes)
- - [Quick Start](#quick-start-for-launching-the-template)
+ - [Installation](#installation)
  - [Getting Help](#help)
  - [Additional BIG-IP VE Deployment and Configuration Details](#additional-big-ip-ve-deployment-and-configuration-details)
  - [Security](#security)
@@ -244,7 +244,7 @@ The security blocking level you choose when you configure the template determine
 Attack signatures are rules that identify attacks on a web application and its components. The WAF has at least 2600 attack signatures available. The higher the security level you choose, the more traffic that is blocked by these signatures.
 
 | Level | Details |
-| --- | --- | --- |
+| --- | --- | 
 | Low | The fewest attack signatures enabled. There is a greater chance of possible security violations making it through to the web applications, but a lesser chance of false positives. |
 | Medium | A balance between logging too many violations and too many false positives. |
 | High | The most attack signatures enabled. A large number of false positives may be recorded; you must correct these alerts for your application to function correctly. |
@@ -438,7 +438,8 @@ The following is an example ELB configuration that could be used in this impleme
 If you find an issue, we would love to hear about it. 
 You have a choice when it comes to filing issues:
   - Use the **Issues** link on the GitHub menu bar in this repository for items such as enhancement or feature requests and non-urgent bug fixes. Tell us as much as you can about what you found and how you found it.
-  - Contact F5 Technical support via your typical method for more time sensitive changes and other issues requiring immediate support.
+  - Use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 cloud templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support.
+  - Contact F5 Technical support for more time sensitive changes and other issues requiring immediate support.
 
 
 
@@ -468,4 +469,4 @@ under the License.
 Contributor License Agreement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Individuals or business entities who contribute to this project must have
-completed and submitted the `F5 Contributor License Agreement`
+completed and submitted the [F5 Contributor License Agreement](http://f5-openstack-docs.readthedocs.io/en/latest/cla_landing.html).

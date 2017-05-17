@@ -220,6 +220,8 @@ def main():
                 "managementGuiPort",
                 "sshKey",
                 "restrictedSrcAddress",
+                "ntpServer",
+                "timezone"
               ]
             },
             {
@@ -308,6 +310,11 @@ def main():
             "costcenter": {
                 "default": "Cost Center"
             },
+             "ntpServer":{
+                "default": "NTP Server"
+            },
+            "timezone":{
+                "default": "Timezone (Olson)"
             "bigiqAddress": {
                 "default": "IP address BIG-IQ License Server"
             },
@@ -355,6 +362,19 @@ def main():
             Default="f5costcenter",
             Type="String",
     ))    
+    if num_nics <= 2 or (num_nics == 2 and ha_type == "same-az"):
+        ntpServer = t.add_parameter(Parameter(
+            "ntpServer",
+                Description="NTP server for this implementation"
+                Default="0.pool.ntp.org",
+                Type= "String"
+        ))
+        timezone = t.add_parameter(Parameter(
+            "timezone",
+            Description="Olson timezone string from /usr/share/zoneinfo",
+            Default="UTC",
+            Type="String"
+        ))
     if stack != "network": 
         restrictedSrcAddress = t.add_parameter(Parameter(
             "restrictedSrcAddress",
@@ -1681,6 +1701,11 @@ def main():
                                         "--tz UTC",
                                         "--dns ${NAME_SERVER}",
                                         "--module ltm:nominal",
+                                    ]
+            if num_nics <= 2 or (num_nics == 2 and ha_type == "same-az"):
+                onboard_BIG_IP += [
+                                    "--ntp ", Ref(ntpServer),
+                                    "--tz ", Ref(timezone),
                                     ]
             ### Build Custom Script
             custom_sh = [

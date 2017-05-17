@@ -366,7 +366,7 @@ def main():
     if num_nics <= 2 or (num_nics == 2 and ha_type == "same-az"):
         ntpServer = t.add_parameter(Parameter(
             "ntpServer",
-                Description="NTP server for this implementation"
+                Description="NTP server for this implementation",
                 Default="0.pool.ntp.org",
                 Type= "String"
         ))

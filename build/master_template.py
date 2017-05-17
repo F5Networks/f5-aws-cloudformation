@@ -315,6 +315,7 @@ def main():
             },
             "timezone":{
                 "default": "Timezone (Olson)"
+            },
             "bigiqAddress": {
                 "default": "IP address BIG-IQ License Server"
             },
@@ -1702,6 +1703,7 @@ def main():
                                         "--dns ${NAME_SERVER}",
                                         "--module ltm:nominal",
                                     ]
+            #TODO: do we need to set it above if it's done here? 
             if num_nics <= 2 or (num_nics == 2 and ha_type == "same-az"):
                 onboard_BIG_IP += [
                                     "--ntp ", Ref(ntpServer),

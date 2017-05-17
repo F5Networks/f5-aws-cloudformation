@@ -1,7 +1,7 @@
 #!/bin/bash
 
-## Bash Script to deploy an F5 ARM template into Azure, using azure cli 1.0 ##
-<EXAMPLE_CMD>
+## Bash Script to deploy F5 template into AWS, using aws-cli/1.11.76 ##
+# Example Command: <EXAMPLE_CMD>
 
 # Assign Script Paramters and Define Variables
 # Specify static items, change these as needed or make them parameters
@@ -13,26 +13,12 @@ tagValues='[{"Key": "application", "Value": "f5app"},{"Key": "environment", "Val
 while [[ $# -gt 1 ]]
 do
     case "$1" in
-        -a|--licenseType)
-            licenseType=$2
-            shift 2;;<LICENSE_PARAMETERS><DYNAMIC_PARAMETERS>
-        -b|--imageName)
-            azureLoginUser=$2
-            shift 2;;
-        -c|--instanceType)
-            azureLoginPassword=$2
-            shift 2;;
-        -d|--restrictedSrcAddress)
-            licenseType=$2
-            shift 2;;
-        --)
-            shift
-            break;;
+        <CASE_STATEMENTS>
     esac
 done
 
 #If a required parameter is not passed, the script will prompt for it below
-required_variables="<REQUIRED_PARAMETERS>"
+required_variables=<REQUIRED_PARAMETERS>
 for variable in $required_variables
         do
         if [ -z ${!variable} ] ; then
@@ -40,10 +26,36 @@ for variable in $required_variables
         fi
 done
 
-<LICENSE_CHECK>
+# Prompt for license key if not supplied and BYOL is selected 
+if [ $licenseType == "BYOL" ]
+then 
+    <IF_LICENSE_NOT_ENTERED>
+    
+    template="<BYOL_TEMPLATE>"
+fi 
+
+# Prompt for license bandwidth if not supplied and Hourly is selected 
+if [ $licenseType == "Hourly" ]
+then 
+    if [ -z $imageName ]
+    then 
+            read -p "Please enter value for imageName:" imageName
+    fi
+    template="<HOURLY_TEMPLATE>"
+fi
 
 echo "Disclaimer: Scripting to Deploy F5 Solution templates into Cloud Environments are provided as examples. They will be treated as best effort for issues that occur, feedback is encouraged."
 sleep 3
 
 # Deploy Template
-<DEPLOYMENT_CREATE>
+if [ $licenseType == "BYOL" ]
+then
+    <DEPLOY_BYOL>
+
+elif [ $licenseType == "Hourly" ]
+then
+    <DEPLOY_HOURLY>    
+else 
+    echo "Uh oh, shouldn't make it here! Ensure license type is either Hourly or BYOL'"
+    exit 1
+fi

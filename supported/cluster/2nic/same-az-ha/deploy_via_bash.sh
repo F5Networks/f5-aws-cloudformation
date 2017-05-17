@@ -1,7 +1,7 @@
 #!/bin/bash
 
-## Bash Script to deploy F5 1 NIC template into AWS, using aws-cli/1.11.76 ##
-## Example Command: ./deploy_2nic_ha_same-az.sh --licenseType Hourly --imageName Good200Mbps --instanceType t2.medium --bigipExternalSecurityGroup <value> --bigipManagementSecurityGroup <value> --sshKey <value> --managementSubnetAz1 <value> --subnet1Az1 <value> --vpc <value> --stackName <value>
+## Bash Script to deploy F5 template into AWS, using aws-cli/1.11.76 ##
+## Example Command: ./deploy_via_bash.sh --licenseType Hourly --imageName Good200Mbps --instanceType t2.medium --bigipExternalSecurityGroup <value> --bigipManagementSecurityGroup <value> --sshKey <value> --managementSubnetAz1 <value> --subnet1Az1 <value> --vpc <value> --stackName <value>
 
 # Assign Script Parameters and Define Variables 
 # Specify static items, change these as needed or make them parameters

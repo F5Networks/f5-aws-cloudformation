@@ -1697,8 +1697,6 @@ def main():
             onboard_BIG_IP  +=      [                        
                                         "--password-url file:///config/cloud/aws/.adminPassword",
                                         "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-                                        "--ntp 0.us.pool.ntp.org",
-                                        "--ntp 1.us.pool.ntp.org",
                                         "--tz UTC",
                                         "--dns ${NAME_SERVER}",
                                         "--module ltm:nominal",

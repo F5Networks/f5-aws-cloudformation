@@ -310,16 +310,11 @@ def main():
             "costcenter": {
                 "default": "Cost Center"
             },
-<<<<<<< HEAD
-             "ntpServer":{
-=======
             "ntpServer":{
->>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
                 "default": "NTP Server"
             },
             "timezone":{
                 "default": "Timezone (Olson)"
-<<<<<<< HEAD
             },
             "bigiqAddress": {
                 "default": "IP address BIG-IQ License Server"
@@ -332,8 +327,6 @@ def main():
             },
             "bigiqPassword": {
                 "default": "Password for BIG-IQ user that will license BIG-IP"
-=======
->>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
             }
           }
         }
@@ -369,13 +362,7 @@ def main():
             Description="Name of the Cost Center Tag",
             Default="f5costcenter",
             Type="String",
-<<<<<<< HEAD
     ))    
-    
-<<<<<<< HEAD
-
-=======
->>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
     if stack != "network": 
         restrictedSrcAddress = t.add_parameter(Parameter(
             "restrictedSrcAddress",
@@ -421,14 +408,12 @@ def main():
                 Description="Port for the BIG-IP management Configuration utility",
             ))
     if bigip == True:
-        #TODO: edit 
         ntpServer = t.add_parameter(Parameter(
             "ntpServer",
                 Description="NTP server for this implementation"
                 Default="0.pool.ntp.org",
                 Type= "String"
         ))
->>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
         timezone = t.add_parameter(Parameter(
             "timezone",
             Description="Olson timezone string from /usr/share/zoneinfo",
@@ -1713,7 +1698,6 @@ def main():
                                 "--dns ${NAME_SERVER}",
                                 "--module ltm:nominal",
                                 ]
-<<<<<<< HEAD
             onboard_BIG_IP  +=      [                        
                                         "--password-url file:///config/cloud/aws/.adminPassword",
                                         "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
@@ -1727,8 +1711,6 @@ def main():
                                     "--ntp ", Ref(ntpServer),
                                     "--tz ", Ref(timezone),
                                     ]
-=======
->>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
             ### Build Custom Script
             custom_sh = [
                             "#!/bin/bash\n",

@@ -310,11 +310,16 @@ def main():
             "costcenter": {
                 "default": "Cost Center"
             },
+<<<<<<< HEAD
              "ntpServer":{
+=======
+            "ntpServer":{
+>>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
                 "default": "NTP Server"
             },
             "timezone":{
                 "default": "Timezone (Olson)"
+<<<<<<< HEAD
             },
             "bigiqAddress": {
                 "default": "IP address BIG-IQ License Server"
@@ -327,6 +332,8 @@ def main():
             },
             "bigiqPassword": {
                 "default": "Password for BIG-IQ user that will license BIG-IP"
+=======
+>>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
             }
           }
         }
@@ -362,22 +369,13 @@ def main():
             Description="Name of the Cost Center Tag",
             Default="f5costcenter",
             Type="String",
+<<<<<<< HEAD
     ))    
     
-    if num_nics <= 2 or (num_nics == 2 and ha_type == "same-az"):
-        ntpServer = t.add_parameter(Parameter(
-            "ntpServer",
-                Description="NTP server for this implementation",
-                Default="0.pool.ntp.org",
-                Type= "String"
-        ))
-        timezone = t.add_parameter(Parameter(
-            "timezone",
-            Description="Olson timezone string from /usr/share/zoneinfo",
-            Default="UTC",
-            Type="String"
-        ))
+<<<<<<< HEAD
 
+=======
+>>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
     if stack != "network": 
         restrictedSrcAddress = t.add_parameter(Parameter(
             "restrictedSrcAddress",
@@ -423,6 +421,21 @@ def main():
                 Description="Port for the BIG-IP management Configuration utility",
             ))
     if bigip == True:
+        #TODO: edit 
+        ntpServer = t.add_parameter(Parameter(
+            "ntpServer",
+                Description="NTP server for this implementation"
+                Default="0.pool.ntp.org",
+                Type= "String"
+        ))
+>>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
+        timezone = t.add_parameter(Parameter(
+            "timezone",
+            Description="Olson timezone string from /usr/share/zoneinfo",
+            Default="UTC",
+            Type="String"
+        ))
+
         if 'waf' in components:
             # Default to 2xlarge
             instanceType = t.add_parameter(Parameter(
@@ -1687,15 +1700,20 @@ def main():
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
                                   ]
             onboard_BIG_IP += [
-                               "--wait-for ADMIN_CREATED",
-                               "-o /var/log/onboard.log",
-                               "--log-level debug",
-                               "--no-reboot",
-                               "--host localhost",
-                              ]
-            onboard_BIG_IP +=   [
-                                    "--user admin",
+                                "--wait-for ADMIN_CREATED",
+                                "-o /var/log/onboard.log",
+                                "--log-level debug",
+                                "--no-reboot",
+                                "--host localhost",
+                                "--user admin",                       
+                                "--password-url file:///config/cloud/aws/.adminPassword",
+                                "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+                                "--ntp ", Ref(ntpServer),
+                                "--tz ", Ref(timezone),
+                                "--dns ${NAME_SERVER}",
+                                "--module ltm:nominal",
                                 ]
+<<<<<<< HEAD
             onboard_BIG_IP  +=      [                        
                                         "--password-url file:///config/cloud/aws/.adminPassword",
                                         "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
@@ -1709,6 +1727,8 @@ def main():
                                     "--ntp ", Ref(ntpServer),
                                     "--tz ", Ref(timezone),
                                     ]
+=======
+>>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
             ### Build Custom Script
             custom_sh = [
                             "#!/bin/bash\n",

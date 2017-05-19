@@ -363,6 +363,7 @@ def main():
             Default="f5costcenter",
             Type="String",
     ))    
+    
     if num_nics <= 2 or (num_nics == 2 and ha_type == "same-az"):
         ntpServer = t.add_parameter(Parameter(
             "ntpServer",
@@ -376,6 +377,7 @@ def main():
             Default="UTC",
             Type="String"
         ))
+
     if stack != "network": 
         restrictedSrcAddress = t.add_parameter(Parameter(
             "restrictedSrcAddress",

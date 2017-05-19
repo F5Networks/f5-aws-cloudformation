@@ -410,7 +410,7 @@ def main():
     if bigip == True:
         ntpServer = t.add_parameter(Parameter(
             "ntpServer",
-                Description="NTP server for this implementation"
+                Description="NTP server for this implementation",
                 Default="0.pool.ntp.org",
                 Type= "String"
         ))

@@ -521,14 +521,6 @@
            "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
-           "--ntp ",
-           {
-            "Ref": "ntpServer"
-           },
-           "--tz ",
-           {
-            "Ref": "timezone"
-           },
            "--license ",
            {
             "Ref": "licenseKey1"

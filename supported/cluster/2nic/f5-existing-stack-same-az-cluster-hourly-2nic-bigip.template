@@ -694,14 +694,6 @@
            "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
-           "--ntp ",
-           {
-            "Ref": "ntpServer"
-           },
-           "--tz ",
-           {
-            "Ref": "timezone"
-           },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
@@ -1338,14 +1330,6 @@
            "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
-           "--ntp ",
-           {
-            "Ref": "ntpServer"
-           },
-           "--tz ",
-           {
-            "Ref": "timezone"
-           },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]

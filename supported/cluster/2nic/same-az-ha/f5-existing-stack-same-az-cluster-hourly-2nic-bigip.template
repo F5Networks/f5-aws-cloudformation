@@ -190,7 +190,9 @@
       "licenseKey2",
       "managementGuiPort",
       "sshKey",
-      "restrictedSrcAddress"
+      "restrictedSrcAddress",
+      "ntpServer",
+      "timezone"
      ]
     },
     {
@@ -276,6 +278,9 @@
     "managementSubnetAz2": {
      "default": "Management Subnet AZ2"
     },
+    "ntpServer": {
+     "default": "NTP Server"
+    },
     "owner": {
      "default": "Owner"
     },
@@ -290,6 +295,9 @@
     },
     "subnet1Az2": {
      "default": "Subnet AZ2"
+    },
+    "timezone": {
+     "default": "Timezone (Olson)"
     }
    }
   },
@@ -554,6 +562,11 @@
    "Description": "Management Subnet ID",
    "Type": "AWS::EC2::Subnet::Id"
   },
+  "ntpServer": {
+   "Default": "0.pool.ntp.org",
+   "Description": "NTP server for this implementation",
+   "Type": "String"
+  },
   "owner": {
    "Default": "f5owner",
    "Description": "Name of the Owner Tag",
@@ -576,6 +589,11 @@
    "ConstraintDescription": "The subnet ID must be within an existing VPC",
    "Description": "Public or External subnet",
    "Type": "AWS::EC2::Subnet::Id"
+  },
+  "timezone": {
+   "Default": "UTC",
+   "Description": "Olson timezone string from /usr/share/zoneinfo",
+   "Type": "String"
   }
  },
  "Resources": {
@@ -661,11 +679,29 @@
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
            "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-           "--ntp 0.us.pool.ntp.org",
-           "--ntp 1.us.pool.ntp.org",
+           "--ntp ",
+           {
+            "Ref": "ntpServer"
+           },
+           "--tz ",
+           {
+            "Ref": "timezone"
+           },
+           "--dns ${NAME_SERVER}",
+           "--module ltm:nominal",
+           "--password-url file:///config/cloud/aws/.adminPassword",
+           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
            "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
+           "--ntp ",
+           {
+            "Ref": "ntpServer"
+           },
+           "--tz ",
+           {
+            "Ref": "timezone"
+           },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
@@ -1287,11 +1323,29 @@
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
            "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-           "--ntp 0.us.pool.ntp.org",
-           "--ntp 1.us.pool.ntp.org",
+           "--ntp ",
+           {
+            "Ref": "ntpServer"
+           },
+           "--tz ",
+           {
+            "Ref": "timezone"
+           },
+           "--dns ${NAME_SERVER}",
+           "--module ltm:nominal",
+           "--password-url file:///config/cloud/aws/.adminPassword",
+           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
            "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
+           "--ntp ",
+           {
+            "Ref": "ntpServer"
+           },
+           "--tz ",
+           {
+            "Ref": "timezone"
+           },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]

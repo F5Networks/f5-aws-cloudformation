@@ -8,6 +8,8 @@
 region="us-west-2"
 restrictedSrcAddress="0.0.0.0/0"
 tagValues='[{"Key": "application", "Value": "f5app"},{"Key": "environment", "Value": "f5env"},{"Key": "group", "Value": "f5group"},{"Key": "owner", "Value": "f5owner"},{"Key": "costcenter", "Value": "f5costcenter"}]'
+ntpServer="0.pool.ntp.org"
+timezone="UTC"
 
 # Parse the command line arguments, primarily checking full params as short params are just placeholders
 while [[ $# -gt 1 ]]
@@ -20,27 +22,27 @@ done
 #If a required parameter is not passed, the script will prompt for it below
 required_variables=<REQUIRED_PARAMETERS>
 for variable in $required_variables
-        do
-        if [ -z ${!variable} ] ; then
-                read -p "Please enter value for $variable:" $variable
-        fi
+do
+    while [ -z ${!variable} ]
+    do
+        read -p "Please enter value for $variable:" $variable
+    done
 done
 
 # Prompt for license key if not supplied and BYOL is selected 
 if [ $licenseType == "BYOL" ]
 then 
-    <IF_LICENSE_NOT_ENTERED>
-    
+    <WHILE_LICENSE_NOT_ENTERED>
     template="<BYOL_TEMPLATE>"
 fi 
 
 # Prompt for license bandwidth if not supplied and Hourly is selected 
 if [ $licenseType == "Hourly" ]
 then 
-    if [ -z $imageName ]
-    then 
-            read -p "Please enter value for imageName:" imageName
-    fi
+    while [ -z $imageName ]
+    do 
+        read -p "Please enter value for imageName:" imageName
+    done
     template="<HOURLY_TEMPLATE>"
 fi
 
@@ -50,11 +52,11 @@ sleep 3
 # Deploy Template
 if [ $licenseType == "BYOL" ]
 then
-    <DEPLOY_BYOL>
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters <DEPLOY_BYOL>ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
 
 elif [ $licenseType == "Hourly" ]
 then
-    <DEPLOY_HOURLY>    
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters <DEPLOY_HOURLY>ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
 else 
     echo "Uh oh, shouldn't make it here! Ensure license type is either Hourly or BYOL'"
     exit 1

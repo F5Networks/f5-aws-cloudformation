@@ -12,8 +12,10 @@ python master_template.py -s existing -n 1 -l byol > ../supported/standalone/1ni
 python master_template.py -s existing -n 2 -l byol > ../supported/standalone/2nic/f5-existing-stack-byol-2nic-bigip.template
 
 # Cluster/HA
-python master_template.py -s existing -n 2 -l hourly -H same-az > ../supported/cluster/2nic/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template
-python master_template.py -s existing -n 2 -l byol -H same-az > ../supported/cluster/2nic/f5-existing-stack-same-az-cluster-byol-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H same-az > ../supported/cluster/2nic/same-az-ha/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template
+python master_template.py -s existing -n 2 -l byol -H same-az > ../supported/cluster/2nic/same-az-ha/f5-existing-stack-same-az-cluster-byol-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az > ../supported/cluster/2nic/across-az-ha/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template
+python master_template.py -s existing -n 2 -l byol -H across-az > ../supported/cluster/2nic/across-az-ha/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template
 
 # Network Only
 python master_template.py -s network -a 1 -n 1 > ../experimental/reference/1nic/network-only/f5-network-only-1AZ-for-1nic-bigip.template
@@ -107,14 +109,13 @@ python master_template.py -s existing -n 2 -l bigiq -c waf -H same-az > ../exper
 
 #### HOURLY
 python master_template.py -s full -n 2 -l hourly -H across-az > ../experimental/learning-stacks/cluster/2nic/f5-full-stack-across-az-cluster-hourly-2nic-bigip.template
-python master_template.py -s existing -n 2 -l hourly -H across-az > ../experimental/cluster/2nic/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template
 #### WITH WAF 
 python master_template.py -s full -n 2 -l hourly -c waf -H across-az > ../experimental/learning-stacks/reference/2nic/waf/f5-full-stack-across-az-cluster-hourly-2nic-bigip-w-waf.template
 python master_template.py -s existing -n 2 -l hourly -c waf -H across-az > ../experimental/reference/2nic/waf/f5-existing-stack-across-az-cluster-hourly-2nic-bigip-w-waf.template
 
 #### BYOL
 python master_template.py -s full -n 2 -l byol -H across-az > ../experimental/learning-stacks/cluster/2nic/f5-full-stack-across-az-cluster-byol-2nic-bigip.template
-python master_template.py -s existing -n 2 -l byol -H across-az > ../experimental/cluster/2nic/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template
+
 #### WITH WAF 
 python master_template.py -s full -n 2 -l byol -c waf -H across-az > ../experimental/learning-stacks/reference/2nic/waf/f5-full-stack-across-az-cluster-byol-2nic-bigip-w-waf.template
 python master_template.py -s existing -n 2 -l byol -c waf -H across-az > ../experimental/reference/2nic/waf/f5-existing-stack-across-az-cluster-byol-2nic-bigip-w-waf.template

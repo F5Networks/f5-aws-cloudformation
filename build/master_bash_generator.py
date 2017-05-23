@@ -3,12 +3,17 @@ from collections import defaultdict
 import copy
 
 def main():
+    # parser instance for command line arguments passed in when running this script (master_bash_generator.py)
     cli_argument_parser = parse_args()
 
-    # get strings for tag replacement in base.deploy_via_bash.sh
+    # set up step: read in base file.
     output_string = read_all_file_lines("base.deploy_via_bash.sh")
+    # set up step: create all parameters that will be needed for a script to deploy the type of stack specified 
+    # in the command line arguments user ot run this generator
     all_parameters = create_all_parameters(cli_argument_parser)
-    example_parameters = create_example_parameters(all_parameters)
+
+    # get strings for tag replacement in base.deploy_via_bash.sh
+    example_parameters = create_example_command_parameters(all_parameters)
     example_command = create_example_command(example_parameters)
     required_parameters = create_required_parameters(example_parameters)
     case_statements = create_case_stataments(all_parameters)
@@ -18,7 +23,7 @@ def main():
     create_stack_byol = create_stack_command(all_parameters, "byol")
     create_stack_hourly = create_stack_command(all_parameters, "hourly")
 
-    # replace tags in base.deploy_via_bash.sh with runnable code
+    # replace tags in base.deploy_via_bash.sh with script code
     output_string = output_string.replace("<EXAMPLE_CMD>", example_command)
     output_string = output_string.replace("<CASE_STATEMENTS>", case_statements)
     output_string = output_string.replace("<REQUIRED_PARAMETERS>", required_parameters)
@@ -28,6 +33,7 @@ def main():
     output_string = output_string.replace("<DEPLOY_BYOL>", create_stack_byol)
     output_string = output_string.replace("<DEPLOY_HOURLY>", create_stack_hourly)
 
+    # writes deploy_via_bash.sh file to the location from which this generator is run
     write_all_bash_lines("deploy_via_bash.sh", output_string)
 
 def read_all_file_lines(file_name):
@@ -50,8 +56,8 @@ def write_all_bash_lines(file_name, output_string):
     return output_file
 
 def parse_args():
-    # Including all differentiating options here (AKA not license type because that is handled in the deploy_via_bash scripts
-    # so that it will be easy to extend the functionality of this script to create scripts for experimental templates. 
+    # Including all differentiating options here so that it will be easy to extend the functionality of this script to create scripts 
+    # for experimental templates. 
     parser = OptionParser()
     parser.add_option("-s", "--stack", action="store", type="string", dest="stack")
     parser.add_option("-a", "--num-azs", action="store", type="int", dest="num_azs", default=1)
@@ -63,7 +69,7 @@ def parse_args():
     
     (options, args) = parser.parse_args()
 
-    # if standalone, and num_bigips unset (i.e. default int value 0)
+    # if standalone, and num_bigips unset 
     if(options.ha_type != "standalone" and options.num_bigips is None):
         options.num_bigips = 2
     
@@ -74,8 +80,9 @@ def create_all_parameters(cli_argument_parser):
     default_substitute = "<value>"
     parameters = {}
 
-    #baseline parameters that exist in all stacks.
+    # set all values in the dictionary to the default
     parameters = defaultdict(lambda: default_substitute, parameters)
+    # create the keys for all baseline parameters that exist in all stacks
     parameters["licenseType"]
     parameters["imageName"]
     parameters["instanceType"]
@@ -86,6 +93,7 @@ def create_all_parameters(cli_argument_parser):
     parameters["stackName"]
     parameters["licenseKey1"]
 
+    # add differentiating parameters
     if(cli_argument_parser.num_nics == 2):
         #implicitly, if hourly and/or cluster or standalone... then
         parameters["bigipManagementSecurityGroup"]
@@ -97,7 +105,7 @@ def create_all_parameters(cli_argument_parser):
         
     return parameters
 
-def create_example_parameters(all_parameters):
+def create_example_command_parameters(all_parameters):
     example_parameters = copy.deepcopy(all_parameters)
     remove_parameter("licenseKey1", example_parameters)
     remove_parameter("licenseKey2", example_parameters)
@@ -107,6 +115,27 @@ def create_example_parameters(all_parameters):
     
     return example_parameters
 
+
+def create_example_command(required_parameters):
+    command_builder = "./deploy_via_bash.sh"
+    for parameter in required_parameters:
+        command_builder += " --" + str(parameter) + " " + str(required_parameters[parameter])
+
+    return command_builder
+
+def create_case_stataments(required_parameters):
+    output = ""
+    whitespace = "\n\t\t\t"
+    boilerplate = "--<parameter_name>)" + whitespace + "<parameter_name>=$2" + whitespace + "shift 2;;\n"
+    num_replacements = 2
+    for parameter in required_parameters:
+        output += boilerplate.replace("<parameter_name>", parameter, num_replacements)
+        output += "\t\t"
+
+    output += "--)" + whitespace + "shift" + whitespace + "break;;"
+
+    return output
+
 def create_required_parameters(example_parameters):
     required_parameter_list = example_parameters.keys()
     required_parameter_string = ""
@@ -114,14 +143,6 @@ def create_required_parameters(example_parameters):
         required_parameter_string += parameter + " "
         
     return '"' + required_parameter_string + '"'
-
-#havent decided where cli_args will be passead into here from 
-def create_example_command(required_parameters):
-    command_builder = "./deploy_via_bash.sh"
-    for parameter in required_parameters:
-        command_builder += " --" + str(parameter) + " " + str(required_parameters[parameter])
-
-    return command_builder
 
 def create_license_key_prompt(cli_argument_parser):
     boilerplate = (
@@ -131,12 +152,12 @@ def create_license_key_prompt(cli_argument_parser):
     done
     """)
     output = ""
-
+    num_replacements = 3
     if(cli_argument_parser.ha_type == "standalone"):
-        output = boilerplate.replace("<num>", "1", 3)
+        output = boilerplate.replace("<num>", "1", num_replacements)
     else:
         for i in range (cli_argument_parser.num_bigips):
-            output += boilerplate.replace("<num>", str(i + 1), 3)
+            output += boilerplate.replace("<num>", str(i + 1), num_replacements)
         
     return output
 
@@ -154,19 +175,6 @@ def create_template_url(cli_argument_parser, license_type):
     
     return output
 
-def create_case_stataments(required_parameters):
-    output = ""
-    whitespace = "\n\t\t\t"
-    boilerplate = "--<parameter_name>)" + whitespace + "<parameter_name>=$2" + whitespace + "shift 2;;\n"
-
-    for parameter in required_parameters:
-        output += boilerplate.replace("<parameter_name>", parameter, 2)
-        output += "\t\t"
-
-    output += "--)" + whitespace + "shift" + whitespace + "break;;"
-
-    return output
-
 def create_stack_command(all_parameters, license_type):
     remove_parameter("stackName", all_parameters)
     #remove_parameter("licenseType", all_parameters)
@@ -178,7 +186,7 @@ def create_stack_command(all_parameters, license_type):
         output = populate_boilerplate(all_parameters, boilerplate)
        
     elif(license_type == "hourly"):
-        hourly_parameters = create_example_parameters(all_parameters)
+        hourly_parameters = create_example_command_parameters(all_parameters)
         remove_parameter("licenseType", hourly_parameters)
         output = populate_boilerplate(hourly_parameters, boilerplate)
 

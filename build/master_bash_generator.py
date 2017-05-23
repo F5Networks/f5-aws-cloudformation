@@ -95,7 +95,6 @@ def create_all_parameters(cli_argument_parser):
 
     # add differentiating parameters
     if(cli_argument_parser.num_nics == 2):
-        #implicitly, if hourly and/or cluster or standalone... then
         parameters["bigipManagementSecurityGroup"]
         parameters["licenseKey2"]
         parameters["managementSubnetAz1"]
@@ -177,7 +176,6 @@ def create_template_url(cli_argument_parser, license_type):
 
 def create_stack_command(all_parameters, license_type):
     remove_parameter("stackName", all_parameters)
-    #remove_parameter("licenseType", all_parameters)
     
     output = ""
     boilerplate = "ParameterKey=<key>,ParameterValue=<value> "

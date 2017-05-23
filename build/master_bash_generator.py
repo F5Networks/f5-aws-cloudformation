@@ -1,20 +1,11 @@
-# TODO: remove the build command examples below
-# python master_template.py -s existing -n 1 -l hourly > ../supported/standalone/1nic/f5-existing-stack-hourly-1nic-bigip.template
-# python master_template.py -s existing -n 2 -l hourly > ../supported/standalone/2nic/f5-existing-stack-hourly-2nic-bigip.template
-
-# python master_template.py -s existing -n 1 -l byol > ../supported/standalone/1nic/f5-existing-stack-byol-1nic-bigip.template
-# python master_template.py -s existing -n 2 -l byol > ../supported/standalone/2nic/f5-existing-stack-byol-2nic-bigip.template
-
-# Cluster/HA
-# python master_template.py -s existing -n 2 -l hourly -H same-az > ../supported/cluster/2nic/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template
-# python master_template.py -s existing -n 2 -l byol -H same-az > ../supported/cluster/2nic/f5-existing-stack-same-az-cluster-byol-2nic-bigip.template
 from optparse import OptionParser
+from collections import defaultdict
 import copy
-
 
 def main():
     cli_argument_parser = parse_args()
 
+    # get strings for tag replacement in base.deploy_via_bash.sh
     output_string = read_all_file_lines("base.deploy_via_bash.sh")
     all_parameters = create_all_parameters(cli_argument_parser)
     example_parameters = create_example_parameters(all_parameters)
@@ -24,10 +15,10 @@ def main():
     byol_license_key_prompt = create_license_key_prompt(cli_argument_parser)
     byol_template_url = create_template_url(cli_argument_parser, "byol")
     hourly_template_url = create_template_url(cli_argument_parser, "hourly")
-    create_stack_byol = create_stack_command(all_parameters, "byol") #TODO
-    create_stack_hourly = create_stack_command(all_parameters, "hourly") #TODO
+    create_stack_byol = create_stack_command(all_parameters, "byol")
+    create_stack_hourly = create_stack_command(all_parameters, "hourly")
 
-    # TODO: string replacements via tags, TODO: possibly refactor the replacements into own method 
+    # replace tags in base.deploy_via_bash.sh with runnable code
     output_string = output_string.replace("<EXAMPLE_CMD>", example_command)
     output_string = output_string.replace("<CASE_STATEMENTS>", case_statements)
     output_string = output_string.replace("<REQUIRED_PARAMETERS>", required_parameters)
@@ -37,18 +28,17 @@ def main():
     output_string = output_string.replace("<DEPLOY_BYOL>", create_stack_byol)
     output_string = output_string.replace("<DEPLOY_HOURLY>", create_stack_hourly)
 
-
     write_all_bash_lines("deploy_via_bash.sh", output_string)
 
 def read_all_file_lines(file_name):
-    base_file = open(file_name, "r")
-    base_lines = base_file.readlines()
+    input_file = open(file_name, "r")
+    input_lines = input_file.readlines()
     output_string = ""
 
-    for line in base_lines:
+    for line in input_lines:
         output_string += line
 
-    base_file.close()
+    input_file.close()
     
     return output_string
 
@@ -71,7 +61,6 @@ def parse_args():
     parser.add_option("-c", "--components", action="store", type="string", dest="components")
     parser.add_option("-H", "--ha-type", action="store", type="string", dest="ha_type", default="standalone")
     
-
     (options, args) = parser.parse_args()
 
     # if standalone, and num_bigips unset (i.e. default int value 0)
@@ -83,26 +72,28 @@ def parse_args():
 def create_all_parameters(cli_argument_parser):
     # for 1 nic standalone hourly, the parameters will be as below, no additions. 
     default_substitute = "<value>"
-    parameters = {
-        "licenseType" : "Hourly", 
-        "imageName" : default_substitute, 
-        "instanceType" : "t2.medium", 
-        "bigipExternalSecurityGroup" : default_substitute,
-        "sshKey" : default_substitute,
-        "subnet1Az1" : default_substitute,
-        "Vpc" : default_substitute,
-        "stackName" : default_substitute,
-        "licenseKey1" : default_substitute
-        }
+    parameters = {}
+
+    #baseline parameters that exist in all stacks.
+    parameters = defaultdict(lambda: default_substitute, parameters)
+    parameters["licenseType"]
+    parameters["imageName"]
+    parameters["instanceType"]
+    parameters["bigipExternalSecurityGroup"]
+    parameters["sshKey"]
+    parameters["subnet1Az1"]
+    parameters["Vpc"]
+    parameters["stackName"]
+    parameters["licenseKey1"]
 
     if(cli_argument_parser.num_nics == 2):
         #implicitly, if hourly and/or cluster or standalone... then
-        parameters["bigipManagementSecurityGroup"] = default_substitute
-        parameters["licenseKey2"] = default_substitute
-        parameters["managementSubnetAz1"] = default_substitute
+        parameters["bigipManagementSecurityGroup"]
+        parameters["licenseKey2"]
+        parameters["managementSubnetAz1"]
         if(cli_argument_parser.ha_type == "across-az"):
-            parameters["managementSubnetAz2"] = default_substitute
-            parameters["subnet1Az2"] = default_substitute
+            parameters["managementSubnetAz2"]
+            parameters["subnet1Az2"]
         
     return parameters
 
@@ -110,7 +101,9 @@ def create_example_parameters(all_parameters):
     example_parameters = copy.deepcopy(all_parameters)
     remove_parameter("licenseKey1", example_parameters)
     remove_parameter("licenseKey2", example_parameters)
+    example_parameters["licenseType"] = "Hourly" 
     example_parameters["imageName"] = "Good200Mbps"
+    example_parameters["instanceType"] = "t2.medium"
     
     return example_parameters
 
@@ -135,16 +128,15 @@ def create_license_key_prompt(cli_argument_parser):
     """while [ -z $licenseKey<num> ]
     do
         read -p "Please enter value for licenseKey<num>:" licenseKey<num>
-    done"""
-    )
-    otuput = ""
+    done
+    """)
+    output = ""
 
     if(cli_argument_parser.ha_type == "standalone"):
         output = boilerplate.replace("<num>", "1", 3)
-    
     else:
         for i in range (cli_argument_parser.num_bigips):
-            output = boilerplate.replace("<num>", str(i), 3)
+            output += boilerplate.replace("<num>", str(i + 1), 3)
         
     return output
 
@@ -165,15 +157,11 @@ def create_template_url(cli_argument_parser, license_type):
 def create_case_stataments(required_parameters):
     output = ""
     whitespace = "\n\t\t\t"
-    boilerplate = "-<alpha>|--<parameter_name>)" + whitespace + "<parameter_name>=$2" + whitespace + "shift 2;;\n"
-    alphabets = "a b c d e f g h i j k l m n o p q r s t u v w x y z aa bb cc dd ee ff gg hh ii jj kk ll mm nn oo pp"
-    case_switch = alphabets.split();
+    boilerplate = "--<parameter_name>)" + whitespace + "<parameter_name>=$2" + whitespace + "shift 2;;\n"
 
-    index = 0
     for parameter in required_parameters:
-        output += boilerplate.replace("<alpha>", case_switch[index]).replace("<parameter_name>", parameter, 2)
+        output += boilerplate.replace("<parameter_name>", parameter, 2)
         output += "\t\t"
-        index += 1
 
     output += "--)" + whitespace + "shift" + whitespace + "break;;"
 
@@ -181,16 +169,18 @@ def create_case_stataments(required_parameters):
 
 def create_stack_command(all_parameters, license_type):
     remove_parameter("stackName", all_parameters)
-    remove_parameter("licenseType", all_parameters)
+    #remove_parameter("licenseType", all_parameters)
     
     output = ""
     boilerplate = "ParameterKey=<key>,ParameterValue=<value> "
     if(license_type == "byol"):
+        remove_parameter("licenseType", all_parameters)
         output = populate_boilerplate(all_parameters, boilerplate)
        
     elif(license_type == "hourly"):
-        newthing = create_example_parameters(all_parameters)
-        output = populate_boilerplate(newthing, boilerplate)
+        hourly_parameters = create_example_parameters(all_parameters)
+        remove_parameter("licenseType", hourly_parameters)
+        output = populate_boilerplate(hourly_parameters, boilerplate)
 
     #TODO: for future, add license types for experimental templates (BIG-IQ, etc)
 

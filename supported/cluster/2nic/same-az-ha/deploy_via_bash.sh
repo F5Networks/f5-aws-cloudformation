@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Bash Script to deploy F5 template into AWS, using aws-cli/1.11.76 ##
-# Example Command: ./deploy_via_bash.sh --stackName <value> --licenseType Hourly --bigipManagementSecurityGroup <value> --sshKey <value> --managementSubnetAz1 <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --Vpc <value> --instanceType t2.medium --imageName Good200Mbps
+# Example Command: ./deploy_via_bash.sh --stackName <value> --licenseType Hourly --managementSubnetAz1 <value> --sshKey <value> --bigipManagementSecurityGroup <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --instanceType t2.medium --Vpc <value> --imageName Good200Mbps
 
 # Assign Script Paramters and Define Variables
 # Specify static items, change these as needed or make them parameters
@@ -15,41 +15,41 @@ timezone="UTC"
 while [[ $# -gt 1 ]]
 do
     case "$1" in
-        -a|--licenseType)
-			licenseType=$2
-			shift 2;;
-		-b|--sshKey)
-			sshKey=$2
-			shift 2;;
-		-c|--managementSubnetAz1)
-			managementSubnetAz1=$2
-			shift 2;;
-		-d|--bigipExternalSecurityGroup)
-			bigipExternalSecurityGroup=$2
-			shift 2;;
-		-e|--instanceType)
-			instanceType=$2
-			shift 2;;
-		-f|--licenseKey1)
+        --licenseKey1)
 			licenseKey1=$2
 			shift 2;;
-		-g|--licenseKey2)
+		--licenseType)
+			licenseType=$2
+			shift 2;;
+		--managementSubnetAz1)
+			managementSubnetAz1=$2
+			shift 2;;
+		--sshKey)
+			sshKey=$2
+			shift 2;;
+		--licenseKey2)
 			licenseKey2=$2
 			shift 2;;
-		-h|--bigipManagementSecurityGroup)
+		--bigipManagementSecurityGroup)
 			bigipManagementSecurityGroup=$2
 			shift 2;;
-		-i|--subnet1Az1)
+		--subnet1Az1)
 			subnet1Az1=$2
 			shift 2;;
-		-j|--stackName)
+		--bigipExternalSecurityGroup)
+			bigipExternalSecurityGroup=$2
+			shift 2;;
+		--stackName)
 			stackName=$2
 			shift 2;;
-		-k|--imageName)
+		--imageName)
 			imageName=$2
 			shift 2;;
-		-l|--Vpc)
+		--Vpc)
 			Vpc=$2
+			shift 2;;
+		--instanceType)
+			instanceType=$2
 			shift 2;;
 		--)
 			shift
@@ -58,7 +58,7 @@ do
 done
 
 #If a required parameter is not passed, the script will prompt for it below
-required_variables="stackName licenseType bigipManagementSecurityGroup sshKey managementSubnetAz1 subnet1Az1 bigipExternalSecurityGroup Vpc instanceType imageName "
+required_variables="stackName licenseType managementSubnetAz1 sshKey bigipManagementSecurityGroup subnet1Az1 bigipExternalSecurityGroup instanceType Vpc imageName "
 for variable in $required_variables
 do
     while [ -z ${!variable} ]
@@ -74,6 +74,11 @@ then
     do
         read -p "Please enter value for licenseKey1:" licenseKey1
     done
+    while [ -z $licenseKey2 ]
+    do
+        read -p "Please enter value for licenseKey2:" licenseKey2
+    done
+    
     template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-byol-2nic-bigip.template"
 fi 
 
@@ -84,6 +89,7 @@ then
     do 
         read -p "Please enter value for imageName:" imageName
     done
+    
     template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template"
 fi
 
@@ -93,11 +99,11 @@ sleep 3
 # Deploy Template
 if [ $licenseType == "BYOL" ]
 then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=licenseKey1,ParameterValue=$licenseKey1 ParameterKey=licenseKey2,ParameterValue=$licenseKey2 ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=imageName,ParameterValue=$imageName ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=licenseKey1,ParameterValue=$licenseKey1 ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=licenseKey2,ParameterValue=$licenseKey2 ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=imageName,ParameterValue=$imageName ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
 
 elif [ $licenseType == "Hourly" ]
 then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=imageName,ParameterValue=$imageName ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=imageName,ParameterValue=$imageName ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
 else 
     echo "Uh oh, shouldn't make it here! Ensure license type is either Hourly or BYOL'"
     exit 1

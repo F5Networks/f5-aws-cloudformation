@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Bash Script to deploy F5 template into AWS, using aws-cli/1.11.76 ##
-# Example Command: ./deploy_via_bash.sh --licenseType Hourly --sshKey <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --stackName <value> --imageName Good200Mbps --Vpc <value> --instanceType t2.medium
+# Example Command: ./deploy_via_bash.sh --stackName <value> --licenseType Hourly --sshKey <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --imageName Good200Mbps --Vpc <value> --instanceType t2.medium
 
 # Assign Script Paramters and Define Variables
 # Specify static items, change these as needed or make them parameters
@@ -15,32 +15,32 @@ timezone="UTC"
 while [[ $# -gt 1 ]]
 do
     case "$1" in
-        -a|--stackName)
-			stackName=$2
-			shift 2;;
-		-b|--licenseKey1)
+        --licenseKey1)
 			licenseKey1=$2
 			shift 2;;
-		-c|--licenseType)
+		--licenseType)
 			licenseType=$2
 			shift 2;;
-		-d|--imageName)
-			imageName=$2
-			shift 2;;
-		-e|--sshKey)
+		--sshKey)
 			sshKey=$2
 			shift 2;;
-		-f|--Vpc)
-			Vpc=$2
-			shift 2;;
-		-g|--subnet1Az1)
+		--subnet1Az1)
 			subnet1Az1=$2
 			shift 2;;
-		-h|--instanceType)
-			instanceType=$2
-			shift 2;;
-		-i|--bigipExternalSecurityGroup)
+		--bigipExternalSecurityGroup)
 			bigipExternalSecurityGroup=$2
+			shift 2;;
+		--stackName)
+			stackName=$2
+			shift 2;;
+		--imageName)
+			imageName=$2
+			shift 2;;
+		--Vpc)
+			Vpc=$2
+			shift 2;;
+		--instanceType)
+			instanceType=$2
 			shift 2;;
 		--)
 			shift
@@ -49,7 +49,7 @@ do
 done
 
 #If a required parameter is not passed, the script will prompt for it below
-required_variables="licenseType sshKey subnet1Az1 bigipExternalSecurityGroup stackName imageName Vpc instanceType "
+required_variables="stackName licenseType sshKey subnet1Az1 bigipExternalSecurityGroup imageName Vpc instanceType "
 for variable in $required_variables
 do
     while [ -z ${!variable} ]
@@ -65,6 +65,7 @@ then
     do
         read -p "Please enter value for licenseKey1:" licenseKey1
     done
+    
     template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-1nic-bigip.template"
 fi 
 
@@ -75,6 +76,7 @@ then
     do 
         read -p "Please enter value for imageName:" imageName
     done
+    
     template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-1nic-bigip.template"
 fi
 
@@ -84,7 +86,7 @@ sleep 3
 # Deploy Template
 if [ $licenseType == "BYOL" ]
 then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=licenseKey1,ParameterValue=$licenseKey1 ParameterKey=imageName,ParameterValue=$imageName ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=licenseKey1,ParameterValue=$licenseKey1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=imageName,ParameterValue=$imageName ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
 
 elif [ $licenseType == "Hourly" ]
 then

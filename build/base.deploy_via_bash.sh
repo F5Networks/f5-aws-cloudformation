@@ -43,6 +43,7 @@ then
     do 
         read -p "Please enter value for imageName:" imageName
     done
+    
     template="<HOURLY_TEMPLATE>"
 fi
 

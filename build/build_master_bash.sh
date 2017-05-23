@@ -5,5 +5,5 @@ python master_bash_generator.py -n 2 && mv deploy_via_bash.sh ../supported/stand
 
 # For HA, if more than 2 bigips needed, run with -b flag followed by the number of bigips
 python master_bash_generator.py -n 2 -H same-az && mv deploy_via_bash.sh ../supported/cluster/2nic/same-az-ha/deploy_via_bash.sh
-python master_bash_generator.py -n 2 -H across-az && mv deploy_via_bash.sh ../supported/cluster/2nic/across-az-ha/deplpy_via_bash.sh 
+python master_bash_generator.py -n 2 -H across-az && mv deploy_via_bash.sh ../supported/cluster/2nic/across-az-ha/deploy_via_bash.sh 
 

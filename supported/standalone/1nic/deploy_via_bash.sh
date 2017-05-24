@@ -92,6 +92,6 @@ elif [ $licenseType == "Hourly" ]
 then
     aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=imageName,ParameterValue=$imageName ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
 else 
-    echo "Uh oh, shouldn't make it here! Ensure license type is either Hourly or BYOL'"
+    echo "This failure may have been caused by an error in license type: Please ensure license type is either Hourly or BYOL'"
     exit 1
 fi

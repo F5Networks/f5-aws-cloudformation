@@ -56,7 +56,7 @@ One you have launched the CFT from the marketplace, you need to complete the tem
 | bigipSecurityGroup | x | AWS Security Group for the BIG-IP VEs |
 | bigipElasticLoadBalancer | x | AWS Elastic Load Balancer group for the BIG-IP VEs |
 | sshKey | x | EC2 KeyPair to enable SSH access to the BIG-IP instance |
-| instanceType | x | AWS Instance Type (the default is m3.2xlarge) |
+| instanceType | x | AWS Instance Type (the default is m4.xlarge) |
 | throughput | x | For CFTs not launched from the AWS Marketplace: The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
 | adminUsername | x | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
 | managementGuiPort | x | Port of BIG-IP management Configuration utility (the default is 8443) |

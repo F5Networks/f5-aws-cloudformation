@@ -17,18 +17,14 @@ This solution implements auto scaling of BIG-IP Virtual Edition (VE) Web Applica
 
 ## Prerequisites and notes
 The following are prerequisites for this solution:
- - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdminstratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.
- - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size.
+ - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdminstratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.  For details on permissions and all AWS configuration, see https://aws.amazon.com/documentation/.
+ - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
    - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
  - Access to **Best** BIG-IP images in the Amazon region within which you are working.
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and accept the EULA there. 
- - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS).
- - An AWS Security Group with the following inbound rules:
-    - Port 22 for SSH access to the BIG-IP VE *(source = Intra-VPC and/or mgmt networks)*.
-    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility *(source = Intra-VPC and/or mgmt networks)*. See the [Configuration Utility note](#note) for an important note about accessing the Configuration utility.
-    - Port 4353 and 6123-6128 for cluster communication *(source = Intra-VPC or the public subnet of the peer)*.
-    - Port 80 accessing your applications via the BIG-IP virtual server *(source = any)*.
+ - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
+
  
  
 ## Quick Start for launching the template
@@ -49,33 +45,33 @@ One you have launched the CFT from the marketplace, you need to complete the tem
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-| deploymentName | x | Name the template uses to create BIG-IP and AWS object names |
-| vpc | x | AWS VPC where you want to deploy the BIG-IP VEs |
-| availabilityZones | x | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
-| subnets | x | Public or External Subnet for the Availability Zones |
-| bigipSecurityGroup | x | AWS Security Group for the BIG-IP VEs |
-| bigipElasticLoadBalancer | x | AWS Elastic Load Balancer group for the BIG-IP VEs |
-| sshKey | x | EC2 KeyPair to enable SSH access to the BIG-IP instance |
-| instanceType | x | AWS Instance Type (the default is m4.xlarge) |
-| throughput | x | For CFTs not launched from the AWS Marketplace: The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
-| adminUsername | x | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
-| managementGuiPort | x | Port of BIG-IP management Configuration utility (the default is 8443) |
-| timezone | x | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
-| ntpServer | x | NTP server for this implementation (Default 0.pool.ntp.org) |
-| scalingMinSize | x | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack](#update) |
-| scalingMaxSize | x | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scaling Group (the default is 3) |
-| scaleDownBytesThreshold | x | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
-| scaleUpBytesThreshold | x | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
-| notificationEmail | x | Valid email address to send Auto Scaling Event Notifications |
-| virtualServicePort | x | Port on BIG-IP (the default is 80) |
-| applicationPort | x | Application Pool Member Port on BIG-IP (the default is 80) |
-| appInternalDnsName | x | DNS name for the application pool |
-| [policyLevel](#security-blocking-levels-) | x | WAF Policy Level to protect the application (the default is high) |
-| application |  | Application Tag (the default is f5app) |
-| environment |  | Environment Name Tag (the default is f5env) |
-| group |  | Group Tag (the default is f5group) |
-| owner |  | Owner Tag (the default is f5owner) |
-| costcenter |  | Cost Center Tag (the default is f5costcenter) |
+| deploymentName | Yes | Name the template uses to create BIG-IP and AWS object names |
+| vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
+| availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
+| subnets | Yes | Public or External Subnet for the Availability Zones |
+| bigipSecurityGroup | Yes | AWS Security Group for the BIG-IP VEs |
+| bigipElasticLoadBalancer | Yes | AWS Elastic Load Balancer group for the BIG-IP VEs |
+| sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
+| instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
+| throughput | Yes | For CFTs not launched from the AWS Marketplace: The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
+| adminUsername | Yes | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
+| managementGuiPort | Yes | Port of BIG-IP management Configuration utility (the default is 8443) |
+| timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
+| ntpServer | Yes | NTP server for this implementation (Default 0.pool.ntp.org) |
+| scalingMinSize | Yes | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack](#update) |
+| scalingMaxSize | Yes | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scaling Group (the default is 3) |
+| scaleDownBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
+| scaleUpBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
+| notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
+| virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
+| applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
+| appInternalDnsName | Yes | DNS name for the application pool |
+| [policyLevel](#security-blocking-levels-) | Yes | WAF Policy Level to protect the application (the default is high) |
+| application | No | Application Tag (the default is f5app) |
+| environment | No | Environment Name Tag (the default is f5env) |
+| group | No | Group Tag (the default is f5group) |
+| owner | No | Owner Tag (the default is f5owner) |
+| costcenter | No | Cost Center Tag (the default is f5costcenter) |
 <br>
 
 
@@ -122,7 +118,7 @@ You can now configure the BIG-IP VE as applicable for your configuration.  See t
 ---
 
 ### Help <a name="help"></a>
-Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support.
+Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support. You can modify the template itself if necessary, but if you modify any of the code between ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
 
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 

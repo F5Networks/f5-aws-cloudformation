@@ -34,6 +34,34 @@ The following are prerequisites for this solution:
 ## Quick Start for launching the template
 This Readme file describes launching from the AWS Marketplace.
 
+<<<<<<< HEAD
+
+**AWS Console**
+
+ From the AWS Console main page: 
+   1. Under AWS Services, click **CloudFormation**.
+   2. Click the **Create Stack** button 
+   3. In the Choose a template area, click **Upload a template to Amazon S3**.
+   4. Click **Choose File** and then browse to the **autoscale-bigip.template** file.
+ 
+ <br>
+<<<<<<< HEAD
+
+ 
+=======
+<<<<<<< HEAD
+ 
+=======
+>>>>>>> master
+>>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
+ **AWS CLI**
+ 
+ From the AWS CLI, use the following command syntax:
+ ```
+ aws cloudformation create-stack --stack-name Acme-autoscale-bigip --template-body file:///fullfilepath/autoscale-bigip.template --parameters file:///fullfilepath/autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM`
+```
+<br>
+=======
 From the Marketplace: 
 - From the **For Region** list, select your Region. 
 - From the **Delivery Methods** list, select **Auto Scale via CFT**
@@ -41,6 +69,7 @@ From the Marketplace:
 - Select either the **Hourly** or **Yearly** Subscription Term.
 - Select the appropriate version.
 - Click **Launch the CloudFormation template**.
+>>>>>>> f3aab64c75a84f4573f4461ddeab5f2ac30a3a81
 
 
 ### Template Parameters ###

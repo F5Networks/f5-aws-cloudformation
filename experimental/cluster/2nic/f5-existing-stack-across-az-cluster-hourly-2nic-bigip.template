@@ -4,74 +4,158 @@
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Best": "ami-eb1d2c8c",
-    "Better": "ami-54192833",
-    "Good": "ami-c31a2ba4"
+    "Best1000Mbps": "ami-3a1c2d5d",
+    "Best200Mbps": "ami-301c2d57",
+    "Best25Mbps": "ami-3b1e2f5c",
+    "Better1000Mbps": "ami-631b2a04",
+    "Better200Mbps": "ami-0c19286b",
+    "Better25Mbps": "ami-841a2be3",
+    "Good1000Mbps": "ami-3d1e2f5a",
+    "Good200Mbps": "ami-781a2b1f",
+    "Good25Mbps": "ami-031c2d64"
    },
    "ap-northeast-2": {
-    "Best": "ami-dcdf02b2",
-    "Better": "ami-23a27f4d",
-    "Good": "ami-14de037a"
+    "Best1000Mbps": "ami-33dc015d",
+    "Best200Mbps": "ami-b9a37ed7",
+    "Best25Mbps": "ami-e0dc018e",
+    "Better1000Mbps": "ami-ada27fc3",
+    "Better200Mbps": "ami-b8a37ed6",
+    "Better25Mbps": "ami-e5dc018b",
+    "Good1000Mbps": "ami-2aa27f44",
+    "Good200Mbps": "ami-aba27fc5",
+    "Good25Mbps": "ami-c7df02a9"
    },
    "ap-south-1": {
-    "Best": "ami-0ed4a661",
-    "Better": "ami-fed9ab91",
-    "Good": "ami-7bd8aa14"
+    "Best1000Mbps": "ami-62dba90d",
+    "Best200Mbps": "ami-bad8aad5",
+    "Best25Mbps": "ami-07d5a768",
+    "Better1000Mbps": "ami-c4d8aaab",
+    "Better200Mbps": "ami-bbdfadd4",
+    "Better25Mbps": "ami-9ad9abf5",
+    "Good1000Mbps": "ami-f2deac9d",
+    "Good200Mbps": "ami-0fd4a660",
+    "Good25Mbps": "ami-e1d8aa8e"
    },
    "ap-southeast-1": {
-    "Best": "ami-9b08b2f8",
-    "Better": "ami-f209b391",
-    "Good": "ami-5b09b338"
+    "Best1000Mbps": "ami-4e0eb42d",
+    "Best200Mbps": "ami-5a0eb439",
+    "Best25Mbps": "ami-530eb430",
+    "Better1000Mbps": "ami-800bb1e3",
+    "Better200Mbps": "ami-5c0eb43f",
+    "Better25Mbps": "ami-d608b2b5",
+    "Good1000Mbps": "ami-cb08b2a8",
+    "Good200Mbps": "ami-9708b2f4",
+    "Good25Mbps": "ami-dc08b2bf"
    },
    "ap-southeast-2": {
-    "Best": "ami-67d8d304",
-    "Better": "ami-1fdfd47c",
-    "Good": "ami-10dfd473"
+    "Best1000Mbps": "ami-f4d8d397",
+    "Best200Mbps": "ami-18dfd47b",
+    "Best25Mbps": "ami-60d8d303",
+    "Better1000Mbps": "ami-6ed8d30d",
+    "Better200Mbps": "ami-cdd9d2ae",
+    "Better25Mbps": "ami-ffd8d39c",
+    "Good1000Mbps": "ami-e2ddd681",
+    "Good200Mbps": "ami-4bdfd428",
+    "Good25Mbps": "ami-05d8d366"
    },
    "ca-central-1": {
-    "Best": "ami-42922e26",
-    "Better": "ami-b2962ad6",
-    "Good": "ami-f98d319d"
+    "Best1000Mbps": "ami-0894286c",
+    "Best200Mbps": "ami-0994286d",
+    "Best25Mbps": "ami-f895299c",
+    "Better1000Mbps": "ami-43922e27",
+    "Better200Mbps": "ami-93912df7",
+    "Better25Mbps": "ami-fe95299a",
+    "Good1000Mbps": "ami-a5922ec1",
+    "Good200Mbps": "ami-52932f36",
+    "Good25Mbps": "ami-318c3055"
    },
    "eu-central-1": {
-    "Best": "ami-c74e91a8",
-    "Better": "ami-524d923d",
-    "Good": "ami-ed518e82"
+    "Best1000Mbps": "ami-db4f90b4",
+    "Best200Mbps": "ami-464d9229",
+    "Best25Mbps": "ami-c24e91ad",
+    "Better1000Mbps": "ami-0c4f9063",
+    "Better200Mbps": "ami-f9518e96",
+    "Better25Mbps": "ami-444d922b",
+    "Good1000Mbps": "ami-774d9218",
+    "Good200Mbps": "ami-d84f90b7",
+    "Good25Mbps": "ami-3f4d9250"
    },
    "eu-west-1": {
-    "Best": "ami-e8a2af8e",
-    "Better": "ami-62a1ac04",
-    "Good": "ami-1bbfb27d"
+    "Best1000Mbps": "ami-87bbb6e1",
+    "Best200Mbps": "ami-30a2af56",
+    "Best25Mbps": "ami-1fbdb079",
+    "Better1000Mbps": "ami-98bdb0fe",
+    "Better200Mbps": "ami-21a2af47",
+    "Better25Mbps": "ami-b6a3aed0",
+    "Good1000Mbps": "ami-c9b8b5af",
+    "Good200Mbps": "ami-0bb9b46d",
+    "Good25Mbps": "ami-d7bbb6b1"
    },
    "eu-west-2": {
-    "Best": "ami-dba7b3bf",
-    "Better": "ami-faa0b49e",
-    "Good": "ami-4da5b129"
+    "Best1000Mbps": "ami-91a0b4f5",
+    "Best200Mbps": "ami-dba5b1bf",
+    "Best25Mbps": "ami-81a5b1e5",
+    "Better1000Mbps": "ami-97a0b4f3",
+    "Better200Mbps": "ami-96a0b4f2",
+    "Better25Mbps": "ami-d8a5b1bc",
+    "Good1000Mbps": "ami-3fa7b35b",
+    "Good200Mbps": "ami-daa5b1be",
+    "Good25Mbps": "ami-92a0b4f6"
    },
    "sa-east-1": {
-    "Best": "ami-7d8ee211",
-    "Better": "ami-248de148",
-    "Good": "ami-2e8de142"
+    "Best1000Mbps": "ami-a88ee2c4",
+    "Best200Mbps": "ami-0c8ce060",
+    "Best25Mbps": "ami-d58de1b9",
+    "Better1000Mbps": "ami-418fe32d",
+    "Better200Mbps": "ami-dc8ee2b0",
+    "Better25Mbps": "ami-408fe32c",
+    "Good1000Mbps": "ami-c68fe3aa",
+    "Good200Mbps": "ami-0e8ce062",
+    "Good25Mbps": "ami-548fe338"
    },
    "us-east-1": {
-    "Best": "ami-4c76185a",
-    "Better": "ami-46781650",
-    "Good": "ami-44751b52"
+    "Best1000Mbps": "ami-52751b44",
+    "Best200Mbps": "ami-1a78160c",
+    "Best25Mbps": "ami-09721c1f",
+    "Better1000Mbps": "ami-13791705",
+    "Better200Mbps": "ami-c77917d1",
+    "Better25Mbps": "ami-ea7b15fc",
+    "Good1000Mbps": "ami-bd701eab",
+    "Good200Mbps": "ami-4c741a5a",
+    "Good25Mbps": "ami-134a2405"
    },
    "us-east-2": {
-    "Best": "ami-2be6c14e",
-    "Better": "ami-d31a3db6",
-    "Good": "ami-2ae6c14f"
+    "Best1000Mbps": "ami-6ce7c009",
+    "Best200Mbps": "ami-8be7c0ee",
+    "Best25Mbps": "ami-3c183f59",
+    "Better1000Mbps": "ami-c2193ea7",
+    "Better200Mbps": "ami-2ce6c149",
+    "Better25Mbps": "ami-46193e23",
+    "Good1000Mbps": "ami-29e6c14c",
+    "Good200Mbps": "ami-6de7c008",
+    "Good25Mbps": "ami-c0193ea5"
    },
    "us-west-1": {
-    "Best": "ami-e56d4b85",
-    "Better": "ami-766c4a16",
-    "Good": "ami-7d6a4c1d"
+    "Best1000Mbps": "ami-c76a4ca7",
+    "Best200Mbps": "ami-7a6c4a1a",
+    "Best25Mbps": "ami-c46f49a4",
+    "Better1000Mbps": "ami-fa6c4a9a",
+    "Better200Mbps": "ami-e26d4b82",
+    "Better25Mbps": "ami-686a4c08",
+    "Good1000Mbps": "ami-486c4a28",
+    "Good200Mbps": "ami-fd6c4a9d",
+    "Good25Mbps": "ami-3f6d4b5f"
    },
    "us-west-2": {
-    "Best": "ami-a4bc27c4",
-    "Better": "ami-e3be2583",
-    "Good": "ami-fdb3289d"
+    "Best1000Mbps": "ami-66bd2606",
+    "Best200Mbps": "ami-7abd261a",
+    "Best25Mbps": "ami-6bbd260b",
+    "Better1000Mbps": "ami-cfbd26af",
+    "Better200Mbps": "ami-91b328f1",
+    "Better25Mbps": "ami-24b12a44",
+    "Good1000Mbps": "ami-cbbc27ab",
+    "Good200Mbps": "ami-80b328e0",
+    "Good25Mbps": "ami-ebbc278b"
    }
   }
  },
@@ -435,13 +519,19 @@
   },
   "imageName": {
    "AllowedValues": [
-    "Good",
-    "Better",
-    "Best"
+    "Good25Mbps",
+    "Good200Mbps",
+    "Good1000Mbps",
+    "Better25Mbps",
+    "Better200Mbps",
+    "Better1000Mbps",
+    "Best25Mbps",
+    "Best200Mbps",
+    "Best1000Mbps"
    ],
    "ConstraintDescription": "Must be a valid F5 BIG-IP VE image type",
-   "Default": "Best",
-   "Description": "F5 BIG-IP Performance Type",
+   "Default": "Best1000Mbps",
+   "Description": "F5 BIG-IP VE image",
    "Type": "String"
   },
   "instanceType": {
@@ -465,22 +555,6 @@
    "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
    "Default": "m3.2xlarge",
    "Description": "Size of the F5 BIG-IP Virtual Instance",
-   "Type": "String"
-  },
-  "licenseKey1": {
-   "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
-   "ConstraintDescription": "Verify your F5 BYOL regkey.",
-   "Description": "F5 BYOL license key",
-   "MaxLength": "255",
-   "MinLength": "1",
-   "Type": "String"
-  },
-  "licenseKey2": {
-   "AllowedPattern": "([\\x41-\\x5A][\\x41-\\x5A|\\x30-\\x39]{4})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{5})\\-([\\x41-\\x5A|\\x30-\\x39]{7})",
-   "ConstraintDescription": "Verify your F5 BYOL regkey.",
-   "Description": "F5 BYOL license key",
-   "MaxLength": "255",
-   "MinLength": "1",
    "Type": "String"
   },
   "managementSubnetAz1": {
@@ -615,6 +689,9 @@
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
            "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+           "--tz UTC",
+           "--dns ${NAME_SERVER}",
+           "--module ltm:nominal",
            "--ntp ",
            {
             "Ref": "ntpServer"
@@ -622,17 +699,6 @@
            "--tz ",
            {
             "Ref": "timezone"
-           },
-           "--dns ${NAME_SERVER}",
-           "--module ltm:nominal",
-           "--password-url file:///config/cloud/aws/.adminPassword",
-           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-           "--tz UTC",
-           "--dns ${NAME_SERVER}",
-           "--module ltm:nominal",
-           "--license ",
-           {
-            "Ref": "licenseKey1"
            },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
@@ -1266,6 +1332,9 @@
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
            "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+           "--tz UTC",
+           "--dns ${NAME_SERVER}",
+           "--module ltm:nominal",
            "--ntp ",
            {
             "Ref": "ntpServer"
@@ -1273,17 +1342,6 @@
            "--tz ",
            {
             "Ref": "timezone"
-           },
-           "--dns ${NAME_SERVER}",
-           "--module ltm:nominal",
-           "--password-url file:///config/cloud/aws/.adminPassword",
-           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-           "--tz UTC",
-           "--dns ${NAME_SERVER}",
-           "--module ltm:nominal",
-           "--license ",
-           {
-            "Ref": "licenseKey2"
            },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"

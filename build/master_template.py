@@ -220,6 +220,8 @@ def main():
                 "managementGuiPort",
                 "sshKey",
                 "restrictedSrcAddress",
+                "ntpServer",
+                "timezone"
               ]
             },
             {
@@ -307,6 +309,12 @@ def main():
             },
             "costcenter": {
                 "default": "Cost Center"
+            },
+            "ntpServer":{
+                "default": "NTP Server"
+            },
+            "timezone":{
+                "default": "Timezone (Olson)"
             },
             "bigiqAddress": {
                 "default": "IP address BIG-IQ License Server"
@@ -400,6 +408,19 @@ def main():
                 Description="Port for the BIG-IP management Configuration utility",
             ))
     if bigip == True:
+        ntpServer = t.add_parameter(Parameter(
+            "ntpServer",
+                Description="NTP server for this implementation",
+                Default="0.pool.ntp.org",
+                Type= "String"
+        ))
+        timezone = t.add_parameter(Parameter(
+            "timezone",
+            Description="Olson timezone string from /usr/share/zoneinfo",
+            Default="UTC",
+            Type="String"
+        ))
+
         if 'waf' in components:
             # Default to 2xlarge
             instanceType = t.add_parameter(Parameter(
@@ -1664,20 +1685,22 @@ def main():
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
                                   ]
             onboard_BIG_IP += [
-                               "--wait-for ADMIN_CREATED",
-                               "-o /var/log/onboard.log",
-                               "--log-level debug",
-                               "--no-reboot",
-                               "--host localhost",
-                              ]
-            onboard_BIG_IP +=   [
-                                    "--user admin",
+                                "--wait-for ADMIN_CREATED",
+                                "-o /var/log/onboard.log",
+                                "--log-level debug",
+                                "--no-reboot",
+                                "--host localhost",
+                                "--user admin",                       
+                                "--password-url file:///config/cloud/aws/.adminPassword",
+                                "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+                                "--ntp ", Ref(ntpServer),
+                                "--tz ", Ref(timezone),
+                                "--dns ${NAME_SERVER}",
+                                "--module ltm:nominal",
                                 ]
             onboard_BIG_IP  +=      [                        
                                         "--password-url file:///config/cloud/aws/.adminPassword",
                                         "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-                                        "--ntp 0.us.pool.ntp.org",
-                                        "--ntp 1.us.pool.ntp.org",
                                         "--tz UTC",
                                         "--dns ${NAME_SERVER}",
                                         "--module ltm:nominal",

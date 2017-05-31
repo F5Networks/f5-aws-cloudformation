@@ -49,7 +49,7 @@ One you have launched the CFT from the marketplace, you need to complete the tem
 | vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
 | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | subnets | Yes | Public or External Subnet for the Availability Zones |
-| bigipSecurityGroup | Yes | AWS Security Group for the BIG-IP VEs |
+| restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the BIG-IP instances (the default is 0.0.0.0/0) |
 | bigipElasticLoadBalancer | Yes | AWS Elastic Load Balancer group for the BIG-IP VEs |
 | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |

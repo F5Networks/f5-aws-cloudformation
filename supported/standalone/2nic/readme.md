@@ -2,15 +2,23 @@
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 
+**Contents**
+ - [Introduction](#introduction) 
+ - [Prerequisites](#prerequisites-and-notes)
+ - [Security](#security)
+ - [Getting Help](#help)
+ - [Deploying the solution](#deploying-the-f5-2-nic-solution) 
+ - [Configuration Example](#configuration-example)
+
 ## Introduction
  
 This solution uses a CloudFormation Template to launch a 2-NIC deployment of a BIG-IP VE in an Amazon Virtual Private Cloud. In a 2-NIC implementation, one interface is for management and data-plane traffic from the Internet, and the second interface is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.
 
 The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder in the *experimental* directory.
 
-See the **[Configuration Example](#config)** section for a configuration diagram and description for this solution.
+See the **[Configuration Example](#configuration-example)** section for a configuration diagram and description for this solution.
 
-## Prerequisites
+## Prerequisites and notes
 The following are prerequisites for the F5 2-NIC CFT:
   - An AWS VPC with three subnets: 
     - Management subnet (called Public in the AWS UI)
@@ -24,7 +32,7 @@ The following are prerequisites for the F5 2-NIC CFT:
   - This solution uses the SSH key to enable access to the BIG-IP system. If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
 
 ## Security
-This CloudFormation template downloads helper code to configure the BIG-IP system. If your organization is security conscious and you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Detail](#securitydetail) for the exact code in each of the following sections.
+This CloudFormation template downloads helper code to configure the BIG-IP system. If you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Details](#security-details) for the exact code in each of the following sections.
   - In the */config/verifyHash* section: **script-signature** and then a hashed signature
   - In the */config/installCloudLibs.sh* section **"tmsh load sys config merge file /config/verifyHash"**
   
@@ -36,20 +44,24 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
 ### Help 
-Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support via your typical methods.
+Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support.
  
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 
+## Deploying the F5 2 NIC solution
+You have two options for launching this solution:
+  - Using the [Launch Stack buttons](#installing-the-image-using-the-aws-launch-stack-buttons)
+  - Using the [AWS CLI](#installing-the-template-using-the-aws-cli-aws-cli11176) 
 
-## Installation using the AWS deploy buttons
+### Installing the image using the AWS Launch Stack buttons
 The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
  - Hourly, which uses pay-as-you-go hourly billing
- - [BYOL](#byol) (bring your own license), which allows you to use an existing BIG-IP license.
-<br>
+ - [BYOL](#byol-deploy-button) (bring your own license), which allows you to use an existing BIG-IP license.
 
-**Hourly deploy button**
+
+#### Hourly deploy button
 
 Use this button to deploy the **hourly** template: 
 
@@ -75,9 +87,9 @@ After clicking the Launch button, you must specify the following parameters.
 | Vpc | x | Common VPC for the deployment |
 
 <br>
-<br>
 
-<a name="byol"></a>**BYOL deploy button**
+
+#### BYOL deploy button
 
 Use this button to deploy the **BYOL** template: 
 
@@ -89,24 +101,139 @@ After clicking the Launch button, you must specify the following parameters.
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-| bigipExternalSecurityGroup | x | Public or External Security Group ID |
-| bigipManagementSecurityGroup | x | BIG-IP Management Security Group ID |
-| iamAccessKey | x | Type the IAM Access Key |
-| iamSecretKey | x | Type the IAM Secret Key for BIG-IP |
-| imageName | x | F5 BIG-IP Performance Type |
-| instanceType | x | BIG-IP virtual instance type |
-| licenseKey1 | x | Type or paste your F5 BYOL regkey here |
-| licenseKey2 | x | Type or paste your second F5 BYOL regkey here |
-| managementSubnetAz1 | x | Management subnet ID |
-| managementSubnetAz2 | x | Management subnet ID |
-| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
-| subnet1Az1 | x | Public or External subnet ID |
-| subnet1Az2 | x | Public or External subnet ID |
-| Vpc | x | Common VPC for the deployment |
+| bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
+| bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
+| iamAccessKey | Yes | Type the IAM Access Key |
+| iamSecretKey | Yes | Type the IAM Secret Key for BIG-IP |
+| imageName | Yes | F5 BIG-IP Performance Type |
+| instanceType | Yes | BIG-IP virtual instance type |
+| licenseKey1 | Yes | Type or paste your F5 BYOL regkey here |
+| licenseKey2 | Yes | Type or paste your second F5 BYOL regkey here |
+| managementSubnetAz1 | Yes | Management subnet ID |
+| managementSubnetAz2 | Yes | Management subnet ID |
+| restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
+| subnet1Az1 | Yes | Public or External subnet ID |
+| subnet1Az2 | Yes | Public or External subnet ID |
+| Vpc | Yes | Common VPC for the deployment |
 
+### Installing the template using the AWS CLI (aws-cli/1.11.76)
+If you want to deploy the template using the AWS CLI, use the following example script, replacing the static items (or make them parameters).  Use the following command syntax:
+ 
+```./deploy_via_bash.sh --stackName <value> --licenseType Hourly --managementSubnetAz1 <value> --sshKey <value> --bigipManagementSecurityGroup <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --instanceType t2.medium --Vpc <value> --imageName Good200Mbps```
 
-## Configuration Example <a name="config">
+The following is the script file.  This file (**deploy_via_bash.sh**) is also available in this repository.
+
+```bash
+#!/bin/bash
+
+## Bash Script to deploy F5 template into AWS, using aws-cli/1.11.76 ##
+# Example Command: ./deploy_via_bash.sh --stackName <value> --licenseType Hourly --managementSubnetAz1 <value> --sshKey <value> --bigipManagementSecurityGroup <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --instanceType t2.medium --Vpc <value> --imageName Good200Mbps
+
+# Assign Script Parameters and Define Variables
+# Specify static items, change these as needed or make them parameters
+region="us-west-2"
+restrictedSrcAddress="0.0.0.0/0"
+tagValues='[{"Key": "application", "Value": "f5app"},{"Key": "environment", "Value": "f5env"},{"Key": "group", "Value": "f5group"},{"Key": "owner", "Value": "f5owner"},{"Key": "costcenter", "Value": "f5costcenter"}]'
+ntpServer="0.pool.ntp.org"
+timezone="UTC"
+
+# Parse the command line arguments, primarily checking full params as short params are just placeholders
+while [[ $# -gt 1 ]]
+do
+    case "$1" in
+        --licenseKey1)
+			licenseKey1=$2
+			shift 2;;
+		--licenseType)
+			licenseType=$2
+			shift 2;;
+		--managementSubnetAz1)
+			managementSubnetAz1=$2
+			shift 2;;
+		--sshKey)
+			sshKey=$2
+			shift 2;;
+		--licenseKey2)
+			licenseKey2=$2
+			shift 2;;
+		--bigipManagementSecurityGroup)
+			bigipManagementSecurityGroup=$2
+			shift 2;;
+		--subnet1Az1)
+			subnet1Az1=$2
+			shift 2;;
+		--bigipExternalSecurityGroup)
+			bigipExternalSecurityGroup=$2
+			shift 2;;
+		--stackName)
+			stackName=$2
+			shift 2;;
+		--imageName)
+			imageName=$2
+			shift 2;;
+		--Vpc)
+			Vpc=$2
+			shift 2;;
+		--instanceType)
+			instanceType=$2
+			shift 2;;
+		--)
+			shift
+			break;;
+    esac
+done
+
+#If a required parameter is not passed, the script will prompt for it below
+required_variables="stackName licenseType managementSubnetAz1 sshKey bigipManagementSecurityGroup subnet1Az1 bigipExternalSecurityGroup instanceType Vpc imageName "
+for variable in $required_variables
+do
+    while [ -z ${!variable} ]
+    do
+        read -p "Please enter value for $variable:" $variable
+    done
+done
+
+# Prompt for license key if not supplied and BYOL is selected 
+if [ $licenseType == "BYOL" ]
+then 
+    while [ -z $licenseKey1 ]
+    do
+        read -p "Please enter value for licenseKey1:" licenseKey1
+    done
+    
+    template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-2nic-bigip.template"
+fi 
+
+# Prompt for license bandwidth if not supplied and Hourly is selected 
+if [ $licenseType == "Hourly" ]
+then 
+    while [ -z $imageName ]
+    do 
+        read -p "Please enter value for imageName:" imageName
+    done
+    
+    template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-2nic-bigip.template"
+fi
+
+echo "Disclaimer: Scripting to Deploy F5 Solution templates into Cloud Environments are provided as examples. They will be treated as best effort for issues that occur, feedback is encouraged."
+sleep 3
+
+# Deploy Template
+if [ $licenseType == "BYOL" ]
+then
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=licenseKey1,ParameterValue=$licenseKey1 ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=licenseKey2,ParameterValue=$licenseKey2 ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=imageName,ParameterValue=$imageName ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
+
+elif [ $licenseType == "Hourly" ]
+then
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=imageName,ParameterValue=$imageName ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
+else 
+    echo "This failure may have been caused by an error in license type: Please ensure license type is either Hourly or BYOL'"
+    exit 1
+fi
+```
+
+## Configuration Example
 
 The following is a simple configuration diagram for this 2-NIC deployment. In this diagram, the IP addresses are provided as examples. This solution uses the BIG-IP v13.0 AMI image.<br>
 ![2-NIC configuration example](images/aws-standalone-2nic.png)
@@ -114,7 +241,7 @@ The following is a simple configuration diagram for this 2-NIC deployment. In th
 ### Documentation
 The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also describes the configuration in more detail.
 
-## Security Details <a name="securitydetail"></a>
+## Security Details
 This section has the entire code snippets for each of the lines you should ensure are present in your template file if you want to verify the integrity of the helper code in the template.
 
 **/config/verifyHash section**
@@ -238,4 +365,4 @@ under the License.
 Contributor License Agreement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Individuals or business entities who contribute to this project must have
-completed and submitted the `F5 Contributor License Agreement`
+completed and submitted the [F5 Contributor License Agreement](http://f5-openstack-docs.readthedocs.io/en/latest/cla_landing.html).

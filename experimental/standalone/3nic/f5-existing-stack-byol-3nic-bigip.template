@@ -1,6 +1,6 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.3.0: AWS CloudFormation Template for creating a 3NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.4.0: AWS CloudFormation Template for creating a 3NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -86,10 +86,12 @@
       "Vpc",
       "managementSubnetAz1",
       "managementSubnetAz2",
-      "subnet1Az2",
       "bigipManagementSecurityGroup",
       "subnet1Az1",
+      "subnet1Az2",
       "bigipExternalSecurityGroup",
+      "subnet2Az1",
+      "bigipInternalSecurityGroup",
       "availabilityZone1",
       "availabilityZone2"
      ]
@@ -106,7 +108,9 @@
       "licenseKey2",
       "managementGuiPort",
       "sshKey",
-      "restrictedSrcAddress"
+      "restrictedSrcAddress",
+      "ntpServer",
+      "timezone"
      ]
     },
     {
@@ -146,6 +150,9 @@
     },
     "bigipExternalSecurityGroup": {
      "default": "External Security Group"
+    },
+    "bigipInternalSecurityGroup": {
+     "default": "Internal Security Group"
     },
     "bigipManagementSecurityGroup": {
      "default": "Management Security Group"
@@ -192,6 +199,9 @@
     "managementSubnetAz2": {
      "default": "Management Subnet AZ2"
     },
+    "ntpServer": {
+     "default": "NTP Server"
+    },
     "owner": {
      "default": "Owner"
     },
@@ -202,14 +212,20 @@
      "default": "SSH Key"
     },
     "subnet1Az1": {
-     "default": "Subnet AZ1"
+     "default": "Subnet1 AZ1"
     },
     "subnet1Az2": {
-     "default": "Subnet AZ2"
+     "default": "Subnet1 AZ2"
+    },
+    "subnet2Az1": {
+     "default": "Subnet2 AZ1"
+    },
+    "timezone": {
+     "default": "Timezone (Olson)"
     }
    }
   },
-  "Version": "2.3.0"
+  "Version": "2.4.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -386,6 +402,13 @@
    "AllowedValues": [
     "t2.medium",
     "t2.large",
+    "c3.2xlarge",
+    "c3.4xlarge",
+    "c3.8xlarge",
+    "c4.xlarge",
+    "c4.2xlarge",
+    "c4.4xlarge",
+    "c4.8xlarge",
     "m3.xlarge",
     "m3.2xlarge",
     "m4.large",
@@ -393,12 +416,7 @@
     "m4.2xlarge",
     "m4.4xlarge",
     "m4.10xlarge",
-    "c3.2xlarge",
-    "c3.4xlarge",
-    "c3.8xlarge",
-    "c4.xlarge",
-    "c4.2xlarge",
-    "c4.4xlarge"
+    "m4.16xlarge"
    ],
    "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
    "Default": "m3.2xlarge",
@@ -417,6 +435,11 @@
    "ConstraintDescription": "The subnet ID must be within an existing VPC",
    "Description": "Management Subnet ID",
    "Type": "AWS::EC2::Subnet::Id"
+  },
+  "ntpServer": {
+   "Default": "0.pool.ntp.org",
+   "Description": "NTP server for this implementation",
+   "Type": "String"
   },
   "owner": {
    "Default": "f5owner",
@@ -445,6 +468,11 @@
    "ConstraintDescription": "The subnet ID must be within an existing VPC",
    "Description": "Private or Internal subnet ID",
    "Type": "AWS::EC2::Subnet::Id"
+  },
+  "timezone": {
+   "Default": "UTC",
+   "Description": "Olson timezone string from /usr/share/zoneinfo",
+   "Type": "String"
   }
  },
  "Resources": {
@@ -530,8 +558,18 @@
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
            "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-           "--ntp 0.us.pool.ntp.org",
-           "--ntp 1.us.pool.ntp.org",
+           "--ntp ",
+           {
+            "Ref": "ntpServer"
+           },
+           "--tz ",
+           {
+            "Ref": "timezone"
+           },
+           "--dns ${NAME_SERVER}",
+           "--module ltm:nominal",
+           "--password-url file:///config/cloud/aws/.adminPassword",
+           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
            "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
@@ -596,8 +634,14 @@
           "",
           [
            "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
+           "declare -a tmsh=()\n",
            "date\n",
-           "echo 'starting tmsh config'\n",
+           "echo 'starting custom-config.sh'\n",
            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
            "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
@@ -625,8 +669,10 @@
            },
            "'\n",
            "EXTMASK=${GATEWAY_PREFIX}\n",
-           "tmsh create net vlan external interfaces add { 1.1 } \n",
-           "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
+           "tmsh+=(\n",
+           "\"tmsh create net vlan external interfaces add { 1.1 }\"\n",
+           "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\"\n",
+           ")\n",
            "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`\n",
            "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
            "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}\n",
@@ -639,10 +685,19 @@
            },
            "'\n",
            "INTMASK=${GATEWAY_PREFIX2}\n",
-           "tmsh create net vlan internal interfaces add { 1.2 } \n",
-           "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
-           "tmsh create net route default gw ${GATEWAY}\n",
-           "tmsh save /sys config\n",
+           "tmsh+=(\n",
+           "\"tmsh create net vlan internal interfaces add { 1.2 }\"\n",
+           "\"tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\"\n",
+           "\"tmsh create net route default gw ${GATEWAY}\"\n",
+           "\"tmsh save /sys config\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "    if $CMD;then\n",
+           "        echo \"command $CMD successfully executed.\"\n",
+           "    else\n",
+           "        error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "    fi\n",
+           "done\n",
            "date\n",
            "### START CUSTOM TMSH CONFIGURTION\n",
            "### END CUSTOM TMSH CONFIGURATION"
@@ -677,9 +732,23 @@
           "",
           [
            "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\"Unknown Error\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
            "date\n",
            "echo 'starting rm-password.sh'\n",
-           "rm /config/cloud/aws/.adminPassword\n",
+           "declare -a tmsh=()\n",
+           "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "  if $CMD;then\n",
+           "      echo \"command $CMD successfully executed.\"\n",
+           "  else\n",
+           "      error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "  fi\n",
+           "done\n",
            "date\n"
           ]
          ]

@@ -1,161 +1,201 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.3.0: AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of 2NIC BIG-IPs, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.4.0: AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of 2NIC BIG-IPs, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
     "Best1000Mbps": "ami-3a1c2d5d",
     "Best200Mbps": "ami-301c2d57",
     "Best25Mbps": "ami-3b1e2f5c",
+    "Best5000Mbps": "ami-b11f2ed6",
     "Better1000Mbps": "ami-631b2a04",
     "Better200Mbps": "ami-0c19286b",
     "Better25Mbps": "ami-841a2be3",
+    "Better5000Mbps": "ami-a51e2fc2",
     "Good1000Mbps": "ami-3d1e2f5a",
     "Good200Mbps": "ami-781a2b1f",
-    "Good25Mbps": "ami-031c2d64"
+    "Good25Mbps": "ami-031c2d64",
+    "Good5000Mbps": "ami-a01c2dc7"
    },
    "ap-northeast-2": {
     "Best1000Mbps": "ami-33dc015d",
     "Best200Mbps": "ami-b9a37ed7",
     "Best25Mbps": "ami-e0dc018e",
+    "Best5000Mbps": "ami-e4dd008a",
     "Better1000Mbps": "ami-ada27fc3",
     "Better200Mbps": "ami-b8a37ed6",
     "Better25Mbps": "ami-e5dc018b",
     "Good1000Mbps": "ami-2aa27f44",
     "Good200Mbps": "ami-aba27fc5",
-    "Good25Mbps": "ami-c7df02a9"
+    "Good25Mbps": "ami-c7df02a9",
+    "Good5000Mbps": "ami-dadf02b4"
    },
    "ap-south-1": {
     "Best1000Mbps": "ami-62dba90d",
     "Best200Mbps": "ami-bad8aad5",
     "Best25Mbps": "ami-07d5a768",
+    "Best5000Mbps": "ami-76d9ab19",
     "Better1000Mbps": "ami-c4d8aaab",
     "Better200Mbps": "ami-bbdfadd4",
     "Better25Mbps": "ami-9ad9abf5",
     "Good1000Mbps": "ami-f2deac9d",
     "Good200Mbps": "ami-0fd4a660",
-    "Good25Mbps": "ami-e1d8aa8e"
+    "Good25Mbps": "ami-e1d8aa8e",
+    "Good5000Mbps": "ami-c4dba9ab"
    },
    "ap-southeast-1": {
     "Best1000Mbps": "ami-4e0eb42d",
     "Best200Mbps": "ami-5a0eb439",
     "Best25Mbps": "ami-530eb430",
+    "Best5000Mbps": "ami-d70ab0b4",
     "Better1000Mbps": "ami-800bb1e3",
     "Better200Mbps": "ami-5c0eb43f",
     "Better25Mbps": "ami-d608b2b5",
+    "Better5000Mbps": "ami-4e09b32d",
     "Good1000Mbps": "ami-cb08b2a8",
     "Good200Mbps": "ami-9708b2f4",
-    "Good25Mbps": "ami-dc08b2bf"
+    "Good25Mbps": "ami-dc08b2bf",
+    "Good5000Mbps": "ami-3a0eb459"
    },
    "ap-southeast-2": {
     "Best1000Mbps": "ami-f4d8d397",
     "Best200Mbps": "ami-18dfd47b",
     "Best25Mbps": "ami-60d8d303",
+    "Best5000Mbps": "ami-f9d8d39a",
     "Better1000Mbps": "ami-6ed8d30d",
     "Better200Mbps": "ami-cdd9d2ae",
     "Better25Mbps": "ami-ffd8d39c",
+    "Better5000Mbps": "ami-8eddd6ed",
     "Good1000Mbps": "ami-e2ddd681",
     "Good200Mbps": "ami-4bdfd428",
-    "Good25Mbps": "ami-05d8d366"
+    "Good25Mbps": "ami-05d8d366",
+    "Good5000Mbps": "ami-75d8d316"
    },
    "ca-central-1": {
     "Best1000Mbps": "ami-0894286c",
     "Best200Mbps": "ami-0994286d",
     "Best25Mbps": "ami-f895299c",
+    "Best5000Mbps": "ami-93902cf7",
     "Better1000Mbps": "ami-43922e27",
     "Better200Mbps": "ami-93912df7",
     "Better25Mbps": "ami-fe95299a",
+    "Better5000Mbps": "ami-4d932f29",
     "Good1000Mbps": "ami-a5922ec1",
     "Good200Mbps": "ami-52932f36",
-    "Good25Mbps": "ami-318c3055"
+    "Good25Mbps": "ami-318c3055",
+    "Good5000Mbps": "ami-0b94286f"
    },
    "eu-central-1": {
     "Best1000Mbps": "ami-db4f90b4",
     "Best200Mbps": "ami-464d9229",
     "Best25Mbps": "ami-c24e91ad",
+    "Best5000Mbps": "ami-87508fe8",
     "Better1000Mbps": "ami-0c4f9063",
     "Better200Mbps": "ami-f9518e96",
     "Better25Mbps": "ami-444d922b",
+    "Better5000Mbps": "ami-904d92ff",
     "Good1000Mbps": "ami-774d9218",
     "Good200Mbps": "ami-d84f90b7",
-    "Good25Mbps": "ami-3f4d9250"
+    "Good25Mbps": "ami-3f4d9250",
+    "Good5000Mbps": "ami-744d921b"
    },
    "eu-west-1": {
     "Best1000Mbps": "ami-87bbb6e1",
     "Best200Mbps": "ami-30a2af56",
     "Best25Mbps": "ami-1fbdb079",
+    "Best5000Mbps": "ami-adbcb1cb",
     "Better1000Mbps": "ami-98bdb0fe",
     "Better200Mbps": "ami-21a2af47",
     "Better25Mbps": "ami-b6a3aed0",
+    "Better5000Mbps": "ami-ddbbb6bb",
     "Good1000Mbps": "ami-c9b8b5af",
     "Good200Mbps": "ami-0bb9b46d",
-    "Good25Mbps": "ami-d7bbb6b1"
+    "Good25Mbps": "ami-d7bbb6b1",
+    "Good5000Mbps": "ami-1fb9b479"
    },
    "eu-west-2": {
     "Best1000Mbps": "ami-91a0b4f5",
     "Best200Mbps": "ami-dba5b1bf",
     "Best25Mbps": "ami-81a5b1e5",
+    "Best5000Mbps": "ami-42a5b126",
     "Better1000Mbps": "ami-97a0b4f3",
     "Better200Mbps": "ami-96a0b4f2",
     "Better25Mbps": "ami-d8a5b1bc",
+    "Better5000Mbps": "ami-07a6b263",
     "Good1000Mbps": "ami-3fa7b35b",
     "Good200Mbps": "ami-daa5b1be",
-    "Good25Mbps": "ami-92a0b4f6"
+    "Good25Mbps": "ami-92a0b4f6",
+    "Good5000Mbps": "ami-52a0b436"
    },
    "sa-east-1": {
     "Best1000Mbps": "ami-a88ee2c4",
     "Best200Mbps": "ami-0c8ce060",
     "Best25Mbps": "ami-d58de1b9",
+    "Best5000Mbps": "ami-208ee24c",
     "Better1000Mbps": "ami-418fe32d",
     "Better200Mbps": "ami-dc8ee2b0",
     "Better25Mbps": "ami-408fe32c",
+    "Better5000Mbps": "ami-4a8fe326",
     "Good1000Mbps": "ami-c68fe3aa",
     "Good200Mbps": "ami-0e8ce062",
-    "Good25Mbps": "ami-548fe338"
+    "Good25Mbps": "ami-548fe338",
+    "Good5000Mbps": "ami-358ee259"
    },
    "us-east-1": {
     "Best1000Mbps": "ami-52751b44",
     "Best200Mbps": "ami-1a78160c",
     "Best25Mbps": "ami-09721c1f",
+    "Best5000Mbps": "ami-20791736",
     "Better1000Mbps": "ami-13791705",
     "Better200Mbps": "ami-c77917d1",
     "Better25Mbps": "ami-ea7b15fc",
+    "Better5000Mbps": "ami-e4751bf2",
     "Good1000Mbps": "ami-bd701eab",
     "Good200Mbps": "ami-4c741a5a",
-    "Good25Mbps": "ami-134a2405"
+    "Good25Mbps": "ami-134a2405",
+    "Good5000Mbps": "ami-d0701ec6"
    },
    "us-east-2": {
     "Best1000Mbps": "ami-6ce7c009",
     "Best200Mbps": "ami-8be7c0ee",
     "Best25Mbps": "ami-3c183f59",
+    "Best5000Mbps": "ami-d2e7c0b7",
     "Better1000Mbps": "ami-c2193ea7",
     "Better200Mbps": "ami-2ce6c149",
     "Better25Mbps": "ami-46193e23",
+    "Better5000Mbps": "ami-3b183f5e",
     "Good1000Mbps": "ami-29e6c14c",
     "Good200Mbps": "ami-6de7c008",
-    "Good25Mbps": "ami-c0193ea5"
+    "Good25Mbps": "ami-c0193ea5",
+    "Good5000Mbps": "ami-dfe7c0ba"
    },
    "us-west-1": {
     "Best1000Mbps": "ami-c76a4ca7",
     "Best200Mbps": "ami-7a6c4a1a",
     "Best25Mbps": "ami-c46f49a4",
+    "Best5000Mbps": "ami-9f6c4aff",
     "Better1000Mbps": "ami-fa6c4a9a",
     "Better200Mbps": "ami-e26d4b82",
     "Better25Mbps": "ami-686a4c08",
+    "Better5000Mbps": "ami-da6f49ba",
     "Good1000Mbps": "ami-486c4a28",
     "Good200Mbps": "ami-fd6c4a9d",
-    "Good25Mbps": "ami-3f6d4b5f"
+    "Good25Mbps": "ami-3f6d4b5f",
+    "Good5000Mbps": "ami-336d4b53"
    },
    "us-west-2": {
     "Best1000Mbps": "ami-66bd2606",
     "Best200Mbps": "ami-7abd261a",
     "Best25Mbps": "ami-6bbd260b",
+    "Best5000Mbps": "ami-c6bd26a6",
     "Better1000Mbps": "ami-cfbd26af",
     "Better200Mbps": "ami-91b328f1",
     "Better25Mbps": "ami-24b12a44",
+    "Better5000Mbps": "ami-44b22924",
     "Good1000Mbps": "ami-cbbc27ab",
     "Good200Mbps": "ami-80b328e0",
-    "Good25Mbps": "ami-ebbc278b"
+    "Good25Mbps": "ami-ebbc278b",
+    "Good5000Mbps": "ami-b2b229d2"
    }
   },
   "WebserverRegionMap": {
@@ -214,10 +254,12 @@
       "Vpc",
       "managementSubnetAz1",
       "managementSubnetAz2",
-      "subnet1Az2",
       "bigipManagementSecurityGroup",
       "subnet1Az1",
+      "subnet1Az2",
       "bigipExternalSecurityGroup",
+      "subnet2Az1",
+      "bigipInternalSecurityGroup",
       "availabilityZone1",
       "availabilityZone2"
      ]
@@ -234,7 +276,9 @@
       "licenseKey2",
       "managementGuiPort",
       "sshKey",
-      "restrictedSrcAddress"
+      "restrictedSrcAddress",
+      "ntpServer",
+      "timezone"
      ]
     },
     {
@@ -274,6 +318,9 @@
     },
     "bigipExternalSecurityGroup": {
      "default": "External Security Group"
+    },
+    "bigipInternalSecurityGroup": {
+     "default": "Internal Security Group"
     },
     "bigipManagementSecurityGroup": {
      "default": "Management Security Group"
@@ -320,6 +367,9 @@
     "managementSubnetAz2": {
      "default": "Management Subnet AZ2"
     },
+    "ntpServer": {
+     "default": "NTP Server"
+    },
     "owner": {
      "default": "Owner"
     },
@@ -330,14 +380,20 @@
      "default": "SSH Key"
     },
     "subnet1Az1": {
-     "default": "Subnet AZ1"
+     "default": "Subnet1 AZ1"
     },
     "subnet1Az2": {
-     "default": "Subnet AZ2"
+     "default": "Subnet1 AZ2"
+    },
+    "subnet2Az1": {
+     "default": "Subnet2 AZ1"
+    },
+    "timezone": {
+     "default": "Timezone (Olson)"
     }
    }
   },
-  "Version": "2.3.0"
+  "Version": "2.4.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -638,12 +694,15 @@
     "Good25Mbps",
     "Good200Mbps",
     "Good1000Mbps",
+    "Good5000Mbps",
     "Better25Mbps",
     "Better200Mbps",
     "Better1000Mbps",
+    "Better5000Mbps",
     "Best25Mbps",
     "Best200Mbps",
-    "Best1000Mbps"
+    "Best1000Mbps",
+    "Best5000Mbps"
    ],
    "ConstraintDescription": "Must be a valid F5 BIG-IP VE image type",
    "Default": "Best1000Mbps",
@@ -654,6 +713,13 @@
    "AllowedValues": [
     "t2.medium",
     "t2.large",
+    "c3.2xlarge",
+    "c3.4xlarge",
+    "c3.8xlarge",
+    "c4.xlarge",
+    "c4.2xlarge",
+    "c4.4xlarge",
+    "c4.8xlarge",
     "m3.xlarge",
     "m3.2xlarge",
     "m4.large",
@@ -661,16 +727,16 @@
     "m4.2xlarge",
     "m4.4xlarge",
     "m4.10xlarge",
-    "c3.2xlarge",
-    "c3.4xlarge",
-    "c3.8xlarge",
-    "c4.xlarge",
-    "c4.2xlarge",
-    "c4.4xlarge"
+    "m4.16xlarge"
    ],
    "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
    "Default": "m3.2xlarge",
    "Description": "Size of the F5 BIG-IP Virtual Instance",
+   "Type": "String"
+  },
+  "ntpServer": {
+   "Default": "0.pool.ntp.org",
+   "Description": "NTP server for this implementation",
    "Type": "String"
   },
   "owner": {
@@ -690,6 +756,11 @@
   "sshKey": {
    "Description": "Key pair for accessing the instance",
    "Type": "AWS::EC2::KeyPair::KeyName"
+  },
+  "timezone": {
+   "Default": "UTC",
+   "Description": "Olson timezone string from /usr/share/zoneinfo",
+   "Type": "String"
   }
  },
  "Resources": {
@@ -950,8 +1021,18 @@
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
            "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-           "--ntp 0.us.pool.ntp.org",
-           "--ntp 1.us.pool.ntp.org",
+           "--ntp ",
+           {
+            "Ref": "ntpServer"
+           },
+           "--tz ",
+           {
+            "Ref": "timezone"
+           },
+           "--dns ${NAME_SERVER}",
+           "--module ltm:nominal",
+           "--password-url file:///config/cloud/aws/.adminPassword",
+           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
            "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
@@ -1044,8 +1125,14 @@
           "",
           [
            "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
+           "declare -a tmsh=()\n",
            "date\n",
-           "echo 'starting tmsh config'\n",
+           "echo 'starting custom-config.sh'\n",
            "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
            "POOLMEM='",
            {
@@ -1103,18 +1190,27 @@
            },
            "'\n",
            "EXTMASK=${GATEWAY_PREFIX}\n",
-           "tmsh create net vlan external interfaces add { 1.1 } \n",
-           "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
-           "tmsh create net route default gw ${GATEWAY}\n",
-           "tmsh modify sys db dhclient.mgmt { value disable }\n",
-           "tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
-           "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
-           "tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\n",
-           "tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\n",
-           "tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\n",
-           "tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\n",
-           "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-           "tmsh save /sys config\n",
+           "tmsh+=(\n",
+           "\"tmsh create net vlan external interfaces add { 1.1 }\"\n",
+           "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\"\n",
+           "\"tmsh create net route default gw ${GATEWAY}\"\n",
+           "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
+           "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
+           "\"tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\"\n",
+           "\"tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\"\n",
+           "\"tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\"\n",
+           "\"tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\"\n",
+           "\"tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\"\n",
+           "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\"\n",
+           "\"tmsh save /sys config\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "    if $CMD;then\n",
+           "        echo \"command $CMD successfully executed.\"\n",
+           "    else\n",
+           "        error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "    fi\n",
+           "done\n",
            "date\n",
            "### START CUSTOM TMSH CONFIGURTION\n",
            "### END CUSTOM TMSH CONFIGURATION"
@@ -1149,9 +1245,23 @@
           "",
           [
            "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\"Unknown Error\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
            "date\n",
            "echo 'starting rm-password.sh'\n",
-           "rm /config/cloud/aws/.adminPassword\n",
+           "declare -a tmsh=()\n",
+           "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "  if $CMD;then\n",
+           "      echo \"command $CMD successfully executed.\"\n",
+           "  else\n",
+           "      error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "  fi\n",
+           "done\n",
            "date\n"
           ]
          ]
@@ -1365,7 +1475,7 @@
        "Fn::Join": [
         "",
         [
-         "Big-IP: ",
+         "Big-IP1: ",
          {
           "Ref": "AWS::StackName"
          }
@@ -1599,8 +1709,18 @@
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
            "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-           "--ntp 0.us.pool.ntp.org",
-           "--ntp 1.us.pool.ntp.org",
+           "--ntp ",
+           {
+            "Ref": "ntpServer"
+           },
+           "--tz ",
+           {
+            "Ref": "timezone"
+           },
+           "--dns ${NAME_SERVER}",
+           "--module ltm:nominal",
+           "--password-url file:///config/cloud/aws/.adminPassword",
+           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
            "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
@@ -1694,8 +1814,14 @@
           "",
           [
            "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
+           "declare -a tmsh=()\n",
            "date\n",
-           "echo 'starting tmsh config'\n",
+           "echo 'starting custom-config.sh'\n",
            "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
            "POOLMEM='",
            {
@@ -1735,12 +1861,21 @@
            },
            "'\n",
            "EXTMASK=${GATEWAY_PREFIX}\n",
-           "tmsh create net vlan external interfaces add { 1.1 } \n",
-           "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
-           "tmsh create net route default gw ${GATEWAY}\n",
-           "tmsh modify sys db dhclient.mgmt { value disable }\n",
-           "tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
-           "tmsh save /sys config\n",
+           "tmsh+=(\n",
+           "\"tmsh create net vlan external interfaces add { 1.1 }\"\n",
+           "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\"\n",
+           "\"tmsh create net route default gw ${GATEWAY}\"\n",
+           "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
+           "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
+           "\"tmsh save /sys config\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "    if $CMD;then\n",
+           "        echo \"command $CMD successfully executed.\"\n",
+           "    else\n",
+           "        error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "    fi\n",
+           "done\n",
            "date\n",
            "### START CUSTOM TMSH CONFIGURTION\n",
            "### END CUSTOM TMSH CONFIGURATION"
@@ -1775,9 +1910,23 @@
           "",
           [
            "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\"Unknown Error\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
            "date\n",
            "echo 'starting rm-password.sh'\n",
-           "rm /config/cloud/aws/.adminPassword\n",
+           "declare -a tmsh=()\n",
+           "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "  if $CMD;then\n",
+           "      echo \"command $CMD successfully executed.\"\n",
+           "  else\n",
+           "      error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "  fi\n",
+           "done\n",
            "date\n"
           ]
          ]
@@ -1991,7 +2140,7 @@
        "Fn::Join": [
         "",
         [
-         "Big-IP: ",
+         "Big-IP2: ",
          {
           "Ref": "AWS::StackName"
          }

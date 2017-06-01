@@ -122,7 +122,7 @@ def main():
 
     # Build variables used for QA
     ### Template Version
-    version = "2.3.0"
+    version = "2.4.0"
     ### Cloudlib Branch
     branch_cloud = "v3.0.2"
     branch_aws = "v1.2.0"
@@ -199,10 +199,12 @@ def main():
                 "Vpc",
                 "managementSubnetAz1",
                 "managementSubnetAz2",
-                "subnet1Az2",
                 "bigipManagementSecurityGroup",
                 "subnet1Az1",
+                "subnet1Az2",
                 "bigipExternalSecurityGroup",
+                "subnet2Az1",
+                "bigipInternalSecurityGroup",
                 "availabilityZone1",
                 "availabilityZone2"
               ]
@@ -254,10 +256,13 @@ def main():
                 "default": "Management Subnet AZ2"
             },
             "subnet1Az1": {
-                "default": "Subnet AZ1"
+                "default": "Subnet1 AZ1"
             },
             "subnet1Az2": {
-                "default": "Subnet AZ2"
+                "default": "Subnet1 AZ2"
+            },
+            "subnet2Az1": {
+                "default": "Subnet2 AZ1"
             },
             "availabilityZone1": {
                 "default": "Availability Zone 1"
@@ -270,6 +275,9 @@ def main():
             },
             "bigipExternalSecurityGroup": {
                 "default": "External Security Group"
+            },
+            "bigipInternalSecurityGroup": {
+                "default": "Internal Security Group"
             },
             "imageName": {
                 "default": "Image Name"
@@ -451,6 +459,13 @@ def main():
                 AllowedValues=[
                                 "t2.medium",
                                 "t2.large",
+                                "c3.2xlarge",
+                                "c3.4xlarge",
+                                "c3.8xlarge",
+                                "c4.xlarge",
+                                "c4.2xlarge",
+                                "c4.4xlarge",
+                                "c4.8xlarge",
                                 "m3.xlarge",
                                 "m3.2xlarge",
                                 "m4.large",
@@ -458,12 +473,7 @@ def main():
                                 "m4.2xlarge",
                                 "m4.4xlarge",
                                 "m4.10xlarge",
-                                "c3.2xlarge",
-                                "c3.4xlarge",
-                                "c3.8xlarge",
-                                "c4.xlarge",
-                                "c4.2xlarge",
-                                "c4.4xlarge",       
+                                "m4.16xlarge",
                               ],
             ))
         if license_type == "hourly" and 'waf' not in components:
@@ -476,13 +486,16 @@ def main():
                 AllowedValues=[
                                 "Good25Mbps",
                                 "Good200Mbps",
-                                "Good1000Mbps",    
+                                "Good1000Mbps",
+                                "Good5000Mbps",
                                 "Better25Mbps",
                                 "Better200Mbps",
-                                "Better1000Mbps",                          
+                                "Better1000Mbps",
+                                "Better5000Mbps",                                
                                 "Best25Mbps",
                                 "Best200Mbps",
                                 "Best1000Mbps",
+                                "Best5000Mbps",
                               ],
             ))
         if license_type == "hourly" and 'waf' in components:
@@ -496,6 +509,7 @@ def main():
                                 "Best25Mbps",
                                 "Best200Mbps",
                                 "Best1000Mbps",
+                                "Best5000Mbps",
                               ],
             ))
         if license_type != "hourly":
@@ -1569,15 +1583,29 @@ def main():
             cluster_command = []
             rm_password_sh =    [
                                         "#!/bin/bash\n",
+                                        "PROGNAME=$(basename $0)\n",
+                                        "function error_exit {\n",
+                                            "echo \"${PROGNAME}: ${1:-\"Unknown Error\"}\" 1>&2\n",
+                                        "exit 1\n",
+                                        "}\n",                                       
                                         "date\n",
                                         "echo 'starting rm-password.sh'\n",
+                                        "declare -a tmsh=()\n",
                                 ]
             if ha_type == "across-az" and (BIGIP_INDEX) == CLUSTER_SEED:
                 rm_password_sh += [
-                                    "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
+                                    "tmsh+=(\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\")\n",
                                   ]
             rm_password_sh +=   [                      
-                                 "rm /config/cloud/aws/.adminPassword\n",
+                                 "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
+                                 "for CMD in \"${tmsh[@]}\"\n",
+                                 "do\n",
+                                 "  if $CMD;then\n",
+                                 "      echo \"command $CMD successfully executed.\"\n",
+                                 "  else\n",
+                                 "      error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+                                 "  fi\n",
+                                 "done\n",
                                  "date\n",
                                 ]
             rm_password_command =   [
@@ -1708,8 +1736,14 @@ def main():
             ### Build Custom Script
             custom_sh = [
                             "#!/bin/bash\n",
+                            "PROGNAME=$(basename $0)\n",
+                            "function error_exit {\n",
+                                "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+                            "exit 1\n",
+                            "}\n",
+                            "declare -a tmsh=()\n",
                             "date\n",
-                            "echo 'starting tmsh config'\n",            
+                            "echo 'starting custom-config.sh'\n",            
                         ]
             if ha_type != "standalone":
                 custom_sh += [
@@ -1762,35 +1796,38 @@ def main():
                                 "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
                                 "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",                                 
                                 "EXTMASK=${GATEWAY_PREFIX}\n",
-                                "tmsh create net vlan external interfaces add { 1.1 } \n",                                
+                                "tmsh+=(\n",
+                                "\"tmsh create net vlan external interfaces add { 1.1 }\"\n",                                
                               ]
                 if ha_type == "standalone":
                     if 'waf' not in components:
                         custom_sh +=  [                                         
-                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
+                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\"\n",
                                         ]
                     if 'waf' in components:                    
                         custom_sh +=  [ 
-                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
                                         ]
                 if ha_type != "standalone":
                     if 'waf' not in components:
                         custom_sh +=  [ 
-                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
+                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\"\n",
                                         ]
                     if 'waf' in components:
                         custom_sh +=  [ 
-                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
                                         ]
             if num_nics > 2:
                 custom_sh +=  [ 
+                                ")\n",
                                 "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                                 "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                                 "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}\n",
                                 "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
-                                "INTMASK=${GATEWAY_PREFIX2}\n", 
-                                "tmsh create net vlan internal interfaces add { 1.2 } \n",
-                                "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
+                                "INTMASK=${GATEWAY_PREFIX2}\n",
+                                "tmsh+=(\n",
+                                "\"tmsh create net vlan internal interfaces add { 1.2 }\"\n",
+                                "\"tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\"\n",
                                 ]
             # Set Gateway
             if ha_type == "across-az":
@@ -1798,19 +1835,19 @@ def main():
                                  
                                     ]
                 custom_sh +=  [                  
-                                    "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
-                                    "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
+                                    "\"tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\"\n",
+                                    "\"tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\"\n",
                                 ]
             else:
                 if num_nics > 1:
                     custom_sh +=  [
-                                        "tmsh create net route default gw ${GATEWAY}\n",
+                                        "\"tmsh create net route default gw ${GATEWAY}\"\n",
                                     ]
             # Disable DHCP if clustering. 
             if ha_type != "standalone":
                 custom_sh += [ 
-                                    "tmsh modify sys db dhclient.mgmt { value disable }\n",
-                                    "tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
+                                    "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
+                                    "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
                                 ] 
                 if num_nics == 1:
                     custom_sh += [
@@ -1844,80 +1881,97 @@ def main():
 
                                 ]
             if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
-                if stack != "existing": 
+                if stack != "existing":
+                    if ha_type == "standalone" and num_nics == 1 and 'waf' not in components:
+                        custom_sh += [ 
+                                        "tmsh+=(\n",
+                                     ]
                     #Add Pool
                     custom_sh +=    [
-                                        "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                                        "\"tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\"\n",
                                     ]
                     # Add virtual service with simple URI-Routing ltm policy
                     if 'waf' not in components:
                         custom_sh +=    [
-                                            "tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\n",
-                                            "tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\n",
-                                            "tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\n",
-                                            "tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\n",
+                                            "\"tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\"\n",
+                                            "\"tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\"\n",
+                                            "\"tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\"\n",
+                                            "\"tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\"\n",
                                         ]
                         if ha_type != "across-az":
                             if num_nics == 1:
                                 custom_sh +=    [
-                                                    "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                                    "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\"\n",
                                                 ]
                             if num_nics > 1:
                                 custom_sh +=    [
-                                                    "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                                    "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\"\n",
                                                 ]
                         if ha_type == "across-az":                      
                             custom_sh +=    [
-                                                "tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                                                "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                                                "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
-                                                "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
-                                            ]
+                                                "\"tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\"\n",
+                                                "\"tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\"\n",
+                                                "\"tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\"\n",
+                                                "\"tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\"\n",
+                                            ]        
                 if 'waf' in components:
                     # 12.1.0 requires "first match legacy"
                     custom_sh += [
+                                    ")\n",
                                     "curl -s -f --retry 20 -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
                                     "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
                                     "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
-                                    "tmsh modify asm policy /Common/linux-high active\n",
-                                    "tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
-                                    "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
-                                    "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
+                                    "tmsh+=(\n",
+                                    "\"tmsh modify asm policy /Common/linux-high active\"\n",
+                                    "\"tmsh create ltm policy app-ltm-policy strategy first-match legacy\"\n",
+                                    "\"tmsh modify ltm policy app-ltm-policy controls add { asm }\"\n",
+                                    "\"tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\"\n",
                                  ]
                     if stack != "existing":
                         if ha_type != "across-az":
                             if num_nics == 1:
                                 custom_sh +=    [
-                                                    "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                                                    "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\"\n",
                                                 ]
 
                             if num_nics > 1:
                                 custom_sh +=    [
-                                                    "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                                                    "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\"\n",
                                                 ]
                         if ha_type == "across-az":                      
                             custom_sh +=    [
-                                                "tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
-                                                "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
-                                                "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
-                                                "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
+                                                "\"tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\"\n",
+                                                "\"tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\"\n",
+                                                "\"tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\"\n",
+                                                "\"tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\"\n",
                                             ]
                 if ha_type == "across-az":
                     custom_sh +=    [
-                                    "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl\n",
-                                    "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha." + str(iApp_version) + " tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
-                                    "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
-                                    "tmsh run cm config-sync to-group across_az_failover_group\n",
+                                    "\"tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl\"\n",
+                                    "\"tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha." + str(iApp_version) + " tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\"\n",
+                                    "\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\"\n",
                                     ]
             # If ASM, Need to use overwite Config (SOL16509 / BZID: 487538 )
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 if 'waf' in components:
                     custom_sh += [
-                                            "tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\n", 
-                                            "tmsh run cm config-sync to-group datasync-global-dg\n",
-                                  ]
-            custom_sh += [
-                                "tmsh save /sys config\n",
+                                            "\"tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\"\n", 
+                                            "\"tmsh run cm config-sync to-group datasync-global-dg\"\n",
+                                 ]
+            if ha_type == "standalone" and num_nics == 1 and 'waf' not in components and stack == "existing":
+                custom_sh += [
+                               "tmsh+=(\n",
+                               ]
+            custom_sh += [                                
+                                "\"tmsh save /sys config\")\n",
+                                "for CMD in \"${tmsh[@]}\"\n",
+                                "do\n",
+                                "    if $CMD;then\n",
+                                "        echo \"command $CMD successfully executed.\"\n",
+                                "    else\n",
+                                "        error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+                                "    fi\n",
+                                "done\n",    
                                 "date\n",
                                 "### START CUSTOM TMSH CONFIGURTION\n",
                                 "### END CUSTOM TMSH CONFIGURATION"
@@ -2084,7 +2138,7 @@ def main():
                     Metadata=metadata,
                     UserData=Base64(Join("", ["#!/bin/bash\n", "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance , " --region ", Ref("AWS::Region"), "\n"])),
                     Tags=Tags(
-                        Name=Join("", ["Big-IP: ", Ref("AWS::StackName")] ),
+                        Name=Join("", ["Big-IP" + str(BIGIP_INDEX +1) + ": ", Ref("AWS::StackName")] ),
                         Application=Ref(application),
                         Environment=Ref(environment),
                         Group=Ref(group),
@@ -2104,7 +2158,7 @@ def main():
                     Metadata=metadata,
                     UserData=Base64(Join("", ["#!/bin/bash\n", "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance , " --region ", Ref("AWS::Region"), "\n"])),
                     Tags=Tags(
-                        Name=Join("", ["Big-IP: ", Ref("AWS::StackName")] ),
+                        Name=Join("", ["Big-IP" + str(BIGIP_INDEX +1) + ": ", Ref("AWS::StackName")] ),
                         Application=Ref(application),
                         Environment=Ref(environment),
                         Group=Ref(group),

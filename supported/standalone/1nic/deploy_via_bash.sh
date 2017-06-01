@@ -3,7 +3,7 @@
 ## Bash Script to deploy F5 template into AWS, using aws-cli/1.11.76 ##
 # Example Command: ./deploy_via_bash.sh --stackName <value> --licenseType Hourly --sshKey <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --imageName Good200Mbps --Vpc <value> --instanceType t2.medium
 
-# Assign Script Paramters and Define Variables
+# Assign Script Parameters and Define Variables
 # Specify static items, change these as needed or make them parameters
 region="us-west-2"
 restrictedSrcAddress="0.0.0.0/0"

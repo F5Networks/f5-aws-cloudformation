@@ -17,13 +17,8 @@ This solution implements auto scaling of BIG-IP Virtual Edition (VE) Web Applica
 
 ## Prerequisites and notes
 The following are prerequisites for this solution:
-<<<<<<< HEAD
- - The appropriate permission in AWS to launch CloudFormation (CFT) templates. This template creates Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles, so the account you are using must have permission to create these objects.
- - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size.
-=======
  - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdminstratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.  For details on permissions and all AWS configuration, see https://aws.amazon.com/documentation/.
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
->>>>>>> joes
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
    - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
  - Access to **Best** BIG-IP images in the Amazon region within which you are working.
@@ -32,10 +27,10 @@ The following are prerequisites for this solution:
 
  
  
-## Quick Start for launching the template
-This Readme file describes launching from the AWS Marketplace.
+### Installation
+Download the CloudFormation template from this repository (https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/solutions/autoscale/waf/f5-autoscale-bigip.template) and use it to create a stack in AWS CloudFormation either using the AWS Console or AWS CLI.<br> 
+Note that you **cannot** right-click the link and use "Save as".  You must click **Raw** and save the code with the file name **f5-autoscale-bigip.template**.
 
-<<<<<<< HEAD
 
 **AWS Console**
 
@@ -46,15 +41,8 @@ This Readme file describes launching from the AWS Marketplace.
    4. Click **Choose File** and then browse to the **autoscale-bigip.template** file.
  
  <br>
-<<<<<<< HEAD
 
  
-=======
-<<<<<<< HEAD
- 
-=======
->>>>>>> master
->>>>>>> 023a03d71f19b02cd5d8245eea508b8a495bdeac
  **AWS CLI**
  
  From the AWS CLI, use the following command syntax:
@@ -62,57 +50,15 @@ This Readme file describes launching from the AWS Marketplace.
  aws cloudformation create-stack --stack-name Acme-autoscale-bigip --template-body file:///fullfilepath/autoscale-bigip.template --parameters file:///fullfilepath/autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM`
 ```
 <br>
-=======
-From the Marketplace: 
-- From the **For Region** list, select your Region. 
-- From the **Delivery Methods** list, select **Auto Scale via CFT**
-- Click **Continue**
-- Select either the **Hourly** or **Yearly** Subscription Term.
-- Select the appropriate version.
-- Click **Launch the CloudFormation template**.
->>>>>>> f3aab64c75a84f4573f4461ddeab5f2ac30a3a81
 
 
 
 ### Template Parameters ###
-<<<<<<< HEAD
-One you have launched the CFT from the marketplace, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
-=======
 Once you have launched the CFT, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
->>>>>>> joes
 
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-<<<<<<< HEAD
-| deploymentName | x | Name the template uses to create BIG-IP and AWS object names |
-| vpc | x | AWS VPC where you want to deploy the BIG-IP VEs |
-| availabilityZones | x | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
-| subnets | x | Public or External Subnet for the Availability Zones |
-| bigipSecurityGroup | x | AWS Security Group for the BIG-IP VEs |
-| bigipElasticLoadBalancer | x | AWS Elastic Load Balancer group for the BIG-IP VEs |
-| sshKey | x | EC2 KeyPair to enable SSH access to the BIG-IP instance |
-| instanceType | x | AWS Instance Type (the default is m4.xlarge) |
-| throughput | x | For CFTs not launched from the AWS Marketplace: The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
-| adminUsername | x | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
-| managementGuiPort | x | Port of BIG-IP management Configuration utility (the default is 8443) |
-| timezone | x | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
-| ntpServer | x | NTP server for this implementation (Default 0.pool.ntp.org) |
-| scalingMinSize | x | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack](#update) |
-| scalingMaxSize | x | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scaling Group (the default is 3) |
-| scaleDownBytesThreshold | x | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
-| scaleUpBytesThreshold | x | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
-| notificationEmail |  | Valid email address to send Auto Scaling Event Notifications |
-| virtualServicePort | x | Port on BIG-IP (the default is 80) |
-| applicationPort | x | Application Pool Member Port on BIG-IP (the default is 80) |
-| appInternalDnsName | x | DNS name for the application pool |
-| [policyLevel](#security-blocking-levels-) | x | WAF Policy Level to protect the application (the default is high) |
-| application |  | Application Tag (the default is f5app) |
-| environment |  | Environment Name Tag (the default is f5env) |
-| group |  | Group Tag (the default is f5group) |
-| owner |  | Owner Tag (the default is f5owner) |
-| costcenter |  | Cost Center Tag (the default is f5costcenter) |
-=======
 | deploymentName | Yes | Name the template uses to create BIG-IP and AWS object names |
 | vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
 | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
@@ -140,18 +86,13 @@ Once you have launched the CFT, you need to complete the template by entering th
 | group | No | Group Tag (the default is f5group) |
 | owner | No | Owner Tag (the default is f5owner) |
 | costcenter | No | Cost Center Tag (the default is f5costcenter) |
->>>>>>> joes
 <br>
 
 
 <sup>1</sup> Note about the Scaling Up/Down Thresholds:
 
 The default template values are set artificially low for testing.<br>
-<<<<<<< HEAD
-The Marketplace templates defaults are set to 80% and 20% respectively.<br> 
-=======
 The templates defaults are set to 80% and 20% respectively.<br> 
->>>>>>> joes
 To adjust the thresholds,  set them according to the utility size (optional).<br> 
 For example, if you wanted use different percentages in the scaling threshold(s), modify the ***.80*** or ***.20*** in the following calculations to represent the percentage you want to use. Then take the result and use that as the appropriate threshold value in the CFT.
 
@@ -213,10 +154,7 @@ The CloudFormation template uses the default **Best** image available in the AWS
 
 #### Configuration Example <a name="config"></a>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> joes
 The following is a simple configuration diagram deployment. 
 
 ![Configuration example](images/config-diagram-autoscale-waf.png)

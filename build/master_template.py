@@ -1726,13 +1726,7 @@ def main():
                                 "--dns ${NAME_SERVER}",
                                 "--module ltm:nominal",
                                 ]
-            onboard_BIG_IP  +=      [                        
-                                        "--password-url file:///config/cloud/aws/.adminPassword",
-                                        "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-                                        "--tz UTC",
-                                        "--dns ${NAME_SERVER}",
-                                        "--module ltm:nominal",
-                                    ]
+
             ### Build Custom Script
             custom_sh = [
                             "#!/bin/bash\n",

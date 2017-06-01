@@ -328,46 +328,46 @@
   "Mappings": {
     "BigipRegionMap": {
       "ap-northeast-1": {
-        "Best25Mbps": "ami-ee497689"
+        "Best25Mbps": "ami-d6ebecb1"
       }, 
       "ap-northeast-2": {
-        "Best25Mbps": "ami-f200dd9c"
+        "Best25Mbps": "ami-00de026e"
       }, 
       "ap-south-1": {
-        "Best25Mbps": "ami-324d305d"
+        "Best25Mbps": "ami-4269152d"
       }, 
       "ap-southeast-1": {
-        "Best25Mbps": "ami-ca60e4a9"
+        "Best25Mbps": "ami-6987060a"
       }, 
       "ap-southeast-2": {
-        "Best25Mbps": "ami-27a4ae44"
+        "Best25Mbps": "ami-27bfab44"
       }, 
       "ca-central-1": {
-        "Best25Mbps": "ami-6b76ca0f"
+        "Best25Mbps": "ami-723d8116"
       }, 
       "eu-central-1": {
-        "Best25Mbps": "ami-46fb2229"
+        "Best25Mbps": "ami-47548f28"
       }, 
       "eu-west-1": {
-        "Best25Mbps": "ami-347c7452"
+        "Best25Mbps": "ami-d00c1ab6"
       },
       "eu-west-2": {
-        "Best25Mbps": "ami-c37463a7"
+        "Best25Mbps": "ami-71d3c415"
       }, 
       "sa-east-1": {
-        "Best25Mbps": "ami-9e89e6f2"
+        "Best25Mbps": "ami-9e1178f2"
       }, 
       "us-east-1": {
-        "Best25Mbps": "ami-51fb8647"
+        "Best25Mbps": "ami-87bef091"
       }, 
       "us-east-2": {
-        "Best25Mbps": "ami-c6def9a3"
+        "Best25Mbps": "ami-9c5274f9"
       }, 
       "us-west-1": {
-        "Best25Mbps": "ami-f5567795"
+        "Best25Mbps": "ami-288eae48"
       }, 
       "us-west-2": {
-        "Best25Mbps": "ami-59234439"
+        "Best25Mbps": "ami-8b781aeb"
       }
     }
   },

@@ -148,21 +148,27 @@ class BigIpImageFinder(object):
                         if image['throughput'] == "200mbps":
                             package_dict['Good200Mbps'] = image['id']
                         if image['throughput'] == "1gbps":
-                            package_dict['Good1000Mbps'] = image['id']    
+                            package_dict['Good1000Mbps'] = image['id']
+                        if image['throughput'] == "5gbps":
+                            package_dict['Good5000Mbps'] = image['id']                             
                     elif image['package'] == "better":
                         if image['throughput'] == "25mbps":
                             package_dict['Better25Mbps'] = image['id']
                         if image['throughput'] == "200mbps":
                             package_dict['Better200Mbps'] = image['id']
                         if image['throughput'] == "1gbps":
-                            package_dict['Better1000Mbps'] = image['id']  
+                            package_dict['Better1000Mbps'] = image['id']
+                        if image['throughput'] == "5gbps":
+                            package_dict['Better5000Mbps'] = image['id']                             
                     elif image['package'] == "best":
                         if image['throughput'] == "25mbps":
                             package_dict['Best25Mbps'] = image['id']
                         if image['throughput'] == "200mbps":
                             package_dict['Best200Mbps'] = image['id']
                         if image['throughput'] == "1gbps":
-                            package_dict['Best1000Mbps'] = image['id']  
+                            package_dict['Best1000Mbps'] = image['id']
+                        if image['throughput'] == "5gbps":
+                            package_dict['Best5000Mbps'] = image['id']                            
 
             BigipRegionMap[region] = package_dict
 

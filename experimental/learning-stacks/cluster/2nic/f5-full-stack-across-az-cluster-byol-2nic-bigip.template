@@ -1029,11 +1029,6 @@
            },
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
-           "--password-url file:///config/cloud/aws/.adminPassword",
-           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-           "--tz UTC",
-           "--dns ${NAME_SERVER}",
-           "--module ltm:nominal",
            "--license ",
            {
             "Ref": "licenseKey1"
@@ -1732,11 +1727,6 @@
            {
             "Ref": "timezone"
            },
-           "--dns ${NAME_SERVER}",
-           "--module ltm:nominal",
-           "--password-url file:///config/cloud/aws/.adminPassword",
-           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-           "--tz UTC",
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
            "--license ",

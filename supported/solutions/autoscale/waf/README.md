@@ -47,8 +47,51 @@ Note that you **cannot** right-click the link and use "Save as".  You must click
  
  From the AWS CLI, use the following command syntax:
  ```
- aws cloudformation create-stack --stack-name Acme-autoscale-bigip --template-body file:///fullfilepath/autoscale-bigip.template --parameters file:///fullfilepath/autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM`
+ aws cloudformation create-stack --stack-name Acme-autoscale-bigip --template-body file:///fullfilepath/f5-autoscale-bigip.template --parameters file:///fullfilepath/f5-autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM`
 ```
+
+If you are using the CLI, you must create a JSON-formatted parameter file in same directory. The following example shows the minimum contents of the f5-autoscale-bigip-parameters.json file, using default values for unlisted parameters.
+```json
+[
+                {
+                                "ParameterKey":"deploymentName",
+                                "ParameterValue":"Acme"
+                },
+                {
+                                "ParameterKey":"vpc",
+                                "ParameterValue":"vpc-1ffef478"
+                },
+                {
+                                "ParameterKey":"availabilityZones",
+                                "ParameterValue":"us-east-1a,us-east-1b"
+                },
+                {
+                                "ParameterKey":"subnets",
+                                "ParameterValue":"subnet-88d30fa5,subnet-2dc44b64"
+                },
+                {
+                                "ParameterKey":"bigipElasticLoadBalancer",
+                                "ParameterValue":"Acme-BigipElb"
+                },
+                {
+                                "ParameterKey":"sshKey",
+                                "ParameterValue":"awskeypair"
+                },
+                {
+                                "ParameterKey":"adminUsername",
+                                "ParameterValue":"mybigipAdmin"
+                },
+                {
+                                "ParameterKey":"notificationEmail",
+                                "ParameterValue":"user@company.com"
+                },
+                {
+                                "ParameterKey":"appInternalElbDnsName",
+                                "ParameterValue":"internal-Acme-AppElb-911355308.us-east-1.elb.amazonaws.com"
+                }
+]
+```
+
 <br>
 
 

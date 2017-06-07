@@ -5,7 +5,7 @@
 
  - [Introduction](#introduction) 
  - [Prerequisites](#prerequisites-and-notes)
- - [Quick Start](#quick-start-for-launching-the-template) 
+ - [Launching the template](#launching-the-template) 
  - [Getting Help](#help)
  - [Additional BIG-IP VE Deployment and Configuration Details](#additional-big-ip-ve-deployment-and-configuration-details)
  - [Security](#security)
@@ -25,14 +25,26 @@ The following are prerequisites for this solution:
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image. 
  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
 
+## Launching the template
+You have three options for launching this solution:
+  - Using the [Launch Stack buttons](#using-the-aws-launch-stack-button)
+  - Using the [AWS Console](#using-the-aws-console)
+  - Using the [AWS CLI](#using-the-aws-cli) 
  
+### Using the AWS Launch Stack button
+The easiest way to deploy one of the CloudFormation templates is to use the Launch Stack button.<br>
+**Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
+
+See [Template Parameters](#template-parameters) for guidance on the parameters presented by the template.
  
-### Installation
-Download the CloudFormation template from this repository (https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/solutions/autoscale/waf/f5-autoscale-bigip.template) and use it to create a stack in AWS CloudFormation either using the AWS Console or AWS CLI.<br> 
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-BIGIP-WAF-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-autoscale-bigip.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+
+### Using the AWS Console
+Download the CloudFormation template from this repository (https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/solutions/autoscale/waf/f5-autoscale-bigip.template) and use it to create a stack in AWS CloudFormation using the AWS Console.<br> 
 Note that you **cannot** right-click the link and use "Save as".  You must click **Raw** and save the code with the file name **f5-autoscale-bigip.template**.
 
 
-**AWS Console**
+AWS Console
 
  From the AWS Console main page: 
    1. Under AWS Services, click **CloudFormation**.
@@ -43,7 +55,7 @@ Note that you **cannot** right-click the link and use "Save as".  You must click
  <br>
 
  
- **AWS CLI**
+### Using the AWS CLI
  
  From the AWS CLI, use the following command syntax:
  ```
@@ -106,7 +118,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
 | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | subnets | Yes | Public or External Subnet for the Availability Zones |
-| restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the BIG-IP instances (the default is 0.0.0.0/0) |
+| restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
 | bigipElasticLoadBalancer | Yes | AWS Elastic Load Balancer group for the BIG-IP VEs |
 | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |

@@ -31,6 +31,7 @@
           "Parameters": [
             "sshKey",
             "instanceType",
+            "throughput",
             "adminUsername",
             "managementGuiPort",
             "timezone",
@@ -97,6 +98,9 @@
         },
         "instanceType": {
           "default": "AWS Instance Size"
+        },
+        "throughput": {
+          "default": "Maximum Throughput"
         },
         "adminUsername": {
           "default": "BIG-IP Admin User for clustering"
@@ -176,11 +180,10 @@
       "Type": "List<AWS::EC2::Subnet::Id>"
     },
     "restrictedSrcAddress" : {
-      "Description" : " The IP address range that can be used to SSH to the BIG-IP instances",
+      "Description" : " The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances",
       "Type": "String",
       "MinLength": "9",
       "MaxLength": "18",
-      "Default": "0.0.0.0/0",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
       "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
     },
@@ -209,6 +212,17 @@
         "c4.8xlarge"
       ],
       "ConstraintDescription": "Must be a valid BIG-IP BEST virtual EC2 instance type."
+    },
+    "throughput": {
+      "Description": "Maximum amount of throughput for BIG-IP VE",
+      "Type": "String",
+      "Default": "1000Mbps",
+      "AllowedValues": [
+        "25Mbps",
+        "200Mbps",
+        "1000Mbps"
+      ],
+      "ConstraintDescription": "Select the BIG-IP throughput you want to use"
     },
     "adminUsername": {
       "ConstraintDescription": "Verify your BIG-IP admin username. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). The user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa.",
@@ -262,7 +276,7 @@
       "Type": "Number"
     },
     "notificationEmail": {
-      "Description": "Valid email address to send Auto Scaling event notifications (optional)",
+      "Description": "Valid email address to send Auto Scaling event notifications",
       "ConstraintDescription": "Must be a valid email address.",
       "AllowedPattern": ".+@.+",
       "Type": "String"
@@ -328,46 +342,91 @@
   "Mappings": {
     "BigipRegionMap": {
       "ap-northeast-1": {
+        "Best1000Mbps": "ami-bc4778db", 
+        "Best200Mbps": "ami-37477850", 
         "Best25Mbps": "ami-ee497689"
       }, 
       "ap-northeast-2": {
+        "Best1000Mbps": "ami-3f03de51", 
+        "Best200Mbps": "ami-f500dd9b", 
         "Best25Mbps": "ami-f200dd9c"
       }, 
       "ap-south-1": {
+        "Best1000Mbps": "ami-154c317a", 
+        "Best200Mbps": "ami-bd4f32d2", 
         "Best25Mbps": "ami-324d305d"
       }, 
       "ap-southeast-1": {
+        "Best1000Mbps": "ami-3961e55a", 
+        "Best200Mbps": "ami-f367e390", 
         "Best25Mbps": "ami-ca60e4a9"
       }, 
       "ap-southeast-2": {
+        "Best1000Mbps": "ami-c5a4aea6", 
+        "Best200Mbps": "ami-2aa4ae49", 
         "Best25Mbps": "ami-27a4ae44"
       }, 
       "ca-central-1": {
+        "Best1000Mbps": "ami-ad77cbc9", 
+        "Best200Mbps": "ami-9675c9f2", 
         "Best25Mbps": "ami-6b76ca0f"
       }, 
       "eu-central-1": {
+        "Best1000Mbps": "ami-d6f821b9", 
+        "Best200Mbps": "ami-16fb2279", 
         "Best25Mbps": "ami-46fb2229"
       }, 
       "eu-west-1": {
+        "Best1000Mbps": "ami-b57f77d3", 
+        "Best200Mbps": "ami-cf7f77a9", 
         "Best25Mbps": "ami-347c7452"
       },
       "eu-west-2": {
+        "Best1000Mbps": "ami-e2736486", 
+        "Best200Mbps": "ami-65736401", 
         "Best25Mbps": "ami-c37463a7"
       }, 
       "sa-east-1": {
+        "Best1000Mbps": "ami-9d87e8f1", 
+        "Best200Mbps": "ami-1489e678", 
         "Best25Mbps": "ami-9e89e6f2"
       }, 
       "us-east-1": {
+        "Best1000Mbps": "ami-1afa870c", 
+        "Best200Mbps": "ami-9cf5888a", 
         "Best25Mbps": "ami-51fb8647"
       }, 
       "us-east-2": {
+        "Best1000Mbps": "ami-f8def99d", 
+        "Best200Mbps": "ami-c7def9a2", 
         "Best25Mbps": "ami-c6def9a3"
       }, 
       "us-west-1": {
+        "Best1000Mbps": "ami-c25574a2", 
+        "Best200Mbps": "ami-f4567794", 
         "Best25Mbps": "ami-f5567795"
       }, 
       "us-west-2": {
+        "Best1000Mbps": "ami-6f23440f", 
+        "Best200Mbps": "ami-d42146b4", 
         "Best25Mbps": "ami-59234439"
+      }
+    },
+    "AWSBigipThrougput": {
+      "25Mbps": {
+        "Good": "Good25Mbps",
+        "Better": "Better25Mbps",
+        "Best": "Best25Mbps"
+      },
+      "200Mbps": {
+        "Good": "Good200Mbps",
+        "Better": "Better200Mbps",
+        "Best": "Best200Mbps"
+      },
+      "1000Mbps": {
+        "Good": "Good1000Mbps",
+        "Better": "Better1000Mbps",
+        "Best": "Best1000Mbps"
       }
     }
   },
@@ -413,12 +472,6 @@
             "FromPort": "4353",
             "IpProtocol": "tcp",
             "ToPort": "4353"
-          },
-          {
-            "CidrIp": "10.0.0.0/16",
-            "FromPort": "6123",
-            "IpProtocol": "tcp",
-            "ToPort": "6128"
           }
         ],
         "Tags": [
@@ -467,6 +520,16 @@
             }
           }
         ]
+      }
+    },
+    "bigipSecurityGroupIngress": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": { "Ref": "bigipSecurityGroup" },
+        "IpProtocol": "tcp",
+        "FromPort": "6123",
+        "ToPort": "6128",
+        "SourceSecurityGroupId": { "Ref": "bigipSecurityGroup" }
       }
     },
     "S3Bucket": {
@@ -1009,7 +1072,15 @@
             {
               "Ref": "AWS::Region"
             },
-            "Best25Mbps"
+            {
+              "Fn::FindInMap": [
+                "AWSBigipThrougput",
+                {
+                  "Ref": "throughput"
+                },
+                  "Best"
+              ]
+            }
           ]
         },
         "InstanceMonitoring": false,

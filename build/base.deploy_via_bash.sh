@@ -16,6 +16,9 @@ while [[ $# -gt 1 ]]
 do
     case "$1" in
         <CASE_STATEMENTS>
+        --)
+			shift
+			break;;
     esac
 done
 

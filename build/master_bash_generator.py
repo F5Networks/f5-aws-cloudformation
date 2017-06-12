@@ -1,3 +1,5 @@
+# This class exists to automate the creation of bash deployment scripts (example: deploy_via_bash.sh for all supported templates)
+
 from optparse import OptionParser
 from collections import defaultdict
 import copy
@@ -9,14 +11,14 @@ def main():
     # set up step: read in base file.
     output_string = read_all_file_lines("base.deploy_via_bash.sh")
     # set up step: create all parameters that will be needed for a script to deploy the type of stack specified 
-    # in the command line arguments user ot run this generator
+    # in the command line arguments user to run this generator
     all_parameters = create_all_parameters(cli_argument_parser)
 
     # get strings for tag replacement in base.deploy_via_bash.sh
     example_parameters = create_example_command_parameters(all_parameters)
     example_command = create_example_command(example_parameters)
     required_parameters = create_required_parameters(example_parameters)
-    case_statements = create_case_stataments(all_parameters)
+    case_statements = create_case_statements(all_parameters)
     byol_license_key_prompt = create_license_key_prompt(cli_argument_parser)
     byol_template_url = create_template_url(cli_argument_parser, "byol")
     hourly_template_url = create_template_url(cli_argument_parser, "hourly")
@@ -122,16 +124,14 @@ def create_example_command(required_parameters):
 
     return command_builder
 
-def create_case_stataments(required_parameters):
+def create_case_statements(all_parameters):
     output = ""
     whitespace = "\n\t\t\t"
     boilerplate = "--<parameter_name>)" + whitespace + "<parameter_name>=$2" + whitespace + "shift 2;;\n"
     num_replacements = 2
-    for parameter in required_parameters:
+    for parameter in all_parameters:
         output += boilerplate.replace("<parameter_name>", parameter, num_replacements)
         output += "\t\t"
-
-    output += "--)" + whitespace + "shift" + whitespace + "break;;"
 
     return output
 

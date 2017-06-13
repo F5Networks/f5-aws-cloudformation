@@ -85,7 +85,7 @@ After clicking the Launch button, you must specify the following parameters.
 | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | Yes | Public or External subnet ID |
 | Vpc | Yes | Common VPC for the deployment |
-| ntpServer | Yes | NTP server you want to use for this implementation | 
+| ntpServer | Yes | NTP server you want to use for this implementation. The default is 0.pool.ntp.org. | 
 | timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
 | application | No | Application Tag (the default is f5app) |
 | environment | No | Environment Name Tag (the default is f5env) |
@@ -123,7 +123,11 @@ After clicking the Launch button, you must specify the following parameters.
 | subnet1Az1 | Yes | Public or External subnet ID |
 | subnet1Az2 | Yes | Public or External subnet ID |
 | Vpc | Yes | Common VPC for the deployment |
+<<<<<<< HEAD
 | ntpServer | Yes | NTP server you want to use for this implementation | 
+=======
+| ntpServer | Yes | NTP server you want to use for this implementation. The default is 0.pool.ntp.org. | 
+>>>>>>> joesbranch
 | timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
 | application | No | Application Tag (the default is f5app) |
 | environment | No | Environment Name Tag (the default is f5env) |

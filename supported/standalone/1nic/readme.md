@@ -75,14 +75,22 @@ After clicking the Launch button, you must specify the following parameters.
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-| bigipExternalSecurityGroup | x | Public or External Security Group ID |
-| imageName | x | F5 BIG-IP Performance Type |
-| instanceType | x | BIG-IP virtual instance type |
-| managementGuiPort | x | Port to use for the management port GUI |
-| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
-| subnet1Az1 | x | Public or External subnet ID |
-| Vpc | x | Common VPC for the deployment |
+| bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
+| imageName | Yes | F5 BIG-IP Performance Type |
+| instanceType | Yes | BIG-IP virtual instance type |
+| managementGuiPort | Yes | Port to use for the management port GUI |
+| restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
+| subnet1Az1 | Yes | Public or External subnet ID |
+| Vpc | Yes | Common VPC for the deployment |
+| ntpServer | Yes | NTP server you want to use for this implementation | 
+| timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
+| application | No | Application Tag (the default is f5app) |
+| environment | No | Environment Name Tag (the default is f5env) |
+| group | No | Group Tag (the default is f5group) |
+| owner | No | Owner Tag (the default is f5owner) |
+| costcenter | No | Cost Center Tag (the default is f5costcenter) |
+
 
 <br>
 

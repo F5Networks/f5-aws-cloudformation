@@ -123,6 +123,13 @@ After clicking the Launch button, you must specify the following parameters.
 | subnet1Az1 | Yes | Public or External subnet ID |
 | subnet1Az2 | Yes | Public or External subnet ID |
 | Vpc | Yes | Common VPC for the deployment |
+| ntpServer | Yes | NTP server you want to use for this implementation | 
+| timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
+| application | No | Application Tag (the default is f5app) |
+| environment | No | Environment Name Tag (the default is f5env) |
+| group | No | Group Tag (the default is f5group) |
+| owner | No | Owner Tag (the default is f5owner) |
+| costcenter | No | Cost Center Tag (the default is f5costcenter) |
 
 ### Installing the template using the AWS CLI (aws-cli/1.11.76)
 If you want to deploy the template using the AWS CLI, use the following example script, replacing the static items (or make them parameters).  Use the following command syntax:

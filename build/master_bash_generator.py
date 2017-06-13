@@ -203,4 +203,5 @@ def remove_parameter(parameter, dictionary):
     if(parameter in dictionary):
         dictionary.pop(parameter)
 
-main()
+if __name__ == "__main__":
+    main()

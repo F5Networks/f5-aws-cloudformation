@@ -16,7 +16,6 @@ class arguments(object):
 
 class test_bash_generator(unittest.TestCase):
     
-
     # -----EXAMPLE COMMAND TESTS-----    
     def test_1nic_standalone_example_command(self):
         args = arguments()

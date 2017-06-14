@@ -960,8 +960,8 @@
            "    fi\n",
            "done\n",
            "date\n",
-           "### START CUSTOM TMSH CONFIGURTION\n",
-           "### END CUSTOM TMSH CONFIGURATION"
+           "### START CUSTOM CONFIGURTION\n",
+           "### END CUSTOM CONFIGURATION"
           ]
          ]
         },

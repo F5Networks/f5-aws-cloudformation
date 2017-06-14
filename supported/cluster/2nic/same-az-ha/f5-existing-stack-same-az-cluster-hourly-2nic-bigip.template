@@ -904,8 +904,8 @@
            "    fi\n",
            "done\n",
            "date\n",
-           "### START CUSTOM TMSH CONFIGURTION\n",
-           "### END CUSTOM TMSH CONFIGURATION"
+           "### START CUSTOM CONFIGURTION\n",
+           "### END CUSTOM CONFIGURATION"
           ]
          ]
         },
@@ -1556,6 +1556,7 @@
            "\"tmsh create net route default gw ${GATEWAY}\"\n",
            "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
            "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
+           "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
            "\"tmsh save /sys config\")\n",
            "for CMD in \"${tmsh[@]}\"\n",
            "do\n",
@@ -1566,8 +1567,8 @@
            "    fi\n",
            "done\n",
            "date\n",
-           "### START CUSTOM TMSH CONFIGURTION\n",
-           "### END CUSTOM TMSH CONFIGURATION"
+           "### START CUSTOM CONFIGURTION\n",
+           "### END CUSTOM CONFIGURATION"
           ]
          ]
         },

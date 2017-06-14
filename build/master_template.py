@@ -1992,7 +1992,6 @@ def main():
                                     "\"tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha." + str(iApp_version) + " tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\"\n",
                                     "\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\"\n",
                                     ]
-                custom_sh +=        ["\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",]                    
             # If ASM, Need to use overwite Config (SOL16509 / BZID: 487538 )
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 if 'waf' in components:
@@ -2004,7 +2003,8 @@ def main():
                 custom_sh += [
                                "tmsh+=(\n",
                                ]
-            custom_sh += [                                
+            custom_sh += [
+                                "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
                                 "\"tmsh save /sys config\")\n",
                                 "for CMD in \"${tmsh[@]}\"\n",
                                 "do\n",
@@ -2015,8 +2015,8 @@ def main():
                                 "    fi\n",
                                 "done\n",    
                                 "date\n",
-                                "### START CUSTOM TMSH CONFIGURTION\n",
-                                "### END CUSTOM TMSH CONFIGURATION"
+                                "### START CUSTOM CONFIGURTION\n",
+                                "### END CUSTOM CONFIGURATION"
                          ]
             metadata = Metadata(
                     Init({

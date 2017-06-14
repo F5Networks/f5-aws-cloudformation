@@ -633,8 +633,8 @@
            "declare -a tmsh=()\n",
            "date\n",
            "echo 'starting custom-config.sh'\n",
-           "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
            "tmsh+=(\n",
+           "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
            "\"tmsh save /sys config\")\n",
            "for CMD in \"${tmsh[@]}\"\n",
            "do\n",
@@ -645,8 +645,8 @@
            "    fi\n",
            "done\n",
            "date\n",
-           "### START CUSTOM TMSH CONFIGURTION\n",
-           "### END CUSTOM TMSH CONFIGURATION"
+           "### START CUSTOM CONFIGURTION\n",
+           "### END CUSTOM CONFIGURATION"
           ]
          ]
         },

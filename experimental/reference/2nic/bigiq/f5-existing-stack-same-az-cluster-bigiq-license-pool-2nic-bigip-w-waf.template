@@ -810,9 +810,9 @@
            "\"tmsh create ltm policy app-ltm-policy strategy first-match legacy\"\n",
            "\"tmsh modify ltm policy app-ltm-policy controls add { asm }\"\n",
            "\"tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\"\n",
-           "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
            "\"tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\"\n",
            "\"tmsh run cm config-sync to-group datasync-global-dg\"\n",
+           "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
            "\"tmsh save /sys config\")\n",
            "for CMD in \"${tmsh[@]}\"\n",
            "do\n",
@@ -823,8 +823,8 @@
            "    fi\n",
            "done\n",
            "date\n",
-           "### START CUSTOM TMSH CONFIGURTION\n",
-           "### END CUSTOM TMSH CONFIGURATION"
+           "### START CUSTOM CONFIGURTION\n",
+           "### END CUSTOM CONFIGURATION"
           ]
          ]
         },
@@ -1492,6 +1492,7 @@
            "\"tmsh create net route default gw ${GATEWAY}\"\n",
            "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
            "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
+           "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
            "\"tmsh save /sys config\")\n",
            "for CMD in \"${tmsh[@]}\"\n",
            "do\n",
@@ -1502,8 +1503,8 @@
            "    fi\n",
            "done\n",
            "date\n",
-           "### START CUSTOM TMSH CONFIGURTION\n",
-           "### END CUSTOM TMSH CONFIGURATION"
+           "### START CUSTOM CONFIGURTION\n",
+           "### END CUSTOM CONFIGURATION"
           ]
          ]
         },

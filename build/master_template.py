@@ -11,6 +11,8 @@ import troposphere.iam as iam
 from awacs.aws import Statement, Principal, Allow
 from awacs.sts import AssumeRole
 from troposphere.ec2 import *
+import troposphere.ec2 as ec2
+import troposphere.autoscaling as autoscaling
 
 def usage():
     print "OPTIONS:"
@@ -119,23 +121,24 @@ def main():
         security_groups = False
         webserver = False
         bigip = True
-
     # Build variables used for QA
     ### Template Version
     version = "2.4.0"
     ### Cloudlib Branch
-    branch_cloud = "v3.0.2"
-    branch_aws = "v1.2.0"
+    branch_cloud = "release-3.1.0"
+    branch_aws = "release-1.3.0"
+    branch_cloud_iapps = "release-1.0.0"
     ### Cloudlib and iApp URL
     iApp_version = "v1.4.0rc1"
     iapp_branch = "v2.2.0"
     iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl" 
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
-    cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"    
+    cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"
+    discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"   
     ### Verify Hash
-    CLOUD_HASH = "862f7c19396088ab012fda7c2b262621c17f134b1d39d7a4d0b765eaf92f3ddc7354716a4f546fabb866df9876e1baed5799ae4a2c9d0ea6f01f79a38b9d3b3e"
-    CLOUD_AWS_HASH = "2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72"
-    CLOUD_AZURE_HASH = "9d4dc6779a5d25253832598d42681defa54c5f4521a70ba8e053179c262cdf0d5c8d6a3d458ea21da1d95212792b099bf2721ddbe175eed035cd1e00647124cf"
+    CLOUD_HASH = "6db9649698cb7af311defc89ccea1c0208d3b6cfc73b7bab5b52ab9d5074677ec9a1559a5e54e7325aa334a02d26d76528b5ead08e1654dcbf77c94192156468"
+    CLOUD_AWS_HASH = "e766afee400582d159b354db1864c28c44de3dba08a85055eaa2599009603059bc73c8d4e941c6beb44aba1c2bc390462e6ec696aacf74964a08db966e612816"
+    CLOUD_AZURE_HASH = "80fbf43a29924e3f10dd1187fd6795083363eb9d65214c24f76c33e0465f82435bb84a131f9cd5b647677c9e4353f446d75566da811110cd587ede2d68206604"
     ASM_POLICY_LINUX = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
     HTTP_IAPP_RC4 = "47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034"
     HTTP_IAPP_RC6 = "811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe"
@@ -148,7 +151,7 @@ def main():
   
     SCRIPT_SIGNATURE ="VwqAYsu1/TM/B7OPgCB2SXyiQ5s0MJH6qqzrypWaoZcRtXc9w9jNz8YwmqQyFn7TWTqCCLxmnMT4bmLzqNIYWesegv7w5KcBMwA8C0NTOebjHLkqKPzr2P68NiVzPN1/gxp3Y2i2e9zpnvy8PXcWRK3PkauO8lVSE7TJ07/uydvjg9t3GEjN449TUIZ+fx0NhqxS9VD6HDqv66FKgVcAeiomqrB2YQeawE4oShnbV2ULBP9IN8X/Rp9cb2gw1IPYZcLneP/rtgkMHOPmnzPV4u+tEowPzIjAo9mTV2J7e4z50peN3vdD7ThO1aPdcd5dfxbRqWZtlyV/pDPPHVVEdg=="
     ### add hashmark to skip verification.
-    comment_out = ""
+    comment_out = "#"
     # Begin Template
     t = Template()
     t.add_version("2010-09-09")
@@ -1139,8 +1142,52 @@ def main():
             ],
         ))
     if bigip == True:
+        if ha_type == "standalone":
+            bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(
+                "bigipServiceDiscoveryAccessRole",
+                Path="/",
+                AssumeRolePolicyDocument=Policy(
+                    Version="2012-10-17",
+                    Statement=[
+                        Statement(
+                            Effect=Allow,
+                            Action=[AssumeRole],
+                            Principal=Principal("Service", ["ec2.amazonaws.com"]),
+                        )
+                    ]
+                ),
+                Policies=[
+                    iam.Policy(
+                        PolicyName="BigipServiceDiscoveryPolicy",
+                        PolicyDocument={
+                            "Version": "2012-10-17",
+                            "Statement": [{
+                                "Action": [
+                                    "ec2:DescribeInstances",
+                                    "ec2:DescribeInstanceStatus",
+                                    "ec2:DescribeAddresses",
+                                    "ec2:AssociateAddress",
+                                    "ec2:DisassociateAddress",
+                                    "ec2:DescribeNetworkInterfaces",
+                                    "ec2:DescribeNetworkInterfaceAttributes",
+                                    "ec2:DescribeRouteTables",
+                                    "ec2:ReplaceRoute",
+                                    "ec2:assignprivateipaddresses"
+                                ],
+                                "Resource": [ "*" ],
+                                "Effect": "Allow"
+                            }],
+                        }
+                    ),
+                ],
+            ))
+            bigipServiceDiscoveryProfile = t.add_resource(iam.InstanceProfile(
+                "bigipServiceDiscoveryProfile",
+                Path="/",
+                Roles=[Ref(bigipServiceDiscoveryAccessRole)]
+            ))
         if ha_type != "standalone":
-            s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,))            
+            s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,))
             bigipClusterAccessRole = t.add_resource(iam.Role(
                 "bigipClusterAccessRole",
                 Path="/",
@@ -1156,7 +1203,7 @@ def main():
                 ),
                 Policies=[
                     iam.Policy(
-                        PolicyName="BigipClusterAcccessPolicy",                        
+                        PolicyName="BigipClusterAcccessPolicy",
                         PolicyDocument={
                             "Version": "2012-10-17",
                             "Statement": [{
@@ -1194,7 +1241,7 @@ def main():
                 Path="/",
                 Roles=[Ref(bigipClusterAccessRole)]
             ))
-        for BIGIP_INDEX in range(num_bigips): 
+        for BIGIP_INDEX in range(num_bigips):
             licenseKey = "licenseKey" + str(BIGIP_INDEX + 1)
             BigipInstance = "Bigip" + str(BIGIP_INDEX + 1) + "Instance"
             if num_azs > 1:
@@ -1484,11 +1531,11 @@ def main():
                       "echo expanding f5-cloud-libs.tar.gz",
                       "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
                             ]
-            if ha_type != "standalone":
-                cloudlibs_sh +=  [ 
-                                    "echo installing dependencies",
-                                    "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/f5-cloud-libs/node_modules",
-                                    "echo cloud libs install complete",
+
+            cloudlibs_sh +=  [ 
+                                "echo installing dependencies",
+                                "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/f5-cloud-libs/node_modules",
+                                "echo cloud libs install complete",
                                  ]
             cloudlibs_sh +=  [            
                                 "touch /config/cloud/cloudLibsReady"
@@ -1956,7 +2003,8 @@ def main():
                 custom_sh += [
                                "tmsh+=(\n",
                                ]
-            custom_sh += [                                
+            custom_sh += [
+                                "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
                                 "\"tmsh save /sys config\")\n",
                                 "for CMD in \"${tmsh[@]}\"\n",
                                 "do\n",
@@ -1967,8 +2015,8 @@ def main():
                                 "    fi\n",
                                 "done\n",    
                                 "date\n",
-                                "### START CUSTOM TMSH CONFIGURTION\n",
-                                "### END CUSTOM TMSH CONFIGURATION"
+                                "### START CUSTOM CONFIGURTION\n",
+                                "### END CUSTOM CONFIGURATION"
                          ]
             metadata = Metadata(
                     Init({
@@ -2025,6 +2073,12 @@ def main():
                                     ),                                         
                                     '/config/cloud/aws/rm-password.sh': InitFile(
                                         content=Join('', rm_password_sh ),
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),
+                                    '/config/cloud/aws/f5.service_discovery.tmpl': InitFile(
+                                        source=discovery_url,
                                         mode='000755',
                                         owner='root',
                                         group='root'
@@ -2140,6 +2194,19 @@ def main():
                         Costcenter=Ref(costcenter),
                     ),
                     ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
+                    BlockDeviceMappings=[
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvda",
+                            Ebs=ec2.EBSBlockDevice(
+                                DeleteOnTermination="True",
+                                VolumeType="gp2"
+                            )
+                        ),
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvdb",
+                            NoDevice={}
+                        )
+                    ],
                     IamInstanceProfile=Ref(bigipClusterInstanceProfile),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
@@ -2160,6 +2227,19 @@ def main():
                         Costcenter=Ref(costcenter),
                     ),
                     ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
+                    BlockDeviceMappings=[
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvda",
+                            Ebs=ec2.EBSBlockDevice(
+                                DeleteOnTermination="True",
+                                VolumeType="gp2"
+                            )
+                        ),
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvdb",
+                            NoDevice={}
+                        )
+                    ],
                     IamInstanceProfile=Ref(bigipClusterInstanceProfile),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
@@ -2179,6 +2259,20 @@ def main():
                         Costcenter=Ref(costcenter),
                     ),
                     ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
+                    BlockDeviceMappings=[
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvda",
+                            Ebs=ec2.EBSBlockDevice(
+                                DeleteOnTermination="True",
+                                VolumeType="gp2"
+                            )
+                        ),
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvdb",
+                            NoDevice={}
+                        )
+                    ],
+                    IamInstanceProfile=Ref(bigipServiceDiscoveryProfile),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces

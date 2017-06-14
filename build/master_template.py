@@ -121,24 +121,24 @@ def main():
         security_groups = False
         webserver = False
         bigip = True
-
     # Build variables used for QA
     ### Template Version
     version = "2.4.0"
     ### Cloudlib Branch
-    branch_cloud = "develop"
-    branch_aws = "provider"
+    branch_cloud = "release-3.1.0"
+    branch_aws = "release-1.3.0"
+    branch_cloud_iapps = "release-1.0.0"
     ### Cloudlib and iApp URL
     iApp_version = "v1.4.0rc1"
     iapp_branch = "v2.2.0"
     iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl" 
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"
-    discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/develop/f5-service-discovery/f5.service_discovery.tmpl"   
+    discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"   
     ### Verify Hash
-    CLOUD_HASH = "862f7c19396088ab012fda7c2b262621c17f134b1d39d7a4d0b765eaf92f3ddc7354716a4f546fabb866df9876e1baed5799ae4a2c9d0ea6f01f79a38b9d3b3e"
-    CLOUD_AWS_HASH = "2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72"
-    CLOUD_AZURE_HASH = "9d4dc6779a5d25253832598d42681defa54c5f4521a70ba8e053179c262cdf0d5c8d6a3d458ea21da1d95212792b099bf2721ddbe175eed035cd1e00647124cf"
+    CLOUD_HASH = "6db9649698cb7af311defc89ccea1c0208d3b6cfc73b7bab5b52ab9d5074677ec9a1559a5e54e7325aa334a02d26d76528b5ead08e1654dcbf77c94192156468"
+    CLOUD_AWS_HASH = "e766afee400582d159b354db1864c28c44de3dba08a85055eaa2599009603059bc73c8d4e941c6beb44aba1c2bc390462e6ec696aacf74964a08db966e612816"
+    CLOUD_AZURE_HASH = "80fbf43a29924e3f10dd1187fd6795083363eb9d65214c24f76c33e0465f82435bb84a131f9cd5b647677c9e4353f446d75566da811110cd587ede2d68206604"
     ASM_POLICY_LINUX = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
     HTTP_IAPP_RC4 = "47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034"
     HTTP_IAPP_RC6 = "811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe"

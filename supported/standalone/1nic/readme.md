@@ -110,11 +110,7 @@ After clicking the Launch button, you must specify the following parameters.
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-<<<<<<< HEAD
-| bigipExternalSecurityGroup | x | Public or External Security Group ID |
-=======
 | bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
->>>>>>> joesbranch
 | imageName | Yes | F5 BIG-IP Performance Type |
 | instanceType | Yes | BIG-IP virtual instance type |
 | licenseKey1 | Yes | Type or paste your F5 BYOL regkey here |
@@ -123,21 +119,14 @@ After clicking the Launch button, you must specify the following parameters.
 | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | Yes | Public or External subnet ID |
 | Vpc | Yes | Common VPC for the deployment |
-<<<<<<< HEAD
-| ntpServer | Yes | NTP server you want to use for this implementation | 
-=======
 | ntpServer | Yes | NTP server you want to use for this implementation. The default is 0.pool.ntp.org. | 
->>>>>>> joesbranch
 | timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
 | application | No | Application Tag (the default is f5app) |
 | environment | No | Environment Name Tag (the default is f5env) |
 | group | No | Group Tag (the default is f5group) |
 | owner | No | Owner Tag (the default is f5owner) |
 | costcenter | No | Cost Center Tag (the default is f5costcenter) |
-<<<<<<< HEAD
-=======
 
->>>>>>> joesbranch
 
 ---
 ### Installing the template using the AWS CLI (aws-cli/1.11.76)

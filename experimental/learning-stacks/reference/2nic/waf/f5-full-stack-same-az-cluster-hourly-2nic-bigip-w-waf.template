@@ -25,6 +25,7 @@
     "Better1000Mbps": "ami-ada27fc3",
     "Better200Mbps": "ami-b8a37ed6",
     "Better25Mbps": "ami-e5dc018b",
+    "Better5000Mbps": "ami-15de037b",
     "Good1000Mbps": "ami-2aa27f44",
     "Good200Mbps": "ami-aba27fc5",
     "Good25Mbps": "ami-c7df02a9",
@@ -38,6 +39,7 @@
     "Better1000Mbps": "ami-c4d8aaab",
     "Better200Mbps": "ami-bbdfadd4",
     "Better25Mbps": "ami-9ad9abf5",
+    "Better5000Mbps": "ami-00d4a66f",
     "Good1000Mbps": "ami-f2deac9d",
     "Good200Mbps": "ami-0fd4a660",
     "Good25Mbps": "ami-e1d8aa8e",
@@ -1187,6 +1189,7 @@
            "\"tmsh modify ltm policy app-ltm-policy controls add { asm }\"\n",
            "\"tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\"\n",
            "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\"\n",
+           "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
            "\"tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\"\n",
            "\"tmsh run cm config-sync to-group datasync-global-dg\"\n",
            "\"tmsh save /sys config\")\n",
@@ -1207,6 +1210,12 @@
         "group": "root",
         "mode": "000755",
         "owner": "root"
+       },
+       "/config/cloud/aws/f5.service_discovery.tmpl": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/develop/f5-service-discovery/f5.service_discovery.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
@@ -1261,13 +1270,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.2.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/provider/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.0.2/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/develop/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -1288,21 +1297,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "if ! tmsh load sys config merge file /config/verifyHash; then",
-           "    echo cannot validate signature of /config/verifyHash",
-           "    exit",
-           "fi",
-           "echo loaded verifyHash",
-           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
-           "for fileToVerify in \"${filesToVerify[@]}\"",
-           "do",
-           "    echo verifying \"$fileToVerify\"",
-           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "        echo \"$fileToVerify\" is not valid",
-           "        exit 1",
-           "    fi",
-           "    echo verified \"$fileToVerify\"",
-           "done",
+           "#if ! tmsh load sys config merge file /config/verifyHash; then",
+           "#    echo cannot validate signature of /config/verifyHash",
+           "#    exit",
+           "#fi",
+           "#echo loaded verifyHash",
+           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+           "#for fileToVerify in \"${filesToVerify[@]}\"",
+           "#do",
+           "#    echo verifying \"$fileToVerify\"",
+           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "#        echo \"$fileToVerify\" is not valid",
+           "#        exit 1",
+           "#    fi",
+           "#    echo verified \"$fileToVerify\"",
+           "#done",
            "mkdir -p /config/cloud/aws/node_modules",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -1395,6 +1404,19 @@
     }
    },
    "Properties": {
+    "BlockDeviceMappings": [
+     {
+      "DeviceName": "/dev/xvda",
+      "Ebs": {
+       "DeleteOnTermination": "true",
+       "VolumeType": "gp2"
+      }
+     },
+     {
+      "DeviceName": "/dev/xvdb",
+      "NoDevice": {}
+     }
+    ],
     "IamInstanceProfile": {
      "Ref": "bigipClusterInstanceProfile"
     },
@@ -1869,6 +1891,12 @@
         "mode": "000755",
         "owner": "root"
        },
+       "/config/cloud/aws/f5.service_discovery.tmpl": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/develop/f5-service-discovery/f5.service_discovery.tmpl"
+       },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
          "Fn::Join": [
@@ -1922,13 +1950,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.2.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/provider/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.0.2/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/develop/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -1949,21 +1977,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "if ! tmsh load sys config merge file /config/verifyHash; then",
-           "    echo cannot validate signature of /config/verifyHash",
-           "    exit",
-           "fi",
-           "echo loaded verifyHash",
-           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
-           "for fileToVerify in \"${filesToVerify[@]}\"",
-           "do",
-           "    echo verifying \"$fileToVerify\"",
-           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "        echo \"$fileToVerify\" is not valid",
-           "        exit 1",
-           "    fi",
-           "    echo verified \"$fileToVerify\"",
-           "done",
+           "#if ! tmsh load sys config merge file /config/verifyHash; then",
+           "#    echo cannot validate signature of /config/verifyHash",
+           "#    exit",
+           "#fi",
+           "#echo loaded verifyHash",
+           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
+           "#for fileToVerify in \"${filesToVerify[@]}\"",
+           "#do",
+           "#    echo verifying \"$fileToVerify\"",
+           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "#        echo \"$fileToVerify\" is not valid",
+           "#        exit 1",
+           "#    fi",
+           "#    echo verified \"$fileToVerify\"",
+           "#done",
            "mkdir -p /config/cloud/aws/node_modules",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -2056,6 +2084,19 @@
     }
    },
    "Properties": {
+    "BlockDeviceMappings": [
+     {
+      "DeviceName": "/dev/xvda",
+      "Ebs": {
+       "DeleteOnTermination": "true",
+       "VolumeType": "gp2"
+      }
+     },
+     {
+      "DeviceName": "/dev/xvdb",
+      "NoDevice": {}
+     }
+    ],
     "IamInstanceProfile": {
      "Ref": "bigipClusterInstanceProfile"
     },

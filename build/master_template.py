@@ -151,7 +151,7 @@ def main():
     SERVICE_DISCOVERY = "2dff554ae33128d939cf4b3349e3c1051970751c296d75bb25173c3245bae858648db26aa6b433ae208a29412508be0aff86bd0a663652d2243e5c506475fc42"
     SCRIPT_SIGNATURE ="QVu349Z9n5Uqf2+MMwnSRz6Sz0FHh+vd+QSUE02EuEE9qjAyEBjv4Xi4g4SD7iMxDTAPMZH68XGpA/A4lf4vchC+2MyifYdfUXJleL3ZUq/7HlaGG3B4jiffuffIX+72UUDDJzb6AawFtnnbKuhFnzeWJAcBtBqHvIQ69IxoQ4ceUCgugjc3tEYpJdJ56kN0EPxqUsfNYFXCOi4M1oq8LiveiwZU0KjITx5R235+4QOBRyk3wJQ+h8d7S4MA5M6vQVVu1xBy+9wEhZr3o99upavboaYF0rOLz3rjYDoyjuTvA2zfiKF0DWuyf2Xgj/8j7hJUaC9cN3UjJJnLYqmsqA=="
     ### add hashmark to skip verification.
-    comment_out = "#"
+    comment_out = ""
     # Begin Template
     t = Template()
     t.add_version("2010-09-09")

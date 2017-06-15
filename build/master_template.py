@@ -134,7 +134,7 @@ def main():
     iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl" 
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"
-    discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"   
+    discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"
     ### Verify Hash
     CLOUD_HASH = "6db9649698cb7af311defc89ccea1c0208d3b6cfc73b7bab5b52ab9d5074677ec9a1559a5e54e7325aa334a02d26d76528b5ead08e1654dcbf77c94192156468"
     CLOUD_AWS_HASH = "e766afee400582d159b354db1864c28c44de3dba08a85055eaa2599009603059bc73c8d4e941c6beb44aba1c2bc390462e6ec696aacf74964a08db966e612816"
@@ -148,8 +148,8 @@ def main():
     ASM_POLICY = "2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6"
     DEPLOY_WAF = "4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a"
     POLICY_CREATOR = "54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a"
-  
-    SCRIPT_SIGNATURE ="VwqAYsu1/TM/B7OPgCB2SXyiQ5s0MJH6qqzrypWaoZcRtXc9w9jNz8YwmqQyFn7TWTqCCLxmnMT4bmLzqNIYWesegv7w5KcBMwA8C0NTOebjHLkqKPzr2P68NiVzPN1/gxp3Y2i2e9zpnvy8PXcWRK3PkauO8lVSE7TJ07/uydvjg9t3GEjN449TUIZ+fx0NhqxS9VD6HDqv66FKgVcAeiomqrB2YQeawE4oShnbV2ULBP9IN8X/Rp9cb2gw1IPYZcLneP/rtgkMHOPmnzPV4u+tEowPzIjAo9mTV2J7e4z50peN3vdD7ThO1aPdcd5dfxbRqWZtlyV/pDPPHVVEdg=="
+    SERVICE_DISCOVERY = "2dff554ae33128d939cf4b3349e3c1051970751c296d75bb25173c3245bae858648db26aa6b433ae208a29412508be0aff86bd0a663652d2243e5c506475fc42"
+    SCRIPT_SIGNATURE ="QVu349Z9n5Uqf2+MMwnSRz6Sz0FHh+vd+QSUE02EuEE9qjAyEBjv4Xi4g4SD7iMxDTAPMZH68XGpA/A4lf4vchC+2MyifYdfUXJleL3ZUq/7HlaGG3B4jiffuffIX+72UUDDJzb6AawFtnnbKuhFnzeWJAcBtBqHvIQ69IxoQ4ceUCgugjc3tEYpJdJ56kN0EPxqUsfNYFXCOi4M1oq8LiveiwZU0KjITx5R235+4QOBRyk3wJQ+h8d7S4MA5M6vQVVu1xBy+9wEhZr3o99upavboaYF0rOLz3rjYDoyjuTvA2zfiKF0DWuyf2Xgj/8j7hJUaC9cN3UjJJnLYqmsqA=="
     ### add hashmark to skip verification.
     comment_out = "#"
     # Begin Template
@@ -1471,6 +1471,7 @@ def main():
                             "            set hashes(asm-policy.tar.gz) " + str(ASM_POLICY),
                             "            set hashes(deploy_waf.sh) " + str(DEPLOY_WAF),
                             "            set hashes(f5.policy_creator.tmpl) " + str(POLICY_CREATOR),
+                            "            set hashes(f5.service_discovery.tmpl) " + str(SERVICE_DISCOVERY),
                             "",
                             "            set file_path [lindex $tmsh::argv 1]",
                             "            set file_name [file tail $file_path]",
@@ -1517,7 +1518,7 @@ def main():
                       str(comment_out) + "    exit",
                       str(comment_out) + "fi",
                       str(comment_out) + "echo loaded verifyHash",
-                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\"" + str(iApp_verify) + ")",
+                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\"" + str(iApp_verify) + ")",
                       str(comment_out) + "for fileToVerify in \"${filesToVerify[@]}\"",
                       str(comment_out) + "do",
                       str(comment_out) + "    echo verifying \"$fileToVerify\"",

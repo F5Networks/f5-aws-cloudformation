@@ -276,7 +276,7 @@ fi
 Once you launch your BIG-IP instance using the CFT template, you can use the Service Discovery iApp template on the BIG-IP VE to automatically update pool members based on auto-scaled cloud application hosts.  In the iApp template, you enter information about your cloud environment, including the tag key and tag value for the pool members you want to include, and then the BIG-IP VE programmatically discovers (or removes) members using those tags.
 
 ### Tagging
-In Microsoft Azure, you have three options for tagging objects that the Service Discovery iApp uses. Note that you select public or private IP addresses within the iApp.
+In AWS, you have two options for tagging objects that the Service Discovery iApp uses. Note that you select public or private IP addresses within the iApp.
   - *Tag a VM resource*<br>
 The BIG-IP VE will discover the primary public or private IP addresses for the primary NIC configured for the tagged VM.
   - *Tag a NIC resource*<br>

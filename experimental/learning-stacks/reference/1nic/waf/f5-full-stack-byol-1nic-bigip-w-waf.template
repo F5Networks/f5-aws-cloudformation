@@ -1042,7 +1042,7 @@
            "            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6",
            "            set hashes(deploy_waf.sh) 4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a",
            "            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a",
-           "            set hashes(f5.service_discovery.tmpl) 645e347f7ad2e48fd548cbb4b8eb4a9931b603bcd0c559383f00f3408678ef013ede844603d0223055f8f1b5b208d709dbbb62b9ed4fc34fe93cc461f4ef9776",
+           "            set hashes(f5.service_discovery.tmpl) b7abc7230b1b421dd62549a82198ce0e28a094a9c88ba084265bf6c664633975d00c15d41a27c1a248ba7512eac07633f2d0e35851368e4bbdad146fb0ec82b1",
            "",
            "            set file_path [lindex $tmsh::argv 1]",
            "            set file_name [file tail $file_path]",
@@ -1064,7 +1064,7 @@
            "            exit 1",
            "        }",
            "    }",
-           "    script-signature PxE7trAdO2m+MFXXA2yDb9nLrZR6nzNuEu7OVYg55tUc2Em2Slhr9x0M3TMHzlEE4moM/6+Pmg5wUEQhir/byqX0RTTpuoxGeMaIKvpkrPfJaagi4yRCLFBAtyJFNgl1wtJVfQ6MXz6CxRg5UOR2rwpanWxHqaiM6a7sRHwd88ZzaHseS3YLkVXqzOdlM7Vvnf/UFQJBBi2K2voCMD38b6DR0TxUaiQM0XR4NYo0V6DcYtpfMWgjNUSJh5S52Z/cwtvc2n5BSBeCLY1cFinyhjU+/u020nEEmstMQ26K9eKByeR9FdvvsaK5XeUQ2vGEF44h25TZw03VuXmtzHe2vA==",
+           "    script-signature NxXN4US9gOzWQF68LUJI7LThBIbVOZtxSEJryhybFrfziOe60SytudaQnHp7ZLnSuoOtuTjGHjwRoexfv764foTs/twcDVdTibGFSbCuAi5cjDi4q+ajTeA7HTG9jQ5LDTLwBiZHIRQYWXlz8aOopGRPwGCD1i3KIJm4zFpK8isanx1JC+bJMMRbH69PvRDjl3MYxcAaLA71+xFFLZ3MHJ+NDJkr5jBj9Z1CZ+/MXxnJOzKU1z+XPHJg6xVKQvnG5xoEND9BSB2laXrHaVrJd9Q11Svn1mrHjvozzVmYobeb46vD+00xNjotmfWyStO/2SuwL3v2YlQGDi2myyLYYA==",
            "    signing-key /Common/f5-irule",
            "}",
            ""

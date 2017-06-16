@@ -1,4 +1,4 @@
-# Deploying the BIG-IP in AWS - 2 NIC
+# Deploying the BIG-IP in AWS - 3 NIC
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 
@@ -13,18 +13,18 @@
 
 ## Introduction
  
-This solution uses a CloudFormation Template to launch a 2-NIC deployment of a BIG-IP VE in an Amazon Virtual Private Cloud. In a 2-NIC implementation, one interface is for management and data-plane traffic from the Internet, and the second interface is connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.
+This solution uses a CloudFormation Template to launch a 3-NIC deployment of a BIG-IP VE in an Amazon Virtual Private Cloud. Traffic flows from the BIG-IP VE to the application servers. This is the standard "on-premise like" cloud design where the compute instance of F5 is running with a management, front-end application traffic (virtual server), and a back-end application interface.
 
 The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the **learning-stacks** folder in the *experimental* directory.
 
 See the **[Configuration Example](#configuration-example)** section for a configuration diagram and description for this solution.
 
 ## Prerequisites and notes
-The following are prerequisites for the F5 2-NIC CFT:
+The following are prerequisites for the F5 3-NIC CFT:
   - An AWS VPC with three subnets: 
-    - Management subnet (called Public in the AWS UI)
-    - External subnet (called Private in the AWS UI) 
-    - NAT instance and associated network interface for network translation.
+    - Management subnet
+    - External subnet
+    - Internal subnet
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   - An AWS Security Group with the following inbound rules:
     - Port 22 for SSH access to the BIG-IP VE
@@ -50,7 +50,7 @@ Because this template has been created and fully tested by F5 Networks, it is fu
  
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 
-## Deploying the F5 2 NIC solution
+## Deploying the F5 3 NIC solution
 You have two options for launching this solution:
   - Using the [Launch Stack buttons](#installing-the-image-using-the-aws-launch-stack-buttons)
   - Using the [AWS CLI](#installing-the-template-using-the-aws-cli-aws-cli11176) 
@@ -67,7 +67,7 @@ The easiest way to deploy one of the CloudFormation templates is to use the appr
 
 Use this button to deploy the **hourly** template: 
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-2nic-bigip.template">
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-3nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-3nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 <br>
@@ -79,6 +79,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Parameter | Required | Description |
 | --- | --- | --- |
 | bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
+| bigipInternalSecurityGroup | Yes | Private or Internal Security Group ID |
 | bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
 | imageName | Yes | F5 BIG-IP Performance Type |
 | instanceType | Yes | BIG-IP virtual instance size in AWS |
@@ -86,6 +87,7 @@ After clicking the Launch button, you must specify the following parameters.
 | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances |
 | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | Yes | Public or External subnet ID |
+| subnet2AZ1 | Yes | Public or External subnet ID |
 | Vpc | Yes | Common VPC for the deployment |
 | ntpServer | Yes | NTP server you want to use for this implementation. The default is 0.pool.ntp.org. | 
 | timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
@@ -102,7 +104,7 @@ After clicking the Launch button, you must specify the following parameters.
 
 Use this button to deploy the **BYOL** template: 
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BYOL&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-2nic-bigip.template">
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-3nic-BYOL&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-3nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 <br>
@@ -111,19 +113,16 @@ After clicking the Launch button, you must specify the following parameters.
 | Parameter | Required | Description |
 | --- | --- | --- |
 | bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
+| bigipInternalSecurityGroup | Yes | Private or Internal Security Group ID |
 | bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
 | iamAccessKey | Yes | Type the IAM Access Key |
-| iamSecretKey | Yes | Type the IAM Secret Key for BIG-IP |
-| imageName | Yes | F5 BIG-IP Performance Type |
 | instanceType | Yes | BIG-IP virtual instance type |
 | licenseKey1 | Yes | Type or paste your F5 BYOL regkey here |
-| licenseKey2 | Yes | Type or paste your second F5 BYOL regkey here |
 | managementSubnetAz1 | Yes | Management subnet ID |
-| managementSubnetAz2 | Yes | Management subnet ID |
 | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances |
 | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | Yes | Public or External subnet ID |
-| subnet1Az2 | Yes | Public or External subnet ID |
+| subnet2Az1 | Yes | Application or Internal subnet ID |
 | Vpc | Yes | Common VPC for the deployment |
 | ntpServer | Yes | NTP server you want to use for this implementation. The default is 0.pool.ntp.org. | 
 | timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
@@ -273,8 +272,8 @@ To launch the template:
 
 ## Configuration Example
 
-The following is a simple configuration diagram for this 2-NIC deployment. In this diagram, the IP addresses are provided as examples. This solution uses the BIG-IP v13.0 AMI image.<br>
-![2-NIC configuration example](images/aws-standalone-2nic.png)
+The following is a simple configuration diagram for this 3-NIC deployment. In this diagram, the IP addresses are provided as examples. This solution uses the BIG-IP v13.0 AMI image.<br>
+![2-NIC configuration example](images/aws-3-nic.png)
 
 ### Documentation
 The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also describes the configuration in more detail.

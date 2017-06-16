@@ -1,5 +1,5 @@
 #/usr/bin/python env
-
+import requests
 from optparse import OptionParser
 import json
 from troposphere import Base64, Select, FindInMap, GetAtt, GetAZs, Join, Output
@@ -122,12 +122,19 @@ def main():
         webserver = False
         bigip = True
     # Build variables used for QA
+
     ### Template Version
     version = "2.4.0"
     ### Cloudlib Branch
     branch_cloud = "release-3.1.0"
     branch_aws = "release-1.3.0"
     branch_cloud_iapps = "release-1.0.0"
+    ### Build verifyHash file from published verifyHash on github
+    githubvh = requests.get('https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/' + str(branch_cloud) + '/dist/verifyHash')
+    with open('c:/cloudformation/f5-aws-cloudformation/build/verifyHash', 'wb') as hash:
+        hash.write(githubvh.text)
+    with open('c:/cloudformation/f5-aws-cloudformation/build/verifyHash', 'r') as vhash:
+        lines = vhash.read()
     ### Cloudlib and iApp URL
     iApp_version = "v1.4.0rc1"
     iapp_branch = "v2.2.0"
@@ -1457,7 +1464,8 @@ def main():
                 iApp_verify = " \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\""
                 ha_iapp = "/config/cloud/aws/" + str(iapp_name)
                 ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/" + str(iapp_branch) + "/iApps/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
-            sig_check = [
+            sig_check = lines
+            sig2_check = [
                             "cli script /Common/verifyHash {",
                             "    proc script::run {} {",
                             "        if {[catch {",
@@ -2045,7 +2053,7 @@ def main():
                                         group='root'
                                     ),
                                     '/config/verifyHash': InitFile(
-                                        content=Join('\n', sig_check ),
+                                        content=lines,
                                         mode='000755',
                                         owner='root',
                                         group='root'

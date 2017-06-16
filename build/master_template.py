@@ -1175,7 +1175,10 @@ def main():
                                     "ec2:assignprivateipaddresses"
                                 ],
                                 "Resource": [ "*" ],
-                                "Effect": "Allow"
+                                "Effect": "Allow",
+                                "Action": ["sts:AssumeRole"],
+                                "Resource": ["*"],
+                                "Effect": "Allow",
                             }],
                         }
                     ),
@@ -1230,7 +1233,10 @@ def main():
                                     "ec2:assignprivateipaddresses"
                                 ],
                                 "Resource": [ "*" ],
-                                "Effect": "Allow"
+                                "Effect": "Allow",
+                                "Action": ["sts:AssumeRole"],
+                                "Resource": ["*"],
+                                "Effect": "Allow",
                             }],
                         }
                     ),

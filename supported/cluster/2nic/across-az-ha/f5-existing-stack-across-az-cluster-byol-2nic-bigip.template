@@ -1950,6 +1950,23 @@
         },
         {
          "Action": [
+          "ec2:DescribeInstances",
+          "ec2:DescribeInstanceStatus",
+          "ec2:DescribeAddresses",
+          "ec2:AssociateAddress",
+          "ec2:DisassociateAddress",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeNetworkInterfaceAttributes",
+          "ec2:DescribeRouteTables",
+          "ec2:ReplaceRoute",
+          "ec2:assignprivateipaddresses"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
           "sts:AssumeRole"
          ],
          "Effect": "Allow",

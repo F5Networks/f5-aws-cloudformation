@@ -1174,7 +1174,9 @@ def main():
                                     "ec2:ReplaceRoute",
                                     "ec2:assignprivateipaddresses"
                                 ],
-                                "Resource": [ "*" ],
+                                "Resource": [ "*" ]
+                            },
+                            {
                                 "Effect": "Allow",
                                 "Action": ["sts:AssumeRole"],
                                 "Resource": ["*"],
@@ -1232,7 +1234,9 @@ def main():
                                     "ec2:ReplaceRoute",
                                     "ec2:assignprivateipaddresses"
                                 ],
-                                "Resource": [ "*" ],
+                                "Resource": [ "*" ]
+                            },
+                            {
                                 "Effect": "Allow",
                                 "Action": ["sts:AssumeRole"],
                                 "Resource": ["*"],

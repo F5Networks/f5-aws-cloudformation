@@ -130,7 +130,7 @@ def main():
     branch_cloud = "release-3.1.0"
     branch_aws = "release-1.3.0"
     branch_cloud_iapps = "release-1.0.0"
-    ### Build verifyHash file from published verifyHash on github
+    ### Build verifyHash file from published verifyHash on gitswarm
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
     githubvh = requests.get('https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash', verify=False)
     with open('c:/cloudformation/f5-aws-cloudformation/build/verifyHash', 'wb') as hash:
@@ -144,21 +144,6 @@ def main():
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"
     discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"
-    ### Verify Hash
-    CLOUD_HASH = "6db9649698cb7af311defc89ccea1c0208d3b6cfc73b7bab5b52ab9d5074677ec9a1559a5e54e7325aa334a02d26d76528b5ead08e1654dcbf77c94192156468"
-    CLOUD_AWS_HASH = "6a2cb0d101c918d37aa552528a45f14615ab50fe8a024c2040cf686a4ec1ce316a75930d936de3dc341a1a5f9cec14e9979f0f9cb601f51dba528929de607e6e"
-    CLOUD_AZURE_HASH = "40343c3e60c92770f9d0fee01c7dbcc3d11ef8adf2f782bf7db3a3d532c9b42675c5f5842805dc17fa763c54e3e0bdf2a6dfb052006113e737e14e79aab9d026"
-    ASM_POLICY_LINUX = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
-    HTTP_IAPP_RC4 = "47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034"
-    HTTP_IAPP_RC6 = "811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe"
-    HTTP_IAPP_RC7 = "21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d"
-    ADVANCED_HA = "9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d"
-    ADVANCED_HA_1_4_0 = "de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396"
-    ASM_POLICY = "2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6"
-    DEPLOY_WAF = "4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a"
-    POLICY_CREATOR = "54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a"
-    SERVICE_DISCOVERY = "b7abc7230b1b421dd62549a82198ce0e28a094a9c88ba084265bf6c664633975d00c15d41a27c1a248ba7512eac07633f2d0e35851368e4bbdad146fb0ec82b1"
-    SCRIPT_SIGNATURE ="NxXN4US9gOzWQF68LUJI7LThBIbVOZtxSEJryhybFrfziOe60SytudaQnHp7ZLnSuoOtuTjGHjwRoexfv764foTs/twcDVdTibGFSbCuAi5cjDi4q+ajTeA7HTG9jQ5LDTLwBiZHIRQYWXlz8aOopGRPwGCD1i3KIJm4zFpK8isanx1JC+bJMMRbH69PvRDjl3MYxcAaLA71+xFFLZ3MHJ+NDJkr5jBj9Z1CZ+/MXxnJOzKU1z+XPHJg6xVKQvnG5xoEND9BSB2laXrHaVrJd9Q11Svn1mrHjvozzVmYobeb46vD+00xNjotmfWyStO/2SuwL3v2YlQGDi2myyLYYA=="
     ### add hashmark to skip verification.
     comment_out = ""
     # Begin Template
@@ -1466,50 +1451,6 @@ def main():
                 iApp_verify = " \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\""
                 ha_iapp = "/config/cloud/aws/" + str(iapp_name)
                 ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/" + str(iapp_branch) + "/iApps/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
-            sig_check = lines
-            sig2_check = [
-                            "cli script /Common/verifyHash {",
-                            "    proc script::run {} {",
-                            "        if {[catch {",
-                            "            set hashes(f5-cloud-libs.tar.gz) " + str(CLOUD_HASH),
-                            "            set hashes(f5-cloud-libs-aws.tar.gz) " + str(CLOUD_AWS_HASH),
-                            "            set hashes(f5-cloud-libs-azure.tar.gz) " + str(CLOUD_AZURE_HASH),
-                            "            set hashes(asm-policy-linux.tar.gz) " + str(ASM_POLICY_LINUX),
-                            "            set hashes(f5.http.v1.2.0rc4.tmpl) " + str(HTTP_IAPP_RC4),
-                            "            set hashes(f5.http.v1.2.0rc6.tmpl) " + str(HTTP_IAPP_RC6),
-                            "            set hashes(f5.http.v1.2.0rc7.tmpl) " + str(HTTP_IAPP_RC7),
-                            "            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) " + str(ADVANCED_HA),
-                            "            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) " + str(ADVANCED_HA_1_4_0),
-                            "            set hashes(asm-policy.tar.gz) " + str(ASM_POLICY),
-                            "            set hashes(deploy_waf.sh) " + str(DEPLOY_WAF),
-                            "            set hashes(f5.policy_creator.tmpl) " + str(POLICY_CREATOR),
-                            "            set hashes(f5.service_discovery.tmpl) " + str(SERVICE_DISCOVERY),
-                            "",
-                            "            set file_path [lindex $tmsh::argv 1]",
-                            "            set file_name [file tail $file_path]",
-                            "",
-                            "            if {![info exists hashes($file_name)]} {",
-                            "                tmsh::log err \"No hash found for $file_name\"",
-                            "                exit 1",
-                            "            }",
-                            "",
-                            "            set expected_hash $hashes($file_name)",
-                            "            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
-                            "            if { $expected_hash eq $computed_hash } {",
-                            "                exit 0",
-                            "            }",
-                            "            tmsh::log err \"Hash does not match for $file_path\"",
-                            "            exit 1",
-                            "        }]} {",
-                            "            tmsh::log err {Unexpected error in verifyHash}",
-                            "            exit 1",
-                            "        }",
-                            "    }",
-                            "    script-signature " + str(SCRIPT_SIGNATURE),
-                            "    signing-key /Common/f5-irule",
-                            "}",
-                            "",
-                        ]
             cloudlibs_sh =  [
                       "#!/bin/bash",
                       "echo about to execute",

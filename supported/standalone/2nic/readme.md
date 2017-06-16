@@ -112,18 +112,13 @@ After clicking the Launch button, you must specify the following parameters.
 | --- | --- | --- |
 | bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
 | bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
-| iamAccessKey | Yes | Type the IAM Access Key |
-| iamSecretKey | Yes | Type the IAM Secret Key for BIG-IP |
 | imageName | Yes | F5 BIG-IP Performance Type |
 | instanceType | Yes | BIG-IP virtual instance type |
 | licenseKey1 | Yes | Type or paste your F5 BYOL regkey here |
-| licenseKey2 | Yes | Type or paste your second F5 BYOL regkey here |
 | managementSubnetAz1 | Yes | Management subnet ID |
-| managementSubnetAz2 | Yes | Management subnet ID |
 | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances |
 | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | subnet1Az1 | Yes | Public or External subnet ID |
-| subnet1Az2 | Yes | Public or External subnet ID |
 | Vpc | Yes | Common VPC for the deployment |
 | ntpServer | Yes | NTP server you want to use for this implementation. The default is 0.pool.ntp.org. | 
 | timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |

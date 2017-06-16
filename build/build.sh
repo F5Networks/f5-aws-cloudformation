@@ -28,12 +28,11 @@ python master_template.py -s infra -a 2 -n 3 > ../experimental/reference/3nic/in
 ## Supported
 python master_template.py -s existing -n 1 -l hourly > ../supported/standalone/1nic/f5-existing-stack-hourly-1nic-bigip.template
 python master_template.py -s existing -n 2 -l hourly > ../supported/standalone/2nic/f5-existing-stack-hourly-2nic-bigip.template
+python master_template.py -s existing -n 3 -l hourly > ../supported/standalone/3nic/f5-existing-stack-hourly-3nic-bigip.template
 python master_template.py -s existing -n 1 -l byol > ../supported/standalone/1nic/f5-existing-stack-byol-1nic-bigip.template
 python master_template.py -s existing -n 2 -l byol > ../supported/standalone/2nic/f5-existing-stack-byol-2nic-bigip.template
-
+python master_template.py -s existing -n 3 -l byol > ../supported/standalone/3nic/f5-existing-stack-byol-3nic-bigip.template
 ## Experimental
-python master_template.py -s existing -n 3 -l hourly > ../experimental/standalone/3nic/f5-existing-stack-hourly-3nic-bigip.template
-python master_template.py -s existing -n 3 -l byol > ../experimental/standalone/3nic/f5-existing-stack-byol-3nic-bigip.template
 python master_template.py -s existing -n 1 -l bigiq > ../experimental/reference/1nic/bigiq/f5-existing-stack-bigiq-1nic-bigip.template
 python master_template.py -s existing -n 2 -l bigiq > ../experimental/reference/2nic/bigiq/f5-existing-stack-bigiq-2nic-bigip.template
 python master_template.py -s existing -n 3 -l bigiq > ../experimental/reference/3nic/bigiq/f5-existing-stack-bigiq-license-pool-3nic-bigip.template

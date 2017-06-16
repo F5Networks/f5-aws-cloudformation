@@ -3,11 +3,12 @@
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 
 **Contents**
- - [Introduction](#introduction) 
+ - [Introduction](#introduction)
  - [Prerequisites](#prerequisites-and-notes)
  - [Security](#security)
  - [Getting Help](#help)
- - [Deploying the solution](#deploying-the-f5-2-nic-solution) 
+ - [Deploying the solution](#deploying-the-f5-2-nic-solution)
+ - [Service Discovery](#service-discovery)
  - [Configuration Example](#configuration-example)
 
 ## Introduction
@@ -30,6 +31,7 @@ The following are prerequisites for the F5 2-NIC CFT:
     - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility
     - A port for accessing your applications via the BIG-IP virtual server
   - This solution uses the SSH key to enable access to the BIG-IP system. If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
+  - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. If you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Details](#security-details) for the exact code in each of the following sections.
@@ -246,6 +248,28 @@ else
     exit 1
 fi
 ```
+
+## Service Discovery
+Once you launch your BIG-IP instance using the CFT template, you can use the Service Discovery iApp template on the BIG-IP VE to automatically update pool members based on auto-scaled cloud application hosts.  In the iApp template, you enter information about your cloud environment, including the tag key and tag value for the pool members you want to include, and then the BIG-IP VE programmatically discovers (or removes) members using those tags.
+
+### Tagging
+In AWS, you have two options for tagging objects that the Service Discovery iApp uses. Note that you select public or private IP addresses within the iApp.
+  - *Tag a VM resource*<br>
+The BIG-IP VE will discover the primary public or private IP addresses for the primary NIC configured for the tagged VM.
+  - *Tag a NIC resource*<br>
+The BIG-IP VE will discover the primary public or private IP addresses for the tagged NIC.  Use this option if you want to use the secondary NIC of a VM in the pool.
+
+
+The iApp first looks for NIC resources with the tags you specify.  If it finds NICs with the proper tags, it does not look for VM resources. If it does not find NIC resources, it looks for VM resources with the proper tags. 
+
+**Important**: Make sure the tags and IP addresses you use are unique. You should not tag multiple AWS nodes with the same key/tag combination if those nodes use the same IP address.
+
+To launch the template:
+  1.	From the BIG-IP VE web-based Configuration utility, on the Main tab, click **iApps > Application Services > Create**.
+  2.	In the **Name** field, give the template a unique name.
+  3.	From the **Template** list, select **f5.service_discovery**.  The template opens.
+  4.	Complete the template with information from your environment.  For assistance, from the Do you want to see inline help? question, select Yes, show inline help.
+  5.	When you are done, click the **Finished** button.
 
 ## Configuration Example
 

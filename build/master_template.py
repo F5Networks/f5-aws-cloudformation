@@ -1162,6 +1162,7 @@ def main():
                         PolicyDocument={
                             "Version": "2012-10-17",
                             "Statement": [{
+                                "Effect": "Allow",
                                 "Action": [
                                     "ec2:DescribeInstances",
                                     "ec2:DescribeInstanceStatus",
@@ -1217,6 +1218,7 @@ def main():
                                 "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" }, "/*" ] ] }
                             },
                             {
+                                "Effect": "Allow",
                                 "Action": [
                                     "ec2:DescribeInstances",
                                     "ec2:DescribeInstanceStatus",

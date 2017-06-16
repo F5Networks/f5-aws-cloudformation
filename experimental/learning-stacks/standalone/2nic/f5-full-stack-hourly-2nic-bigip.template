@@ -2165,6 +2165,7 @@
           "ec2:assignprivateipaddresses",
           "sts:AssumeRole"
          ],
+         "Effect": "Allow",
          "Resource": [
           "*"
          ]

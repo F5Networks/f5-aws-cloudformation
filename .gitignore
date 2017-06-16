@@ -67,3 +67,4 @@ docs/_build/
 target/
 build/sbuild.sh
 checksum.sh
+build/verifyHash

@@ -1809,17 +1809,9 @@
           "ec2:DescribeNetworkInterfaceAttributes",
           "ec2:DescribeRouteTables",
           "ec2:ReplaceRoute",
-          "ec2:assignprivateipaddresses"
-         ],
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
+          "ec2:assignprivateipaddresses",
           "sts:AssumeRole"
          ],
-         "Effect": "Allow",
          "Resource": [
           "*"
          ]

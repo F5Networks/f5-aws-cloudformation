@@ -1172,15 +1172,10 @@ def main():
                                     "ec2:DescribeNetworkInterfaceAttributes",
                                     "ec2:DescribeRouteTables",
                                     "ec2:ReplaceRoute",
-                                    "ec2:assignprivateipaddresses"
+                                    "ec2:assignprivateipaddresses",
+                                    "sts:AssumeRole",
                                 ],
                                 "Resource": [ "*" ]
-                            },
-                            {
-                                "Effect": "Allow",
-                                "Action": ["sts:AssumeRole"],
-                                "Resource": ["*"],
-                                "Effect": "Allow",
                             }],
                         }
                     ),
@@ -1232,15 +1227,10 @@ def main():
                                     "ec2:DescribeNetworkInterfaceAttributes",
                                     "ec2:DescribeRouteTables",
                                     "ec2:ReplaceRoute",
-                                    "ec2:assignprivateipaddresses"
+                                    "ec2:assignprivateipaddresses",
+                                    "sts:AssumeRole",
                                 ],
                                 "Resource": [ "*" ]
-                            },
-                            {
-                                "Effect": "Allow",
-                                "Action": ["sts:AssumeRole"],
-                                "Resource": ["*"],
-                                "Effect": "Allow",
                             }],
                         }
                     ),

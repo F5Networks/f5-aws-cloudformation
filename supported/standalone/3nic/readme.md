@@ -1,4 +1,4 @@
-# Deploying the BIG-IP in AWS - 2 NIC
+# Deploying the BIG-IP in AWS - 3 NIC
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 
@@ -22,9 +22,9 @@ See the **[Configuration Example](#configuration-example)** section for a config
 ## Prerequisites and notes
 The following are prerequisites for the F5 3-NIC CFT:
   - An AWS VPC with three subnets: 
-    - Management subnet (called Public in the AWS UI)
-    - External subnet (called Private in the AWS UI) 
-    - NAT instance and associated network interface for network translation.
+    - Management subnet
+    - External subnet
+    - Internal subnet
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   - An AWS Security Group with the following inbound rules:
     - Port 22 for SSH access to the BIG-IP VE

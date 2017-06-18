@@ -96,14 +96,17 @@ def create_all_parameters(cli_argument_parser):
     parameters["licenseKey1"]
 
     # add differentiating parameters
-    if(cli_argument_parser.num_nics == 2):
+    if(cli_argument_parser.num_nics == 3):
+        parameters["bigipInternalSecurityGroup"]
+        parameters["subnet2Az1"]
+    if(cli_argument_parser.num_nics >=2):
         parameters["bigipManagementSecurityGroup"]
         parameters["licenseKey2"]
         parameters["managementSubnetAz1"]
-        if(cli_argument_parser.ha_type == "across-az"):
-            parameters["managementSubnetAz2"]
-            parameters["subnet1Az2"]
-        
+    if(cli_argument_parser.num_nics == 2 and cli_argument_parser.ha_type == "across-az"):
+        parameters["managementSubnetAz2"]
+        parameters["subnet1Az2"]
+            
     return parameters
 
 def create_example_command_parameters(all_parameters):

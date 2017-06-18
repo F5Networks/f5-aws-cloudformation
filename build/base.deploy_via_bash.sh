@@ -56,11 +56,11 @@ sleep 3
 # Deploy Template
 if [ $licenseType == "BYOL" ]
 then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters <DEPLOY_BYOL>ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --capabilities CAPABILITY_IAM --parameters <DEPLOY_BYOL>ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
 
 elif [ $licenseType == "Hourly" ]
 then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters <DEPLOY_HOURLY>ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --capabilities CAPABILITY_IAM --parameters <DEPLOY_HOURLY>ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
 else 
     echo "This failure may have been caused by an error in license type: Please ensure license type is either Hourly or BYOL'"
     exit 1

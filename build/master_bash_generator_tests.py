@@ -41,6 +41,18 @@ class test_bash_generator(unittest.TestCase):
 
         self.assertEqual(self.example_string, correct_command)
     
+    def test_3nic_standalone_example_command(self):
+        args = arguments()
+        setattr(args, 'num_nics', 3)
+        setattr(args, 'ha_type', 'standalone')
+        self.all_parameters = create_all_parameters(args)
+        self.example_parameters = create_example_command_parameters(self.all_parameters)
+        self.example_string = create_example_command(self.example_parameters)
+
+        correct_command = "./deploy_via_bash.sh --stackName <value> --licenseType Hourly --bigipManagementSecurityGroup <value> --sshKey <value> --subnet2Az1 <value> --managementSubnetAz1 <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --instanceType t2.medium --bigipInternalSecurityGroup <value> --Vpc <value> --imageName Good200Mbps"
+
+        self.assertEqual(self.example_string, correct_command)
+    
     def test_2nic_cluster_same_az_example_command(self):
         args = arguments()
         setattr(args, 'num_nics', 2)
@@ -74,7 +86,8 @@ class test_bash_generator(unittest.TestCase):
         self.case_statements = create_case_statements(self.all_parameters)
 
         correct_cases = (
-        """--licenseKey1)
+        """
+        --licenseKey1)
 			licenseKey1=$2
 			shift 2;;
 		--licenseType)
@@ -100,9 +113,10 @@ class test_bash_generator(unittest.TestCase):
 			shift 2;;
 		--instanceType)
 			instanceType=$2
-			shift 2;;\n\t\t""")
+			shift 2;;
+            """)
 
-        self.assertEqual(self.case_statements, correct_cases)
+        self.assertEqual(''.join(self.case_statements.split()), ''.join(correct_cases.split()))
 
     def test_2nic_standalone_case_statements(self):
         args = arguments()
@@ -112,7 +126,8 @@ class test_bash_generator(unittest.TestCase):
         self.case_statements = create_case_statements(self.all_parameters)
 
         correct_cases = (
-        """--licenseKey1)
+        """
+        --licenseKey1)
 			licenseKey1=$2
 			shift 2;;
 		--licenseType)
@@ -147,9 +162,64 @@ class test_bash_generator(unittest.TestCase):
 			shift 2;;
 		--instanceType)
 			instanceType=$2
-			shift 2;;\n\t\t""")
+			shift 2;;
+            """)
 
-        self.assertEqual(self.case_statements, correct_cases)
+        self.assertEqual(''.join(self.case_statements.split()), ''.join(correct_cases.split()))
+
+    def test_3nic_standalone_case_statements(self):
+        args = arguments()
+        setattr(args, 'num_nics', 3)
+        setattr(args, 'ha_type', 'standalone')
+        self.all_parameters = create_all_parameters(args)
+        self.case_statements = create_case_statements(self.all_parameters)
+
+        correct_cases = ("""
+        --licenseKey1)
+			licenseKey1=$2
+			shift 2;;
+		--licenseType)
+			licenseType=$2
+			shift 2;;
+		--managementSubnetAz1)
+			managementSubnetAz1=$2
+			shift 2;;
+        --bigipInternalSecurityGroup)
+            bigipInternalSecurityGroup=$2
+            shift 2;;
+		--sshKey)
+			sshKey=$2
+			shift 2;;
+		--licenseKey2)
+			licenseKey2=$2
+			shift 2;;
+        --subnet2Az1)
+            subnet2Az1=$2
+            shift 2;;
+		--bigipManagementSecurityGroup)
+			bigipManagementSecurityGroup=$2
+			shift 2;;
+		--subnet1Az1)
+			subnet1Az1=$2
+			shift 2;;
+		--bigipExternalSecurityGroup)
+			bigipExternalSecurityGroup=$2
+			shift 2;;
+		--stackName)
+			stackName=$2
+			shift 2;;
+		--imageName)
+			imageName=$2
+			shift 2;;
+		--Vpc)
+			Vpc=$2
+			shift 2;;
+		--instanceType)
+			instanceType=$2
+			shift 2;;
+        """)
+
+        self.assertEqual(''.join(self.case_statements.split()), ''.join(correct_cases.split()))
 
 
     def test_2nic_cluster_same_az_case_statements(self):
@@ -160,7 +230,8 @@ class test_bash_generator(unittest.TestCase):
         self.case_statements = create_case_statements(self.all_parameters)
     
         correct_cases = (
-        """--licenseKey1)
+        """
+        --licenseKey1)
 			licenseKey1=$2
 			shift 2;;
 		--licenseType)
@@ -195,9 +266,10 @@ class test_bash_generator(unittest.TestCase):
 			shift 2;;
 		--instanceType)
 			instanceType=$2
-			shift 2;;\n\t\t""")
+			shift 2;;
+            """)
 
-        self.assertEqual(self.case_statements, correct_cases)
+        self.assertEqual(''.join(self.case_statements.split()), ''.join(correct_cases.split()))
 
     def test_2nic_cluster_across_az_case_statements(self):
         args = arguments()
@@ -207,7 +279,8 @@ class test_bash_generator(unittest.TestCase):
         self.case_statements = create_case_statements(self.all_parameters)
         
         correct_cases = (
-        """--licenseKey1)
+        """
+        --licenseKey1)
 			licenseKey1=$2
 			shift 2;;
 		--licenseType)
@@ -248,9 +321,10 @@ class test_bash_generator(unittest.TestCase):
 			shift 2;;
 		--instanceType)
 			instanceType=$2
-			shift 2;;\n\t\t""")
+			shift 2;;
+            """)
 
-        self.assertEqual(self.case_statements, correct_cases)
+        self.assertEqual(''.join(self.case_statements.split()), ''.join(correct_cases.split()))
 
     # -----END CASE STATEMENT TESTS
         
@@ -278,7 +352,17 @@ class test_bash_generator(unittest.TestCase):
 
         self.assertEqual(self.required_parameters, correct_parameters)
         
+    def test_3nic_standalone_required_parameters(self):
+        args = arguments()
+        setattr(args, 'num_nics', 3)
+        setattr(args, 'ha_type', 'standalone')
+        self.all_parameters = create_all_parameters(args)
+        self.example_parameters = create_example_command_parameters(self.all_parameters)
+        self.required_parameters = create_required_parameters(self.example_parameters)
 
+        correct_parameters = '"stackName licenseType bigipManagementSecurityGroup sshKey subnet2Az1 managementSubnetAz1 subnet1Az1 bigipExternalSecurityGroup instanceType bigipInternalSecurityGroup Vpc imageName "'
+
+        self.assertEqual(self.required_parameters, correct_parameters)
     def test_2nic_cluster_same_az_required_parameters(self):
         args = arguments()
         setattr(args, 'num_nics', 2)
@@ -385,6 +469,27 @@ class test_bash_generator(unittest.TestCase):
         self.generated_url = create_template_url(args, "hourly")
 
         self.assertEqual(self.generated_url, correct_url)
+
+    def test_byol_standalone_3nic_url(self):
+        correct_url = "https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-3nic-bigip.template"
+
+        args = arguments()
+        setattr(args, 'num_nics', 3)
+        setattr(args, 'ha_type', 'standalone')
+
+        self.generated_url = create_template_url(args, "byol")
+        self.assertEqual(self.generated_url, correct_url)
+
+    def test_hourly_standalone_3nic_url(self):
+        correct_url = "https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-3nic-bigip.template"
+
+        args = arguments()
+        setattr(args, 'num_nics', 3)
+        setattr(args, 'ha_type', 'standalone')
+
+        self.generated_url = create_template_url(args, "hourly")
+
+        self.assertEqual(self.generated_url, correct_url)
         
 
     def test_byol_cluster_same_az_2nic_url(self):
@@ -475,6 +580,26 @@ class test_bash_generator(unittest.TestCase):
         self.command_string = create_stack_command(self.all_parameters, "hourly")
 
         correct_command = "ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=imageName,ParameterValue=$imageName "
+        self.assertEqual(self.command_string, correct_command)
+
+    def test_byol_standalone_3nic_command(self):
+        args = arguments()
+        setattr(args, 'num_nics', 3)
+        setattr(args, 'ha_type', 'standalone')
+        self.all_parameters = create_all_parameters(args)
+        self.command_string = create_stack_command(self.all_parameters, "byol")
+
+        correct_command = "ParameterKey=licenseKey1,ParameterValue=$licenseKey1 ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=bigipInternalSecurityGroup,ParameterValue=$bigipInternalSecurityGroup ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=licenseKey2,ParameterValue=$licenseKey2 ParameterKey=subnet2Az1,ParameterValue=$subnet2Az1 ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=imageName,ParameterValue=$imageName ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType "
+        self.assertEqual(self.command_string, correct_command)
+    
+    def test_hourly_standalone_3nic_command(self):
+        args = arguments()
+        setattr(args, 'num_nics', 3)
+        setattr(args, 'ha_type', 'standalone')
+        self.all_parameters = create_all_parameters(args)
+        self.command_string = create_stack_command(self.all_parameters, "hourly")
+
+        correct_command = "ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=subnet2Az1,ParameterValue=$subnet2Az1 ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=bigipInternalSecurityGroup,ParameterValue=$bigipInternalSecurityGroup ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=imageName,ParameterValue=$imageName "
         self.assertEqual(self.command_string, correct_command)
     
     def test_byol_cluster_same_az_2nic_command(self):

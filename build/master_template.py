@@ -132,9 +132,9 @@ def main():
     branch_cloud_iapps = "release-1.0.0"
     ### Build verifyHash file from published verifyHash on gitswarm
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-    githubvh = requests.get('https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash', verify=False)
+    gitswarmvh = requests.get('https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash', verify=False)
     with open('../build/verifyHash', 'wb') as hash:
-        hash.write(githubvh.text)
+        hash.write(gitswarmvh.text)
     with open('../build/verifyHash', 'r') as vhash:
         lines = vhash.read()
     ### Cloudlib and iApp URL

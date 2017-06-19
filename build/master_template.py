@@ -133,9 +133,9 @@ def main():
     ### Build verifyHash file from published verifyHash on gitswarm
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
     githubvh = requests.get('https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash', verify=False)
-    with open('c:/cloudformation/f5-aws-cloudformation/build/verifyHash', 'wb') as hash:
+    with open('../build/verifyHash', 'wb') as hash:
         hash.write(githubvh.text)
-    with open('c:/cloudformation/f5-aws-cloudformation/build/verifyHash', 'r') as vhash:
+    with open('../build/verifyHash', 'r') as vhash:
         lines = vhash.read()
     ### Cloudlib and iApp URL
     iApp_version = "v1.4.0rc1"

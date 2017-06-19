@@ -133,14 +133,14 @@ def main():
     branch_aws = "release-1.3.0"
     branch_cloud_iapps = "release-1.0.0"
     ### Build verifyHash file from published verifyHash on gitswarm. Or github (public) if gitswarm (private) not available
-    urls = [ 'https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash',
+    urls = [ 'https://gitswrm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash',
              'https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/' + str(branch_cloud) + '/dist/verifyHash' ]
     for url in urls:
         try:
             raw = urllib2.urlopen(url).read()
             requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
             vh = requests.get(
-                'https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash',
+                url,
                 verify=False)
             with open('../build/verifyHash', 'wb') as hash:
                 hash.write(vh.text)

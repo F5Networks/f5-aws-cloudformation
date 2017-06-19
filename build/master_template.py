@@ -1,6 +1,8 @@
 #/usr/bin/python env
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import urllib2
+from urllib2 import URLError
 from optparse import OptionParser
 import json
 from troposphere import Base64, Select, FindInMap, GetAtt, GetAZs, Join, Output
@@ -130,14 +132,23 @@ def main():
     branch_cloud = "release-3.1.0"
     branch_aws = "release-1.3.0"
     branch_cloud_iapps = "release-1.0.0"
-    ### Build verifyHash file from published verifyHash on gitswarm
-    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-    gitswarmvh = requests.get('https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash', verify=False)
-    with open('../build/verifyHash', 'wb') as hash:
-        hash.write(gitswarmvh.text)
-    with open('../build/verifyHash', 'r') as vhash:
-        lines = vhash.read()
-    ### Cloudlib and iApp URL
+    ### Build verifyHash file from published verifyHash on gitswarm. Or github (public) if gitswarm (private) not available
+    urls = [ 'https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash',
+             'https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/' + str(branch_cloud) + '/dist/verifyHash' ]
+    for url in urls:
+        try:
+            raw = urllib2.urlopen(url).read()
+            requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+            vh = requests.get(
+                'https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash',
+                verify=False)
+            with open('../build/verifyHash', 'wb') as hash:
+                hash.write(vh.text)
+            with open('../build/verifyHash', 'r') as vhash:
+                lines = vhash.read()
+        except URLError, error:
+             err = str(error) + ": Attempting to connect to next url"
+### Cloudlib and iApp URL
     iApp_version = "v1.4.0rc1"
     iapp_branch = "v2.2.0"
     iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl" 

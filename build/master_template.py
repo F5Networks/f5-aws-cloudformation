@@ -190,12 +190,12 @@ def main():
     bigiq_parms = [
                     ]
     if license_type == "bigiq":
-        bigiq_label = "BIG-IQ LICENSING"
+        bigiq_label = "BIG-IQ LICENSING CONFIGURATION"
         bigiq_parms = [
                     "bigiqAddress",
-                    "bigiqLicensePoolName",
                     "bigiqUsername",
-                    "bigiqPassword"
+                    "bigiqPasswordS3Uri",
+                    "bigiqLicensePoolName",
                     ]
     t.add_metadata({
         "Version": str(version),
@@ -335,7 +335,7 @@ def main():
                 "default": "Timezone (Olson)"
             },
             "bigiqAddress": {
-                "default": "IP address BIG-IQ License Server"
+                "default": "IP address of BIG-IQ License Server"
             },
             "bigiqLicensePoolName": {
                 "default": "Name of BIG-IQ License Pool"
@@ -343,8 +343,8 @@ def main():
             "bigiqUsername": {
                 "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
             },
-            "bigiqPassword": {
-                "default": "Password for BIG-IQ user that will license BIG-IP"
+            "bigiqPasswordS3Uri": {
+                "default": "S3 URI (s3://bucketname/objectname) of BIG-IQ Password file"
             }
           }
         }
@@ -545,7 +545,7 @@ def main():
             bigiqAddress = t.add_parameter(Parameter(
                 "bigiqAddress",
                 MinLength="1",
-                ConstraintDescription="Verify IP address BIG-IQ License Server",
+                ConstraintDescription="Verify IP address of BIG-IQ License Server",
                 Type="String",
                 Description="IP address BIG-IQ License Server",
                 MaxLength="255",
@@ -558,14 +558,14 @@ def main():
                 Description="BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
                 MaxLength="255",
             ))
-            bigiqPassword = t.add_parameter(Parameter(
-                "bigiqPassword",
+            bigiqPasswordS3Uri = t.add_parameter(Parameter(
+                "bigiqPasswordS3Uri",
                 Type="String",
-                Description="Password for BIG-IQ user that will license BIG-IP",
+                Description="S3 URI (s3://bucketname/objectname) of BIG-IQ Password file",
                 MinLength="1",
                 NoEcho=True,
                 MaxLength="255",
-                ConstraintDescription="Verify Password for BIG-IQ user that will license BIG-IP",
+                ConstraintDescription="Verify S3 URI of BIG-IQ Password file",
             ))
             bigiqLicensePoolName = t.add_parameter(Parameter(
                 "bigiqLicensePoolName",
@@ -1362,8 +1362,7 @@ def main():
                                 Ref(bigiqAddress),
                                 " --big-iq-user ",
                                 Ref(bigiqUsername),
-                                " --big-iq-password ",
-                                Ref(bigiqPassword),
+                                " --big-iq-password-url file:///config/cloud/aws/.big-iq ",
                                 " --license-pool-name ",
                                 Ref(bigiqLicensePoolName),
                                 ]
@@ -1597,7 +1596,11 @@ def main():
                 rm_password_sh += [
                                     "tmsh+=(\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\")\n",
                                   ]
-            rm_password_sh +=   [                      
+            if license_type == "bigiq":
+                rm_password_sh += [
+                                    "tmsh+=(\"rm /config/cloud/aws/.bigiq\")\n",
+                                  ]
+            rm_password_sh +=   [
                                  "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
                                  "for CMD in \"${tmsh[@]}\"\n",
                                  "do\n",
@@ -1688,6 +1691,17 @@ def main():
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                 ]
             # Global Settings
+            if license_type == "bigiq":
+                onboard_BIG_IP += [
+                                    "version=$(ls /opt/aws/ | grep awscli);",
+                                    "AWSCLI=/opt/aws/$version;",
+                                    "export PATH=$PATH:$AWSCLI/bin;",
+                                    "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib64/python2.6/site-packages;",
+                                    "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib/python2.6/site-packages;",
+                                    "aws s3 cp",
+                                    Ref(bigiqPasswordS3Uri),
+                                    "/config/cloud/aws/.bigiq;",
+                ]
             if num_nics == 1:
                 one_nic_setup += [
                                     "nohup /config/waitThenRun.sh",

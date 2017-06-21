@@ -192,10 +192,10 @@ def main():
     if license_type == "bigiq":
         bigiq_label = "BIG-IQ LICENSING CONFIGURATION"
         bigiq_parms = [
-                    "bigiqAddress",
-                    "bigiqUsername",
-                    "bigiqPasswordS3Uri",
-                    "bigiqLicensePoolName",
+                        "bigiqAddress",
+                        "bigiqUsername",
+                        "bigiqPasswordS3Uri",
+                        "bigiqLicensePoolName",
                     ]
     t.add_metadata({
         "Version": str(version),
@@ -335,7 +335,7 @@ def main():
                 "default": "Timezone (Olson)"
             },
             "bigiqAddress": {
-                "default": "IP address of BIG-IQ License Server"
+                "default": "IP address of the BIG-IQ device that contains the pool of licenses"
             },
             "bigiqLicensePoolName": {
                 "default": "Name of BIG-IQ License Pool"
@@ -545,9 +545,9 @@ def main():
             bigiqAddress = t.add_parameter(Parameter(
                 "bigiqAddress",
                 MinLength="1",
-                ConstraintDescription="Verify IP address of BIG-IQ License Server",
+                ConstraintDescription="Verify IP address of the BIG-IQ device that contains the pool of licenses",
                 Type="String",
-                Description="IP address BIG-IQ License Server",
+                Description="IP address of the BIG-IQ device that contains the pool of licenses",
                 MaxLength="255",
             ))
             bigiqUsername = t.add_parameter(Parameter(
@@ -563,7 +563,6 @@ def main():
                 Type="String",
                 Description="S3 URI (s3://bucketname/objectname) of BIG-IQ Password file",
                 MinLength="1",
-                NoEcho=True,
                 MaxLength="255",
                 ConstraintDescription="Verify S3 URI of BIG-IQ Password file",
             ))
@@ -1362,7 +1361,7 @@ def main():
                                 Ref(bigiqAddress),
                                 " --big-iq-user ",
                                 Ref(bigiqUsername),
-                                " --big-iq-password-url file:///config/cloud/aws/.big-iq ",
+                                " --big-iq-password-url file:///config/cloud/aws/.bigiq",
                                 " --license-pool-name ",
                                 Ref(bigiqLicensePoolName),
                                 ]

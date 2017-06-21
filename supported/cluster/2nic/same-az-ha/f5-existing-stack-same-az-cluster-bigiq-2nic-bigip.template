@@ -163,7 +163,7 @@
      "default": "Management Security Group"
     },
     "bigiqAddress": {
-     "default": "IP address of BIG-IQ License Server"
+     "default": "IP address of the BIG-IQ device that contains the pool of licenses"
     },
     "bigiqLicensePoolName": {
      "default": "Name of BIG-IQ License Pool"
@@ -432,8 +432,8 @@
    "Type": "AWS::EC2::SecurityGroup::Id"
   },
   "bigiqAddress": {
-   "ConstraintDescription": "Verify IP address of BIG-IQ License Server",
-   "Description": "IP address BIG-IQ License Server",
+   "ConstraintDescription": "Verify IP address of the BIG-IQ device that contains the pool of licenses",
+   "Description": "IP address of the BIG-IQ device that contains the pool of licenses",
    "MaxLength": "255",
    "MinLength": "1",
    "Type": "String"
@@ -450,7 +450,6 @@
    "Description": "S3 URI (s3://bucketname/objectname) of BIG-IQ Password file",
    "MaxLength": "255",
    "MinLength": "1",
-   "NoEcho": true,
    "Type": "String"
   },
   "bigiqUsername": {
@@ -588,7 +587,7 @@
            " --signal PASSWORD_CREATED",
            " --file f5-rest-node",
            " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
-           " --log-level verbose",
+           " --log-level info",
            " -o /var/log/generatePassword.log",
            " &>> /var/log/cloudlibs-install.log < /dev/null",
            " &"
@@ -609,7 +608,7 @@
            " --cl-args '--user admin",
            " --password-file /config/cloud/aws/.adminPassword",
            "'",
-           " --log-level verbose",
+           " --log-level info",
            " -o /var/log/createUser.log",
            " &>> /var/log/cloudlibs-install.log < /dev/null",
            " &"
@@ -637,7 +636,7 @@
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
            "--wait-for ADMIN_CREATED",
            "-o /var/log/onboard.log",
-           "--log-level debug",
+           "--log-level info",
            "--no-reboot",
            "--host localhost",
            "--user admin",
@@ -661,7 +660,7 @@
            {
             "Ref": "bigiqUsername"
            },
-           " --big-iq-password-url file:///config/cloud/aws/.big-iq ",
+           " --big-iq-password-url file:///config/cloud/aws/.bigiq",
            " --license-pool-name ",
            {
             "Ref": "bigiqLicensePoolName"
@@ -682,7 +681,7 @@
            "--file /config/cloud/aws/custom-config.sh",
            "--cwd /config/cloud/aws",
            "-o /var/log/custom-config.log",
-           "--log-level debug",
+           "--log-level info",
            "--wait-for ONBOARD_DONE",
            "--signal CUSTOM_CONFIG_DONE",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
@@ -701,7 +700,7 @@
            "--wait-for CUSTOM_CONFIG_DONE",
            "--signal CLUSTER_DONE",
            "-o /var/log/cluster.log",
-           "--log-level debug",
+           "--log-level info",
            "--host localhost",
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
@@ -739,7 +738,7 @@
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
            "--file /config/cloud/aws/rm-password.sh",
            "-o /var/log/rm-password.log",
-           "--log-level debug",
+           "--log-level info",
            "--wait-for CLUSTER_DONE",
            "--signal PASSWORD_REMOVED",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
@@ -1246,7 +1245,7 @@
            " --signal PASSWORD_CREATED",
            " --file f5-rest-node",
            " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
-           " --log-level verbose",
+           " --log-level info",
            " -o /var/log/generatePassword.log",
            " &>> /var/log/cloudlibs-install.log < /dev/null",
            " &"
@@ -1267,7 +1266,7 @@
            " --cl-args '--user admin",
            " --password-file /config/cloud/aws/.adminPassword",
            "'",
-           " --log-level verbose",
+           " --log-level info",
            " -o /var/log/createUser.log",
            " &>> /var/log/cloudlibs-install.log < /dev/null",
            " &"
@@ -1295,7 +1294,7 @@
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
            "--wait-for ADMIN_CREATED",
            "-o /var/log/onboard.log",
-           "--log-level debug",
+           "--log-level info",
            "--no-reboot",
            "--host localhost",
            "--user admin",
@@ -1319,7 +1318,7 @@
            {
             "Ref": "bigiqUsername"
            },
-           " --big-iq-password-url file:///config/cloud/aws/.big-iq ",
+           " --big-iq-password-url file:///config/cloud/aws/.bigiq",
            " --license-pool-name ",
            {
             "Ref": "bigiqLicensePoolName"
@@ -1340,7 +1339,7 @@
            "--file /config/cloud/aws/custom-config.sh",
            "--cwd /config/cloud/aws",
            "-o /var/log/custom-config.log",
-           "--log-level debug",
+           "--log-level info",
            "--wait-for ONBOARD_DONE",
            "--signal CUSTOM_CONFIG_DONE",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
@@ -1358,7 +1357,7 @@
            "--wait-for CUSTOM_CONFIG_DONE",
            "--signal CLUSTER_DONE",
            "-o /var/log/cluster.log",
-           "--log-level debug",
+           "--log-level info",
            "--host localhost",
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
@@ -1398,7 +1397,7 @@
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
            "--file /config/cloud/aws/rm-password.sh",
            "-o /var/log/rm-password.log",
-           "--log-level debug",
+           "--log-level info",
            "--wait-for CLUSTER_DONE",
            "--signal PASSWORD_REMOVED",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"

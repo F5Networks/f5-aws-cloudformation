@@ -84,3 +84,6 @@ python master_template.py -s full -n 2 -l byol -H across-az > ../experimental/le
 python master_template.py -s full -n 2 -l byol -c waf -H across-az > ../experimental/learning-stacks/reference/2nic/waf/f5-full-stack-across-az-cluster-byol-2nic-bigip-w-waf.template
 python master_template.py -s full -n 2 -l bigiq -H across-az > ../experimental/learning-stacks/reference/2nic/bigiq/f5-full-stack-across-az-cluster-bigiq-license-pool-2nic-bigip.template
 python master_template.py -s full -n 2 -l bigiq -c waf -H across-az > ../experimental/learning-stacks/reference/2nic/bigiq/f5-full-stack-across-az-cluster-bigiq-license-pool-2nic-bigip-w-waf.template
+
+## Build sh512 checksum file for supported templates
+python checksum-sha512.py

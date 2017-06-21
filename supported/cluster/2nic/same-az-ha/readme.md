@@ -66,6 +66,7 @@ The easiest way to deploy one of the CloudFormation templates is to use the appr
 
  - Hourly, which uses pay-as-you-go hourly billing
  - [BYOL](#byol-deploy-button) (bring your own license), which allows you to use an existing BIG-IP license.
+ - [Using BIG-IQ for licensing](#big-iq-licensing-deploy-button), which allows you to launch the template using an existing BIG-IQ device with a pool of licenses to license the BIG-IP VE(s).
 <br><br>
 
 #### Hourly deploy button
@@ -137,9 +138,36 @@ After clicking the Launch button, you must specify the following parameters.
 | owner | No | Owner Tag (the default is f5owner) |
 | costcenter | No | Cost Center Tag (the default is f5costcenter) |
 
+#### BIG-IQ Licensing Deploy button
+If you have an existing BIG-IQ device with a pool of BIG-IP licenses, you can use this button to deploy the **BIG-IQ** template: 
+ 
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-bigiq-1nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
+</a>
+
+<br>
+<br>
+**Parameters for BIG-IQ licensing**<br>
+After clicking the Launch button, you must specify the following parameters.
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| bigipExternalSecurityGroup | x | Public or External Security Group ID |
+| bigiqAddress | x | IP address of the BIG-IQ device that contains the pool of licenses |
+| bigiqUsername | x | BIG-IQ user with privileges to license BIG-IQ. Can be **admin** or **manager**. |
+| bigiqPasswordS3Uri | x | S3 URI of the S3 object (s3://bucketname/objectname) containing password of BIG-IQ user that will license the BIG-IP VE |
+| bigiqLicensePoolName | x | Name of the BIG-IQ License Pool |
+| imageName | x | F5 BIG-IP Performance Type |
+| instanceType | x | BIG-IP virtual instance type |
+| managementGuiPort | x | Port to use for the management port GUI |
+| restrictedSrcAddress | x | The IP address range that can be used to SSH to the EC2 instances |
+| sshKey | x | Name of an existing EC2 KeyPair to enable SSH access to the instance |
+| subnet1Az1 | x | Public or External subnet ID |
+| Vpc | x | Common VPC for the deployment |
+
 
 ### Installing the template using the AWS CLI (aws-cli/1.11.76)
-If you want to deploy the template using the AWS CLI, use the following example script, replacing the static items (or make them parameters).  Use the following command syntax:
+If you want to deploy the template using the AWS CLI (does not include licensing using BIG-IQ, use the Launch button for that option), use the following example script, replacing the static items (or make them parameters).  Use the following command syntax:
  
 ```./deploy_via_bash.sh --stackName <value> --licenseType Hourly --managementSubnetAz1 <value> --sshKey <value> --bigipManagementSecurityGroup <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --instanceType t2.medium --Vpc <value> --imageName Good200Mbps```
 
@@ -199,7 +227,8 @@ do
 		--instanceType)
 			instanceType=$2
 			shift 2;;
-		--)
+		
+        --)
 			shift
 			break;;
     esac
@@ -247,11 +276,11 @@ sleep 3
 # Deploy Template
 if [ $licenseType == "BYOL" ]
 then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=licenseKey1,ParameterValue=$licenseKey1 ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=licenseKey2,ParameterValue=$licenseKey2 ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=imageName,ParameterValue=$imageName ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --capabilities CAPABILITY_IAM --parameters ParameterKey=licenseKey1,ParameterValue=$licenseKey1 ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=licenseKey2,ParameterValue=$licenseKey2 ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=imageName,ParameterValue=$imageName ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
 
 elif [ $licenseType == "Hourly" ]
 then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --parameters ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=imageName,ParameterValue=$imageName ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
+    aws cloudformation create-stack --stack-name $stackName --template-url $template --capabilities CAPABILITY_IAM --parameters ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=imageName,ParameterValue=$imageName ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
 else 
     echo "This failure may have been caused by an error in license type: Please ensure license type is either Hourly or BYOL'"
     exit 1

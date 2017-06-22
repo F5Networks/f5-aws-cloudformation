@@ -1,5 +1,8 @@
 #/usr/bin/python env
-
+import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import urllib2
+from urllib2 import URLError
 from optparse import OptionParser
 import json
 from troposphere import Base64, Select, FindInMap, GetAtt, GetAZs, Join, Output
@@ -11,6 +14,8 @@ import troposphere.iam as iam
 from awacs.aws import Statement, Principal, Allow
 from awacs.sts import AssumeRole
 from troposphere.ec2 import *
+import troposphere.ec2 as ec2
+import troposphere.autoscaling as autoscaling
 
 def usage():
     print "OPTIONS:"
@@ -119,39 +124,44 @@ def main():
         security_groups = False
         webserver = False
         bigip = True
-
     # Build variables used for QA
+
     ### Template Version
-    version = "2.3.0"
+    version = "2.4.0"
     ### Cloudlib Branch
-    branch_cloud = "v3.0.2"
-    branch_aws = "v1.2.0"
-    ### Cloudlib and iApp URL
+    branch_cloud = "v3.1.0"
+    branch_aws = "v1.3.0"
+    branch_cloud_iapps = "v1.0.0"
+    ### Build verifyHash file from published verifyHash on gitswarm. Or github (public) if gitswarm (private) not available
+    urls = [ 'https://gitswrm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash',
+             'https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/' + str(branch_cloud) + '/dist/verifyHash' ]
+    for url in urls:
+        try:
+            raw = urllib2.urlopen(url).read()
+            requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+            vh = requests.get(
+                url,
+                verify=False)
+            with open('../build/verifyHash', 'wb') as hash:
+                hash.write(vh.text)
+            with open('../build/verifyHash', 'r') as vhash:
+                lines = vhash.read()
+        except URLError, error:
+             err = str(error) + ": Attempting to connect to next url"
+### Cloudlib and iApp URL
     iApp_version = "v1.4.0rc1"
     iapp_branch = "v2.2.0"
     iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl" 
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
-    cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"    
-    ### Verify Hash
-    CLOUD_HASH = "862f7c19396088ab012fda7c2b262621c17f134b1d39d7a4d0b765eaf92f3ddc7354716a4f546fabb866df9876e1baed5799ae4a2c9d0ea6f01f79a38b9d3b3e"
-    CLOUD_AWS_HASH = "2566f515fb46d89f5a245079b0efdad60fd78327c352e567bd5d573eb2ee0093d167a2f054b2408bd7df49c5debc4218074fdb50cfe135bb80ccc6c303a03f72"
-    CLOUD_AZURE_HASH = "9d4dc6779a5d25253832598d42681defa54c5f4521a70ba8e053179c262cdf0d5c8d6a3d458ea21da1d95212792b099bf2721ddbe175eed035cd1e00647124cf"
-    ASM_POLICY_LINUX = "63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0"
-    HTTP_IAPP_RC4 = "47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034"
-    HTTP_IAPP_RC6 = "811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe"
-    HTTP_IAPP_RC7 = "21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d"
-    ADVANCED_HA = "9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d"
-    ADVANCED_HA_1_4_0 = "de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396"
-    ASM_POLICY = "2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6"
-    DEPLOY_WAF = "4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a"
-    POLICY_CREATOR = "54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a"
-  
-    SCRIPT_SIGNATURE ="VwqAYsu1/TM/B7OPgCB2SXyiQ5s0MJH6qqzrypWaoZcRtXc9w9jNz8YwmqQyFn7TWTqCCLxmnMT4bmLzqNIYWesegv7w5KcBMwA8C0NTOebjHLkqKPzr2P68NiVzPN1/gxp3Y2i2e9zpnvy8PXcWRK3PkauO8lVSE7TJ07/uydvjg9t3GEjN449TUIZ+fx0NhqxS9VD6HDqv66FKgVcAeiomqrB2YQeawE4oShnbV2ULBP9IN8X/Rp9cb2gw1IPYZcLneP/rtgkMHOPmnzPV4u+tEowPzIjAo9mTV2J7e4z50peN3vdD7ThO1aPdcd5dfxbRqWZtlyV/pDPPHVVEdg=="
+    cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"
+    discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"
     ### add hashmark to skip verification.
     comment_out = ""
     # Begin Template
     t = Template()
+    ## add template version
     t.add_version("2010-09-09")
+    ## build description
     description = "Template Version " + str(version) + ": "
     if stack == "network":
         description += "AWS CloudFormation Template for creating network components for a " + str(num_azs) + " Availability Zone VPC"
@@ -173,20 +183,20 @@ def main():
             description += "AWS CloudFormation Template for creating a Same-AZ cluster of " + str(num_nics) + "NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
         if ha_type == "across-az":
             description += "AWS CloudFormation Template for creating a Across-AZs cluster of " + str(num_nics) + "NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
+    ## add description
     t.add_description(description)
+    ## Build Labels and add to metadata
     bigiq_label = ""
     bigiq_parms = [
-
                     ]
     if license_type == "bigiq":
-        bigiq_label = "BIG-IQ LICENSING"
+        bigiq_label = "BIG-IQ LICENSING CONFIGURATION"
         bigiq_parms = [
-                    "bigiqAddress",
-                    "bigiqLicensePoolName",
-                    "bigiqUsername",
-                    "bigiqPassword"
+                        "bigiqAddress",
+                        "bigiqUsername",
+                        "bigiqPasswordS3Uri",
+                        "bigiqLicensePoolName",
                     ]
-            
     t.add_metadata({
         "Version": str(version),
         "AWS::CloudFormation::Interface": {
@@ -199,10 +209,12 @@ def main():
                 "Vpc",
                 "managementSubnetAz1",
                 "managementSubnetAz2",
-                "subnet1Az2",
                 "bigipManagementSecurityGroup",
                 "subnet1Az1",
+                "subnet1Az2",
                 "bigipExternalSecurityGroup",
+                "subnet2Az1",
+                "bigipInternalSecurityGroup",
                 "availabilityZone1",
                 "availabilityZone2"
               ]
@@ -220,6 +232,8 @@ def main():
                 "managementGuiPort",
                 "sshKey",
                 "restrictedSrcAddress",
+                "ntpServer",
+                "timezone"
               ]
             },
             {
@@ -252,10 +266,13 @@ def main():
                 "default": "Management Subnet AZ2"
             },
             "subnet1Az1": {
-                "default": "Subnet AZ1"
+                "default": "Subnet1 AZ1"
             },
             "subnet1Az2": {
-                "default": "Subnet AZ2"
+                "default": "Subnet1 AZ2"
+            },
+            "subnet2Az1": {
+                "default": "Subnet2 AZ1"
             },
             "availabilityZone1": {
                 "default": "Availability Zone 1"
@@ -268,6 +285,9 @@ def main():
             },
             "bigipExternalSecurityGroup": {
                 "default": "External Security Group"
+            },
+            "bigipInternalSecurityGroup": {
+                "default": "Internal Security Group"
             },
             "imageName": {
                 "default": "Image Name"
@@ -308,8 +328,14 @@ def main():
             "costcenter": {
                 "default": "Cost Center"
             },
+            "ntpServer":{
+                "default": "NTP Server"
+            },
+            "timezone":{
+                "default": "Timezone (Olson)"
+            },
             "bigiqAddress": {
-                "default": "IP address BIG-IQ License Server"
+                "default": "IP address of the BIG-IQ device that contains the pool of licenses"
             },
             "bigiqLicensePoolName": {
                 "default": "Name of BIG-IQ License Pool"
@@ -317,8 +343,8 @@ def main():
             "bigiqUsername": {
                 "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
             },
-            "bigiqPassword": {
-                "default": "Password for BIG-IQ user that will license BIG-IP"
+            "bigiqPasswordS3Uri": {
+                "default": "S3 URI (s3://bucketname/objectname) of BIG-IQ Password file"
             }
           }
         }
@@ -373,7 +399,6 @@ def main():
             Description="Key pair for accessing the instance",
         ))
     if network == True:
-
         for INDEX in range(num_azs):
             AvailabilityZone = "availabilityZone" + str(INDEX + 1)
             PARAMETERS[AvailabilityZone] = t.add_parameter(Parameter(
@@ -400,6 +425,18 @@ def main():
                 Description="Port for the BIG-IP management Configuration utility",
             ))
     if bigip == True:
+        ntpServer = t.add_parameter(Parameter(
+            "ntpServer",
+                Description="NTP server for this implementation",
+                Default="0.pool.ntp.org",
+                Type= "String"
+        ))
+        timezone = t.add_parameter(Parameter(
+            "timezone",
+            Description="Olson timezone string from /usr/share/zoneinfo",
+            Default="UTC",
+            Type="String"
+        ))
         if 'waf' in components:
             # Default to 2xlarge
             instanceType = t.add_parameter(Parameter(
@@ -430,6 +467,13 @@ def main():
                 AllowedValues=[
                                 "t2.medium",
                                 "t2.large",
+                                "c3.2xlarge",
+                                "c3.4xlarge",
+                                "c3.8xlarge",
+                                "c4.xlarge",
+                                "c4.2xlarge",
+                                "c4.4xlarge",
+                                "c4.8xlarge",
                                 "m3.xlarge",
                                 "m3.2xlarge",
                                 "m4.large",
@@ -437,12 +481,7 @@ def main():
                                 "m4.2xlarge",
                                 "m4.4xlarge",
                                 "m4.10xlarge",
-                                "c3.2xlarge",
-                                "c3.4xlarge",
-                                "c3.8xlarge",
-                                "c4.xlarge",
-                                "c4.2xlarge",
-                                "c4.4xlarge",       
+                                "m4.16xlarge",
                               ],
             ))
         if license_type == "hourly" and 'waf' not in components:
@@ -455,13 +494,16 @@ def main():
                 AllowedValues=[
                                 "Good25Mbps",
                                 "Good200Mbps",
-                                "Good1000Mbps",    
+                                "Good1000Mbps",
+                                "Good5000Mbps",
                                 "Better25Mbps",
                                 "Better200Mbps",
-                                "Better1000Mbps",                          
+                                "Better1000Mbps",
+                                "Better5000Mbps",                                
                                 "Best25Mbps",
                                 "Best200Mbps",
                                 "Best1000Mbps",
+                                "Best5000Mbps",
                               ],
             ))
         if license_type == "hourly" and 'waf' in components:
@@ -475,6 +517,7 @@ def main():
                                 "Best25Mbps",
                                 "Best200Mbps",
                                 "Best1000Mbps",
+                                "Best5000Mbps",
                               ],
             ))
         if license_type != "hourly":
@@ -502,9 +545,9 @@ def main():
             bigiqAddress = t.add_parameter(Parameter(
                 "bigiqAddress",
                 MinLength="1",
-                ConstraintDescription="Verify IP address BIG-IQ License Server",
+                ConstraintDescription="Verify IP address of the BIG-IQ device that contains the pool of licenses",
                 Type="String",
-                Description="IP address BIG-IQ License Server",
+                Description="IP address of the BIG-IQ device that contains the pool of licenses",
                 MaxLength="255",
             ))
             bigiqUsername = t.add_parameter(Parameter(
@@ -515,14 +558,13 @@ def main():
                 Description="BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
                 MaxLength="255",
             ))
-            bigiqPassword = t.add_parameter(Parameter(
-                "bigiqPassword",
+            bigiqPasswordS3Uri = t.add_parameter(Parameter(
+                "bigiqPasswordS3Uri",
                 Type="String",
-                Description="Password for BIG-IQ user that will license BIG-IP",
+                Description="S3 URI (s3://bucketname/objectname) of BIG-IQ Password file",
                 MinLength="1",
-                NoEcho=True,
                 MaxLength="255",
-                ConstraintDescription="Verify Password for BIG-IQ user that will license BIG-IP",
+                ConstraintDescription="Verify S3 URI of BIG-IQ Password file",
             ))
             bigiqLicensePoolName = t.add_parameter(Parameter(
                 "bigiqLicensePoolName",
@@ -585,22 +627,17 @@ def main():
             ))
     # BEGIN REGION MAPPINGS FOR AMI IDS
     if bigip == True: 
-
         if license_type == "hourly":
             with open("cached-hourly-region-map.json") as json_file:
                 RegionMap = json.load(json_file)
-
         if license_type != "hourly":
             with open("cached-byol-region-map.json") as json_file:
                 RegionMap = json.load(json_file)
-
         t.add_mapping("BigipRegionMap", RegionMap )
     # WEB SERVER MAPPING
     if webserver == True:
-
         with open("cached-webserver-region-map.json") as json_file:
             RegionMap = json.load(json_file)
-
         t.add_mapping("WebserverRegionMap", RegionMap )
     ### BEGIN RESOURCES
     if network == True:
@@ -631,17 +668,14 @@ def main():
         ))
         AttachGateway = t.add_resource(VPCGatewayAttachment(
             "AttachGateway",
-
             VpcId=Ref(Vpc),
             InternetGatewayId=Ref(defaultGateway),
         ))
         octet = 1
         for INDEX in range(num_azs):
             ExternalSubnet = "subnet1" + "Az" + str(INDEX + 1)
-
             RESOURCES[ExternalSubnet] = t.add_resource(Subnet(
                 ExternalSubnet,
-
                 Tags=Tags(
                     Name=Join("", ["Az" , str(INDEX + 1) ,  " External Subnet:" , Ref("AWS::StackName")] ),
                     Application=Ref("application"),
@@ -730,7 +764,6 @@ def main():
                 ManagementSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "ManagementSubnetRouteTableAssociation"
                 RESOURCES[ManagementSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
                     ManagementSubnetRouteTableAssociation,
-
                     SubnetId=Ref("managementSubnet" + "Az" + str(INDEX + 1)),
                     RouteTableId=Ref(ManagementRouteTable),
                 ))
@@ -738,10 +771,8 @@ def main():
             octet = 2
             for INDEX in range(num_azs):
                 InternalSubnet = "subnet2" + "Az" + str(INDEX + 1)
-
                 RESOURCES[InternalSubnet] = t.add_resource(Subnet(
                     InternalSubnet,
-
                     Tags=Tags(
                         Name=Join("", ["Az" , str(INDEX + 1) ,  " Internal Subnet:" , Ref("AWS::StackName")] ),
                         Application=Ref("application"),
@@ -963,7 +994,6 @@ def main():
             ))
             bigipManagementSecurityGroup = t.add_resource(SecurityGroup(
                 "bigipManagementSecurityGroup",
-
                 SecurityGroupIngress=[
                     SecurityGroupRule(
                                 IpProtocol="tcp",
@@ -1011,10 +1041,8 @@ def main():
             ))
         # If a 3 nic with additional Internal interface.
         if num_nics > 2:
-
             bigipInternalSecurityGroup = t.add_resource(SecurityGroup(
                 "bigipInternalSecurityGroup",
-
                 SecurityGroupIngress=[
                     SecurityGroupRule(
                                 IpProtocol="-1",
@@ -1104,8 +1132,54 @@ def main():
             ],
         ))
     if bigip == True:
+        ## Build IAM ROLE and POLICY
+        if ha_type == "standalone":
+            bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(
+                "bigipServiceDiscoveryAccessRole",
+                Path="/",
+                AssumeRolePolicyDocument=Policy(
+                    Version="2012-10-17",
+                    Statement=[
+                        Statement(
+                            Effect=Allow,
+                            Action=[AssumeRole],
+                            Principal=Principal("Service", ["ec2.amazonaws.com"]),
+                        )
+                    ]
+                ),
+                Policies=[
+                    iam.Policy(
+                        PolicyName="BigipServiceDiscoveryPolicy",
+                        PolicyDocument={
+                            "Version": "2012-10-17",
+                            "Statement": [{
+                                "Effect": "Allow",
+                                "Action": [
+                                    "ec2:DescribeInstances",
+                                    "ec2:DescribeInstanceStatus",
+                                    "ec2:DescribeAddresses",
+                                    "ec2:AssociateAddress",
+                                    "ec2:DisassociateAddress",
+                                    "ec2:DescribeNetworkInterfaces",
+                                    "ec2:DescribeNetworkInterfaceAttributes",
+                                    "ec2:DescribeRouteTables",
+                                    "ec2:ReplaceRoute",
+                                    "ec2:assignprivateipaddresses",
+                                    "sts:AssumeRole",
+                                ],
+                                "Resource": [ "*" ]
+                            }],
+                        }
+                    ),
+                ],
+            ))
+            bigipServiceDiscoveryProfile = t.add_resource(iam.InstanceProfile(
+                "bigipServiceDiscoveryProfile",
+                Path="/",
+                Roles=[Ref(bigipServiceDiscoveryAccessRole)]
+            ))
         if ha_type != "standalone":
-            s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,))            
+            s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,))
             bigipClusterAccessRole = t.add_resource(iam.Role(
                 "bigipClusterAccessRole",
                 Path="/",
@@ -1121,7 +1195,7 @@ def main():
                 ),
                 Policies=[
                     iam.Policy(
-                        PolicyName="BigipClusterAcccessPolicy",                        
+                        PolicyName="BigipClusterAcccessPolicy",
                         PolicyDocument={
                             "Version": "2012-10-17",
                             "Statement": [{
@@ -1135,6 +1209,7 @@ def main():
                                 "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" }, "/*" ] ] }
                             },
                             {
+                                "Effect": "Allow",
                                 "Action": [
                                     "ec2:DescribeInstances",
                                     "ec2:DescribeInstanceStatus",
@@ -1145,10 +1220,10 @@ def main():
                                     "ec2:DescribeNetworkInterfaceAttributes",
                                     "ec2:DescribeRouteTables",
                                     "ec2:ReplaceRoute",
-                                    "ec2:assignprivateipaddresses"
+                                    "ec2:assignprivateipaddresses",
+                                    "sts:AssumeRole",
                                 ],
-                                "Resource": [ "*" ],
-                                "Effect": "Allow"
+                                "Resource": [ "*" ]
                             }],
                         }
                     ),
@@ -1159,7 +1234,8 @@ def main():
                 Path="/",
                 Roles=[Ref(bigipClusterAccessRole)]
             ))
-        for BIGIP_INDEX in range(num_bigips): 
+        ## Build variables for BIGIP's
+        for BIGIP_INDEX in range(num_bigips):
             licenseKey = "licenseKey" + str(BIGIP_INDEX + 1)
             BigipInstance = "Bigip" + str(BIGIP_INDEX + 1) + "Instance"
             if num_azs > 1:
@@ -1173,6 +1249,7 @@ def main():
             ExternalSelfEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "SelfEipAddress"            
             ExternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "Interface"
             ExternalSelfEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "SelfEipAssociation"
+            ## Build BIGIP Resources
             RESOURCES[ExternalInterface] = t.add_resource(NetworkInterface(
                 ExternalInterface,
                 SubnetId=Ref(ExternalSubnet),
@@ -1284,8 +1361,7 @@ def main():
                                 Ref(bigiqAddress),
                                 " --big-iq-user ",
                                 Ref(bigiqUsername),
-                                " --big-iq-password ",
-                                Ref(bigiqPassword),
+                                " --big-iq-password-url file:///config/cloud/aws/.bigiq",
                                 " --license-pool-name ",
                                 Ref(bigiqLicensePoolName),
                                 ]
@@ -1373,48 +1449,6 @@ def main():
                 iApp_verify = " \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\""
                 ha_iapp = "/config/cloud/aws/" + str(iapp_name)
                 ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/" + str(iapp_branch) + "/iApps/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
-            sig_check = [
-                            "cli script /Common/verifyHash {",
-                            "    proc script::run {} {",
-                            "        if {[catch {",
-                            "            set hashes(f5-cloud-libs.tar.gz) " + str(CLOUD_HASH),
-                            "            set hashes(f5-cloud-libs-aws.tar.gz) " + str(CLOUD_AWS_HASH),
-                            "            set hashes(f5-cloud-libs-azure.tar.gz) " + str(CLOUD_AZURE_HASH),
-                            "            set hashes(asm-policy-linux.tar.gz) " + str(ASM_POLICY_LINUX),
-                            "            set hashes(f5.http.v1.2.0rc4.tmpl) " + str(HTTP_IAPP_RC4),
-                            "            set hashes(f5.http.v1.2.0rc6.tmpl) " + str(HTTP_IAPP_RC6),
-                            "            set hashes(f5.http.v1.2.0rc7.tmpl) " + str(HTTP_IAPP_RC7),
-                            "            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) " + str(ADVANCED_HA),
-                            "            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) " + str(ADVANCED_HA_1_4_0),
-                            "            set hashes(asm-policy.tar.gz) " + str(ASM_POLICY),
-                            "            set hashes(deploy_waf.sh) " + str(DEPLOY_WAF),
-                            "            set hashes(f5.policy_creator.tmpl) " + str(POLICY_CREATOR),
-                            "",
-                            "            set file_path [lindex $tmsh::argv 1]",
-                            "            set file_name [file tail $file_path]",
-                            "",
-                            "            if {![info exists hashes($file_name)]} {",
-                            "                tmsh::log err \"No hash found for $file_name\"",
-                            "                exit 1",
-                            "            }",
-                            "",
-                            "            set expected_hash $hashes($file_name)",
-                            "            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
-                            "            if { $expected_hash eq $computed_hash } {",
-                            "                exit 0",
-                            "            }",
-                            "            tmsh::log err \"Hash does not match for $file_path\"",
-                            "            exit 1",
-                            "        }]} {",
-                            "            tmsh::log err {Unexpected error in verifyHash}",
-                            "            exit 1",
-                            "        }",
-                            "    }",
-                            "    script-signature " + str(SCRIPT_SIGNATURE),
-                            "    signing-key /Common/f5-irule",
-                            "}",
-                            "",
-                        ]
             cloudlibs_sh =  [
                       "#!/bin/bash",
                       "echo about to execute",
@@ -1435,7 +1469,7 @@ def main():
                       str(comment_out) + "    exit",
                       str(comment_out) + "fi",
                       str(comment_out) + "echo loaded verifyHash",
-                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\"" + str(iApp_verify) + ")",
+                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\"" + str(iApp_verify) + ")",
                       str(comment_out) + "for fileToVerify in \"${filesToVerify[@]}\"",
                       str(comment_out) + "do",
                       str(comment_out) + "    echo verifying \"$fileToVerify\"",
@@ -1449,11 +1483,11 @@ def main():
                       "echo expanding f5-cloud-libs.tar.gz",
                       "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
                             ]
-            if ha_type != "standalone":
-                cloudlibs_sh +=  [ 
-                                    "echo installing dependencies",
-                                    "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/f5-cloud-libs/node_modules",
-                                    "echo cloud libs install complete",
+
+            cloudlibs_sh +=  [ 
+                                "echo installing dependencies",
+                                "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/f5-cloud-libs/node_modules",
+                                "echo cloud libs install complete",
                                  ]
             cloudlibs_sh +=  [            
                                 "touch /config/cloud/cloudLibsReady"
@@ -1548,15 +1582,33 @@ def main():
             cluster_command = []
             rm_password_sh =    [
                                         "#!/bin/bash\n",
+                                        "PROGNAME=$(basename $0)\n",
+                                        "function error_exit {\n",
+                                            "echo \"${PROGNAME}: ${1:-\"Unknown Error\"}\" 1>&2\n",
+                                        "exit 1\n",
+                                        "}\n",                                       
                                         "date\n",
                                         "echo 'starting rm-password.sh'\n",
+                                        "declare -a tmsh=()\n",
                                 ]
             if ha_type == "across-az" and (BIGIP_INDEX) == CLUSTER_SEED:
                 rm_password_sh += [
-                                    "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
+                                    "tmsh+=(\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\")\n",
                                   ]
-            rm_password_sh +=   [                      
-                                 "rm /config/cloud/aws/.adminPassword\n",
+            if license_type == "bigiq":
+                rm_password_sh += [
+                                    "tmsh+=(\"rm /config/cloud/aws/.bigiq\")\n",
+                                  ]
+            rm_password_sh +=   [
+                                 "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
+                                 "for CMD in \"${tmsh[@]}\"\n",
+                                 "do\n",
+                                 "  if $CMD;then\n",
+                                 "      echo \"command $CMD successfully executed.\"\n",
+                                 "  else\n",
+                                 "      error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+                                 "  fi\n",
+                                 "done\n",
                                  "date\n",
                                 ]
             rm_password_command =   [
@@ -1638,6 +1690,17 @@ def main():
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                 ]
             # Global Settings
+            if license_type == "bigiq":
+                onboard_BIG_IP += [
+                                    "version=$(ls /opt/aws/ | grep awscli);",
+                                    "AWSCLI=/opt/aws/$version;",
+                                    "export PATH=$PATH:$AWSCLI/bin;",
+                                    "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib64/python2.6/site-packages;",
+                                    "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib/python2.6/site-packages;",
+                                    "aws s3 cp",
+                                    Ref(bigiqPasswordS3Uri),
+                                    "/config/cloud/aws/.bigiq;",
+                ]
             if num_nics == 1:
                 one_nic_setup += [
                                     "nohup /config/waitThenRun.sh",
@@ -1664,29 +1727,31 @@ def main():
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
                                   ]
             onboard_BIG_IP += [
-                               "--wait-for ADMIN_CREATED",
-                               "-o /var/log/onboard.log",
-                               "--log-level debug",
-                               "--no-reboot",
-                               "--host localhost",
-                              ]
-            onboard_BIG_IP +=   [
-                                    "--user admin",
+                                "--wait-for ADMIN_CREATED",
+                                "-o /var/log/onboard.log",
+                                "--log-level debug",
+                                "--no-reboot",
+                                "--host localhost",
+                                "--user admin",                       
+                                "--password-url file:///config/cloud/aws/.adminPassword",
+                                "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+                                "--ntp ", Ref(ntpServer),
+                                "--tz ", Ref(timezone),
+                                "--dns ${NAME_SERVER}",
+                                "--module ltm:nominal",
                                 ]
-            onboard_BIG_IP  +=      [                        
-                                        "--password-url file:///config/cloud/aws/.adminPassword",
-                                        "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-                                        "--ntp 0.us.pool.ntp.org",
-                                        "--ntp 1.us.pool.ntp.org",
-                                        "--tz UTC",
-                                        "--dns ${NAME_SERVER}",
-                                        "--module ltm:nominal",
-                                    ]
+
             ### Build Custom Script
             custom_sh = [
                             "#!/bin/bash\n",
+                            "PROGNAME=$(basename $0)\n",
+                            "function error_exit {\n",
+                                "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+                            "exit 1\n",
+                            "}\n",
+                            "declare -a tmsh=()\n",
                             "date\n",
-                            "echo 'starting tmsh config'\n",            
+                            "echo 'starting custom-config.sh'\n",            
                         ]
             if ha_type != "standalone":
                 custom_sh += [
@@ -1739,35 +1804,38 @@ def main():
                                 "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
                                 "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",                                 
                                 "EXTMASK=${GATEWAY_PREFIX}\n",
-                                "tmsh create net vlan external interfaces add { 1.1 } \n",                                
+                                "tmsh+=(\n",
+                                "\"tmsh create net vlan external interfaces add { 1.1 }\"\n",                                
                               ]
                 if ha_type == "standalone":
                     if 'waf' not in components:
                         custom_sh +=  [                                         
-                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\n",
+                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\"\n",
                                         ]
                     if 'waf' in components:                    
                         custom_sh +=  [ 
-                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
                                         ]
                 if ha_type != "standalone":
                     if 'waf' not in components:
                         custom_sh +=  [ 
-                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\n",
+                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\"\n",
                                         ]
                     if 'waf' in components:
                         custom_sh +=  [ 
-                                        "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
                                         ]
             if num_nics > 2:
                 custom_sh +=  [ 
+                                ")\n",
                                 "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`\n",
                                 "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                                 "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}\n",
                                 "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
-                                "INTMASK=${GATEWAY_PREFIX2}\n", 
-                                "tmsh create net vlan internal interfaces add { 1.2 } \n",
-                                "tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\n",
+                                "INTMASK=${GATEWAY_PREFIX2}\n",
+                                "tmsh+=(\n",
+                                "\"tmsh create net vlan internal interfaces add { 1.2 }\"\n",
+                                "\"tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\"\n",
                                 ]
             # Set Gateway
             if ha_type == "across-az":
@@ -1775,19 +1843,19 @@ def main():
                                  
                                     ]
                 custom_sh +=  [                  
-                                    "tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\n",
-                                    "tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\n",
+                                    "\"tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\"\n",
+                                    "\"tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\"\n",
                                 ]
             else:
                 if num_nics > 1:
                     custom_sh +=  [
-                                        "tmsh create net route default gw ${GATEWAY}\n",
+                                        "\"tmsh create net route default gw ${GATEWAY}\"\n",
                                     ]
             # Disable DHCP if clustering. 
             if ha_type != "standalone":
                 custom_sh += [ 
-                                    "tmsh modify sys db dhclient.mgmt { value disable }\n",
-                                    "tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
+                                    "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
+                                    "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
                                 ] 
                 if num_nics == 1:
                     custom_sh += [
@@ -1821,83 +1889,101 @@ def main():
 
                                 ]
             if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
-                if stack != "existing": 
+                if stack != "existing":
+                    if ha_type == "standalone" and num_nics == 1 and 'waf' not in components:
+                        custom_sh += [ 
+                                        "tmsh+=(\n",
+                                     ]
                     #Add Pool
                     custom_sh +=    [
-                                        "tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\n",
+                                        "\"tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\"\n",
                                     ]
                     # Add virtual service with simple URI-Routing ltm policy
                     if 'waf' not in components:
                         custom_sh +=    [
-                                            "tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\n",
-                                            "tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\n",
-                                            "tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\n",
-                                            "tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\n",
+                                            "\"tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\"\n",
+                                            "\"tmsh modify ltm policy uri-routing-policy rules add { service1.example.com { conditions add { 0 { http-uri host values { service1.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 1 } }\"\n",
+                                            "\"tmsh modify ltm policy uri-routing-policy rules add { service2.example.com { conditions add { 0 { http-uri host values { service2.example.com } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 2 } }\"\n",
+                                            "\"tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\"\n",
                                         ]
                         if ha_type != "across-az":
                             if num_nics == 1:
                                 custom_sh +=    [
-                                                    "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                                    "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\"\n",
                                                 ]
                             if num_nics > 1:
                                 custom_sh +=    [
-                                                    "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
+                                                    "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\"\n",
                                                 ]
                         if ha_type == "across-az":                      
                             custom_sh +=    [
-                                                "tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                                                "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\n",
-                                                "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
-                                                "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
-                                            ]
+                                                "\"tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\"\n",
+                                                "\"tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\"\n",
+                                                "\"tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\"\n",
+                                                "\"tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\"\n",
+                                            ]        
                 if 'waf' in components:
                     # 12.1.0 requires "first match legacy"
                     custom_sh += [
+                                    ")\n",
                                     "curl -s -f --retry 20 -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
                                     "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
                                     "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
-                                    "tmsh modify asm policy /Common/linux-high active\n",
-                                    "tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
-                                    "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
-                                    "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
+                                    "tmsh+=(\n",
+                                    "\"tmsh modify asm policy /Common/linux-high active\"\n",
+                                    "\"tmsh create ltm policy app-ltm-policy strategy first-match legacy\"\n",
+                                    "\"tmsh modify ltm policy app-ltm-policy controls add { asm }\"\n",
+                                    "\"tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\"\n",
                                  ]
                     if stack != "existing":
                         if ha_type != "across-az":
                             if num_nics == 1:
                                 custom_sh +=    [
-                                                    "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                                                    "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination 0.0.0.0:${VIRTUALSERVERPORT} mask any ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\"\n",
                                                 ]
 
                             if num_nics > 1:
                                 custom_sh +=    [
-                                                    "tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
+                                                    "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\"\n",
                                                 ]
                         if ha_type == "across-az":                      
                             custom_sh +=    [
-                                                "tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
-                                                "tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\n",
-                                                "tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\n",
-                                                "tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\n",
+                                                "\"tmsh create ltm virtual /Common/AZ1-${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\"\n",
+                                                "\"tmsh create ltm virtual /Common/AZ2-${APPNAME}-${VIRTUALSERVERPORT} { destination ${PEER_EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\"\n",
+                                                "\"tmsh modify ltm virtual-address ${EXTPRIVIP} traffic-group none\"\n",
+                                                "\"tmsh modify ltm virtual-address ${PEER_EXTPRIVIP} traffic-group none\"\n",
                                             ]
                 if ha_type == "across-az":
                     custom_sh +=    [
-                                    "tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl\n",
-                                    "tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha." + str(iApp_version) + " tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\n",
-                                    "tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\n",
-                                    "tmsh run cm config-sync to-group across_az_failover_group\n",
+                                    "\"tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl\"\n",
+                                    "\"tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha." + str(iApp_version) + " tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\"\n",
+                                    "\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\"\n",
                                     ]
             # If ASM, Need to use overwite Config (SOL16509 / BZID: 487538 )
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 if 'waf' in components:
                     custom_sh += [
-                                            "tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\n", 
-                                            "tmsh run cm config-sync to-group datasync-global-dg\n",
-                                  ]
+                                            "\"tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\"\n", 
+                                            "\"tmsh run cm config-sync to-group datasync-global-dg\"\n",
+                                 ]
+            if ha_type == "standalone" and num_nics == 1 and 'waf' not in components and stack == "existing":
+                custom_sh += [
+                               "tmsh+=(\n",
+                               ]
             custom_sh += [
-                                "tmsh save /sys config\n",
+                                "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
+                                "\"tmsh save /sys config\")\n",
+                                "for CMD in \"${tmsh[@]}\"\n",
+                                "do\n",
+                                "    if $CMD;then\n",
+                                "        echo \"command $CMD successfully executed.\"\n",
+                                "    else\n",
+                                "        error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+                                "    fi\n",
+                                "done\n",    
                                 "date\n",
-                                "### START CUSTOM TMSH CONFIGURTION\n",
-                                "### END CUSTOM TMSH CONFIGURATION"
+                                "### START CUSTOM CONFIGURTION\n",
+                                "### END CUSTOM CONFIGURATION"
                          ]
             metadata = Metadata(
                     Init({
@@ -1923,7 +2009,7 @@ def main():
                                         group='root'
                                     ),
                                     '/config/verifyHash': InitFile(
-                                        content=Join('\n', sig_check ),
+                                        content=lines,
                                         mode='000755',
                                         owner='root',
                                         group='root'
@@ -1954,6 +2040,12 @@ def main():
                                     ),                                         
                                     '/config/cloud/aws/rm-password.sh': InitFile(
                                         content=Join('', rm_password_sh ),
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),
+                                    '/config/cloud/aws/f5.service_discovery.tmpl': InitFile(
+                                        source=discovery_url,
                                         mode='000755',
                                         owner='root',
                                         group='root'
@@ -2061,7 +2153,7 @@ def main():
                     Metadata=metadata,
                     UserData=Base64(Join("", ["#!/bin/bash\n", "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance , " --region ", Ref("AWS::Region"), "\n"])),
                     Tags=Tags(
-                        Name=Join("", ["Big-IP: ", Ref("AWS::StackName")] ),
+                        Name=Join("", ["Big-IP" + str(BIGIP_INDEX +1) + ": ", Ref("AWS::StackName")] ),
                         Application=Ref(application),
                         Environment=Ref(environment),
                         Group=Ref(group),
@@ -2069,6 +2161,19 @@ def main():
                         Costcenter=Ref(costcenter),
                     ),
                     ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
+                    BlockDeviceMappings=[
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvda",
+                            Ebs=ec2.EBSBlockDevice(
+                                DeleteOnTermination="True",
+                                VolumeType="gp2"
+                            )
+                        ),
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvdb",
+                            NoDevice={}
+                        )
+                    ],
                     IamInstanceProfile=Ref(bigipClusterInstanceProfile),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
@@ -2081,7 +2186,7 @@ def main():
                     Metadata=metadata,
                     UserData=Base64(Join("", ["#!/bin/bash\n", "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance , " --region ", Ref("AWS::Region"), "\n"])),
                     Tags=Tags(
-                        Name=Join("", ["Big-IP: ", Ref("AWS::StackName")] ),
+                        Name=Join("", ["Big-IP" + str(BIGIP_INDEX +1) + ": ", Ref("AWS::StackName")] ),
                         Application=Ref(application),
                         Environment=Ref(environment),
                         Group=Ref(group),
@@ -2089,6 +2194,19 @@ def main():
                         Costcenter=Ref(costcenter),
                     ),
                     ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
+                    BlockDeviceMappings=[
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvda",
+                            Ebs=ec2.EBSBlockDevice(
+                                DeleteOnTermination="True",
+                                VolumeType="gp2"
+                            )
+                        ),
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvdb",
+                            NoDevice={}
+                        )
+                    ],
                     IamInstanceProfile=Ref(bigipClusterInstanceProfile),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
@@ -2108,6 +2226,20 @@ def main():
                         Costcenter=Ref(costcenter),
                     ),
                     ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
+                    BlockDeviceMappings=[
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvda",
+                            Ebs=ec2.EBSBlockDevice(
+                                DeleteOnTermination="True",
+                                VolumeType="gp2"
+                            )
+                        ),
+                        ec2.BlockDeviceMapping(
+                            DeviceName="/dev/xvdb",
+                            NoDevice={}
+                        )
+                    ],
+                    IamInstanceProfile=Ref(bigipServiceDiscoveryProfile),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces

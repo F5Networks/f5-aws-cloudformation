@@ -1,1598 +1,1977 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Template Version 1.0.0: AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
-    "Mappings": {
-        "BigipRegionMap": {
-            "ap-northeast-1": {
-                "Best1000Mbps": "ami-acf82acd",
-                "Best200Mbps": "ami-6bfc2e0a",
-                "Best25Mbps": "ami-a6f92bc7",
-                "Better1000Mbps": "ami-aff82ace",
-                "Better200Mbps": "ami-69f92b08",
-                "Better25Mbps": "ami-1afd2f7b",
-                "Good1000Mbps": "ami-3ef82a5f",
-                "Good200Mbps": "ami-62fc2e03",
-                "Good25Mbps": "ami-3af82a5b"
-            },
-            "ap-southeast-1": {
-                "Best1000Mbps": "ami-ab78ddc8",
-                "Best200Mbps": "ami-d37edbb0",
-                "Best25Mbps": "ami-4e79dc2d",
-                "Better1000Mbps": "ami-d47fdab7",
-                "Better200Mbps": "ami-7f78dd1c",
-                "Better25Mbps": "ami-4278dd21",
-                "Good1000Mbps": "ami-d87cd9bb",
-                "Good200Mbps": "ami-da7cd9b9",
-                "Good25Mbps": "ami-d47cd9b7"
-            },
-            "ap-southeast-2": {
-                "Best1000Mbps": "ami-c2e8d8a1",
-                "Best200Mbps": "ami-c4e8d8a7",
-                "Best25Mbps": "ami-bdecdcde",
-                "Better1000Mbps": "ami-6febdb0c",
-                "Better200Mbps": "ami-b1ebdbd2",
-                "Better25Mbps": "ami-42e8d821",
-                "Good1000Mbps": "ami-bcebdbdf",
-                "Good200Mbps": "ami-dbebdbb8",
-                "Good25Mbps": "ami-58e9d93b"
-            },
-            "eu-central-1": {
-                "Best1000Mbps": "ami-2157aa4e",
-                "Best200Mbps": "ami-8055a8ef",
-                "Best25Mbps": "ami-2c56ab43",
-                "Better1000Mbps": "ami-2f57aa40",
-                "Better200Mbps": "ami-2854a947",
-                "Better25Mbps": "ami-2657aa49",
-                "Good1000Mbps": "ami-e357aa8c",
-                "Good200Mbps": "ami-2557aa4a",
-                "Good25Mbps": "ami-cb55a8a4"
-            },
-            "eu-west-1": {
-                "Best1000Mbps": "ami-8af48ef9",
-                "Best200Mbps": "ami-fbeb9188",
-                "Best25Mbps": "ami-cbf58fb8",
-                "Better1000Mbps": "ami-c8f58fbb",
-                "Better200Mbps": "ami-51f18b22",
-                "Better25Mbps": "ami-7bf38908",
-                "Good1000Mbps": "ami-b5f68cc6",
-                "Good200Mbps": "ami-65f58f16",
-                "Good25Mbps": "ami-91f18be2"
-            },
-            "sa-east-1": {
-                "Best1000Mbps": "ami-7142d11d",
-                "Best200Mbps": "ami-8b5fcce7",
-                "Best25Mbps": "ami-8a5ecde6",
-                "Better1000Mbps": "ami-955fccf9",
-                "Better200Mbps": "ami-c142d1ad",
-                "Better25Mbps": "ami-c342d1af",
-                "Good1000Mbps": "ami-335dce5f",
-                "Good200Mbps": "ami-1359ca7f",
-                "Good25Mbps": "ami-1f59ca73"
-            },
-            "us-east-1": {
-                "Best1000Mbps": "ami-1d057e0a",
-                "Best200Mbps": "ami-0b7a011c",
-                "Best25Mbps": "ami-ce047fd9",
-                "Better1000Mbps": "ami-83047f94",
-                "Better200Mbps": "ami-84017a93",
-                "Better25Mbps": "ami-8f007b98",
-                "Good1000Mbps": "ami-98017a8f",
-                "Good200Mbps": "ami-a2017ab5",
-                "Good25Mbps": "ami-130c7704"
-            },
-            "us-west-1": {
-                "Best1000Mbps": "ami-812668e1",
-                "Best200Mbps": "ami-05246a65",
-                "Best25Mbps": "ami-f0256b90",
-                "Better1000Mbps": "ami-822668e2",
-                "Better200Mbps": "ami-44226c24",
-                "Better25Mbps": "ami-8b256beb",
-                "Good1000Mbps": "ami-49256b29",
-                "Good200Mbps": "ami-a72769c7",
-                "Good25Mbps": "ami-e5246a85"
-            },
-            "us-west-2": {
-                "Best1000Mbps": "ami-012ef261",
-                "Best200Mbps": "ami-8633efe6",
-                "Best25Mbps": "ami-792ff319",
-                "Better1000Mbps": "ami-5b29f53b",
-                "Better200Mbps": "ami-a031edc0",
-                "Better25Mbps": "ami-a731edc7",
-                "Good1000Mbps": "ami-6a2df10a",
-                "Good200Mbps": "ami-532ff333",
-                "Good25Mbps": "ami-dc2ef2bc"
-            }
-        }
+ "AWSTemplateFormatVersion": "2010-09-09",
+ "Description": "Template Version 2.4.0: AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Mappings": {
+  "BigipRegionMap": {
+   "ap-northeast-1": {
+    "Best1000Mbps": "ami-3a1c2d5d",
+    "Best200Mbps": "ami-301c2d57",
+    "Best25Mbps": "ami-3b1e2f5c",
+    "Best5000Mbps": "ami-b11f2ed6",
+    "Better1000Mbps": "ami-631b2a04",
+    "Better200Mbps": "ami-0c19286b",
+    "Better25Mbps": "ami-841a2be3",
+    "Better5000Mbps": "ami-a51e2fc2",
+    "Good1000Mbps": "ami-3d1e2f5a",
+    "Good200Mbps": "ami-781a2b1f",
+    "Good25Mbps": "ami-031c2d64",
+    "Good5000Mbps": "ami-a01c2dc7"
+   },
+   "ap-northeast-2": {
+    "Best1000Mbps": "ami-33dc015d",
+    "Best200Mbps": "ami-b9a37ed7",
+    "Best25Mbps": "ami-e0dc018e",
+    "Best5000Mbps": "ami-e4dd008a",
+    "Better1000Mbps": "ami-ada27fc3",
+    "Better200Mbps": "ami-b8a37ed6",
+    "Better25Mbps": "ami-e5dc018b",
+    "Better5000Mbps": "ami-15de037b",
+    "Good1000Mbps": "ami-2aa27f44",
+    "Good200Mbps": "ami-aba27fc5",
+    "Good25Mbps": "ami-c7df02a9",
+    "Good5000Mbps": "ami-dadf02b4"
+   },
+   "ap-south-1": {
+    "Best1000Mbps": "ami-62dba90d",
+    "Best200Mbps": "ami-bad8aad5",
+    "Best25Mbps": "ami-07d5a768",
+    "Best5000Mbps": "ami-76d9ab19",
+    "Better1000Mbps": "ami-c4d8aaab",
+    "Better200Mbps": "ami-bbdfadd4",
+    "Better25Mbps": "ami-9ad9abf5",
+    "Better5000Mbps": "ami-00d4a66f",
+    "Good1000Mbps": "ami-f2deac9d",
+    "Good200Mbps": "ami-0fd4a660",
+    "Good25Mbps": "ami-e1d8aa8e",
+    "Good5000Mbps": "ami-c4dba9ab"
+   },
+   "ap-southeast-1": {
+    "Best1000Mbps": "ami-4e0eb42d",
+    "Best200Mbps": "ami-5a0eb439",
+    "Best25Mbps": "ami-530eb430",
+    "Best5000Mbps": "ami-d70ab0b4",
+    "Better1000Mbps": "ami-800bb1e3",
+    "Better200Mbps": "ami-5c0eb43f",
+    "Better25Mbps": "ami-d608b2b5",
+    "Better5000Mbps": "ami-4e09b32d",
+    "Good1000Mbps": "ami-cb08b2a8",
+    "Good200Mbps": "ami-9708b2f4",
+    "Good25Mbps": "ami-dc08b2bf",
+    "Good5000Mbps": "ami-3a0eb459"
+   },
+   "ap-southeast-2": {
+    "Best1000Mbps": "ami-f4d8d397",
+    "Best200Mbps": "ami-18dfd47b",
+    "Best25Mbps": "ami-60d8d303",
+    "Best5000Mbps": "ami-f9d8d39a",
+    "Better1000Mbps": "ami-6ed8d30d",
+    "Better200Mbps": "ami-cdd9d2ae",
+    "Better25Mbps": "ami-ffd8d39c",
+    "Better5000Mbps": "ami-8eddd6ed",
+    "Good1000Mbps": "ami-e2ddd681",
+    "Good200Mbps": "ami-4bdfd428",
+    "Good25Mbps": "ami-05d8d366",
+    "Good5000Mbps": "ami-75d8d316"
+   },
+   "ca-central-1": {
+    "Best1000Mbps": "ami-0894286c",
+    "Best200Mbps": "ami-0994286d",
+    "Best25Mbps": "ami-f895299c",
+    "Best5000Mbps": "ami-93902cf7",
+    "Better1000Mbps": "ami-43922e27",
+    "Better200Mbps": "ami-93912df7",
+    "Better25Mbps": "ami-fe95299a",
+    "Better5000Mbps": "ami-4d932f29",
+    "Good1000Mbps": "ami-a5922ec1",
+    "Good200Mbps": "ami-52932f36",
+    "Good25Mbps": "ami-318c3055",
+    "Good5000Mbps": "ami-0b94286f"
+   },
+   "eu-central-1": {
+    "Best1000Mbps": "ami-db4f90b4",
+    "Best200Mbps": "ami-464d9229",
+    "Best25Mbps": "ami-c24e91ad",
+    "Best5000Mbps": "ami-87508fe8",
+    "Better1000Mbps": "ami-0c4f9063",
+    "Better200Mbps": "ami-f9518e96",
+    "Better25Mbps": "ami-444d922b",
+    "Better5000Mbps": "ami-904d92ff",
+    "Good1000Mbps": "ami-774d9218",
+    "Good200Mbps": "ami-d84f90b7",
+    "Good25Mbps": "ami-3f4d9250",
+    "Good5000Mbps": "ami-744d921b"
+   },
+   "eu-west-1": {
+    "Best1000Mbps": "ami-87bbb6e1",
+    "Best200Mbps": "ami-30a2af56",
+    "Best25Mbps": "ami-1fbdb079",
+    "Best5000Mbps": "ami-adbcb1cb",
+    "Better1000Mbps": "ami-98bdb0fe",
+    "Better200Mbps": "ami-21a2af47",
+    "Better25Mbps": "ami-b6a3aed0",
+    "Better5000Mbps": "ami-ddbbb6bb",
+    "Good1000Mbps": "ami-c9b8b5af",
+    "Good200Mbps": "ami-0bb9b46d",
+    "Good25Mbps": "ami-d7bbb6b1",
+    "Good5000Mbps": "ami-1fb9b479"
+   },
+   "eu-west-2": {
+    "Best1000Mbps": "ami-91a0b4f5",
+    "Best200Mbps": "ami-dba5b1bf",
+    "Best25Mbps": "ami-81a5b1e5",
+    "Best5000Mbps": "ami-42a5b126",
+    "Better1000Mbps": "ami-97a0b4f3",
+    "Better200Mbps": "ami-96a0b4f2",
+    "Better25Mbps": "ami-d8a5b1bc",
+    "Better5000Mbps": "ami-07a6b263",
+    "Good1000Mbps": "ami-3fa7b35b",
+    "Good200Mbps": "ami-daa5b1be",
+    "Good25Mbps": "ami-92a0b4f6",
+    "Good5000Mbps": "ami-52a0b436"
+   },
+   "sa-east-1": {
+    "Best1000Mbps": "ami-a88ee2c4",
+    "Best200Mbps": "ami-0c8ce060",
+    "Best25Mbps": "ami-d58de1b9",
+    "Best5000Mbps": "ami-208ee24c",
+    "Better1000Mbps": "ami-418fe32d",
+    "Better200Mbps": "ami-dc8ee2b0",
+    "Better25Mbps": "ami-408fe32c",
+    "Better5000Mbps": "ami-4a8fe326",
+    "Good1000Mbps": "ami-c68fe3aa",
+    "Good200Mbps": "ami-0e8ce062",
+    "Good25Mbps": "ami-548fe338",
+    "Good5000Mbps": "ami-358ee259"
+   },
+   "us-east-1": {
+    "Best1000Mbps": "ami-52751b44",
+    "Best200Mbps": "ami-1a78160c",
+    "Best25Mbps": "ami-09721c1f",
+    "Best5000Mbps": "ami-20791736",
+    "Better1000Mbps": "ami-13791705",
+    "Better200Mbps": "ami-c77917d1",
+    "Better25Mbps": "ami-ea7b15fc",
+    "Better5000Mbps": "ami-e4751bf2",
+    "Good1000Mbps": "ami-bd701eab",
+    "Good200Mbps": "ami-4c741a5a",
+    "Good25Mbps": "ami-134a2405",
+    "Good5000Mbps": "ami-d0701ec6"
+   },
+   "us-east-2": {
+    "Best1000Mbps": "ami-6ce7c009",
+    "Best200Mbps": "ami-8be7c0ee",
+    "Best25Mbps": "ami-3c183f59",
+    "Best5000Mbps": "ami-d2e7c0b7",
+    "Better1000Mbps": "ami-c2193ea7",
+    "Better200Mbps": "ami-2ce6c149",
+    "Better25Mbps": "ami-46193e23",
+    "Better5000Mbps": "ami-3b183f5e",
+    "Good1000Mbps": "ami-29e6c14c",
+    "Good200Mbps": "ami-6de7c008",
+    "Good25Mbps": "ami-c0193ea5",
+    "Good5000Mbps": "ami-dfe7c0ba"
+   },
+   "us-west-1": {
+    "Best1000Mbps": "ami-c76a4ca7",
+    "Best200Mbps": "ami-7a6c4a1a",
+    "Best25Mbps": "ami-c46f49a4",
+    "Best5000Mbps": "ami-9f6c4aff",
+    "Better1000Mbps": "ami-fa6c4a9a",
+    "Better200Mbps": "ami-e26d4b82",
+    "Better25Mbps": "ami-686a4c08",
+    "Better5000Mbps": "ami-da6f49ba",
+    "Good1000Mbps": "ami-486c4a28",
+    "Good200Mbps": "ami-fd6c4a9d",
+    "Good25Mbps": "ami-3f6d4b5f",
+    "Good5000Mbps": "ami-336d4b53"
+   },
+   "us-west-2": {
+    "Best1000Mbps": "ami-66bd2606",
+    "Best200Mbps": "ami-7abd261a",
+    "Best25Mbps": "ami-6bbd260b",
+    "Best5000Mbps": "ami-c6bd26a6",
+    "Better1000Mbps": "ami-cfbd26af",
+    "Better200Mbps": "ami-91b328f1",
+    "Better25Mbps": "ami-24b12a44",
+    "Better5000Mbps": "ami-44b22924",
+    "Good1000Mbps": "ami-cbbc27ab",
+    "Good200Mbps": "ami-80b328e0",
+    "Good25Mbps": "ami-ebbc278b",
+    "Good5000Mbps": "ami-b2b229d2"
+   }
+  }
+ },
+ "Metadata": {
+  "AWS::CloudFormation::Interface": {
+   "ParameterGroups": [
+    {
+     "Label": {
+      "default": "NETWORKING CONFIGURATION"
+     },
+     "Parameters": [
+      "Vpc",
+      "managementSubnetAz1",
+      "managementSubnetAz2",
+      "bigipManagementSecurityGroup",
+      "subnet1Az1",
+      "subnet1Az2",
+      "bigipExternalSecurityGroup",
+      "subnet2Az1",
+      "bigipInternalSecurityGroup",
+      "availabilityZone1",
+      "availabilityZone2"
+     ]
     },
-    "Metadata": {
-        "AWS::CloudFormation::Interface": {
-            "ParameterGroups": [
-                {
-                    "Label": {
-                        "default": "NETWORKING CONFIGURATION"
-                    },
-                    "Parameters": [
-                        "Vpc",
-                        "managementSubnetAz1",
-                        "managementSubnetAz2",
-                        "subnet1Az2",
-                        "bigipManagementSecurityGroup",
-                        "subnet1Az1",
-                        "bigipExternalSecurityGroup",
-                        "availabilityZone1",
-                        "availabilityZone2"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "INSTANCE CONFIGURATION"
-                    },
-                    "Parameters": [
-                        "adminUsername",
-                        "adminPassword",
-                        "imageName",
-                        "instanceType",
-                        "applicationInstanceType",
-                        "licenseKey1",
-                        "licenseKey2",
-                        "managementGuiPort",
-                        "sshKey",
-                        "restrictedSrcAddress",
-                        "iamAccessKey",
-                        "iamSecretKey"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "TAGS"
-                    },
-                    "Parameters": [
-                        "application",
-                        "environment",
-                        "group",
-                        "owner",
-                        "costcenter"
-                    ]
-                }
-            ],
-            "ParameterLabels": {
-                "Vpc": {
-                    "default": "VPC"
-                },
-                "adminPassword": {
-                    "default": "Admin Password"
-                },
-                "adminUsername": {
-                    "default": "Admin Username"
-                },
-                "application": {
-                    "default": "Application"
-                },
-                "applicationInstanceType": {
-                    "default": "Application Instance Type"
-                },
-                "availabilityZone1": {
-                    "default": "Availability Zone 1"
-                },
-                "availabilityZone2": {
-                    "default": "Availability Zone 2"
-                },
-                "bigipExternalSecurityGroup": {
-                    "default": "External Security Group"
-                },
-                "bigipManagementSecurityGroup": {
-                    "default": "Management Security Group"
-                },
-                "costcenter": {
-                    "default": "Cost Center"
-                },
-                "environment": {
-                    "default": "Environment"
-                },
-                "group": {
-                    "default": "Group"
-                },
-                "iamAccessKey": {
-                    "default": "IAM Access Key"
-                },
-                "iamSecretKey": {
-                    "default": "IAM Secret Key"
-                },
-                "imageName": {
-                    "default": "Image Name"
-                },
-                "instanceType": {
-                    "default": "AWS Instance Size"
-                },
-                "licenseKey1": {
-                    "default": "License Key1"
-                },
-                "managementGuiPort": {
-                    "default": "Management Port"
-                },
-                "managementSubnetAz1": {
-                    "default": "Management Subnet AZ1"
-                },
-                "managementSubnetAz2": {
-                    "default": "Management Subnet AZ2"
-                },
-                "owner": {
-                    "default": "Owner"
-                },
-                "restrictedSrcAddress": {
-                    "default": "Source Address(es) for SSH Access"
-                },
-                "sshKey": {
-                    "default": "SSH Key"
-                },
-                "subnet1Az1": {
-                    "default": "Subnet AZ1"
-                },
-                "subnet1Az2": {
-                    "default": "Subnet AZ2"
-                }
-            }
-        },
-        "Version": "1.0.0"
+    {
+     "Label": {
+      "default": "INSTANCE CONFIGURATION"
+     },
+     "Parameters": [
+      "imageName",
+      "instanceType",
+      "applicationInstanceType",
+      "licenseKey1",
+      "licenseKey2",
+      "managementGuiPort",
+      "sshKey",
+      "restrictedSrcAddress",
+      "ntpServer",
+      "timezone"
+     ]
     },
-    "Outputs": {
-        "Bigip1ExternalInterfacePrivateIp": {
-            "Description": "Internally routable IP of the public interface on BIG-IP",
-            "Value": {
-                "Fn::GetAtt": [
-                    "Bigip1subnet1Az1Interface",
-                    "PrimaryPrivateIpAddress"
-                ]
-            }
-        },
-        "Bigip1InstanceId": {
-            "Description": "Instance Id of BIG-IP in Amazon",
-            "Value": {
-                "Ref": "Bigip1Instance"
-            }
-        },
-        "Bigip1ManagementEipAddress": {
-            "Description": "IP address of the management port on BIG-IP",
-            "Value": {
-                "Ref": "Bigip1ManagementEipAddress"
-            }
-        },
-        "Bigip1ManagementInterface": {
-            "Description": "Management interface ID on BIG-IP",
-            "Value": {
-                "Ref": "Bigip1ManagementInterface"
-            }
-        },
-        "Bigip1ManagementInterfacePrivateIp": {
-            "Description": "Internally routable IP of the management interface on BIG-IP",
-            "Value": {
-                "Fn::GetAtt": [
-                    "Bigip1ManagementInterface",
-                    "PrimaryPrivateIpAddress"
-                ]
-            }
-        },
-        "Bigip1Url": {
-            "Description": "BIG-IP Management GUI",
-            "Value": {
-                "Fn::Join": [
-                    "",
-                    [
-                        "https://",
-                        {
-                            "Fn::GetAtt": [
-                                "Bigip1Instance",
-                                "PublicIp"
-                            ]
-                        }
-                    ]
-                ]
-            }
-        },
-        "Bigip1VipEipAddress": {
-            "Description": "EIP address for VIP",
-            "Value": {
-                "Fn::Join": [
-                    "",
-                    [
-                        "http://",
-                        {
-                            "Ref": "Bigip1VipEipAddress"
-                        },
-                        ":80"
-                    ]
-                ]
-            }
-        },
-        "Bigip1VipPrivateIp": {
-            "Description": "VIP on External Interface Secondary IP 1",
-            "Value": {
-                "Fn::Select": [
-                    "0",
-                    {
-                        "Fn::GetAtt": [
-                            "Bigip1subnet1Az1Interface",
-                            "SecondaryPrivateIpAddresses"
-                        ]
-                    }
-                ]
-            }
-        },
-        "Bigip1subnet1Az1Interface": {
-            "Description": "External interface Id on BIG-IP",
-            "Value": {
-                "Ref": "Bigip1subnet1Az1Interface"
-            }
-        },
-        "Bigip1subnet1Az1SelfEipAddress": {
-            "Description": "IP Address of the External interface attached to BIG-IP",
-            "Value": {
-                "Ref": "Bigip1subnet1Az1SelfEipAddress"
-            }
-        },
-        "Bigip2ExternalInterfacePrivateIp": {
-            "Description": "Internally routable IP of the public interface on BIG-IP",
-            "Value": {
-                "Fn::GetAtt": [
-                    "Bigip2subnet1Az1Interface",
-                    "PrimaryPrivateIpAddress"
-                ]
-            }
-        },
-        "Bigip2InstanceId": {
-            "Description": "Instance Id of BIG-IP in Amazon",
-            "Value": {
-                "Ref": "Bigip2Instance"
-            }
-        },
-        "Bigip2ManagementEipAddress": {
-            "Description": "IP address of the management port on BIG-IP",
-            "Value": {
-                "Ref": "Bigip2ManagementEipAddress"
-            }
-        },
-        "Bigip2ManagementInterface": {
-            "Description": "Management interface ID on BIG-IP",
-            "Value": {
-                "Ref": "Bigip2ManagementInterface"
-            }
-        },
-        "Bigip2ManagementInterfacePrivateIp": {
-            "Description": "Internally routable IP of the management interface on BIG-IP",
-            "Value": {
-                "Fn::GetAtt": [
-                    "Bigip2ManagementInterface",
-                    "PrimaryPrivateIpAddress"
-                ]
-            }
-        },
-        "Bigip2Url": {
-            "Description": "BIG-IP Management GUI",
-            "Value": {
-                "Fn::Join": [
-                    "",
-                    [
-                        "https://",
-                        {
-                            "Fn::GetAtt": [
-                                "Bigip2Instance",
-                                "PublicIp"
-                            ]
-                        }
-                    ]
-                ]
-            }
-        },
-        "Bigip2subnet1Az1Interface": {
-            "Description": "External interface Id on BIG-IP",
-            "Value": {
-                "Ref": "Bigip2subnet1Az1Interface"
-            }
-        },
-        "Bigip2subnet1Az1SelfEipAddress": {
-            "Description": "IP Address of the External interface attached to BIG-IP",
-            "Value": {
-                "Ref": "Bigip2subnet1Az1SelfEipAddress"
-            }
-        },
-        "availabilityZone1": {
-            "Description": "Availability Zone",
-            "Value": {
-                "Fn::GetAtt": [
-                    "Bigip1Instance",
-                    "AvailabilityZone"
-                ]
-            }
-        },
-        "availabilityZone2": {
-            "Description": "Availability Zone",
-            "Value": {
-                "Fn::GetAtt": [
-                    "Bigip2Instance",
-                    "AvailabilityZone"
-                ]
-            }
-        }
+    {
+     "Label": {
+      "default": "TAGS"
+     },
+     "Parameters": [
+      "application",
+      "environment",
+      "group",
+      "owner",
+      "costcenter"
+     ]
     },
-    "Parameters": {
-        "Vpc": {
-            "ConstraintDescription": "This must be an existing VPC within the working region.",
-            "Type": "AWS::EC2::VPC::Id"
-        },
-        "adminPassword": {
-            "ConstraintDescription": "Verify your BIG-IP VE Admin Password",
-            "Description": "BIG-IP VE Admin Password",
-            "MaxLength": "255",
-            "MinLength": "1",
-            "NoEcho": true,
-            "Type": "String"
-        },
-        "adminUsername": {
-            "ConstraintDescription": "Verify your BIG-IP VE Admin Username",
-            "Default": "admin",
-            "Description": "BIG-IP VE Admin Username",
-            "MaxLength": "255",
-            "MinLength": "1",
-            "Type": "String"
-        },
-        "application": {
-            "Default": "f5app",
-            "Description": "Name of the Application Tag",
-            "Type": "String"
-        },
-        "bigipExternalSecurityGroup": {
-            "ConstraintDescription": "The security group ID must be within an existing VPC",
-            "Description": "Public or External Security Group",
-            "Type": "AWS::EC2::SecurityGroup::Id"
-        },
-        "bigipManagementSecurityGroup": {
-            "ConstraintDescription": "The security group ID must be within an existing VPC",
-            "Description": "BIG-IP Management Security Group",
-            "Type": "AWS::EC2::SecurityGroup::Id"
-        },
-        "costcenter": {
-            "Default": "f5costcenter",
-            "Description": "Name of the Cost Center Tag",
-            "Type": "String"
-        },
-        "environment": {
-            "Default": "f5env",
-            "Description": "Name of the Environment Tag",
-            "Type": "String"
-        },
-        "group": {
-            "Default": "f5group",
-            "Description": "Name of the Group Tag",
-            "Type": "String"
-        },
-        "iamAccessKey": {
-            "AllowedPattern": "[\\w]*",
-            "ConstraintDescription": "Can contain only ASCII characters.",
-            "Description": "IAM Access key ID",
-            "MaxLength": "32",
-            "MinLength": "16",
-            "NoEcho": true,
-            "Type": "String"
-        },
-        "iamSecretKey": {
-            "AllowedPattern": "[\\x20-\\x7E]*",
-            "ConstraintDescription": "Can contain only ASCII characters.",
-            "Description": "IAM Secret access key",
-            "MaxLength": "255",
-            "MinLength": "1",
-            "NoEcho": true,
-            "Type": "String"
-        },
-        "imageName": {
-            "AllowedValues": [
-                "Best25Mbps",
-                "Best200Mbps",
-                "Best1000Mbps"
-            ],
-            "ConstraintDescription": "Must be a valid F5 BIG-IP VE image type",
-            "Default": "Best1000Mbps",
-            "Description": "F5 BIG-IP Performance Type",
-            "Type": "String"
-        },
-        "instanceType": {
-            "AllowedValues": [
-                "m3.2xlarge",
-                "m4.2xlarge",
-                "m4.4xlarge",
-                "m4.10xlarge",
-                "c3.4xlarge",
-                "c3.8xlarge",
-                "c4.4xlarge",
-                "c4.8xlarge",
-                "cc2.8xlarge"
-            ],
-            "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
-            "Default": "m3.2xlarge",
-            "Description": "AWS instance type",
-            "Type": "String"
-        },
-        "managementSubnetAz1": {
-            "ConstraintDescription": "The subnet ID must be within an existing VPC",
-            "Description": "Management Subnet ID",
-            "Type": "AWS::EC2::Subnet::Id"
-        },
-        "owner": {
-            "Default": "f5owner",
-            "Description": "Name of the Owner Tag",
-            "Type": "String"
-        },
-        "restrictedSrcAddress": {
-            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-            "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
-            "Default": "0.0.0.0/0",
-            "Description": " The IP address range that can be used to SSH to the EC2 instances",
-            "MaxLength": "18",
-            "MinLength": "9",
-            "Type": "String"
-        },
-        "sshKey": {
-            "Description": "Key pair for accessing the instance",
-            "Type": "AWS::EC2::KeyPair::KeyName"
-        },
-        "subnet1Az1": {
-            "ConstraintDescription": "The subnet ID must be within an existing VPC",
-            "Description": "Public or External subnet",
-            "Type": "AWS::EC2::Subnet::Id"
-        }
-    },
-    "Resources": {
-        "Bigip1Instance": {
-            "DependsOn": "Bigip2Instance",
-            "Metadata": {
-                "AWS::CloudFormation::Init": {
-                    "config": {
-                        "commands": {
-                            "001-disable-1nicautoconfig": {
-                                "command": "/usr/bin/setdb provision.1nicautoconfig disable"
-                            },
-                            "002-install-libs": {
-                                "command": {
-                                    "Fn::Join": [
-                                        " ",
-                                        [
-                                            "nohup /config/installCloudLibs.sh",
-                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
-                                        ]
-                                    ]
-                                }
-                            },
-                            "003-1nic-setup": {
-                                "command": {
-                                    "Fn::Join": [
-                                        " ",
-                                        []
-                                    ]
-                                }
-                            },
-                            "004-create-admin-user": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "nohup /config/waitThenRun.sh",
-                                            " f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
-                                            " --signal ADMIN_CREATED",
-                                            " --file /config/cloud/aws/createUser.sh",
-                                            " --cl-args ",
-                                            {
-                                                "Ref": "adminUsername"
-                                            },
-                                            " --log-level debug",
-                                            " -o /var/log/createUser.log",
-                                            " > /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
-                                        ]
-                                    ]
-                                }
-                            },
-                            "005-onboard-BIG-IP": {
-                                "command": {
-                                    "Fn::Join": [
-                                        " ",
-                                        [
-                                            "NAME_SERVER=`/config/getNameServer.sh eth1`;",
-                                            "nohup /config/waitThenRun.sh",
-                                            "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
-                                            "--wait-for ADMIN_CREATED",
-                                            "-o /var/log/onboard.log",
-                                            "--log-level debug",
-                                            "--no-reboot",
-                                            "--host localhost",
-                                            "--user ",
-                                            {
-                                                "Ref": "adminUsername"
-                                            },
-                                            "--password-url file:///config/cloud/aws/.adminPassword",
-                                            "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
-                                            "--ntp 0.us.pool.ntp.org",
-                                            "--ntp 1.us.pool.ntp.org",
-                                            "--tz UTC",
-                                            "--dns ${NAME_SERVER}",
-                                            "--module ltm:nominal",
-                                            "--module asm:nominal",
-                                            "--ping",
-                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
-                                        ]
-                                    ]
-                                }
-                            },
-                            "006-custom-config": {
-                                "command": {
-                                    "Fn::Join": [
-                                        " ",
-                                        [
-                                            "nohup /config/waitThenRun.sh",
-                                            "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
-                                            "--file /config/cloud/aws/custom-config.sh",
-                                            "--cwd /config/cloud/aws",
-                                            "-o /var/log/custom-config.log",
-                                            "--log-level debug",
-                                            "--wait-for ONBOARD_DONE",
-                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
-                                        ]
-                                    ]
-                                }
-                            }
-                        },
-                        "files": {
-                            "/config/cloud/aws/.adminPassword": {
-                                "content": {
-                                    "Ref": "adminPassword"
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/cloud/aws/createUser.sh": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "#!/bin/bash",
-                                            "PASSWORD=$(/bin/sed -e $'s:[\\'\"{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
-                                            "if [ \"$1\" = admin ]; then",
-                                            "    tmsh modify auth user \"$1\" password ${PASSWORD}",
-                                            "else",
-                                            "    tmsh create auth user \"$1\" password ${PASSWORD} shell bash partition-access replace-all-with { all-partitions { role admin } }",
-                                            "fi"
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/cloud/aws/custom-config.sh": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "#!/bin/bash\n",
-                                            "date\n",
-                                            "echo 'starting tmsh config'\n",
-                                            "tmsh modify sys global-settings aws-access-key",
-                                            {
-                                                "Ref": "iamAccessKey"
-                                            },
-                                            "\n",
-                                            "tmsh modify sys global-settings aws-secret-key",
-                                            {
-                                                "Ref": "iamSecretKey"
-                                            },
-                                            "\n",
-                                            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                            "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
-                                            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
-                                            "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
-                                            "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                                            "EXTIP='",
-                                            {
-                                                "Fn::GetAtt": [
-                                                    "Bigip1subnet1Az1Interface",
-                                                    "PrimaryPrivateIpAddress"
-                                                ]
-                                            },
-                                            "'\n",
-                                            "EXTPRIVIP='",
-                                            {
-                                                "Fn::Select": [
-                                                    "0",
-                                                    {
-                                                        "Fn::GetAtt": [
-                                                            "Bigip1subnet1Az1Interface",
-                                                            "SecondaryPrivateIpAddresses"
-                                                        ]
-                                                    }
-                                                ]
-                                            },
-                                            "'\n",
-                                            "EXTMASK=${GATEWAY_PREFIX}\n",
-                                            "tmsh create net vlan external interfaces add { 1.1 } \n",
-                                            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
-                                            "tmsh create net route default gw ${GATEWAY}\n",
-                                            "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
-                                            "tmsh mv cm device bigip1 ${HOSTNAME}\n",
-                                            "tmsh modify sys db dhclient.mgmt { value disable }\n",
-                                            "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
-                                            "echo 'sleeping additional 180 secs to wait for peer to boot'\n",
-                                            "sleep 180\n",
-                                            "PEER_HOSTNAME='",
-                                            {
-                                                "Fn::GetAtt": [
-                                                    "Bigip2Instance",
-                                                    "PrivateDnsName"
-                                                ]
-                                            },
-                                            "'\n",
-                                            "PEER_MGMTIP='",
-                                            {
-                                                "Fn::GetAtt": [
-                                                    "Bigip2ManagementInterface",
-                                                    "PrimaryPrivateIpAddress"
-                                                ]
-                                            },
-                                            "'\n",
-                                            "USERNAME=",
-                                            {
-                                                "Ref": "adminUsername"
-                                            },
-                                            "\n",
-                                            "PASSWORD=",
-                                            {
-                                                "Ref": "adminPassword"
-                                            },
-                                            "\n",
-                                            "tmsh modify cm trust-domain Root ca-devices add { ${PEER_MGMTIP} } name ${PEER_HOSTNAME} username \"${USERNAME}\" password \"${PASSWORD}\"\n",
-                                            "tmsh create cm device-group across_az_failover_group type sync-failover devices add { ${HOSTNAME} ${PEER_HOSTNAME} } auto-sync enabled\n",
-                                            "sleep 10\n",
-                                            "tmsh run cm config-sync to-group across_az_failover_group\n",
-                                            "curl -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
-                                            "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
-                                            "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
-                                            "tmsh modify asm policy /Common/linux-high active\n",
-                                            "tmsh create ltm policy app-ltm-policy strategy first-match legacy\n",
-                                            "tmsh modify ltm policy app-ltm-policy controls add { asm }\n",
-                                            "tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\n",
-                                            "tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\n",
-                                            "tmsh run cm config-sync to-group datasync-global-dg\n",
-                                            "rm /config/cloud/aws/.adminPassword\n",
-                                            "tmsh save /sys config\n",
-                                            "date\n",
-                                            "### START CUSTOM TMSH CONFIGURTION\n",
-                                            "### END CUSTOM TMSH CONFIGURATION"
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/cloud/f5-cloud-libs.tar.gz": {
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root",
-                                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.0.1/dist/f5-cloud-libs.tar.gz"
-                            },
-                            "/config/getNameServer.sh": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "INTERFACE=$1",
-                                            "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-                                            "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-                                            "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
-                                            "VPC_NET=${VPC_CIDR_BLOCK%/*}",
-                                            "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
-                                            "echo $NAME_SERVER"
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/installCloudLibs.sh": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "#!/bin/bash",
-                                            "echo about to execute",
-                                            "checks=0",
-                                            "while [ $checks -lt 120 ]; do echo checking mcpd",
-                                            "    tmsh -a show sys mcp-state field-fmt | grep -q running",
-                                            "    if [ $? == 0 ]; then",
-                                            "        echo mcpd ready",
-                                            "        break",
-                                            "    fi",
-                                            "    echo mcpd not ready yet",
-                                            "    let checks=checks+1",
-                                            "    sleep 10",
-                                            "done",
-                                            "echo loading sigcheck script",
-                                            "tmsh load sys config merge file /config/sigcheck",
-                                            "if [ $? != 0 ]; then",
-                                            "    echo cannot validate signature of /config/sigcheck",
-                                            "    exit",
-                                            "fi",
-                                            "echo loaded sigcheck",
-                                            "echo verifying f5-cloud-libs.targ.gz",
-                                            "tmsh run cli script verifyHash /config/cloud/f5-cloud-libs.tar.gz",
-                                            "if [ $? != 0 ]; then",
-                                            "    echo f5-cloud-libs.tar.gz does not match signature f5-coud-libs.tar.gz.f5sig",
-                                            "    exit",
-                                            "fi",
-                                            "echo verified f5-cloud-libs.tar.gz",
-                                            "echo expanding f5-cloud-libs.tar.gz",
-                                            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws",
-                                            "cd /config/cloud/aws/f5-cloud-libs",
-                                            "touch /config/cloud/cloudLibsReady"
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/sigcheck": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "cli script /Common/verifyHash {",
-                                            "    proc script::run {} {",
-                                            "        if {[catch {",
-                                            "            set file_path [lindex $tmsh::argv 1]",
-                                            "            set expected_hash f5c4206c0b093fb2f3a6e16409610ec0300b509dee9157b2c4801f99e41d08b1b1d2b6a3c75c6a509daee77c3103403aa4c8ae47c4b232a6ec76b4663017b11c",
-                                            "            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
-                                            "            if { $expected_hash eq $computed_hash } {",
-                                            "                exit 0",
-                                            "            }",
-                                            "            tmsh::log err {Hash does not match}",
-                                            "            exit 1",
-                                            "        }]} {",
-                                            "            tmsh::log err {Unexpected error in verifyHash}",
-                                            "            exit 1",
-                                            "        }",
-                                            "    }",
-                                            "    script-signature o4v4/Y2mV0cXV/eZefkq6wXlE5GCACYd6+HuN4ScfL/meD0Grw1aJxZGp9MAvv4Ik3IPIwS2n8WgvfG/cDKcwQHVMGFJN4kmN4tzhr9Zdf3879hKqJaqbLLkifDsYk8bX3ontvrqT7r7XKboBv2qygPaUrVZPtkxzbcAJ26ewIj9m+Rui2yp+uYskZAL0bAPi/g5KDTZvEz0rCtSSxOeVljk5lr6vA79HPCHfglCKucH1QnbcrGhpARcs+wiwCYC18yiKsOBl+BVRTQwXuQYs8RsNhCJ8bHQeM8dOHUZj5/1Exh0V6QOcqG8/6pMuSmXfduNKzmQQPyN+bO4ETQ03Q==",
-                                            "}"
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/waitThenRun.sh": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "#!/bin/bash",
-                                            "while true; do echo \"waiting for cloud libs install to complete\"",
-                                            "    if [ -f /config/cloud/cloudLibsReady ]; then",
-                                            "        break",
-                                            "    else",
-                                            "        sleep 10",
-                                            "    fi",
-                                            "done",
-                                            "\"$@\""
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            }
-                        }
-                    }
-                }
-            },
-            "Properties": {
-                "ImageId": {
-                    "Fn::FindInMap": [
-                        "BigipRegionMap",
-                        {
-                            "Ref": "AWS::Region"
-                        },
-                        {
-                            "Ref": "imageName"
-                        }
-                    ]
-                },
-                "InstanceType": {
-                    "Ref": "instanceType"
-                },
-                "KeyName": {
-                    "Ref": "sshKey"
-                },
-                "NetworkInterfaces": [
-                    {
-                        "Description": "Management Interface",
-                        "DeviceIndex": "0",
-                        "NetworkInterfaceId": {
-                            "Ref": "Bigip1ManagementInterface"
-                        }
-                    },
-                    {
-                        "Description": "Public or External Interface",
-                        "DeviceIndex": "1",
-                        "NetworkInterfaceId": {
-                            "Ref": "Bigip1subnet1Az1Interface"
-                        }
-                    }
-                ],
-                "Tags": [
-                    {
-                        "Key": "Application",
-                        "Value": {
-                            "Ref": "application"
-                        }
-                    },
-                    {
-                        "Key": "Costcenter",
-                        "Value": {
-                            "Ref": "costcenter"
-                        }
-                    },
-                    {
-                        "Key": "Environment",
-                        "Value": {
-                            "Ref": "environment"
-                        }
-                    },
-                    {
-                        "Key": "Group",
-                        "Value": {
-                            "Ref": "group"
-                        }
-                    },
-                    {
-                        "Key": "Name",
-                        "Value": {
-                            "Fn::Join": [
-                                "",
-                                [
-                                    "Big-IP: ",
-                                    {
-                                        "Ref": "AWS::StackName"
-                                    }
-                                ]
-                            ]
-                        }
-                    },
-                    {
-                        "Key": "Owner",
-                        "Value": {
-                            "Ref": "owner"
-                        }
-                    }
-                ],
-                "UserData": {
-                    "Fn::Base64": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                "#!/bin/bash\n",
-                                "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
-                                {
-                                    "Ref": "AWS::StackId"
-                                },
-                                " -r ",
-                                "Bigip1Instance",
-                                " --region ",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                "\n"
-                            ]
-                        ]
-                    }
-                }
-            },
-            "Type": "AWS::EC2::Instance"
-        },
-        "Bigip1ManagementEipAddress": {
-            "Properties": {
-                "Domain": "vpc"
-            },
-            "Type": "AWS::EC2::EIP"
-        },
-        "Bigip1ManagementEipAssociation": {
-            "Properties": {
-                "AllocationId": {
-                    "Fn::GetAtt": [
-                        "Bigip1ManagementEipAddress",
-                        "AllocationId"
-                    ]
-                },
-                "NetworkInterfaceId": {
-                    "Ref": "Bigip1ManagementInterface"
-                }
-            },
-            "Type": "AWS::EC2::EIPAssociation"
-        },
-        "Bigip1ManagementInterface": {
-            "Properties": {
-                "Description": "Management Interface for the BIG-IP",
-                "GroupSet": [
-                    {
-                        "Ref": "bigipManagementSecurityGroup"
-                    }
-                ],
-                "SubnetId": {
-                    "Ref": "managementSubnetAz1"
-                }
-            },
-            "Type": "AWS::EC2::NetworkInterface"
-        },
-        "Bigip1VipEipAddress": {
-            "Properties": {
-                "Domain": "vpc"
-            },
-            "Type": "AWS::EC2::EIP"
-        },
-        "Bigip1VipEipAssociation": {
-            "Properties": {
-                "AllocationId": {
-                    "Fn::GetAtt": [
-                        "Bigip1VipEipAddress",
-                        "AllocationId"
-                    ]
-                },
-                "NetworkInterfaceId": {
-                    "Ref": "Bigip1subnet1Az1Interface"
-                },
-                "PrivateIpAddress": {
-                    "Fn::Select": [
-                        "0",
-                        {
-                            "Fn::GetAtt": [
-                                "Bigip1subnet1Az1Interface",
-                                "SecondaryPrivateIpAddresses"
-                            ]
-                        }
-                    ]
-                }
-            },
-            "Type": "AWS::EC2::EIPAssociation"
-        },
-        "Bigip1subnet1Az1Interface": {
-            "Properties": {
-                "Description": "Public External Interface for the BIG-IP",
-                "GroupSet": [
-                    {
-                        "Ref": "bigipExternalSecurityGroup"
-                    }
-                ],
-                "SecondaryPrivateIpAddressCount": "1",
-                "SubnetId": {
-                    "Ref": "subnet1Az1"
-                }
-            },
-            "Type": "AWS::EC2::NetworkInterface"
-        },
-        "Bigip1subnet1Az1SelfEipAddress": {
-            "Properties": {
-                "Domain": "vpc"
-            },
-            "Type": "AWS::EC2::EIP"
-        },
-        "Bigip1subnet1Az1SelfEipAssociation": {
-            "Properties": {
-                "AllocationId": {
-                    "Fn::GetAtt": [
-                        "Bigip1subnet1Az1SelfEipAddress",
-                        "AllocationId"
-                    ]
-                },
-                "NetworkInterfaceId": {
-                    "Ref": "Bigip1subnet1Az1Interface"
-                },
-                "PrivateIpAddress": {
-                    "Fn::GetAtt": [
-                        "Bigip1subnet1Az1Interface",
-                        "PrimaryPrivateIpAddress"
-                    ]
-                }
-            },
-            "Type": "AWS::EC2::EIPAssociation"
-        },
-        "Bigip2Instance": {
-            "Metadata": {
-                "AWS::CloudFormation::Init": {
-                    "config": {
-                        "commands": {
-                            "001-disable-1nicautoconfig": {
-                                "command": "/usr/bin/setdb provision.1nicautoconfig disable"
-                            },
-                            "002-install-libs": {
-                                "command": {
-                                    "Fn::Join": [
-                                        " ",
-                                        [
-                                            "nohup /config/installCloudLibs.sh",
-                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
-                                        ]
-                                    ]
-                                }
-                            },
-                            "003-1nic-setup": {
-                                "command": {
-                                    "Fn::Join": [
-                                        " ",
-                                        []
-                                    ]
-                                }
-                            },
-                            "004-create-admin-user": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "nohup /config/waitThenRun.sh",
-                                            " f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
-                                            " --signal ADMIN_CREATED",
-                                            " --file /config/cloud/aws/createUser.sh",
-                                            " --cl-args ",
-                                            {
-                                                "Ref": "adminUsername"
-                                            },
-                                            " --log-level debug",
-                                            " -o /var/log/createUser.log",
-                                            " > /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
-                                        ]
-                                    ]
-                                }
-                            },
-                            "005-onboard-BIG-IP": {
-                                "command": {
-                                    "Fn::Join": [
-                                        " ",
-                                        [
-                                            "NAME_SERVER=`/config/getNameServer.sh eth1`;",
-                                            "nohup /config/waitThenRun.sh",
-                                            "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/onboard.js",
-                                            "--wait-for ADMIN_CREATED",
-                                            "-o /var/log/onboard.log",
-                                            "--log-level debug",
-                                            "--no-reboot",
-                                            "--host localhost",
-                                            "--user ",
-                                            {
-                                                "Ref": "adminUsername"
-                                            },
-                                            "--password-url file:///config/cloud/aws/.adminPassword",
-                                            "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
-                                            "--ntp 0.us.pool.ntp.org",
-                                            "--ntp 1.us.pool.ntp.org",
-                                            "--tz UTC",
-                                            "--dns ${NAME_SERVER}",
-                                            "--module ltm:nominal",
-                                            "--module asm:nominal",
-                                            "--ping",
-                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
-                                        ]
-                                    ]
-                                }
-                            },
-                            "006-custom-config": {
-                                "command": {
-                                    "Fn::Join": [
-                                        " ",
-                                        [
-                                            "nohup /config/waitThenRun.sh",
-                                            "f5-rest-node /config/cloud/aws/f5-cloud-libs/scripts/runScript.js",
-                                            "--file /config/cloud/aws/custom-config.sh",
-                                            "--cwd /config/cloud/aws",
-                                            "-o /var/log/custom-config.log",
-                                            "--log-level debug",
-                                            "--wait-for ONBOARD_DONE",
-                                            "> /var/log/cloudlibs-install.log 2> /var/log/cloudlibs-install.log < /dev/null &"
-                                        ]
-                                    ]
-                                }
-                            }
-                        },
-                        "files": {
-                            "/config/cloud/aws/.adminPassword": {
-                                "content": {
-                                    "Ref": "adminPassword"
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/cloud/aws/createUser.sh": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "#!/bin/bash",
-                                            "PASSWORD=$(/bin/sed -e $'s:[\\'\"{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
-                                            "if [ \"$1\" = admin ]; then",
-                                            "    tmsh modify auth user \"$1\" password ${PASSWORD}",
-                                            "else",
-                                            "    tmsh create auth user \"$1\" password ${PASSWORD} shell bash partition-access replace-all-with { all-partitions { role admin } }",
-                                            "fi"
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/cloud/aws/custom-config.sh": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "#!/bin/bash\n",
-                                            "date\n",
-                                            "echo 'starting tmsh config'\n",
-                                            "tmsh modify sys global-settings aws-access-key",
-                                            {
-                                                "Ref": "iamAccessKey"
-                                            },
-                                            "\n",
-                                            "tmsh modify sys global-settings aws-secret-key",
-                                            {
-                                                "Ref": "iamSecretKey"
-                                            },
-                                            "\n",
-                                            "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                            "GATEWAY_CIDR_BLOCK=`curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
-                                            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
-                                            "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
-                                            "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                                            "EXTIP='",
-                                            {
-                                                "Fn::GetAtt": [
-                                                    "Bigip2subnet1Az1Interface",
-                                                    "PrimaryPrivateIpAddress"
-                                                ]
-                                            },
-                                            "'\n",
-                                            "EXTPRIVIP='",
-                                            {
-                                                "Fn::Select": [
-                                                    "0",
-                                                    {
-                                                        "Fn::GetAtt": [
-                                                            "Bigip2subnet1Az1Interface",
-                                                            "SecondaryPrivateIpAddresses"
-                                                        ]
-                                                    }
-                                                ]
-                                            },
-                                            "'\n",
-                                            "EXTMASK=${GATEWAY_PREFIX}\n",
-                                            "tmsh create net vlan external interfaces add { 1.1 } \n",
-                                            "tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
-                                            "tmsh create net route default gw ${GATEWAY}\n",
-                                            "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
-                                            "tmsh mv cm device bigip1 ${HOSTNAME}\n",
-                                            "tmsh modify sys db dhclient.mgmt { value disable }\n",
-                                            "tmsh modify cm device ${HOSTNAME} configsync-ip ${EXTIP} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\n",
-                                            "rm /config/cloud/aws/.adminPassword\n",
-                                            "tmsh save /sys config\n",
-                                            "date\n",
-                                            "### START CUSTOM TMSH CONFIGURTION\n",
-                                            "### END CUSTOM TMSH CONFIGURATION"
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/cloud/f5-cloud-libs.tar.gz": {
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root",
-                                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v2.0.1/dist/f5-cloud-libs.tar.gz"
-                            },
-                            "/config/getNameServer.sh": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "INTERFACE=$1",
-                                            "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-                                            "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-                                            "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
-                                            "VPC_NET=${VPC_CIDR_BLOCK%/*}",
-                                            "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
-                                            "echo $NAME_SERVER"
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/installCloudLibs.sh": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "#!/bin/bash",
-                                            "echo about to execute",
-                                            "checks=0",
-                                            "while [ $checks -lt 120 ]; do echo checking mcpd",
-                                            "    tmsh -a show sys mcp-state field-fmt | grep -q running",
-                                            "    if [ $? == 0 ]; then",
-                                            "        echo mcpd ready",
-                                            "        break",
-                                            "    fi",
-                                            "    echo mcpd not ready yet",
-                                            "    let checks=checks+1",
-                                            "    sleep 10",
-                                            "done",
-                                            "echo loading sigcheck script",
-                                            "tmsh load sys config merge file /config/sigcheck",
-                                            "if [ $? != 0 ]; then",
-                                            "    echo cannot validate signature of /config/sigcheck",
-                                            "    exit",
-                                            "fi",
-                                            "echo loaded sigcheck",
-                                            "echo verifying f5-cloud-libs.targ.gz",
-                                            "tmsh run cli script verifyHash /config/cloud/f5-cloud-libs.tar.gz",
-                                            "if [ $? != 0 ]; then",
-                                            "    echo f5-cloud-libs.tar.gz does not match signature f5-coud-libs.tar.gz.f5sig",
-                                            "    exit",
-                                            "fi",
-                                            "echo verified f5-cloud-libs.tar.gz",
-                                            "echo expanding f5-cloud-libs.tar.gz",
-                                            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws",
-                                            "cd /config/cloud/aws/f5-cloud-libs",
-                                            "touch /config/cloud/cloudLibsReady"
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/sigcheck": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "cli script /Common/verifyHash {",
-                                            "    proc script::run {} {",
-                                            "        if {[catch {",
-                                            "            set file_path [lindex $tmsh::argv 1]",
-                                            "            set expected_hash f5c4206c0b093fb2f3a6e16409610ec0300b509dee9157b2c4801f99e41d08b1b1d2b6a3c75c6a509daee77c3103403aa4c8ae47c4b232a6ec76b4663017b11c",
-                                            "            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]",
-                                            "            if { $expected_hash eq $computed_hash } {",
-                                            "                exit 0",
-                                            "            }",
-                                            "            tmsh::log err {Hash does not match}",
-                                            "            exit 1",
-                                            "        }]} {",
-                                            "            tmsh::log err {Unexpected error in verifyHash}",
-                                            "            exit 1",
-                                            "        }",
-                                            "    }",
-                                            "    script-signature o4v4/Y2mV0cXV/eZefkq6wXlE5GCACYd6+HuN4ScfL/meD0Grw1aJxZGp9MAvv4Ik3IPIwS2n8WgvfG/cDKcwQHVMGFJN4kmN4tzhr9Zdf3879hKqJaqbLLkifDsYk8bX3ontvrqT7r7XKboBv2qygPaUrVZPtkxzbcAJ26ewIj9m+Rui2yp+uYskZAL0bAPi/g5KDTZvEz0rCtSSxOeVljk5lr6vA79HPCHfglCKucH1QnbcrGhpARcs+wiwCYC18yiKsOBl+BVRTQwXuQYs8RsNhCJ8bHQeM8dOHUZj5/1Exh0V6QOcqG8/6pMuSmXfduNKzmQQPyN+bO4ETQ03Q==",
-                                            "}"
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            },
-                            "/config/waitThenRun.sh": {
-                                "content": {
-                                    "Fn::Join": [
-                                        "\n",
-                                        [
-                                            "#!/bin/bash",
-                                            "while true; do echo \"waiting for cloud libs install to complete\"",
-                                            "    if [ -f /config/cloud/cloudLibsReady ]; then",
-                                            "        break",
-                                            "    else",
-                                            "        sleep 10",
-                                            "    fi",
-                                            "done",
-                                            "\"$@\""
-                                        ]
-                                    ]
-                                },
-                                "group": "root",
-                                "mode": "000755",
-                                "owner": "root"
-                            }
-                        }
-                    }
-                }
-            },
-            "Properties": {
-                "ImageId": {
-                    "Fn::FindInMap": [
-                        "BigipRegionMap",
-                        {
-                            "Ref": "AWS::Region"
-                        },
-                        {
-                            "Ref": "imageName"
-                        }
-                    ]
-                },
-                "InstanceType": {
-                    "Ref": "instanceType"
-                },
-                "KeyName": {
-                    "Ref": "sshKey"
-                },
-                "NetworkInterfaces": [
-                    {
-                        "Description": "Management Interface",
-                        "DeviceIndex": "0",
-                        "NetworkInterfaceId": {
-                            "Ref": "Bigip2ManagementInterface"
-                        }
-                    },
-                    {
-                        "Description": "Public or External Interface",
-                        "DeviceIndex": "1",
-                        "NetworkInterfaceId": {
-                            "Ref": "Bigip2subnet1Az1Interface"
-                        }
-                    }
-                ],
-                "Tags": [
-                    {
-                        "Key": "Application",
-                        "Value": {
-                            "Ref": "application"
-                        }
-                    },
-                    {
-                        "Key": "Costcenter",
-                        "Value": {
-                            "Ref": "costcenter"
-                        }
-                    },
-                    {
-                        "Key": "Environment",
-                        "Value": {
-                            "Ref": "environment"
-                        }
-                    },
-                    {
-                        "Key": "Group",
-                        "Value": {
-                            "Ref": "group"
-                        }
-                    },
-                    {
-                        "Key": "Name",
-                        "Value": {
-                            "Fn::Join": [
-                                "",
-                                [
-                                    "Big-IP: ",
-                                    {
-                                        "Ref": "AWS::StackName"
-                                    }
-                                ]
-                            ]
-                        }
-                    },
-                    {
-                        "Key": "Owner",
-                        "Value": {
-                            "Ref": "owner"
-                        }
-                    }
-                ],
-                "UserData": {
-                    "Fn::Base64": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                "#!/bin/bash\n",
-                                "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
-                                {
-                                    "Ref": "AWS::StackId"
-                                },
-                                " -r ",
-                                "Bigip2Instance",
-                                " --region ",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                "\n"
-                            ]
-                        ]
-                    }
-                }
-            },
-            "Type": "AWS::EC2::Instance"
-        },
-        "Bigip2ManagementEipAddress": {
-            "Properties": {
-                "Domain": "vpc"
-            },
-            "Type": "AWS::EC2::EIP"
-        },
-        "Bigip2ManagementEipAssociation": {
-            "Properties": {
-                "AllocationId": {
-                    "Fn::GetAtt": [
-                        "Bigip2ManagementEipAddress",
-                        "AllocationId"
-                    ]
-                },
-                "NetworkInterfaceId": {
-                    "Ref": "Bigip2ManagementInterface"
-                }
-            },
-            "Type": "AWS::EC2::EIPAssociation"
-        },
-        "Bigip2ManagementInterface": {
-            "Properties": {
-                "Description": "Management Interface for the BIG-IP",
-                "GroupSet": [
-                    {
-                        "Ref": "bigipManagementSecurityGroup"
-                    }
-                ],
-                "SubnetId": {
-                    "Ref": "managementSubnetAz1"
-                }
-            },
-            "Type": "AWS::EC2::NetworkInterface"
-        },
-        "Bigip2subnet1Az1Interface": {
-            "Properties": {
-                "Description": "Public External Interface for the BIG-IP",
-                "GroupSet": [
-                    {
-                        "Ref": "bigipExternalSecurityGroup"
-                    }
-                ],
-                "SecondaryPrivateIpAddressCount": "1",
-                "SubnetId": {
-                    "Ref": "subnet1Az1"
-                }
-            },
-            "Type": "AWS::EC2::NetworkInterface"
-        },
-        "Bigip2subnet1Az1SelfEipAddress": {
-            "Properties": {
-                "Domain": "vpc"
-            },
-            "Type": "AWS::EC2::EIP"
-        },
-        "Bigip2subnet1Az1SelfEipAssociation": {
-            "Properties": {
-                "AllocationId": {
-                    "Fn::GetAtt": [
-                        "Bigip2subnet1Az1SelfEipAddress",
-                        "AllocationId"
-                    ]
-                },
-                "NetworkInterfaceId": {
-                    "Ref": "Bigip2subnet1Az1Interface"
-                },
-                "PrivateIpAddress": {
-                    "Fn::GetAtt": [
-                        "Bigip2subnet1Az1Interface",
-                        "PrimaryPrivateIpAddress"
-                    ]
-                }
-            },
-            "Type": "AWS::EC2::EIPAssociation"
-        }
+    {
+     "Label": {
+      "default": ""
+     },
+     "Parameters": []
     }
+   ],
+   "ParameterLabels": {
+    "Vpc": {
+     "default": "VPC"
+    },
+    "application": {
+     "default": "Application"
+    },
+    "applicationInstanceType": {
+     "default": "Application Instance Type"
+    },
+    "availabilityZone1": {
+     "default": "Availability Zone 1"
+    },
+    "availabilityZone2": {
+     "default": "Availability Zone 2"
+    },
+    "bigipExternalSecurityGroup": {
+     "default": "External Security Group"
+    },
+    "bigipInternalSecurityGroup": {
+     "default": "Internal Security Group"
+    },
+    "bigipManagementSecurityGroup": {
+     "default": "Management Security Group"
+    },
+    "bigiqAddress": {
+     "default": "IP address of the BIG-IQ device that contains the pool of licenses"
+    },
+    "bigiqLicensePoolName": {
+     "default": "Name of BIG-IQ License Pool"
+    },
+    "bigiqPasswordS3Uri": {
+     "default": "S3 URI (s3://bucketname/objectname) of BIG-IQ Password file"
+    },
+    "bigiqUsername": {
+     "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
+    },
+    "costcenter": {
+     "default": "Cost Center"
+    },
+    "environment": {
+     "default": "Environment"
+    },
+    "group": {
+     "default": "Group"
+    },
+    "imageName": {
+     "default": "Image Name"
+    },
+    "instanceType": {
+     "default": "AWS Instance Size"
+    },
+    "licenseKey1": {
+     "default": "License Key1"
+    },
+    "licenseKey2": {
+     "default": "License Key2"
+    },
+    "managementGuiPort": {
+     "default": "Management Port"
+    },
+    "managementSubnetAz1": {
+     "default": "Management Subnet AZ1"
+    },
+    "managementSubnetAz2": {
+     "default": "Management Subnet AZ2"
+    },
+    "ntpServer": {
+     "default": "NTP Server"
+    },
+    "owner": {
+     "default": "Owner"
+    },
+    "restrictedSrcAddress": {
+     "default": "Source Address(es) for SSH Access"
+    },
+    "sshKey": {
+     "default": "SSH Key"
+    },
+    "subnet1Az1": {
+     "default": "Subnet1 AZ1"
+    },
+    "subnet1Az2": {
+     "default": "Subnet1 AZ2"
+    },
+    "subnet2Az1": {
+     "default": "Subnet2 AZ1"
+    },
+    "timezone": {
+     "default": "Timezone (Olson)"
+    }
+   }
+  },
+  "Version": "2.4.0"
+ },
+ "Outputs": {
+  "Bigip1ExternalInterfacePrivateIp": {
+   "Description": "Internally routable IP of the public interface on BIG-IP",
+   "Value": {
+    "Fn::GetAtt": [
+     "Bigip1subnet1Az1Interface",
+     "PrimaryPrivateIpAddress"
+    ]
+   }
+  },
+  "Bigip1InstanceId": {
+   "Description": "Instance Id of BIG-IP in Amazon",
+   "Value": {
+    "Ref": "Bigip1Instance"
+   }
+  },
+  "Bigip1ManagementEipAddress": {
+   "Description": "IP address of the management port on BIG-IP",
+   "Value": {
+    "Ref": "Bigip1ManagementEipAddress"
+   }
+  },
+  "Bigip1ManagementInterface": {
+   "Description": "Management interface ID on BIG-IP",
+   "Value": {
+    "Ref": "Bigip1ManagementInterface"
+   }
+  },
+  "Bigip1ManagementInterfacePrivateIp": {
+   "Description": "Internally routable IP of the management interface on BIG-IP",
+   "Value": {
+    "Fn::GetAtt": [
+     "Bigip1ManagementInterface",
+     "PrimaryPrivateIpAddress"
+    ]
+   }
+  },
+  "Bigip1Url": {
+   "Description": "BIG-IP Management GUI",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "Bigip1Instance",
+        "PublicIp"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "Bigip1VipEipAddress": {
+   "Description": "EIP address for VIP",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Ref": "Bigip1VipEipAddress"
+      },
+      ":80"
+     ]
+    ]
+   }
+  },
+  "Bigip1VipPrivateIp": {
+   "Description": "VIP on External Interface Secondary IP 1",
+   "Value": {
+    "Fn::Select": [
+     "0",
+     {
+      "Fn::GetAtt": [
+       "Bigip1subnet1Az1Interface",
+       "SecondaryPrivateIpAddresses"
+      ]
+     }
+    ]
+   }
+  },
+  "Bigip1subnet1Az1Interface": {
+   "Description": "External interface Id on BIG-IP",
+   "Value": {
+    "Ref": "Bigip1subnet1Az1Interface"
+   }
+  },
+  "Bigip1subnet1Az1SelfEipAddress": {
+   "Description": "IP Address of the External interface attached to BIG-IP",
+   "Value": {
+    "Ref": "Bigip1subnet1Az1SelfEipAddress"
+   }
+  },
+  "Bigip2ExternalInterfacePrivateIp": {
+   "Description": "Internally routable IP of the public interface on BIG-IP",
+   "Value": {
+    "Fn::GetAtt": [
+     "Bigip2subnet1Az1Interface",
+     "PrimaryPrivateIpAddress"
+    ]
+   }
+  },
+  "Bigip2InstanceId": {
+   "Description": "Instance Id of BIG-IP in Amazon",
+   "Value": {
+    "Ref": "Bigip2Instance"
+   }
+  },
+  "Bigip2ManagementEipAddress": {
+   "Description": "IP address of the management port on BIG-IP",
+   "Value": {
+    "Ref": "Bigip2ManagementEipAddress"
+   }
+  },
+  "Bigip2ManagementInterface": {
+   "Description": "Management interface ID on BIG-IP",
+   "Value": {
+    "Ref": "Bigip2ManagementInterface"
+   }
+  },
+  "Bigip2ManagementInterfacePrivateIp": {
+   "Description": "Internally routable IP of the management interface on BIG-IP",
+   "Value": {
+    "Fn::GetAtt": [
+     "Bigip2ManagementInterface",
+     "PrimaryPrivateIpAddress"
+    ]
+   }
+  },
+  "Bigip2Url": {
+   "Description": "BIG-IP Management GUI",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "Bigip2Instance",
+        "PublicIp"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "Bigip2subnet1Az1Interface": {
+   "Description": "External interface Id on BIG-IP",
+   "Value": {
+    "Ref": "Bigip2subnet1Az1Interface"
+   }
+  },
+  "Bigip2subnet1Az1SelfEipAddress": {
+   "Description": "IP Address of the External interface attached to BIG-IP",
+   "Value": {
+    "Ref": "Bigip2subnet1Az1SelfEipAddress"
+   }
+  },
+  "availabilityZone1": {
+   "Description": "Availability Zone",
+   "Value": {
+    "Fn::GetAtt": [
+     "Bigip1Instance",
+     "AvailabilityZone"
+    ]
+   }
+  },
+  "availabilityZone2": {
+   "Description": "Availability Zone",
+   "Value": {
+    "Fn::GetAtt": [
+     "Bigip2Instance",
+     "AvailabilityZone"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "Vpc": {
+   "ConstraintDescription": "This must be an existing VPC within the working region.",
+   "Type": "AWS::EC2::VPC::Id"
+  },
+  "application": {
+   "Default": "f5app",
+   "Description": "Name of the Application Tag",
+   "Type": "String"
+  },
+  "bigipExternalSecurityGroup": {
+   "ConstraintDescription": "The security group ID must be within an existing VPC",
+   "Description": "Public or External Security Group",
+   "Type": "AWS::EC2::SecurityGroup::Id"
+  },
+  "bigipManagementSecurityGroup": {
+   "ConstraintDescription": "The security group ID must be within an existing VPC",
+   "Description": "BIG-IP Management Security Group",
+   "Type": "AWS::EC2::SecurityGroup::Id"
+  },
+  "costcenter": {
+   "Default": "f5costcenter",
+   "Description": "Name of the Cost Center Tag",
+   "Type": "String"
+  },
+  "environment": {
+   "Default": "f5env",
+   "Description": "Name of the Environment Tag",
+   "Type": "String"
+  },
+  "group": {
+   "Default": "f5group",
+   "Description": "Name of the Group Tag",
+   "Type": "String"
+  },
+  "imageName": {
+   "AllowedValues": [
+    "Best25Mbps",
+    "Best200Mbps",
+    "Best1000Mbps",
+    "Best5000Mbps"
+   ],
+   "ConstraintDescription": "Must be a valid F5 BIG-IP VE image type",
+   "Default": "Best1000Mbps",
+   "Description": "F5 BIG-IP Performance Type",
+   "Type": "String"
+  },
+  "instanceType": {
+   "AllowedValues": [
+    "m3.2xlarge",
+    "m4.2xlarge",
+    "m4.4xlarge",
+    "m4.10xlarge",
+    "c3.4xlarge",
+    "c3.8xlarge",
+    "c4.4xlarge",
+    "c4.8xlarge",
+    "cc2.8xlarge"
+   ],
+   "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
+   "Default": "m3.2xlarge",
+   "Description": "AWS instance type",
+   "Type": "String"
+  },
+  "managementSubnetAz1": {
+   "ConstraintDescription": "The subnet ID must be within an existing VPC",
+   "Description": "Management Subnet ID",
+   "Type": "AWS::EC2::Subnet::Id"
+  },
+  "ntpServer": {
+   "Default": "0.pool.ntp.org",
+   "Description": "NTP server for this implementation",
+   "Type": "String"
+  },
+  "owner": {
+   "Default": "f5owner",
+   "Description": "Name of the Owner Tag",
+   "Type": "String"
+  },
+  "restrictedSrcAddress": {
+   "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+   "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+   "Default": "0.0.0.0/0",
+   "Description": " The IP address range that can be used to SSH to the EC2 instances",
+   "MaxLength": "18",
+   "MinLength": "9",
+   "Type": "String"
+  },
+  "sshKey": {
+   "Description": "Key pair for accessing the instance",
+   "Type": "AWS::EC2::KeyPair::KeyName"
+  },
+  "subnet1Az1": {
+   "ConstraintDescription": "The subnet ID must be within an existing VPC",
+   "Description": "Public or External subnet",
+   "Type": "AWS::EC2::Subnet::Id"
+  },
+  "timezone": {
+   "Default": "UTC",
+   "Description": "Olson timezone string from /usr/share/zoneinfo",
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "Bigip1Instance": {
+   "Metadata": {
+    "AWS::CloudFormation::Init": {
+     "config": {
+      "commands": {
+       "001-disable-1nicautoconfig": {
+        "command": "/usr/bin/setdb provision.1nicautoconfig disable"
+       },
+       "002-install-libs": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/installCloudLibs.sh",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       },
+       "003-1nic-setup": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          []
+         ]
+        }
+       },
+       "004-generate-password": {
+        "command": {
+         "Fn::Join": [
+          "",
+          [
+           "nohup /config/waitThenRun.sh",
+           " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           " --signal PASSWORD_CREATED",
+           " --file f5-rest-node",
+           " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
+           " --log-level verbose",
+           " -o /var/log/generatePassword.log",
+           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " &"
+          ]
+         ]
+        }
+       },
+       "005-create-admin-user": {
+        "command": {
+         "Fn::Join": [
+          "",
+          [
+           "nohup /config/waitThenRun.sh",
+           " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           " --wait-for PASSWORD_CREATED",
+           " --signal ADMIN_CREATED",
+           " --file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/createUser.sh",
+           " --cl-args '--user admin",
+           " --password-file /config/cloud/aws/.adminPassword",
+           "'",
+           " --log-level verbose",
+           " -o /var/log/createUser.log",
+           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " &"
+          ]
+         ]
+        }
+       },
+       "006-onboard-BIG-IP": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+           "--wait-for ADMIN_CREATED",
+           "-o /var/log/onboard.log",
+           "--log-level debug",
+           "--no-reboot",
+           "--host localhost",
+           "--user admin",
+           "--password-url file:///config/cloud/aws/.adminPassword",
+           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+           "--ntp ",
+           {
+            "Ref": "ntpServer"
+           },
+           "--tz ",
+           {
+            "Ref": "timezone"
+           },
+           "--dns ${NAME_SERVER}",
+           "--module ltm:nominal",
+           "--module asm:nominal",
+           "--ping",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       },
+       "007-custom-config": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           "--file /config/cloud/aws/custom-config.sh",
+           "--cwd /config/cloud/aws",
+           "-o /var/log/custom-config.log",
+           "--log-level debug",
+           "--wait-for ONBOARD_DONE",
+           "--signal CUSTOM_CONFIG_DONE",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       },
+       "008-cluster": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`;",
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
+           "--wait-for CUSTOM_CONFIG_DONE",
+           "--signal CLUSTER_DONE",
+           "-o /var/log/cluster.log",
+           "--log-level debug",
+           "--host localhost",
+           "--user admin",
+           "--password-url file:///config/cloud/aws/.adminPassword",
+           "--cloud aws",
+           "--provider-options 's3Bucket:",
+           {
+            "Ref": "S3Bucket"
+           },
+           "'",
+           "--master",
+           "--config-sync-ip",
+           {
+            "Fn::GetAtt": [
+             "Bigip1subnet1Az1Interface",
+             "PrimaryPrivateIpAddress"
+            ]
+           },
+           "--create-group",
+           "--device-group across_az_failover_group",
+           "--sync-type sync-failover",
+           "--network-failover",
+           "--device ${HOSTNAME}",
+           "--auto-sync",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       },
+       "009-rm-password": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           "--file /config/cloud/aws/rm-password.sh",
+           "-o /var/log/rm-password.log",
+           "--log-level debug",
+           "--wait-for CLUSTER_DONE",
+           "--signal PASSWORD_REMOVED",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       }
+      },
+      "files": {
+       "/config/cloud/aws/custom-config.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
+           "declare -a tmsh=()\n",
+           "date\n",
+           "echo 'starting custom-config.sh'\n",
+           "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
+           "PEER_EXTPRIVIP='",
+           {
+            "Fn::Select": [
+             "0",
+             {
+              "Fn::GetAtt": [
+               "Bigip2subnet1Az1Interface",
+               "SecondaryPrivateIpAddresses"
+              ]
+             }
+            ]
+           },
+           "'\n",
+           "VIPEIP='",
+           {
+            "Ref": "Bigip1VipEipAddress"
+           },
+           "'\n",
+           "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+           "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+           "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+           "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+           "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+           "EXTIP='",
+           {
+            "Fn::GetAtt": [
+             "Bigip1subnet1Az1Interface",
+             "PrimaryPrivateIpAddress"
+            ]
+           },
+           "'\n",
+           "EXTPRIVIP='",
+           {
+            "Fn::Select": [
+             "0",
+             {
+              "Fn::GetAtt": [
+               "Bigip1subnet1Az1Interface",
+               "SecondaryPrivateIpAddresses"
+              ]
+             }
+            ]
+           },
+           "'\n",
+           "EXTMASK=${GATEWAY_PREFIX}\n",
+           "tmsh+=(\n",
+           "\"tmsh create net vlan external interfaces add { 1.1 }\"\n",
+           "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
+           "\"tmsh create net route default gw ${GATEWAY}\"\n",
+           "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
+           "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
+           ")\n",
+           "curl -s -f --retry 20 -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
+           "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
+           "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
+           "tmsh+=(\n",
+           "\"tmsh modify asm policy /Common/linux-high active\"\n",
+           "\"tmsh create ltm policy app-ltm-policy strategy first-match legacy\"\n",
+           "\"tmsh modify ltm policy app-ltm-policy controls add { asm }\"\n",
+           "\"tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\"\n",
+           "\"tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\"\n",
+           "\"tmsh run cm config-sync to-group datasync-global-dg\"\n",
+           "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
+           "\"tmsh save /sys config\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "    if $CMD;then\n",
+           "        echo \"command $CMD successfully executed.\"\n",
+           "    else\n",
+           "        error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "    fi\n",
+           "done\n",
+           "date\n",
+           "### START CUSTOM CONFIGURTION\n",
+           "### END CUSTOM CONFIGURATION"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/f5.service_discovery.tmpl": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v1.0.0/f5-service-discovery/f5.service_discovery.tmpl"
+       },
+       "/config/cloud/aws/getNameServer.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "INTERFACE=$1",
+           "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
+           "VPC_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+           "VPC_NET=${VPC_CIDR_BLOCK%/*}",
+           "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
+           "echo $NAME_SERVER"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/rm-password.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\"Unknown Error\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
+           "date\n",
+           "echo 'starting rm-password.sh'\n",
+           "declare -a tmsh=()\n",
+           "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "  if $CMD;then\n",
+           "      echo \"command $CMD successfully executed.\"\n",
+           "  else\n",
+           "      error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "  fi\n",
+           "done\n",
+           "date\n"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/f5-cloud-libs-aws.tar.gz": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.3.0/dist/f5-cloud-libs-aws.tar.gz"
+       },
+       "/config/cloud/f5-cloud-libs.tar.gz": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.1.0/dist/f5-cloud-libs.tar.gz"
+       },
+       "/config/installCloudLibs.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "#!/bin/bash",
+           "echo about to execute",
+           "checks=0",
+           "while [ $checks -lt 120 ]; do echo checking mcpd",
+           "    tmsh -a show sys mcp-state field-fmt | grep -q running",
+           "    if [ $? == 0 ]; then",
+           "        echo mcpd ready",
+           "        break",
+           "    fi",
+           "    echo mcpd not ready yet",
+           "    let checks=checks+1",
+           "    sleep 10",
+           "done",
+           "echo loading verifyHash script",
+           "if ! tmsh load sys config merge file /config/verifyHash; then",
+           "    echo cannot validate signature of /config/verifyHash",
+           "    exit",
+           "fi",
+           "echo loaded verifyHash",
+           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
+           "for fileToVerify in \"${filesToVerify[@]}\"",
+           "do",
+           "    echo verifying \"$fileToVerify\"",
+           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "        echo \"$fileToVerify\" is not valid",
+           "        exit 1",
+           "    fi",
+           "    echo verified \"$fileToVerify\"",
+           "done",
+           "mkdir -p /config/cloud/aws/node_modules",
+           "echo expanding f5-cloud-libs.tar.gz",
+           "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
+           "echo installing dependencies",
+           "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/f5-cloud-libs/node_modules",
+           "echo cloud libs install complete",
+           "touch /config/cloud/cloudLibsReady"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/verifyHash": {
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 6db9649698cb7af311defc89ccea1c0208d3b6cfc73b7bab5b52ab9d5074677ec9a1559a5e54e7325aa334a02d26d76528b5ead08e1654dcbf77c94192156468\n            set hashes(f5-cloud-libs-aws.tar.gz) 6a2cb0d101c918d37aa552528a45f14615ab50fe8a024c2040cf686a4ec1ce316a75930d936de3dc341a1a5f9cec14e9979f0f9cb601f51dba528929de607e6e\n            set hashes(f5-cloud-libs-azure.tar.gz) a4ff4a9af058ce6058159531fd7bca07eb8808cdd1b1e13de0e1324ec7e4692211991ecaa58dc36021c6c88c7783837d480584393753c3dfc2fddf623781e3a9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a\n            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a\n            set hashes(f5.service_discovery.tmpl) 306170ab4ec2494ed290406be37ab32af57ed59c9d614e9a86958375b7719335e6c73831fdba6bdcfb552c40227f5773dc719f2b7d6ff7c0a046180a34beb162\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature j9bD4lE4eJvPyHJagmiGYl/90LXtj4HQqz5JenJuKoODyPrJ3EszmQjzKkERa4G28l6i6+9K7Ot/DvBhu8pOk8tOYrxAOPzdAB+Hj1ns9c3GR4KhUMp+wpZ6y/wqPIcgFakeYGyWJdWaPcpFSR4o7QlYc18NnWL/hvvPSaPuDADANZyriy25Xqmaxx4sU9BIJsKDoFaDyUZwIbqTM1eUmQ750/e7WPAH55PVJPXVdhmXy5x7XX2zVeEfleb0F7Y1QY7+kO3TJLx/kL7Mxx5BZdtoembGIsL0XtcQClQsu1Cm7A/9kqgNvlabBjL60k3xIz5WYueobprQ7tVXgCS+cw==\n    signing-key /Common/f5-irule\n}",
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/waitThenRun.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "#!/bin/bash",
+           "while true; do echo \"waiting for cloud libs install to complete\"",
+           "    if [ -f /config/cloud/cloudLibsReady ]; then",
+           "        break",
+           "    else",
+           "        sleep 10",
+           "    fi",
+           "done",
+           "\"$@\""
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       }
+      }
+     }
+    }
+   },
+   "Properties": {
+    "BlockDeviceMappings": [
+     {
+      "DeviceName": "/dev/xvda",
+      "Ebs": {
+       "DeleteOnTermination": "true",
+       "VolumeType": "gp2"
+      }
+     },
+     {
+      "DeviceName": "/dev/xvdb",
+      "NoDevice": {}
+     }
+    ],
+    "IamInstanceProfile": {
+     "Ref": "bigipClusterInstanceProfile"
+    },
+    "ImageId": {
+     "Fn::FindInMap": [
+      "BigipRegionMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      {
+       "Ref": "imageName"
+      }
+     ]
+    },
+    "InstanceType": {
+     "Ref": "instanceType"
+    },
+    "KeyName": {
+     "Ref": "sshKey"
+    },
+    "NetworkInterfaces": [
+     {
+      "Description": "Management Interface",
+      "DeviceIndex": "0",
+      "NetworkInterfaceId": {
+       "Ref": "Bigip1ManagementInterface"
+      }
+     },
+     {
+      "Description": "Public or External Interface",
+      "DeviceIndex": "1",
+      "NetworkInterfaceId": {
+       "Ref": "Bigip1subnet1Az1Interface"
+      }
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Big-IP1: ",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": {
+      "Fn::Join": [
+       "",
+       [
+        "#!/bin/bash\n",
+        "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
+        {
+         "Ref": "AWS::StackId"
+        },
+        " -r ",
+        "Bigip1Instance",
+        " --region ",
+        {
+         "Ref": "AWS::Region"
+        },
+        "\n"
+       ]
+      ]
+     }
+    }
+   },
+   "Type": "AWS::EC2::Instance"
+  },
+  "Bigip1ManagementEipAddress": {
+   "Properties": {
+    "Domain": "vpc"
+   },
+   "Type": "AWS::EC2::EIP"
+  },
+  "Bigip1ManagementEipAssociation": {
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "Bigip1ManagementEipAddress",
+      "AllocationId"
+     ]
+    },
+    "NetworkInterfaceId": {
+     "Ref": "Bigip1ManagementInterface"
+    }
+   },
+   "Type": "AWS::EC2::EIPAssociation"
+  },
+  "Bigip1ManagementInterface": {
+   "Properties": {
+    "Description": "Management Interface for the BIG-IP",
+    "GroupSet": [
+     {
+      "Ref": "bigipManagementSecurityGroup"
+     }
+    ],
+    "SubnetId": {
+     "Ref": "managementSubnetAz1"
+    }
+   },
+   "Type": "AWS::EC2::NetworkInterface"
+  },
+  "Bigip1VipEipAddress": {
+   "Properties": {
+    "Domain": "vpc"
+   },
+   "Type": "AWS::EC2::EIP"
+  },
+  "Bigip1VipEipAssociation": {
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "Bigip1VipEipAddress",
+      "AllocationId"
+     ]
+    },
+    "NetworkInterfaceId": {
+     "Ref": "Bigip1subnet1Az1Interface"
+    },
+    "PrivateIpAddress": {
+     "Fn::Select": [
+      "0",
+      {
+       "Fn::GetAtt": [
+        "Bigip1subnet1Az1Interface",
+        "SecondaryPrivateIpAddresses"
+       ]
+      }
+     ]
+    }
+   },
+   "Type": "AWS::EC2::EIPAssociation"
+  },
+  "Bigip1subnet1Az1Interface": {
+   "Properties": {
+    "Description": "Public External Interface for the BIG-IP",
+    "GroupSet": [
+     {
+      "Ref": "bigipExternalSecurityGroup"
+     }
+    ],
+    "SecondaryPrivateIpAddressCount": "1",
+    "SubnetId": {
+     "Ref": "subnet1Az1"
+    }
+   },
+   "Type": "AWS::EC2::NetworkInterface"
+  },
+  "Bigip1subnet1Az1SelfEipAddress": {
+   "Properties": {
+    "Domain": "vpc"
+   },
+   "Type": "AWS::EC2::EIP"
+  },
+  "Bigip1subnet1Az1SelfEipAssociation": {
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "Bigip1subnet1Az1SelfEipAddress",
+      "AllocationId"
+     ]
+    },
+    "NetworkInterfaceId": {
+     "Ref": "Bigip1subnet1Az1Interface"
+    },
+    "PrivateIpAddress": {
+     "Fn::GetAtt": [
+      "Bigip1subnet1Az1Interface",
+      "PrimaryPrivateIpAddress"
+     ]
+    }
+   },
+   "Type": "AWS::EC2::EIPAssociation"
+  },
+  "Bigip2Instance": {
+   "DependsOn": "Bigip1Instance",
+   "Metadata": {
+    "AWS::CloudFormation::Init": {
+     "config": {
+      "commands": {
+       "001-disable-1nicautoconfig": {
+        "command": "/usr/bin/setdb provision.1nicautoconfig disable"
+       },
+       "002-install-libs": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/installCloudLibs.sh",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       },
+       "003-1nic-setup": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          []
+         ]
+        }
+       },
+       "004-generate-password": {
+        "command": {
+         "Fn::Join": [
+          "",
+          [
+           "nohup /config/waitThenRun.sh",
+           " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           " --signal PASSWORD_CREATED",
+           " --file f5-rest-node",
+           " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
+           " --log-level verbose",
+           " -o /var/log/generatePassword.log",
+           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " &"
+          ]
+         ]
+        }
+       },
+       "005-create-admin-user": {
+        "command": {
+         "Fn::Join": [
+          "",
+          [
+           "nohup /config/waitThenRun.sh",
+           " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           " --wait-for PASSWORD_CREATED",
+           " --signal ADMIN_CREATED",
+           " --file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/createUser.sh",
+           " --cl-args '--user admin",
+           " --password-file /config/cloud/aws/.adminPassword",
+           "'",
+           " --log-level verbose",
+           " -o /var/log/createUser.log",
+           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " &"
+          ]
+         ]
+        }
+       },
+       "006-onboard-BIG-IP": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+           "--wait-for ADMIN_CREATED",
+           "-o /var/log/onboard.log",
+           "--log-level debug",
+           "--no-reboot",
+           "--host localhost",
+           "--user admin",
+           "--password-url file:///config/cloud/aws/.adminPassword",
+           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+           "--ntp ",
+           {
+            "Ref": "ntpServer"
+           },
+           "--tz ",
+           {
+            "Ref": "timezone"
+           },
+           "--dns ${NAME_SERVER}",
+           "--module ltm:nominal",
+           "--module asm:nominal",
+           "--ping",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       },
+       "007-custom-config": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           "--file /config/cloud/aws/custom-config.sh",
+           "--cwd /config/cloud/aws",
+           "-o /var/log/custom-config.log",
+           "--log-level debug",
+           "--wait-for ONBOARD_DONE",
+           "--signal CUSTOM_CONFIG_DONE",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       },
+       "008-cluster": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
+           "--wait-for CUSTOM_CONFIG_DONE",
+           "--signal CLUSTER_DONE",
+           "-o /var/log/cluster.log",
+           "--log-level debug",
+           "--host localhost",
+           "--user admin",
+           "--password-url file:///config/cloud/aws/.adminPassword",
+           "--cloud aws",
+           "--provider-options 's3Bucket:",
+           {
+            "Ref": "S3Bucket"
+           },
+           "'",
+           "--config-sync-ip",
+           {
+            "Fn::GetAtt": [
+             "Bigip2subnet1Az1Interface",
+             "PrimaryPrivateIpAddress"
+            ]
+           },
+           "--join-group",
+           "--device-group across_az_failover_group",
+           "--remote-host ",
+           {
+            "Fn::GetAtt": [
+             "Bigip1Instance",
+             "PrivateDnsName"
+            ]
+           },
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       },
+       "009-rm-password": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           "--file /config/cloud/aws/rm-password.sh",
+           "-o /var/log/rm-password.log",
+           "--log-level debug",
+           "--wait-for CLUSTER_DONE",
+           "--signal PASSWORD_REMOVED",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       }
+      },
+      "files": {
+       "/config/cloud/aws/custom-config.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
+           "declare -a tmsh=()\n",
+           "date\n",
+           "echo 'starting custom-config.sh'\n",
+           "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
+           "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
+           "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
+           "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
+           "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
+           "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
+           "EXTIP='",
+           {
+            "Fn::GetAtt": [
+             "Bigip2subnet1Az1Interface",
+             "PrimaryPrivateIpAddress"
+            ]
+           },
+           "'\n",
+           "EXTPRIVIP='",
+           {
+            "Fn::Select": [
+             "0",
+             {
+              "Fn::GetAtt": [
+               "Bigip2subnet1Az1Interface",
+               "SecondaryPrivateIpAddresses"
+              ]
+             }
+            ]
+           },
+           "'\n",
+           "EXTMASK=${GATEWAY_PREFIX}\n",
+           "tmsh+=(\n",
+           "\"tmsh create net vlan external interfaces add { 1.1 }\"\n",
+           "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
+           "\"tmsh create net route default gw ${GATEWAY}\"\n",
+           "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
+           "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
+           "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
+           "\"tmsh save /sys config\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "    if $CMD;then\n",
+           "        echo \"command $CMD successfully executed.\"\n",
+           "    else\n",
+           "        error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "    fi\n",
+           "done\n",
+           "date\n",
+           "### START CUSTOM CONFIGURTION\n",
+           "### END CUSTOM CONFIGURATION"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/f5.service_discovery.tmpl": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v1.0.0/f5-service-discovery/f5.service_discovery.tmpl"
+       },
+       "/config/cloud/aws/getNameServer.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "INTERFACE=$1",
+           "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
+           "VPC_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+           "VPC_NET=${VPC_CIDR_BLOCK%/*}",
+           "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
+           "echo $NAME_SERVER"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/rm-password.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\"Unknown Error\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
+           "date\n",
+           "echo 'starting rm-password.sh'\n",
+           "declare -a tmsh=()\n",
+           "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "  if $CMD;then\n",
+           "      echo \"command $CMD successfully executed.\"\n",
+           "  else\n",
+           "      error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "  fi\n",
+           "done\n",
+           "date\n"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/f5-cloud-libs-aws.tar.gz": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.3.0/dist/f5-cloud-libs-aws.tar.gz"
+       },
+       "/config/cloud/f5-cloud-libs.tar.gz": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.1.0/dist/f5-cloud-libs.tar.gz"
+       },
+       "/config/installCloudLibs.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "#!/bin/bash",
+           "echo about to execute",
+           "checks=0",
+           "while [ $checks -lt 120 ]; do echo checking mcpd",
+           "    tmsh -a show sys mcp-state field-fmt | grep -q running",
+           "    if [ $? == 0 ]; then",
+           "        echo mcpd ready",
+           "        break",
+           "    fi",
+           "    echo mcpd not ready yet",
+           "    let checks=checks+1",
+           "    sleep 10",
+           "done",
+           "echo loading verifyHash script",
+           "if ! tmsh load sys config merge file /config/verifyHash; then",
+           "    echo cannot validate signature of /config/verifyHash",
+           "    exit",
+           "fi",
+           "echo loaded verifyHash",
+           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
+           "for fileToVerify in \"${filesToVerify[@]}\"",
+           "do",
+           "    echo verifying \"$fileToVerify\"",
+           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "        echo \"$fileToVerify\" is not valid",
+           "        exit 1",
+           "    fi",
+           "    echo verified \"$fileToVerify\"",
+           "done",
+           "mkdir -p /config/cloud/aws/node_modules",
+           "echo expanding f5-cloud-libs.tar.gz",
+           "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
+           "echo installing dependencies",
+           "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/f5-cloud-libs/node_modules",
+           "echo cloud libs install complete",
+           "touch /config/cloud/cloudLibsReady"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/verifyHash": {
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 6db9649698cb7af311defc89ccea1c0208d3b6cfc73b7bab5b52ab9d5074677ec9a1559a5e54e7325aa334a02d26d76528b5ead08e1654dcbf77c94192156468\n            set hashes(f5-cloud-libs-aws.tar.gz) 6a2cb0d101c918d37aa552528a45f14615ab50fe8a024c2040cf686a4ec1ce316a75930d936de3dc341a1a5f9cec14e9979f0f9cb601f51dba528929de607e6e\n            set hashes(f5-cloud-libs-azure.tar.gz) a4ff4a9af058ce6058159531fd7bca07eb8808cdd1b1e13de0e1324ec7e4692211991ecaa58dc36021c6c88c7783837d480584393753c3dfc2fddf623781e3a9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a\n            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a\n            set hashes(f5.service_discovery.tmpl) 306170ab4ec2494ed290406be37ab32af57ed59c9d614e9a86958375b7719335e6c73831fdba6bdcfb552c40227f5773dc719f2b7d6ff7c0a046180a34beb162\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature j9bD4lE4eJvPyHJagmiGYl/90LXtj4HQqz5JenJuKoODyPrJ3EszmQjzKkERa4G28l6i6+9K7Ot/DvBhu8pOk8tOYrxAOPzdAB+Hj1ns9c3GR4KhUMp+wpZ6y/wqPIcgFakeYGyWJdWaPcpFSR4o7QlYc18NnWL/hvvPSaPuDADANZyriy25Xqmaxx4sU9BIJsKDoFaDyUZwIbqTM1eUmQ750/e7WPAH55PVJPXVdhmXy5x7XX2zVeEfleb0F7Y1QY7+kO3TJLx/kL7Mxx5BZdtoembGIsL0XtcQClQsu1Cm7A/9kqgNvlabBjL60k3xIz5WYueobprQ7tVXgCS+cw==\n    signing-key /Common/f5-irule\n}",
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/waitThenRun.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "#!/bin/bash",
+           "while true; do echo \"waiting for cloud libs install to complete\"",
+           "    if [ -f /config/cloud/cloudLibsReady ]; then",
+           "        break",
+           "    else",
+           "        sleep 10",
+           "    fi",
+           "done",
+           "\"$@\""
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       }
+      }
+     }
+    }
+   },
+   "Properties": {
+    "BlockDeviceMappings": [
+     {
+      "DeviceName": "/dev/xvda",
+      "Ebs": {
+       "DeleteOnTermination": "true",
+       "VolumeType": "gp2"
+      }
+     },
+     {
+      "DeviceName": "/dev/xvdb",
+      "NoDevice": {}
+     }
+    ],
+    "IamInstanceProfile": {
+     "Ref": "bigipClusterInstanceProfile"
+    },
+    "ImageId": {
+     "Fn::FindInMap": [
+      "BigipRegionMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      {
+       "Ref": "imageName"
+      }
+     ]
+    },
+    "InstanceType": {
+     "Ref": "instanceType"
+    },
+    "KeyName": {
+     "Ref": "sshKey"
+    },
+    "NetworkInterfaces": [
+     {
+      "Description": "Management Interface",
+      "DeviceIndex": "0",
+      "NetworkInterfaceId": {
+       "Ref": "Bigip2ManagementInterface"
+      }
+     },
+     {
+      "Description": "Public or External Interface",
+      "DeviceIndex": "1",
+      "NetworkInterfaceId": {
+       "Ref": "Bigip2subnet1Az1Interface"
+      }
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Big-IP2: ",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": {
+      "Fn::Join": [
+       "",
+       [
+        "#!/bin/bash\n",
+        "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
+        {
+         "Ref": "AWS::StackId"
+        },
+        " -r ",
+        "Bigip2Instance",
+        " --region ",
+        {
+         "Ref": "AWS::Region"
+        },
+        "\n"
+       ]
+      ]
+     }
+    }
+   },
+   "Type": "AWS::EC2::Instance"
+  },
+  "Bigip2ManagementEipAddress": {
+   "Properties": {
+    "Domain": "vpc"
+   },
+   "Type": "AWS::EC2::EIP"
+  },
+  "Bigip2ManagementEipAssociation": {
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "Bigip2ManagementEipAddress",
+      "AllocationId"
+     ]
+    },
+    "NetworkInterfaceId": {
+     "Ref": "Bigip2ManagementInterface"
+    }
+   },
+   "Type": "AWS::EC2::EIPAssociation"
+  },
+  "Bigip2ManagementInterface": {
+   "Properties": {
+    "Description": "Management Interface for the BIG-IP",
+    "GroupSet": [
+     {
+      "Ref": "bigipManagementSecurityGroup"
+     }
+    ],
+    "SubnetId": {
+     "Ref": "managementSubnetAz1"
+    }
+   },
+   "Type": "AWS::EC2::NetworkInterface"
+  },
+  "Bigip2subnet1Az1Interface": {
+   "Properties": {
+    "Description": "Public External Interface for the BIG-IP",
+    "GroupSet": [
+     {
+      "Ref": "bigipExternalSecurityGroup"
+     }
+    ],
+    "SecondaryPrivateIpAddressCount": "1",
+    "SubnetId": {
+     "Ref": "subnet1Az1"
+    }
+   },
+   "Type": "AWS::EC2::NetworkInterface"
+  },
+  "Bigip2subnet1Az1SelfEipAddress": {
+   "Properties": {
+    "Domain": "vpc"
+   },
+   "Type": "AWS::EC2::EIP"
+  },
+  "Bigip2subnet1Az1SelfEipAssociation": {
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "Bigip2subnet1Az1SelfEipAddress",
+      "AllocationId"
+     ]
+    },
+    "NetworkInterfaceId": {
+     "Ref": "Bigip2subnet1Az1Interface"
+    },
+    "PrivateIpAddress": {
+     "Fn::GetAtt": [
+      "Bigip2subnet1Az1Interface",
+      "PrimaryPrivateIpAddress"
+     ]
+    }
+   },
+   "Type": "AWS::EC2::EIPAssociation"
+  },
+  "S3Bucket": {
+   "Properties": {
+    "AccessControl": "BucketOwnerFullControl"
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "bigipClusterAccessRole": {
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sts:AssumeRole"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "ec2.amazonaws.com"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Path": "/",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:s3:::",
+            {
+             "Ref": "S3Bucket"
+            }
+           ]
+          ]
+         }
+        },
+        {
+         "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:s3:::",
+            {
+             "Ref": "S3Bucket"
+            },
+            "/*"
+           ]
+          ]
+         }
+        },
+        {
+         "Action": [
+          "ec2:DescribeInstances",
+          "ec2:DescribeInstanceStatus",
+          "ec2:DescribeAddresses",
+          "ec2:AssociateAddress",
+          "ec2:DisassociateAddress",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeNetworkInterfaceAttributes",
+          "ec2:DescribeRouteTables",
+          "ec2:ReplaceRoute",
+          "ec2:assignprivateipaddresses",
+          "sts:AssumeRole"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "BigipClusterAcccessPolicy"
+     }
+    ]
+   },
+   "Type": "AWS::IAM::Role"
+  },
+  "bigipClusterInstanceProfile": {
+   "Properties": {
+    "Path": "/",
+    "Roles": [
+     {
+      "Ref": "bigipClusterAccessRole"
+     }
+    ]
+   },
+   "Type": "AWS::IAM::InstanceProfile"
+  }
+ }
 }

@@ -1,371 +1,392 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Template Version 1.0.0: AWS CloudFormation Template for creating security groups for a 2NIC BIG-IP",
-    "Metadata": {
-        "AWS::CloudFormation::Interface": {
-            "ParameterGroups": [
-                {
-                    "Label": {
-                        "default": "NETWORKING CONFIGURATION"
-                    },
-                    "Parameters": [
-                        "Vpc",
-                        "managementSubnetAz1",
-                        "managementSubnetAz2",
-                        "subnet1Az2",
-                        "bigipManagementSecurityGroup",
-                        "subnet1Az1",
-                        "bigipExternalSecurityGroup",
-                        "availabilityZone1",
-                        "availabilityZone2"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "INSTANCE CONFIGURATION"
-                    },
-                    "Parameters": [
-                        "adminUsername",
-                        "adminPassword",
-                        "imageName",
-                        "instanceType",
-                        "applicationInstanceType",
-                        "licenseKey1",
-                        "licenseKey2",
-                        "managementGuiPort",
-                        "sshKey",
-                        "restrictedSrcAddress",
-                        "iamAccessKey",
-                        "iamSecretKey"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "TAGS"
-                    },
-                    "Parameters": [
-                        "application",
-                        "environment",
-                        "group",
-                        "owner",
-                        "costcenter"
-                    ]
-                }
-            ],
-            "ParameterLabels": {
-                "Vpc": {
-                    "default": "VPC"
-                },
-                "adminPassword": {
-                    "default": "Admin Password"
-                },
-                "adminUsername": {
-                    "default": "Admin Username"
-                },
-                "application": {
-                    "default": "Application"
-                },
-                "applicationInstanceType": {
-                    "default": "Application Instance Type"
-                },
-                "availabilityZone1": {
-                    "default": "Availability Zone 1"
-                },
-                "availabilityZone2": {
-                    "default": "Availability Zone 2"
-                },
-                "bigipExternalSecurityGroup": {
-                    "default": "External Security Group"
-                },
-                "bigipManagementSecurityGroup": {
-                    "default": "Management Security Group"
-                },
-                "costcenter": {
-                    "default": "Cost Center"
-                },
-                "environment": {
-                    "default": "Environment"
-                },
-                "group": {
-                    "default": "Group"
-                },
-                "iamAccessKey": {
-                    "default": "IAM Access Key"
-                },
-                "iamSecretKey": {
-                    "default": "IAM Secret Key"
-                },
-                "imageName": {
-                    "default": "Image Name"
-                },
-                "instanceType": {
-                    "default": "AWS Instance Size"
-                },
-                "licenseKey1": {
-                    "default": "License Key1"
-                },
-                "managementGuiPort": {
-                    "default": "Management Port"
-                },
-                "managementSubnetAz1": {
-                    "default": "Management Subnet AZ1"
-                },
-                "managementSubnetAz2": {
-                    "default": "Management Subnet AZ2"
-                },
-                "owner": {
-                    "default": "Owner"
-                },
-                "restrictedSrcAddress": {
-                    "default": "Source Address(es) for SSH Access"
-                },
-                "sshKey": {
-                    "default": "SSH Key"
-                },
-                "subnet1Az1": {
-                    "default": "Subnet AZ1"
-                },
-                "subnet1Az2": {
-                    "default": "Subnet AZ2"
-                }
-            }
-        },
-        "Version": "1.0.0"
+ "AWSTemplateFormatVersion": "2010-09-09",
+ "Description": "Template Version 2.4.0: AWS CloudFormation Template for creating security groups for a 2NIC BIG-IP",
+ "Metadata": {
+  "AWS::CloudFormation::Interface": {
+   "ParameterGroups": [
+    {
+     "Label": {
+      "default": "NETWORKING CONFIGURATION"
+     },
+     "Parameters": [
+      "Vpc",
+      "managementSubnetAz1",
+      "managementSubnetAz2",
+      "bigipManagementSecurityGroup",
+      "subnet1Az1",
+      "subnet1Az2",
+      "bigipExternalSecurityGroup",
+      "subnet2Az1",
+      "bigipInternalSecurityGroup",
+      "availabilityZone1",
+      "availabilityZone2"
+     ]
     },
-    "Outputs": {
-        "bigipExternalSecurityGroup": {
-            "Description": "Public or External Security Group",
-            "Value": {
-                "Ref": "bigipExternalSecurityGroup"
-            }
-        },
-        "bigipManagementSecurityGroup": {
-            "Description": "Management Security Group",
-            "Value": {
-                "Ref": "bigipManagementSecurityGroup"
-            }
-        }
+    {
+     "Label": {
+      "default": "INSTANCE CONFIGURATION"
+     },
+     "Parameters": [
+      "imageName",
+      "instanceType",
+      "applicationInstanceType",
+      "licenseKey1",
+      "licenseKey2",
+      "managementGuiPort",
+      "sshKey",
+      "restrictedSrcAddress",
+      "ntpServer",
+      "timezone"
+     ]
     },
-    "Parameters": {
-        "Vpc": {
-            "ConstraintDescription": "This must be an existing VPC within the working region.",
-            "Type": "AWS::EC2::VPC::Id"
-        },
-        "application": {
-            "Default": "f5app",
-            "Description": "Name of the Application Tag",
-            "Type": "String"
-        },
-        "costcenter": {
-            "Default": "f5costcenter",
-            "Description": "Name of the Cost Center Tag",
-            "Type": "String"
-        },
-        "environment": {
-            "Default": "f5env",
-            "Description": "Name of the Environment Tag",
-            "Type": "String"
-        },
-        "group": {
-            "Default": "f5group",
-            "Description": "Name of the Group Tag",
-            "Type": "String"
-        },
-        "owner": {
-            "Default": "f5owner",
-            "Description": "Name of the Owner Tag",
-            "Type": "String"
-        },
-        "restrictedSrcAddress": {
-            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-            "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
-            "Default": "0.0.0.0/0",
-            "Description": " The IP address range that can be used to SSH to the EC2 instances",
-            "MaxLength": "18",
-            "MinLength": "9",
-            "Type": "String"
-        }
+    {
+     "Label": {
+      "default": "TAGS"
+     },
+     "Parameters": [
+      "application",
+      "environment",
+      "group",
+      "owner",
+      "costcenter"
+     ]
     },
-    "Resources": {
-        "bigipExternalSecurityGroup": {
-            "Properties": {
-                "GroupDescription": "Public or External interface rules",
-                "SecurityGroupIngress": [
-                    {
-                        "CidrIp": "0.0.0.0/0",
-                        "FromPort": "80",
-                        "IpProtocol": "tcp",
-                        "ToPort": "80"
-                    },
-                    {
-                        "CidrIp": "0.0.0.0/0",
-                        "FromPort": "443",
-                        "IpProtocol": "tcp",
-                        "ToPort": "443"
-                    },
-                    {
-                        "CidrIp": "0.0.0.0/0",
-                        "FromPort": "4353",
-                        "IpProtocol": "tcp",
-                        "ToPort": "4353"
-                    },
-                    {
-                        "CidrIp": "10.0.0.0/16",
-                        "FromPort": "1026",
-                        "IpProtocol": "udp",
-                        "ToPort": "1026"
-                    },
-                    {
-                        "CidrIp": "10.0.0.0/16",
-                        "FromPort": "6123",
-                        "IpProtocol": "tcp",
-                        "ToPort": "6128"
-                    }
-                ],
-                "Tags": [
-                    {
-                        "Key": "Application",
-                        "Value": {
-                            "Ref": "application"
-                        }
-                    },
-                    {
-                        "Key": "Costcenter",
-                        "Value": {
-                            "Ref": "costcenter"
-                        }
-                    },
-                    {
-                        "Key": "Environment",
-                        "Value": {
-                            "Ref": "environment"
-                        }
-                    },
-                    {
-                        "Key": "Group",
-                        "Value": {
-                            "Ref": "group"
-                        }
-                    },
-                    {
-                        "Key": "Name",
-                        "Value": {
-                            "Fn::Join": [
-                                "",
-                                [
-                                    "Bigip External Security Group:",
-                                    {
-                                        "Ref": "AWS::StackName"
-                                    }
-                                ]
-                            ]
-                        }
-                    },
-                    {
-                        "Key": "Owner",
-                        "Value": {
-                            "Ref": "owner"
-                        }
-                    }
-                ],
-                "VpcId": {
-                    "Ref": "Vpc"
-                }
-            },
-            "Type": "AWS::EC2::SecurityGroup"
-        },
-        "bigipManagementSecurityGroup": {
-            "Properties": {
-                "GroupDescription": "BIG-IP Management UI rules",
-                "SecurityGroupIngress": [
-                    {
-                        "CidrIp": {
-                            "Ref": "restrictedSrcAddress"
-                        },
-                        "FromPort": "22",
-                        "IpProtocol": "tcp",
-                        "ToPort": "22"
-                    },
-                    {
-                        "CidrIp": {
-                            "Ref": "restrictedSrcAddress"
-                        },
-                        "FromPort": "443",
-                        "IpProtocol": "tcp",
-                        "ToPort": "443"
-                    },
-                    {
-                        "CidrIp": {
-                            "Ref": "restrictedSrcAddress"
-                        },
-                        "FromPort": "-1",
-                        "IpProtocol": "icmp",
-                        "ToPort": "-1"
-                    },
-                    {
-                        "CidrIp": "10.0.0.0/16",
-                        "FromPort": "22",
-                        "IpProtocol": "tcp",
-                        "ToPort": "22"
-                    },
-                    {
-                        "CidrIp": "10.0.0.0/16",
-                        "FromPort": "443",
-                        "IpProtocol": "tcp",
-                        "ToPort": "443"
-                    }
-                ],
-                "Tags": [
-                    {
-                        "Key": "Application",
-                        "Value": {
-                            "Ref": "application"
-                        }
-                    },
-                    {
-                        "Key": "Costcenter",
-                        "Value": {
-                            "Ref": "costcenter"
-                        }
-                    },
-                    {
-                        "Key": "Environment",
-                        "Value": {
-                            "Ref": "environment"
-                        }
-                    },
-                    {
-                        "Key": "Group",
-                        "Value": {
-                            "Ref": "group"
-                        }
-                    },
-                    {
-                        "Key": "Name",
-                        "Value": {
-                            "Fn::Join": [
-                                "",
-                                [
-                                    "Bigip Management Security Group:",
-                                    {
-                                        "Ref": "AWS::StackName"
-                                    }
-                                ]
-                            ]
-                        }
-                    },
-                    {
-                        "Key": "Owner",
-                        "Value": {
-                            "Ref": "owner"
-                        }
-                    }
-                ],
-                "VpcId": {
-                    "Ref": "Vpc"
-                }
-            },
-            "Type": "AWS::EC2::SecurityGroup"
-        }
+    {
+     "Label": {
+      "default": ""
+     },
+     "Parameters": []
     }
+   ],
+   "ParameterLabels": {
+    "Vpc": {
+     "default": "VPC"
+    },
+    "application": {
+     "default": "Application"
+    },
+    "applicationInstanceType": {
+     "default": "Application Instance Type"
+    },
+    "availabilityZone1": {
+     "default": "Availability Zone 1"
+    },
+    "availabilityZone2": {
+     "default": "Availability Zone 2"
+    },
+    "bigipExternalSecurityGroup": {
+     "default": "External Security Group"
+    },
+    "bigipInternalSecurityGroup": {
+     "default": "Internal Security Group"
+    },
+    "bigipManagementSecurityGroup": {
+     "default": "Management Security Group"
+    },
+    "bigiqAddress": {
+     "default": "IP address of the BIG-IQ device that contains the pool of licenses"
+    },
+    "bigiqLicensePoolName": {
+     "default": "Name of BIG-IQ License Pool"
+    },
+    "bigiqPasswordS3Uri": {
+     "default": "S3 URI (s3://bucketname/objectname) of BIG-IQ Password file"
+    },
+    "bigiqUsername": {
+     "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
+    },
+    "costcenter": {
+     "default": "Cost Center"
+    },
+    "environment": {
+     "default": "Environment"
+    },
+    "group": {
+     "default": "Group"
+    },
+    "imageName": {
+     "default": "Image Name"
+    },
+    "instanceType": {
+     "default": "AWS Instance Size"
+    },
+    "licenseKey1": {
+     "default": "License Key1"
+    },
+    "licenseKey2": {
+     "default": "License Key2"
+    },
+    "managementGuiPort": {
+     "default": "Management Port"
+    },
+    "managementSubnetAz1": {
+     "default": "Management Subnet AZ1"
+    },
+    "managementSubnetAz2": {
+     "default": "Management Subnet AZ2"
+    },
+    "ntpServer": {
+     "default": "NTP Server"
+    },
+    "owner": {
+     "default": "Owner"
+    },
+    "restrictedSrcAddress": {
+     "default": "Source Address(es) for SSH Access"
+    },
+    "sshKey": {
+     "default": "SSH Key"
+    },
+    "subnet1Az1": {
+     "default": "Subnet1 AZ1"
+    },
+    "subnet1Az2": {
+     "default": "Subnet1 AZ2"
+    },
+    "subnet2Az1": {
+     "default": "Subnet2 AZ1"
+    },
+    "timezone": {
+     "default": "Timezone (Olson)"
+    }
+   }
+  },
+  "Version": "2.4.0"
+ },
+ "Outputs": {
+  "bigipExternalSecurityGroup": {
+   "Description": "Public or External Security Group",
+   "Value": {
+    "Ref": "bigipExternalSecurityGroup"
+   }
+  },
+  "bigipManagementSecurityGroup": {
+   "Description": "Management Security Group",
+   "Value": {
+    "Ref": "bigipManagementSecurityGroup"
+   }
+  }
+ },
+ "Parameters": {
+  "Vpc": {
+   "ConstraintDescription": "This must be an existing VPC within the working region.",
+   "Type": "AWS::EC2::VPC::Id"
+  },
+  "application": {
+   "Default": "f5app",
+   "Description": "Name of the Application Tag",
+   "Type": "String"
+  },
+  "costcenter": {
+   "Default": "f5costcenter",
+   "Description": "Name of the Cost Center Tag",
+   "Type": "String"
+  },
+  "environment": {
+   "Default": "f5env",
+   "Description": "Name of the Environment Tag",
+   "Type": "String"
+  },
+  "group": {
+   "Default": "f5group",
+   "Description": "Name of the Group Tag",
+   "Type": "String"
+  },
+  "owner": {
+   "Default": "f5owner",
+   "Description": "Name of the Owner Tag",
+   "Type": "String"
+  },
+  "restrictedSrcAddress": {
+   "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+   "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+   "Default": "0.0.0.0/0",
+   "Description": " The IP address range that can be used to SSH to the EC2 instances",
+   "MaxLength": "18",
+   "MinLength": "9",
+   "Type": "String"
+  }
+ },
+ "Resources": {
+  "bigipExternalSecurityGroup": {
+   "Properties": {
+    "GroupDescription": "Public or External interface rules",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "FromPort": "80",
+      "IpProtocol": "tcp",
+      "ToPort": "80"
+     },
+     {
+      "CidrIp": "0.0.0.0/0",
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
+     },
+     {
+      "CidrIp": "0.0.0.0/0",
+      "FromPort": "4353",
+      "IpProtocol": "tcp",
+      "ToPort": "4353"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "1026",
+      "IpProtocol": "udp",
+      "ToPort": "1026"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "6123",
+      "IpProtocol": "tcp",
+      "ToPort": "6128"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Bigip External Security Group:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::SecurityGroup"
+  },
+  "bigipManagementSecurityGroup": {
+   "Properties": {
+    "GroupDescription": "BIG-IP Management UI rules",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
+     },
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
+     },
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
+      "FromPort": "-1",
+      "IpProtocol": "icmp",
+      "ToPort": "-1"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
+     },
+     {
+      "CidrIp": "10.0.0.0/16",
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Bigip Management Security Group:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::SecurityGroup"
+  }
+ }
 }

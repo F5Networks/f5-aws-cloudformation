@@ -40,6 +40,13 @@ The following is a list of the current *supported* F5 CloudFormation templates. 
   - Using BIG-IQ for Licensing<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-bigiq-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a> 
 
+<a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/standalone/3nic">**Standalone BIG-IP VE - 3 NICs**</a>
+  - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-3nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-3nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a><br>
+
+  - BYOL<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-3nic-BYOL&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-3nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+
 **Clustered BIG-IP VE - 2 NICs**
   - <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/cluster/2nic/same-az-ha">Same Availability Zone</a>
     - Hourly<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Same-Az-Cluster-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template">

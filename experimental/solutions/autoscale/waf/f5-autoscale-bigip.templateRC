@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Template Version 2.5.0RC: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
+  "Description": "Template Version 2.4.0RC: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -692,7 +692,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.5.0RC\n",
+                      "# Generated from Template Version 2.4.0RC\n",
                       "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                       "deploymentName='",
                       {
@@ -805,7 +805,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.5.0RC\n",
+                      "# Generated from Template Version 2.4.0RC\n",
                       "date\n",
                       ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
@@ -856,7 +856,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from Template Version 2.5.0RC\n",
+                      "# Generated from Template Version 2.4.0RC\n",
                       "echo about to execute",
                       "checks=0",
                       "while [ $checks -lt 120 ]; do echo checking mcpd",
@@ -905,7 +905,7 @@
                       "Fn::Join": [
                           "\n",
                           [
-                              "# Generated from Template Version 2.5.0RC\n",
+                              "# Generated from Template Version 2.4.0RC\n",
                               "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                               "PASSWORD=$(/bin/sed -e $'s:[!\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                               "if [ \"$1\" == admin ]; then",
@@ -926,7 +926,7 @@
                   "Fn::Join": [
                     "\n",
                     [
-                      "# Generated from Template Version 2.5.0RC\n",
+                      "# Generated from Template Version 2.4.0RC\n",
                       "INTERFACE=$1",
                       "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
                       "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
@@ -946,7 +946,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from Template Version 2.5.0RC\n",
+                      "# Generated from Template Version 2.4.0RC\n",
                       "while true; do echo waiting for cloud libs install to complete",
                       "    if [ -f /config/cloud/cloudLibsReady ]; then",
                       "        echo cloud libs installed",

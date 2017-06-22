@@ -1,6 +1,8 @@
 #/usr/bin/python env
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import urllib2
+from urllib2 import URLError
 from optparse import OptionParser
 import json
 from troposphere import Base64, Select, FindInMap, GetAtt, GetAZs, Join, Output
@@ -127,17 +129,26 @@ def main():
     ### Template Version
     version = "2.4.0"
     ### Cloudlib Branch
-    branch_cloud = "release-3.1.0"
-    branch_aws = "release-1.3.0"
-    branch_cloud_iapps = "release-1.0.0"
-    ### Build verifyHash file from published verifyHash on gitswarm
-    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-    gitswarmvh = requests.get('https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash', verify=False)
-    with open('../build/verifyHash', 'wb') as hash:
-        hash.write(gitswarmvh.text)
-    with open('../build/verifyHash', 'r') as vhash:
-        lines = vhash.read()
-    ### Cloudlib and iApp URL
+    branch_cloud = "v3.1.0"
+    branch_aws = "v1.3.0"
+    branch_cloud_iapps = "v1.0.0"
+    ### Build verifyHash file from published verifyHash on gitswarm. Or github (public) if gitswarm (private) not available
+    urls = [ 'https://gitswrm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash',
+             'https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/' + str(branch_cloud) + '/dist/verifyHash' ]
+    for url in urls:
+        try:
+            raw = urllib2.urlopen(url).read()
+            requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+            vh = requests.get(
+                url,
+                verify=False)
+            with open('../build/verifyHash', 'wb') as hash:
+                hash.write(vh.text)
+            with open('../build/verifyHash', 'r') as vhash:
+                lines = vhash.read()
+        except URLError, error:
+             err = str(error) + ": Attempting to connect to next url"
+### Cloudlib and iApp URL
     iApp_version = "v1.4.0rc1"
     iapp_branch = "v2.2.0"
     iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl" 
@@ -148,7 +159,9 @@ def main():
     comment_out = ""
     # Begin Template
     t = Template()
+    ## add template version
     t.add_version("2010-09-09")
+    ## build description
     description = "Template Version " + str(version) + ": "
     if stack == "network":
         description += "AWS CloudFormation Template for creating network components for a " + str(num_azs) + " Availability Zone VPC"
@@ -170,20 +183,20 @@ def main():
             description += "AWS CloudFormation Template for creating a Same-AZ cluster of " + str(num_nics) + "NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
         if ha_type == "across-az":
             description += "AWS CloudFormation Template for creating a Across-AZs cluster of " + str(num_nics) + "NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template."
+    ## add description
     t.add_description(description)
+    ## Build Labels and add to metadata
     bigiq_label = ""
     bigiq_parms = [
-
                     ]
     if license_type == "bigiq":
-        bigiq_label = "BIG-IQ LICENSING"
+        bigiq_label = "BIG-IQ LICENSING CONFIGURATION"
         bigiq_parms = [
-                    "bigiqAddress",
-                    "bigiqLicensePoolName",
-                    "bigiqUsername",
-                    "bigiqPassword"
+                        "bigiqAddress",
+                        "bigiqUsername",
+                        "bigiqPasswordS3Uri",
+                        "bigiqLicensePoolName",
                     ]
-            
     t.add_metadata({
         "Version": str(version),
         "AWS::CloudFormation::Interface": {
@@ -322,7 +335,7 @@ def main():
                 "default": "Timezone (Olson)"
             },
             "bigiqAddress": {
-                "default": "IP address BIG-IQ License Server"
+                "default": "IP address of the BIG-IQ device that contains the pool of licenses"
             },
             "bigiqLicensePoolName": {
                 "default": "Name of BIG-IQ License Pool"
@@ -330,8 +343,8 @@ def main():
             "bigiqUsername": {
                 "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
             },
-            "bigiqPassword": {
-                "default": "Password for BIG-IQ user that will license BIG-IP"
+            "bigiqPasswordS3Uri": {
+                "default": "S3 URI (s3://bucketname/objectname) of BIG-IQ Password file"
             }
           }
         }
@@ -386,7 +399,6 @@ def main():
             Description="Key pair for accessing the instance",
         ))
     if network == True:
-
         for INDEX in range(num_azs):
             AvailabilityZone = "availabilityZone" + str(INDEX + 1)
             PARAMETERS[AvailabilityZone] = t.add_parameter(Parameter(
@@ -425,7 +437,6 @@ def main():
             Default="UTC",
             Type="String"
         ))
-
         if 'waf' in components:
             # Default to 2xlarge
             instanceType = t.add_parameter(Parameter(
@@ -534,9 +545,9 @@ def main():
             bigiqAddress = t.add_parameter(Parameter(
                 "bigiqAddress",
                 MinLength="1",
-                ConstraintDescription="Verify IP address BIG-IQ License Server",
+                ConstraintDescription="Verify IP address of the BIG-IQ device that contains the pool of licenses",
                 Type="String",
-                Description="IP address BIG-IQ License Server",
+                Description="IP address of the BIG-IQ device that contains the pool of licenses",
                 MaxLength="255",
             ))
             bigiqUsername = t.add_parameter(Parameter(
@@ -547,14 +558,13 @@ def main():
                 Description="BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
                 MaxLength="255",
             ))
-            bigiqPassword = t.add_parameter(Parameter(
-                "bigiqPassword",
+            bigiqPasswordS3Uri = t.add_parameter(Parameter(
+                "bigiqPasswordS3Uri",
                 Type="String",
-                Description="Password for BIG-IQ user that will license BIG-IP",
+                Description="S3 URI (s3://bucketname/objectname) of BIG-IQ Password file",
                 MinLength="1",
-                NoEcho=True,
                 MaxLength="255",
-                ConstraintDescription="Verify Password for BIG-IQ user that will license BIG-IP",
+                ConstraintDescription="Verify S3 URI of BIG-IQ Password file",
             ))
             bigiqLicensePoolName = t.add_parameter(Parameter(
                 "bigiqLicensePoolName",
@@ -617,22 +627,17 @@ def main():
             ))
     # BEGIN REGION MAPPINGS FOR AMI IDS
     if bigip == True: 
-
         if license_type == "hourly":
             with open("cached-hourly-region-map.json") as json_file:
                 RegionMap = json.load(json_file)
-
         if license_type != "hourly":
             with open("cached-byol-region-map.json") as json_file:
                 RegionMap = json.load(json_file)
-
         t.add_mapping("BigipRegionMap", RegionMap )
     # WEB SERVER MAPPING
     if webserver == True:
-
         with open("cached-webserver-region-map.json") as json_file:
             RegionMap = json.load(json_file)
-
         t.add_mapping("WebserverRegionMap", RegionMap )
     ### BEGIN RESOURCES
     if network == True:
@@ -663,17 +668,14 @@ def main():
         ))
         AttachGateway = t.add_resource(VPCGatewayAttachment(
             "AttachGateway",
-
             VpcId=Ref(Vpc),
             InternetGatewayId=Ref(defaultGateway),
         ))
         octet = 1
         for INDEX in range(num_azs):
             ExternalSubnet = "subnet1" + "Az" + str(INDEX + 1)
-
             RESOURCES[ExternalSubnet] = t.add_resource(Subnet(
                 ExternalSubnet,
-
                 Tags=Tags(
                     Name=Join("", ["Az" , str(INDEX + 1) ,  " External Subnet:" , Ref("AWS::StackName")] ),
                     Application=Ref("application"),
@@ -762,7 +764,6 @@ def main():
                 ManagementSubnetRouteTableAssociation = "Az" + str(INDEX + 1) + "ManagementSubnetRouteTableAssociation"
                 RESOURCES[ManagementSubnetRouteTableAssociation] = t.add_resource(SubnetRouteTableAssociation(
                     ManagementSubnetRouteTableAssociation,
-
                     SubnetId=Ref("managementSubnet" + "Az" + str(INDEX + 1)),
                     RouteTableId=Ref(ManagementRouteTable),
                 ))
@@ -770,10 +771,8 @@ def main():
             octet = 2
             for INDEX in range(num_azs):
                 InternalSubnet = "subnet2" + "Az" + str(INDEX + 1)
-
                 RESOURCES[InternalSubnet] = t.add_resource(Subnet(
                     InternalSubnet,
-
                     Tags=Tags(
                         Name=Join("", ["Az" , str(INDEX + 1) ,  " Internal Subnet:" , Ref("AWS::StackName")] ),
                         Application=Ref("application"),
@@ -995,7 +994,6 @@ def main():
             ))
             bigipManagementSecurityGroup = t.add_resource(SecurityGroup(
                 "bigipManagementSecurityGroup",
-
                 SecurityGroupIngress=[
                     SecurityGroupRule(
                                 IpProtocol="tcp",
@@ -1043,10 +1041,8 @@ def main():
             ))
         # If a 3 nic with additional Internal interface.
         if num_nics > 2:
-
             bigipInternalSecurityGroup = t.add_resource(SecurityGroup(
                 "bigipInternalSecurityGroup",
-
                 SecurityGroupIngress=[
                     SecurityGroupRule(
                                 IpProtocol="-1",
@@ -1136,6 +1132,7 @@ def main():
             ],
         ))
     if bigip == True:
+        ## Build IAM ROLE and POLICY
         if ha_type == "standalone":
             bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(
                 "bigipServiceDiscoveryAccessRole",
@@ -1237,6 +1234,7 @@ def main():
                 Path="/",
                 Roles=[Ref(bigipClusterAccessRole)]
             ))
+        ## Build variables for BIGIP's
         for BIGIP_INDEX in range(num_bigips):
             licenseKey = "licenseKey" + str(BIGIP_INDEX + 1)
             BigipInstance = "Bigip" + str(BIGIP_INDEX + 1) + "Instance"
@@ -1251,6 +1249,7 @@ def main():
             ExternalSelfEipAddress = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "SelfEipAddress"            
             ExternalInterface = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "Interface"
             ExternalSelfEipAssociation = "Bigip" + str(BIGIP_INDEX + 1) + str(ExternalSubnet) + "SelfEipAssociation"
+            ## Build BIGIP Resources
             RESOURCES[ExternalInterface] = t.add_resource(NetworkInterface(
                 ExternalInterface,
                 SubnetId=Ref(ExternalSubnet),
@@ -1362,8 +1361,7 @@ def main():
                                 Ref(bigiqAddress),
                                 " --big-iq-user ",
                                 Ref(bigiqUsername),
-                                " --big-iq-password ",
-                                Ref(bigiqPassword),
+                                " --big-iq-password-url file:///config/cloud/aws/.bigiq",
                                 " --license-pool-name ",
                                 Ref(bigiqLicensePoolName),
                                 ]
@@ -1597,7 +1595,11 @@ def main():
                 rm_password_sh += [
                                     "tmsh+=(\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\")\n",
                                   ]
-            rm_password_sh +=   [                      
+            if license_type == "bigiq":
+                rm_password_sh += [
+                                    "tmsh+=(\"rm /config/cloud/aws/.bigiq\")\n",
+                                  ]
+            rm_password_sh +=   [
                                  "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
                                  "for CMD in \"${tmsh[@]}\"\n",
                                  "do\n",
@@ -1688,6 +1690,17 @@ def main():
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                 ]
             # Global Settings
+            if license_type == "bigiq":
+                onboard_BIG_IP += [
+                                    "version=$(ls /opt/aws/ | grep awscli);",
+                                    "AWSCLI=/opt/aws/$version;",
+                                    "export PATH=$PATH:$AWSCLI/bin;",
+                                    "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib64/python2.6/site-packages;",
+                                    "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib/python2.6/site-packages;",
+                                    "aws s3 cp",
+                                    Ref(bigiqPasswordS3Uri),
+                                    "/config/cloud/aws/.bigiq;",
+                ]
             if num_nics == 1:
                 one_nic_setup += [
                                     "nohup /config/waitThenRun.sh",

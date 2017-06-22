@@ -508,7 +508,7 @@
            " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
            " --wait-for PASSWORD_CREATED",
            " --signal ADMIN_CREATED",
-           " --file /config/cloud/aws/node_modules/f5-cloud-ƒlibs/scripts/createUser.sh",
+           " --file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/createUser.sh",
            " --cl-args '--user admin",
            " --password-file /config/cloud/aws/.adminPassword",
            "'",

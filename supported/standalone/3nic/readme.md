@@ -276,6 +276,8 @@ To launch the template:
   3.	From the **Template** list, select **f5.service_discovery**.  The template opens.
   4.	Complete the template with information from your environment.  For assistance, from the Do you want to see inline help? question, select Yes, show inline help.
   5.	When you are done, click the **Finished** button.
+  
+If you want to verify the integrity of the template, from the BIG-IP VE Configuration utility click **iApps > Templates**. In the template list, look for **f5.service_discovery**. In the Verification column, you should see **F5 Verified**.
 
 ## Configuration Example
 

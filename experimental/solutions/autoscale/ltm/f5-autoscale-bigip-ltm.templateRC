@@ -834,7 +834,7 @@
                       "            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6",
                       "            set hashes(deploy_waf.sh) 4db3176b45913a5e7ccf42ab9c7ac9d7de115cdbd030b9e735946f92456b6eb433087ed0e98ac4981c76d475cd38f4de49cd98c063e13d50328a270e5b3daa4a",
                       "            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a",
-                      "            set hashes(f5.service_discovery.tmpl) ec6aa14c81972e4044076da8c0486e8e4817ca48352c59c097d2ba46a9371f2bfe873147730489c4d17924cd0fc84c399f323fcdb6f3aca5d4055202735c1580",                      
+                      "            set hashes(f5.service_discovery.tmpl) 306170ab4ec2494ed290406be37ab32af57ed59c9d614e9a86958375b7719335e6c73831fdba6bdcfb552c40227f5773dc719f2b7d6ff7c0a046180a34beb162",                      
                       "",
                       "            set file_path [lindex $tmsh::argv 1]",
                       "            set file_name [file tail $file_path]",
@@ -856,7 +856,7 @@
                       "            exit 1",
                       "        }",
                       "    }",
-                      "    script-signature i/xULnhYDMh96GWgi5NeZ1rx4UPv/32RyBcn5ztzhRBLryrQF+SdYEqthIGTscUjCFXbcgGPoQPgHwNgDAtMDnaZFR7AajVNvdQmp2ALIL6UauBNu6MqvYhmxkwbxVOvthSC2sIu07oake7cW+eo0AUQNOuREqHwLKt8uoiU1c315RAib/GkFswRTxAa9jwGfWneTJem32PSdnH9XKx7GGN4YWuIFv5M0HZzdlRFfEi3+RMdg5aXRE24iEbCkGnXdVsCFuUtNed81cEuK/wJhlR/l6h+9giLF60GJ3vDqxr+AYgAnO5zXrXZQS2nvBvzovgWa5xxJ9mnDvpZ5avRgw==",
+                      "    script-signature j9bD4lE4eJvPyHJagmiGYl/90LXtj4HQqz5JenJuKoODyPrJ3EszmQjzKkERa4G28l6i6+9K7Ot/DvBhu8pOk8tOYrxAOPzdAB+Hj1ns9c3GR4KhUMp+wpZ6y/wqPIcgFakeYGyWJdWaPcpFSR4o7QlYc18NnWL/hvvPSaPuDADANZyriy25Xqmaxx4sU9BIJsKDoFaDyUZwIbqTM1eUmQ750/e7WPAH55PVJPXVdhmXy5x7XX2zVeEfleb0F7Y1QY7+kO3TJLx/kL7Mxx5BZdtoembGIsL0XtcQClQsu1Cm7A/9kqgNvlabBjL60k3xIz5WYueobprQ7tVXgCS+cw==",
                       "    signing-key /Common/f5-irule",
                       "}"
                     ]

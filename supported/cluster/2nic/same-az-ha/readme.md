@@ -141,7 +141,7 @@ After clicking the Launch button, you must specify the following parameters.
 #### BIG-IQ Licensing Deploy button
 If you have an existing BIG-IQ device with a pool of BIG-IP licenses, you can use this button to deploy the **BIG-IQ** template: 
  
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-bigiq-1nic-bigip.template">
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=SameAZClusterBigIp-2nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
 
@@ -308,6 +308,8 @@ To launch the template:
   3.	From the **Template** list, select **f5.service_discovery**.  The template opens.
   4.	Complete the template with information from your environment.  For assistance, from the Do you want to see inline help? question, select Yes, show inline help.
   5.	When you are done, click the **Finished** button.
+  
+If you want to verify the integrity of the template, from the BIG-IP VE Configuration utility click **iApps > Templates**. In the template list, look for **f5.service_discovery**. In the Verification column, you should see **F5 Verified**.
 
 ## Configuration Example
 

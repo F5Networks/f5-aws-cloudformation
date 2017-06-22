@@ -130,7 +130,7 @@
      "default": "Management Security Group"
     },
     "bigiqAddress": {
-     "default": "IP address of BIG-IQ License Server"
+     "default": "IP address of the BIG-IQ device that contains the pool of licenses"
     },
     "bigiqLicensePoolName": {
      "default": "Name of BIG-IQ License Pool"

@@ -2,6 +2,8 @@
 'dd58a974dc22c0cbafd93e4add95edde38236cbb3d9d4a2e7a18ba79a27768a5a7bfecbd85c4f81c95ee55727853a68b1051867d58f5fcd0c2cf434ae4a9df80'
 **Cluster: - Across AZs2 NIC - HOURLY**(f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template)
 '9d499d1048b2f99a2bce05a64e109b35be21ac588cfd3be7ecfcfd963b617d2c81a355592eca797dcbbf2bdf5f74970e4adbd4e73de37397aa61f558b00cd302'
+**Cluster: - Same Azs2 NIC - BIGIQ**(f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template)
+'b4bd6aa097e2b67bd656fcf0104fb0cadb38f13ac8118b3526e6007294f8dbb1236e414b6b7f108cedacb2299c828860302a1d010e65e713a772b57402d51b6f'
 **Cluster: - Same Azs2 NIC - BYOL**(f5-existing-stack-same-az-cluster-byol-2nic-bigip.template)
 '24772ff20a61771712e410a0e06e33536d0d32522b49a86b3c3861192a4fde63da054e4802389302effe1280936ccdea3657343f58d77f134e0dbb93e22a3dbe'
 **Cluster: - Same Azs2 NIC - HOURLY**(f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template)
@@ -16,10 +18,14 @@
 '2d2d66f619fde597c99b77821f094d3c96fa8b5bae565105d092eefb7cfe3a5c1ec6a9c5017741ddaedbd55793787866ef09b5ec67b89c85ffa64930a6e362e0'
 **Auto Scale WAF: - AWS Marketplace - 25Mbps**(f5-autoscale-bigip-25-Mbps.template)
 '7a367f0f0d3ad7416b41eee1efa1bcf490d803c12beccf31bbff0fa85462b14a2ebb719b76d1e990a15e755b7c134a9fc6118edd58ff87128c7ceb2e0d57f3ff'
+**Standalone:1 NIC - BIGIQ**(f5-existing-stack-bigiq-1nic-bigip.template)
+'e90acaf386c7b7024a865ee42da97fe903fa685dc3ac4c73cc3db7f7eed94a5f263c5cc2b444f87517516d04ac7533d49fa9320e8a86a5d58bb22f53681f3728'
 **Standalone:1 NIC - BYOL**(f5-existing-stack-byol-1nic-bigip.template)
 '0920a4d2b8af8ac6600dd5f21648c295fbfa3835829f6c08358df8b9ce5dd908cc0ff5edd47d99c1e32babedc446602fcd44ff775f899ecf18de691df07ada5e'
 **Standalone:1 NIC - HOURLY**(f5-existing-stack-hourly-1nic-bigip.template)
 '92d3f1516ed63536557645170ab77435844577c75445beb881686d6604bd0b8587b9d63903a424572061218b1833fa1ac450c785dd8d31888f0b665cacbf7e0f'
+**Standalone:2 NIC - BIGIQ**(f5-existing-stack-bigiq-2nic-bigip.template)
+'2622a6f6517edc4843209cceb4729e1a11054eca32f903768432f5ede57f5a1b46de542cfcdaee956b2b9a2b1e2a6a2dbccda90e6ed2a8b6d58d286c30d0a900'
 **Standalone:2 NIC - BYOL**(f5-existing-stack-byol-2nic-bigip.template)
 '4e5f6ddb3832ab38235831213891f973f6503a3b87a323281fa6160e8ac929ea3ce3301d2b68f670ade4e03b321e2d84ab09250e69c7b8cbed38dc340c82c11d'
 **Standalone:2 NIC - HOURLY**(f5-existing-stack-hourly-2nic-bigip.template)

@@ -127,11 +127,15 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    version = "2.4.0"
+    #version = "2.4.0"
+    version = "2.4.2"
     ### Cloudlib Branch
-    branch_cloud = "v3.1.0"
-    branch_aws = "v1.3.0"
-    branch_cloud_iapps = "v1.0.0"
+    #branch_cloud = "v3.1.0"
+    branch_cloud = "v3.2.0"
+    #branch_aws = "v1.3.0"
+    branch_aws = "v1.4.0"
+    #branch_cloud_iapps = "v1.0.0"
+    branch_cloud_iapps = "v1.0.1"
     ### Build verifyHash file from published verifyHash on github
     urls = [ 'https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/' + str(branch_cloud) + '/dist/verifyHash' ]
     for url in urls:
@@ -193,7 +197,7 @@ def main():
         bigiq_parms = [
                         "bigiqAddress",
                         "bigiqUsername",
-                        "bigiqPasswordS3Uri",
+                        "bigiqPasswordS3Arn",
                         "bigiqLicensePoolName",
                     ]
     t.add_metadata({
@@ -342,8 +346,8 @@ def main():
             "bigiqUsername": {
                 "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
             },
-            "bigiqPasswordS3Uri": {
-                "default": "S3 URI (s3://bucketname/objectname) of BIG-IQ Password file"
+            "bigiqPasswordS3Arn": {
+                "default": "S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of BIG-IQ Password file"
             }
           }
         }
@@ -557,13 +561,13 @@ def main():
                 Description="BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
                 MaxLength="255",
             ))
-            bigiqPasswordS3Uri = t.add_parameter(Parameter(
-                "bigiqPasswordS3Uri",
+            bigiqPasswordS3Arn = t.add_parameter(Parameter(
+                "bigiqPasswordS3Arn",
                 Type="String",
-                Description="S3 URI (s3://bucketname/objectname) of BIG-IQ Password file",
+                Description="S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of BIG-IQ Password file",
                 MinLength="1",
                 MaxLength="255",
-                ConstraintDescription="Verify S3 URI of BIG-IQ Password file",
+                ConstraintDescription="Verify S3 ARN of BIG-IQ Password file",
             ))
             bigiqLicensePoolName = t.add_parameter(Parameter(
                 "bigiqLicensePoolName",
@@ -1133,106 +1137,210 @@ def main():
     if bigip == True:
         ## Build IAM ROLE and POLICY
         if ha_type == "standalone":
-            bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(
-                "bigipServiceDiscoveryAccessRole",
-                Path="/",
-                AssumeRolePolicyDocument=Policy(
-                    Version="2012-10-17",
-                    Statement=[
-                        Statement(
-                            Effect=Allow,
-                            Action=[AssumeRole],
-                            Principal=Principal("Service", ["ec2.amazonaws.com"]),
-                        )
-                    ]
-                ),
-                Policies=[
-                    iam.Policy(
-                        PolicyName="BigipServiceDiscoveryPolicy",
-                        PolicyDocument={
-                            "Version": "2012-10-17",
-                            "Statement": [{
-                                "Effect": "Allow",
-                                "Action": [
-                                    "ec2:DescribeInstances",
-                                    "ec2:DescribeInstanceStatus",
-                                    "ec2:DescribeAddresses",
-                                    "ec2:AssociateAddress",
-                                    "ec2:DisassociateAddress",
-                                    "ec2:DescribeNetworkInterfaces",
-                                    "ec2:DescribeNetworkInterfaceAttributes",
-                                    "ec2:DescribeRouteTables",
-                                    "ec2:ReplaceRoute",
-                                    "ec2:assignprivateipaddresses",
-                                    "sts:AssumeRole",
-                                ],
-                                "Resource": [ "*" ]
-                            }],
-                        }
+            if license_type == "bigiq":
+                bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(
+                    "bigipServiceDiscoveryAccessRole",
+                    Path="/",
+                    AssumeRolePolicyDocument=Policy(
+                        Version="2012-10-17",
+                        Statement=[
+                            Statement(
+                                Effect=Allow,
+                                Action=[AssumeRole],
+                                Principal=Principal("Service", ["ec2.amazonaws.com"]),
+                            )
+                        ]
                     ),
-                ],
-            ))
+                    Policies=[
+                        iam.Policy(
+                            PolicyName="BigipServiceDiscoveryPolicy",
+                            PolicyDocument={
+                                "Version": "2012-10-17",
+                                "Statement": [{
+                                    "Effect": "Allow",
+                                    "Action": ["s3:GetObject"],
+                                    "Resource": { "Ref": "bigiqPasswordS3Arn" },
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ec2:DescribeInstances",
+                                        "ec2:DescribeInstanceStatus",
+                                        "ec2:DescribeAddresses",
+                                        "ec2:AssociateAddress",
+                                        "ec2:DisassociateAddress",
+                                        "ec2:DescribeNetworkInterfaces",
+                                        "ec2:DescribeNetworkInterfaceAttributes",
+                                        "ec2:DescribeRouteTables",
+                                        "ec2:ReplaceRoute",
+                                        "ec2:assignprivateipaddresses",
+                                        "sts:AssumeRole",
+                                    ],
+                                    "Resource": [ "*" ]
+                                }],
+                            }
+                        ),
+                    ],
+                ))
+            else:
+                bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(
+                    "bigipServiceDiscoveryAccessRole",
+                    Path="/",
+                    AssumeRolePolicyDocument=Policy(
+                        Version="2012-10-17",
+                        Statement=[
+                            Statement(
+                                Effect=Allow,
+                                Action=[AssumeRole],
+                                Principal=Principal("Service", ["ec2.amazonaws.com"]),
+                            )
+                        ]
+                    ),
+                    Policies=[
+                        iam.Policy(
+                            PolicyName="BigipServiceDiscoveryPolicy",
+                            PolicyDocument={
+                                "Version": "2012-10-17",
+                                "Statement": [{
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ec2:DescribeInstances",
+                                        "ec2:DescribeInstanceStatus",
+                                        "ec2:DescribeAddresses",
+                                        "ec2:AssociateAddress",
+                                        "ec2:DisassociateAddress",
+                                        "ec2:DescribeNetworkInterfaces",
+                                        "ec2:DescribeNetworkInterfaceAttributes",
+                                        "ec2:DescribeRouteTables",
+                                        "ec2:ReplaceRoute",
+                                        "ec2:assignprivateipaddresses",
+                                        "sts:AssumeRole",
+                                    ],
+                                    "Resource": [ "*" ]
+                                }],
+                            }
+                        ),
+                    ],
+                ))
             bigipServiceDiscoveryProfile = t.add_resource(iam.InstanceProfile(
                 "bigipServiceDiscoveryProfile",
                 Path="/",
                 Roles=[Ref(bigipServiceDiscoveryAccessRole)]
             ))
         if ha_type != "standalone":
-            s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,))
-            bigipClusterAccessRole = t.add_resource(iam.Role(
-                "bigipClusterAccessRole",
-                Path="/",
-                AssumeRolePolicyDocument=Policy(
-                    Version="2012-10-17",
-                    Statement=[
-                        Statement(
-                            Effect=Allow,
-                            Action=[AssumeRole],
-                            Principal=Principal("Service", ["ec2.amazonaws.com"]),
-                        )
-                    ]
-                ),
-                Policies=[
-                    iam.Policy(
-                        PolicyName="BigipClusterAcccessPolicy",
-                        PolicyDocument={
-                            "Version": "2012-10-17",
-                            "Statement": [{
-                                "Effect": "Allow",
-                                "Action": ["s3:ListBucket"],
-                                "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" } ] ] },
-                            },
-                            {
-                                "Effect": "Allow",
-                                "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
-                                "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" }, "/*" ] ] }
-                            },
-                            {
-                                "Effect": "Allow",
-                                "Action": [
-                                    "ec2:DescribeInstances",
-                                    "ec2:DescribeInstanceStatus",
-                                    "ec2:DescribeAddresses",
-                                    "ec2:AssociateAddress",
-                                    "ec2:DisassociateAddress",
-                                    "ec2:DescribeNetworkInterfaces",
-                                    "ec2:DescribeNetworkInterfaceAttributes",
-                                    "ec2:DescribeRouteTables",
-                                    "ec2:ReplaceRoute",
-                                    "ec2:assignprivateipaddresses",
-                                    "sts:AssumeRole",
-                                ],
-                                "Resource": [ "*" ]
-                            }],
-                        }
+            if license_type == "bigiq":
+                s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,))
+                bigipClusterAccessRole = t.add_resource(iam.Role(
+                    "bigipClusterAccessRole",
+                    Path="/",
+                    AssumeRolePolicyDocument=Policy(
+                        Version="2012-10-17",
+                        Statement=[
+                            Statement(
+                                Effect=Allow,
+                                Action=[AssumeRole],
+                                Principal=Principal("Service", ["ec2.amazonaws.com"]),
+                            )
+                        ]
                     ),
-                ],
-            ))
+                    Policies=[
+                        iam.Policy(
+                            PolicyName="BigipClusterAcccessPolicy",
+                            PolicyDocument={
+                                "Version": "2012-10-17",
+                                "Statement": [{
+                                    "Effect": "Allow",
+                                    "Action": ["s3:GetObject"],
+                                    "Resource": { "Ref": "bigiqPasswordS3Arn" },
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": ["s3:ListBucket"],
+                                    "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" } ] ] },
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
+                                    "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" }, "/*" ] ] }
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ec2:DescribeInstances",
+                                        "ec2:DescribeInstanceStatus",
+                                        "ec2:DescribeAddresses",
+                                        "ec2:AssociateAddress",
+                                        "ec2:DisassociateAddress",
+                                        "ec2:DescribeNetworkInterfaces",
+                                        "ec2:DescribeNetworkInterfaceAttributes",
+                                        "ec2:DescribeRouteTables",
+                                        "ec2:ReplaceRoute",
+                                        "ec2:assignprivateipaddresses",
+                                        "sts:AssumeRole",
+                                    ],
+                                    "Resource": [ "*" ]
+                                }],
+                            }
+                        ),
+                    ],
+                ))
+            else:
+                s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,))
+                bigipClusterAccessRole = t.add_resource(iam.Role(
+                    "bigipClusterAccessRole",
+                    Path="/",
+                    AssumeRolePolicyDocument=Policy(
+                        Version="2012-10-17",
+                        Statement=[
+                            Statement(
+                                Effect=Allow,
+                                Action=[AssumeRole],
+                                Principal=Principal("Service", ["ec2.amazonaws.com"]),
+                            )
+                        ]
+                    ),
+                    Policies=[
+                        iam.Policy(
+                            PolicyName="BigipClusterAcccessPolicy",
+                            PolicyDocument={
+                                "Version": "2012-10-17",
+                                "Statement": [{
+                                    "Effect": "Allow",
+                                    "Action": ["s3:ListBucket"],
+                                    "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" } ] ] },
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
+                                    "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" }, "/*" ] ] }
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ec2:DescribeInstances",
+                                        "ec2:DescribeInstanceStatus",
+                                        "ec2:DescribeAddresses",
+                                        "ec2:AssociateAddress",
+                                        "ec2:DisassociateAddress",
+                                        "ec2:DescribeNetworkInterfaces",
+                                        "ec2:DescribeNetworkInterfaceAttributes",
+                                        "ec2:DescribeRouteTables",
+                                        "ec2:ReplaceRoute",
+                                        "ec2:assignprivateipaddresses",
+                                        "sts:AssumeRole",
+                                    ],
+                                    "Resource": [ "*" ]
+                                }],
+                            }
+                        ),
+                    ],
+                ))
             bigipClusterInstanceProfile = t.add_resource(iam.InstanceProfile(
                 "bigipClusterInstanceProfile",
                 Path="/",
                 Roles=[Ref(bigipClusterAccessRole)]
             ))
+
         ## Build variables for BIGIP's
         for BIGIP_INDEX in range(num_bigips):
             licenseKey = "licenseKey" + str(BIGIP_INDEX + 1)
@@ -1360,7 +1468,8 @@ def main():
                                 Ref(bigiqAddress),
                                 " --big-iq-user ",
                                 Ref(bigiqUsername),
-                                " --big-iq-password-url file:///config/cloud/aws/.bigiq",
+                                " --big-iq-password-uri ",
+                                Ref(bigiqPasswordS3Arn),
                                 " --license-pool-name ",
                                 Ref(bigiqLicensePoolName),
                                 ]
@@ -1594,10 +1703,6 @@ def main():
                 rm_password_sh += [
                                     "tmsh+=(\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\")\n",
                                   ]
-            if license_type == "bigiq":
-                rm_password_sh += [
-                                    "tmsh+=(\"rm /config/cloud/aws/.bigiq\")\n",
-                                  ]
             rm_password_sh +=   [
                                  "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
                                  "for CMD in \"${tmsh[@]}\"\n",
@@ -1689,17 +1794,6 @@ def main():
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                 ]
             # Global Settings
-            if license_type == "bigiq":
-                onboard_BIG_IP += [
-                                    "version=$(ls /opt/aws/ | grep awscli);",
-                                    "AWSCLI=/opt/aws/$version;",
-                                    "export PATH=$PATH:$AWSCLI/bin;",
-                                    "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib64/python2.6/site-packages;",
-                                    "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib/python2.6/site-packages;",
-                                    "aws s3 cp",
-                                    Ref(bigiqPasswordS3Uri),
-                                    "/config/cloud/aws/.bigiq;",
-                ]
             if num_nics == 1:
                 one_nic_setup += [
                                     "nohup /config/waitThenRun.sh",

@@ -4,7 +4,7 @@
 **Contents**             
 
  - [Introduction](#introduction) 
- - [Prerequisites](#prerequisites-and-notes)
+ - [Prerequisites](#prerequisites-and-configuration-notes)
  - [Launching the template](#launching-the-template) 
  - [Getting Help](#help)
  - [Additional BIG-IP VE Deployment and Configuration Details](#additional-big-ip-ve-deployment-and-configuration-details)
@@ -15,7 +15,7 @@
 This solution implements auto scaling of BIG-IP Virtual Edition (VE) LTM systems in Amazon Web Services. The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality.  As traffic increases or decreases, the number of BIG-IP VE LTM instances automatically increases or decreases accordingly.
 
 
-## Prerequisites and notes
+## Prerequisites and configuration notes
 The following are prerequisites for this solution:
  - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdminstratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.  For details on permissions and all AWS configuration, see https://aws.amazon.com/documentation/.
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
@@ -24,6 +24,7 @@ The following are prerequisites for this solution:
  - Access to BIG-IP images in the Amazon region within which you are working.
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image. 
  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
+ - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
 
 ## Launching the template
 You have three options for launching this solution:
@@ -288,8 +289,9 @@ In the AWS Console, navigate to the CloudFormation page, select the stack create
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. To verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Detail](#securitydetail) for the exact code in each of the following sections.
-  - In the */config/verifyHash* section: **script-signature** and then a hashed signature
-  - In the */config/installCloudLibs.sh* section **"tmsh load sys config merge file /config/verifyHash"**
+  - In the /config/verifyHash section: script-signature and then a hashed signature.
+  - In the /config/installCloudLibs.sh section: **tmsh load sys config merge file /config/verifyHash**.
+  - In the *filesToVerify* variable: ensure this includes **tmsh run cli script verifyHash /config/cloud/f5-cloud-libs.tar.gz**.
   
 Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
 

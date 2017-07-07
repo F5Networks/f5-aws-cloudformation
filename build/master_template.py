@@ -1137,117 +1137,43 @@ def main():
         ))
     if bigip == True:
         ## Build IAM ROLE and POLICY
-        bigiq_policy = {}
+        discovery_policy = [{"Effect": "Allow", "Action": ["ec2:DescribeInstances", "ec2:DescribeInstanceStatus", "ec2:DescribeAddresses", "ec2:AssociateAddress", "ec2:DisassociateAddress", "ec2:DescribeNetworkInterfaces", "ec2:DescribeNetworkInterfaceAttributes", "ec2:DescribeRouteTables", "ec2:ReplaceRoute", "ec2:assignprivateipaddresses", "sts:AssumeRole", ], "Resource": [ "*" ]}]
         if license_type == "bigiq":
-            bigiq_policy = {"Effect": "Allow", "Action": ["s3:GetObject"], "Resource": {"Ref": "bigiqPasswordS3Arn"}, }
-        if ha_type == "standalone":
-            bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(
-                "bigipServiceDiscoveryAccessRole",
-                Path="/",
-                AssumeRolePolicyDocument=Policy(
-                    Version="2012-10-17",
-                    Statement=[
-                        Statement(
-                            Effect=Allow,
-                            Action=[AssumeRole],
-                            Principal=Principal("Service", ["ec2.amazonaws.com"]),
-                        )
-                    ]
-                ),
-                Policies=[
-                    iam.Policy(
-                        PolicyName="BigipServiceDiscoveryPolicy",
-                        PolicyDocument={
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                bigiq_policy
-                            ,
-                            {
-                                "Effect": "Allow",
-                                "Action": [
-                                    "ec2:DescribeInstances",
-                                    "ec2:DescribeInstanceStatus",
-                                    "ec2:DescribeAddresses",
-                                    "ec2:AssociateAddress",
-                                    "ec2:DisassociateAddress",
-                                    "ec2:DescribeNetworkInterfaces",
-                                    "ec2:DescribeNetworkInterfaceAttributes",
-                                    "ec2:DescribeRouteTables",
-                                    "ec2:ReplaceRoute",
-                                    "ec2:assignprivateipaddresses",
-                                    "sts:AssumeRole",
-                                ],
-                                "Resource": [ "*" ]
-                            }],
-                        }
-                    ),
-                ],
-            ))
-            bigipServiceDiscoveryProfile = t.add_resource(iam.InstanceProfile(
-                "bigipServiceDiscoveryProfile",
-                Path="/",
-                Roles=[Ref(bigipServiceDiscoveryAccessRole)]
-            ))
+            discovery_policy.append({"Effect": "Allow", "Action": ["s3:GetObject"], "Resource": {"Ref": "bigiqPasswordS3Arn"}, })
         if ha_type != "standalone":
+            discovery_policy.append({"Effect": "Allow", "Action": ["s3:ListBucket"], "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" } ] ] },},)
+            discovery_policy.append({"Effect": "Allow", "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"], "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" }, "/*" ] ]}},)
             s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,))
-            bigipClusterAccessRole = t.add_resource(iam.Role(
-                "bigipClusterAccessRole",
-                Path="/",
-                AssumeRolePolicyDocument=Policy(
-                    Version="2012-10-17",
-                    Statement=[
-                        Statement(
-                            Effect=Allow,
-                            Action=[AssumeRole],
-                            Principal=Principal("Service", ["ec2.amazonaws.com"]),
-                        )
-                    ]
-                ),
-                Policies=[
-                    iam.Policy(
-                        PolicyName="BigipClusterAcccessPolicy",
-                        PolicyDocument={
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                bigiq_policy
-                            ,
-                            {
-                                "Effect": "Allow",
-                                "Action": ["s3:ListBucket"],
-                                "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" } ] ] },
-                            },
-                            {
-                                "Effect": "Allow",
-                                "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
-                                "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" }, "/*" ] ] }
-                            },
-                            {
-                                "Effect": "Allow",
-                                "Action": [
-                                    "ec2:DescribeInstances",
-                                    "ec2:DescribeInstanceStatus",
-                                    "ec2:DescribeAddresses",
-                                    "ec2:AssociateAddress",
-                                    "ec2:DisassociateAddress",
-                                    "ec2:DescribeNetworkInterfaces",
-                                    "ec2:DescribeNetworkInterfaceAttributes",
-                                    "ec2:DescribeRouteTables",
-                                    "ec2:ReplaceRoute",
-                                    "ec2:assignprivateipaddresses",
-                                    "sts:AssumeRole",
-                                ],
-                                "Resource": [ "*" ]
-                            }],
-                        }
-                    ),
-                ],
-            ))
-            bigipClusterInstanceProfile = t.add_resource(iam.InstanceProfile(
-                "bigipClusterInstanceProfile",
-                Path="/",
-                Roles=[Ref(bigipClusterAccessRole)]
-            ))
+        bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(
+            "bigipServiceDiscoveryAccessRole",
+            Path="/",
+            AssumeRolePolicyDocument=Policy(
+                Version="2012-10-17",
+                Statement=[
+                    Statement(
+                        Effect=Allow,
+                        Action=[AssumeRole],
+                        Principal=Principal("Service", ["ec2.amazonaws.com"]),
+                    )
+                ]
+            ),
+            Policies=[
+                iam.Policy(
+                    PolicyName="BigipServiceDiscoveryPolicy",
+                    PolicyDocument={
+                        "Version": "2012-10-17",
+                        "Statement":
+                            discovery_policy
 
+                    }
+                ),
+            ],
+        ))
+        bigipServiceDiscoveryProfile = t.add_resource(iam.InstanceProfile(
+            "bigipServiceDiscoveryProfile",
+            Path="/",
+            Roles=[Ref(bigipServiceDiscoveryAccessRole)]
+        ))
         ## Build variables for BIGIP's
         for BIGIP_INDEX in range(num_bigips):
             licenseKey = "licenseKey" + str(BIGIP_INDEX + 1)
@@ -2174,7 +2100,7 @@ def main():
                             NoDevice={}
                         )
                     ],
-                    IamInstanceProfile=Ref(bigipClusterInstanceProfile),
+                    IamInstanceProfile=Ref(bigipServiceDiscoveryAccessRole),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces
@@ -2207,7 +2133,7 @@ def main():
                             NoDevice={}
                         )
                     ],
-                    IamInstanceProfile=Ref(bigipClusterInstanceProfile),
+                    IamInstanceProfile=Ref(bigipServiceDiscoveryAccessRole),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces

@@ -251,12 +251,12 @@
     },
     "scaleDownBytesThreshold": {
       "Description": "Incoming bytes threshold to begin scaling down BIG-IP VE instances",
-      "Default": "26214400",
+      "Default": "131072000",
       "Type": "Number"
     },
     "scaleUpBytesThreshold": {
       "Description": "Incoming bytes threshold to begin scaling up BIG-IP VE instances",
-      "Default": "104857600",
+      "Default": "524288000",
       "Type": "Number"
     },
     "notificationEmail": {
@@ -315,46 +315,46 @@
   "Mappings": {
     "BigipRegionMap": {
       "ap-northeast-1": {
-        "Good1000Mbps": "ami-3d1e2f5a"
+        "Good5000Mbps": "ami-a01c2dc7"
       }, 
       "ap-northeast-2": {
-        "Good1000Mbps": "ami-2aa27f44"
+        "Good5000Mbps": "ami-dadf02b4"
       }, 
       "ap-south-1": {
-        "Good1000Mbps": "ami-f2deac9d"
+        "Good5000Mbps": "ami-c4dba9ab"
       }, 
       "ap-southeast-1": {
-        "Good1000Mbps": "ami-cb08b2a8"
+        "Good5000Mbps": "ami-3a0eb459"
       }, 
       "ap-southeast-2": {
-        "Good1000Mbps": "ami-e2ddd681"
+        "Good5000Mbps": "ami-75d8d316"
       }, 
       "ca-central-1": {
-        "Good1000Mbps": "ami-a5922ec1"
+        "Good5000Mbps": "ami-0b94286f"
       }, 
       "eu-central-1": {
-        "Good1000Mbps": "ami-774d9218"
+        "Good5000Mbps": "ami-744d921b"
       }, 
       "eu-west-1": {
-        "Good1000Mbps": "ami-c9b8b5af"
+        "Good5000Mbps": "ami-1fb9b479"
       }, 
       "eu-west-2": {
-        "Good1000Mbps": "ami-3fa7b35b"
+        "Good5000Mbps": "ami-52a0b436"
       }, 
       "sa-east-1": {
-        "Good1000Mbps": "ami-c68fe3aa"
+        "Good5000Mbps": "ami-358ee259"
       }, 
       "us-east-1": {
-        "Good1000Mbps": "ami-bd701eab"
+        "Good5000Mbps": "ami-d0701ec6"
       }, 
       "us-east-2": {
-        "Good1000Mbps": "ami-29e6c14c"
+        "Good5000Mbps": "ami-dfe7c0ba"
       }, 
       "us-west-1": {
-        "Good1000Mbps": "ami-486c4a28"
+        "Good5000Mbps": "ami-336d4b53"
       }, 
       "us-west-2": {
-        "Good1000Mbps": "ami-cbbc27ab"
+        "Good5000Mbps": "ami-b2b229d2"
       }
     }
   },
@@ -971,7 +971,7 @@
             {
               "Ref": "AWS::Region"
             },
-            "Good1000Mbps"
+            "Good5000Mbps"
           ]
         },
         "InstanceMonitoring": false,

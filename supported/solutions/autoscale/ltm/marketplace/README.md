@@ -1,18 +1,18 @@
-# Auto scaling the BIG-IP VE Web Application Firewall in AWS
+# Auto scaling the BIG-IP VE Local Traffic Manager (LTM) in AWS
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 
 **Contents**             
 
  - [Introduction](#introduction) 
- - [Prerequisites](#prerequisites-and-configuration-notes)
- - [Launching the template](#launching-the-template) 
+ - [Prerequisites](#prerequisites-and-notes)
+ - [Quick Start](#quick-start-for-launching-the-template) 
  - [Getting Help](#help)
  - [Additional BIG-IP VE Deployment and Configuration Details](#additional-big-ip-ve-deployment-and-configuration-details)
  - [Security](#security)
 
 
 ## Introduction
-This solution implements auto scaling of BIG-IP Virtual Edition (VE) Web Application Firewall (WAF) systems in Amazon Web Services. The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) and <a href="https://f5.com/products/big-ip/application-security-manager-asm">Application Security Manager</a> (ASM) modules enabled to provide advanced traffic management and web application security functionality.  As traffic increases or decreases, the number of BIG-IP VE WAF instances automatically increases or decreases accordingly. 
+This solution implements auto scaling of BIG-IP Virtual Edition (VE) LTM systems in Amazon Web Services. The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality.  As traffic increases or decreases, the number of BIG-IP VE LTM instances automatically increases or decreases accordingly.
 
 
 ## Prerequisites and configuration notes
@@ -20,97 +20,26 @@ The following are prerequisites for this solution:
  - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdminstratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.  For details on permissions and all AWS configuration, see https://aws.amazon.com/documentation/.
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
-   - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
- - Access to **Best** BIG-IP images in the Amazon region within which you are working.
+   - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP LTM auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration. You must first upload the SSL certificate to your AWS account for use in the classic ELB. For more information on uploading a certificate, see: http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html
+ - Access to BIG-IP images in the Amazon region within which you are working.
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image. 
- - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
+ - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for information.
  - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
+  
+## Quick Start for launching the template
+This Readme file describes launching from the AWS Marketplace.
 
-## Launching the template
-You have three options for launching this solution:
-  - Using the [Launch Stack buttons](#using-the-aws-launch-stack-button)
-  - Using the [AWS Console](#using-the-aws-console)
-  - Using the [AWS CLI](#using-the-aws-cli) 
- 
-### Using the AWS Launch Stack button
-The easiest way to deploy one of the CloudFormation templates is to use the Launch Stack button.<br>
-**Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
-
-See [Template Parameters](#template-parameters) for guidance on the parameters presented by the template.
- 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-BIGIP-WAF-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-autoscale-bigip.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
-
-### Using the AWS Console
-Download the CloudFormation template from this repository (https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/solutions/autoscale/waf/f5-autoscale-bigip.template) and use it to create a stack in AWS CloudFormation using the AWS Console.<br> 
-Note that you **cannot** right-click the link and use "Save as".  You must click **Raw** and save the code with the file name **f5-autoscale-bigip.template**.
-
-
-AWS Console
-
- From the AWS Console main page: 
-   1. Under AWS Services, click **CloudFormation**.
-   2. Click the **Create Stack** button 
-   3. In the Choose a template area, click **Upload a template to Amazon S3**.
-   4. Click **Choose File** and then browse to the **autoscale-bigip.template** file.
- 
- <br>
-
- 
-### Using the AWS CLI
- 
- From the AWS CLI, use the following command syntax:
- ```
- aws cloudformation create-stack --stack-name Acme-autoscale-bigip --template-body file:///fullfilepath/f5-autoscale-bigip.template --parameters file:///fullfilepath/f5-autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM`
-```
-
-If you are using the CLI, you must create a JSON-formatted parameter file in same directory. The following example shows the minimum contents of the f5-autoscale-bigip-parameters.json file, using default values for unlisted parameters.
-```json
-[
-                {
-                                "ParameterKey":"deploymentName",
-                                "ParameterValue":"Acme"
-                },
-                {
-                                "ParameterKey":"vpc",
-                                "ParameterValue":"vpc-1ffef478"
-                },
-                {
-                                "ParameterKey":"availabilityZones",
-                                "ParameterValue":"us-east-1a,us-east-1b"
-                },
-                {
-                                "ParameterKey":"subnets",
-                                "ParameterValue":"subnet-88d30fa5,subnet-2dc44b64"
-                },
-                {
-                                "ParameterKey":"bigipElasticLoadBalancer",
-                                "ParameterValue":"Acme-BigipElb"
-                },
-                {
-                                "ParameterKey":"sshKey",
-                                "ParameterValue":"awskeypair"
-                },
-                {
-                                "ParameterKey":"adminUsername",
-                                "ParameterValue":"mybigipAdmin"
-                },
-                {
-                                "ParameterKey":"notificationEmail",
-                                "ParameterValue":"user@company.com"
-                },
-                {
-                                "ParameterKey":"appInternalElbDnsName",
-                                "ParameterValue":"internal-Acme-AppElb-911355308.us-east-1.elb.amazonaws.com"
-                }
-]
-```
-
-<br>
-
+From the Marketplace: 
+- From the **For Region** list, select your Region. 
+- From the **Delivery Methods** list, select **Auto Scale via CFT**
+- Click **Continue**
+- Select either the **Hourly** or **Yearly** Subscription Term.
+- Select the appropriate version.
+- Click **Launch the CloudFormation template**.
 
 
 ### Template Parameters ###
-Once you have launched the CFT, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
+Once you have launched the CFT from the marketplace, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
 
 
 | Parameter | Required | Description |
@@ -123,7 +52,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | bigipElasticLoadBalancer | Yes | AWS Elastic Load Balancer group for the BIG-IP VEs |
 | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
-| throughput | Yes | The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
+| throughput | Yes | For CFTs not launched from the AWS Marketplace: The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
 | adminUsername | Yes | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
 | managementGuiPort | Yes | Port of BIG-IP management Configuration utility (the default is 8443) |
 | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
@@ -136,7 +65,6 @@ Once you have launched the CFT, you need to complete the template by entering th
 | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
 | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
 | appInternalDnsName | Yes | DNS name for the application pool |
-| [policyLevel](#security-blocking-levels-) | Yes | WAF Policy Level to protect the application (the default is high) |
 | application | No | Application Tag (the default is f5app) |
 | environment | No | Environment Name Tag (the default is f5env) |
 | group | No | Group Tag (the default is f5group) |
@@ -148,7 +76,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 <sup>1</sup> Note about the Scaling Up/Down Thresholds:
 
 The default template values are set artificially low for testing.<br>
-The templates defaults are set to 80% and 20% respectively.<br> 
+The Marketplace templates defaults are set to 80% and 20% respectively.<br> 
 To adjust the thresholds,  set them according to the utility size (optional).<br> 
 For example, if you wanted use different percentages in the scaling threshold(s), modify the ***.80*** or ***.20*** in the following calculations to represent the percentage you want to use. Then take the result and use that as the appropriate threshold value in the CFT.
 
@@ -156,11 +84,13 @@ For example, if you wanted use different percentages in the scaling threshold(s)
 25 Mbps   = 3276800 bytes   * ***.80*** =   2621440<br>
 200 Mbps  = 26214400 bytes  * ***.80*** =  20971520<br>
 1000 Mbps = 131072000 bytes * ***.80*** = 104857600<br>
+5000 Mbps = 655360000 bytes * ***.80*** = 524288000<br>
  
 *Scale Down Bytes Thresholds:*<br>
 25 Mbps   = 3276800 bytes   * ***.20*** =   655360<br>
 200 Mbps  = 26214400 bytes  * ***.20*** =  5242880<br>
 1000 Mbps = 131072000 bytes * ***.20*** = 26214400<br>
+5000 Mbps = 655360000 bytes * ***.20*** = 131072000<br>
 
 ---
 
@@ -188,7 +118,7 @@ You can now configure the BIG-IP VE as applicable for your configuration.  See t
 ---
 
 ### Help <a name="help"></a>
-Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support. You can modify the template itself if necessary, but if you modify any of the code outside of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
+Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support. You can modify the template itself if necessary, but if you modify any of the code ***outside*** of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
 
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 
@@ -197,26 +127,22 @@ We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.c
 
 ## Additional BIG-IP VE deployment and configuration details 
 
-All BIG-IP VE instances deploy with a single interface (NIC) attached to a public subnet. This single interface processes both management and data plane traffic. The LTM and ASM provide advanced traffic management and security functionality. The CloudFormation template collects some initial deployment input parameters and creates an auto scale group of BIG-IP VEs. The instances parameters and configurations are defined by the Auto Scale group's *launch configuration*. The launch configuration is used to:
+All BIG-IP VE instances deploy with a single interface (NIC) attached to a public subnet. This single interface processes both management and data plane traffic. The LTM provide advanced traffic management functionality. The CloudFormation template collects some initial deployment input parameters and creates an auto scale group of BIG-IP VEs. The instances parameters and configurations are defined by the Auto Scale group's *launch configuration*. The launch configuration is used to:
 
   - Set the BIG-IP system information: hostname, NTP, DNS settings, and so on.
-  - Provision the WAF module: BIG-IP Application Security Manager (ASM)
+  - Provision the LTM module: BIG-IP Local Traffic Manager (LTM)
   - Join the auto scale cluster
   - Deploy integration with EC2 Auto Scale and CloudWatch services for scaling of the BIG-IP tier.
-  - Create an initial HTTP virtual server with a basic Web Application Firewall policy (Low, Medium, High)
-    - See the [Security Blocking Levels](##security-blocking-levels-) section for a description of the blocking levels for the Web Application Firewall presented in the template.
+  - Create an initial HTTP virtual server
 
-The CloudFormation template uses the default **Best** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
+The CloudFormation template uses the default **Good** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
 
 #### Configuration Example <a name="config"></a>
 
 
 The following is a simple configuration diagram deployment. 
 
-![Configuration example](images/config-diagram-autoscale-waf.png)
-
-
-
+![Configuration example](../images/config-diagram-autoscale-ltm.png)
 
 
 #### Detailed clustering information
@@ -228,9 +154,9 @@ When the first auto scale instance is launched, a Device Group called "autoscale
 
 Whenever a new instance is launched, it joins the cluster. If those instances are scaled down, they are removed from the cluster and the original instance remains. The cluster membership is updated once every 10 minutes and sends metrics every 60 seconds using [iCall](https://devcentral.f5.com/icall).
 
-This deployment creates an initial BIG-IP configuration using an [iApp](https://devcentral.f5.com/iapps) that includes a basic virtual service (listening on 0.0.0.0:80) with a WAF policy.   
+This deployment creates an initial BIG-IP configuration using an [iApp](https://devcentral.f5.com/iapps) that includes a basic virtual service (listening on 0.0.0.0:80).   
 
-After the first instance is launched, you can log in and customize the configuration (for example substitute a custom policy, add logging, and much more).
+After the first instance is launched, you can log in and customize the configuration (for example add logging, and much more).
 
 ---
 
@@ -290,34 +216,14 @@ In the AWS Console, navigate to the CloudFormation page, select the stack create
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. To verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Detail](#securitydetail) for the exact code in each of the following sections.
-  - In the /config/verifyHash section: script-signature and then a hashed signature.
-  - In the /config/installCloudLibs.sh section: **tmsh load sys config merge file /config/verifyHash**.
-  - In the *filesToVerify* variable: ensure this includes **tmsh run cli script verifyHash /config/cloud/f5-cloud-libs.tar.gz**.
+  - In the */config/verifyHash* section: **script-signature** and then a hashed signature
+  - In the */config/installCloudLibs.sh* section **"tmsh load sys config merge file /config/verifyHash"**
   
 Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
 
 In order to form a cluster of devices, a secure trust must be established between BIG-IP systems. To establish this trust, we generate and store credentials in an Amazon S3 bucket. You must not delete these credentials from the S3 bucket.
 
 ---
-
-### Security blocking levels <a name="blocking"></a>
-The security blocking level you choose when you configure the template determines how much traffic is blocked and alerted by the F5 WAF.
-
-Attack signatures are rules that identify attacks on a web application and its components. The WAF has at least 2600 attack signatures available. The higher the security level you choose, the more traffic that is blocked by these signatures.
-
-| Level | Details |
-| --- | --- |
-| Low | The fewest attack signatures enabled. There is a greater chance of possible security violations making it through to the web applications, but a lesser chance of false positives. |
-| Medium | A balance between logging too many violations and too many false positives. |
-| High | The most attack signatures enabled. A large number of false positives may be recorded; you must correct these alerts for your application to function correctly. |
-
-All traffic that is not being blocked is being used by the WAF for learning. Over time, if the WAF determines that traffic is safe, it allows it through to the application. Alternately, the WAF can determine that traffic is unsafe and block it from the application.
-
-
----
-
-
-
 
 ## Security Details <a name="securitydetail"></a>
 This section has the entire code snippets for each of the lines you should ensure are present in your template file if you want to verify the integrity of the helper code in the template.

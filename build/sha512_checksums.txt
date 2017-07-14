@@ -10,6 +10,14 @@
 'becd16d006070e616d93918183f09274d1d825ca69d9f69a9f5c7f2a768951dac08c6caad79f788fe68cb2f1a5430fa1f2623e91276096f9b045268b44efc46d'
 **Auto Scale LTM:**(f5-autoscale-bigip-ltm.template)
 'd7e45abada5e5d0857462903c160fbb158c87d9aa7059ed7b53c42df5a2f5b5fd7953e12d2bd80a8720ab7035855f2316840f35b9993a08b6b4a0ca0dc1d5612'
+**Auto Scale LTM: - AWS Marketplace - 1000Mbps**(f5-autoscale-bigip-ltm-1000-Mbps.template)
+'83f7fd2e56523f75caa0df0eb57ed73fd385dbe04a65c40c129323e92cc26f2cb0c0ac7ec4a25204b1568bd136dc49ab4e4ed304aa836720f41bcd80b4d73ed3'
+**Auto Scale LTM: - AWS Marketplace - 200Mbps**(f5-autoscale-bigip-ltm-200-Mbps.template)
+'b6792f81a366268d95558609eb06c97350ead6797bd4e604778fdf2b609f8424acd3274f2093510394d0e9d06dcfb2714b57cc140683cce70e027a3354be9bf5'
+**Auto Scale LTM: - AWS Marketplace - 25Mbps**(f5-autoscale-bigip-ltm-25-Mbps.template)
+'06848af26975e83ab553b773f3a5a950b6f8455939a108707115717d6a1dd09a8d127ca8d606741dbaa4c7a7a14e3f88667a42c472935c66b88e0e08a0e62794'
+**Auto Scale LTM: - AWS Marketplace - 5000Mbps**(f5-autoscale-bigip-ltm-5000-Mbps.template)
+'9dcb80c9fb5ba3e1162b46072cff5b977c7275dbd13a063d4b44d662eeb4c458357d692ded8b50ebb288869b19351f0d20732313d1bebb9bcb3c7b22afa6d162'
 **Auto Scale WAF:**(f5-autoscale-bigip.template)
 '08ab0f706a0cb1bf233520bf3b70ca8e129f5d887aa9b2cb30c47a5065cc07bf3dedd04e7d253addf2f1d9eab5a9867705b1906635231b29d2d4600804dfc9c2'
 **Auto Scale WAF: - AWS Marketplace - 1000Mbps**(f5-autoscale-bigip-1000-Mbps.template)

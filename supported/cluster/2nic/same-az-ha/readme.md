@@ -4,15 +4,14 @@
  
 **Contents**
  - [Introduction](#introduction) 
- - [Prerequisites](#prerequisites-and-notes)
+ - [Prerequisites](#prerequisites-and-configuration-notes)
  - [Security](#security)
  - [Getting Help](#help)
  - [Deploying the solution](#deploying-the-solution)
  - [Service Discovery](#service-discovery)
  - [Configuration Example](#configuration-example)
  
- ## Introduction
-
+## Introduction
 This solution uses a CloudFormation Template to launch and configure two BIG-IP 2-NIC VEs in a clustered, highly available configuration in an Amazon Availability Zone.  When you deploy your applications behind a HA pair of F5 BIG-IP VEs, the BIG-IP VE instances are all in Active-Standby, and are used as a single device for failover. If one device becomes unavailable, the standby takes over traffic management duties, ensuring you have the highest level of availability for your applications. You can also configure the BIG-IP VE to enable F5's L4/L7 security features, access control, and intelligent traffic management.
 
 In a 2-NIC implementation, each BIG-IP VE has one interface used for management and data-plane traffic from the Internet, and the second interface connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.
@@ -22,7 +21,7 @@ The **existing stack** CloudFormation template incorporates an existing Virtual 
 
 See the [Configuration Example](#configuration-example) section for a configuration diagram and description for this solution.
 
-## Prerequisites and notes
+## Prerequisites and configuration notes
 The following are prerequisites for the F5 2-NIC CFT:
   - An AWS VPC with three subnets: 
     - Management subnet (called Public in the AWS UI)
@@ -35,6 +34,7 @@ The following are prerequisites for the F5 2-NIC CFT:
     - A port for accessing your applications via the BIG-IP virtual server
   - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
+  - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
   -	If you are using the *Licensing using BIG-IQ* template only:
     - This solution only supports only BIG-IQ versions 5.0 and 5.1.
     - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
@@ -42,8 +42,9 @@ The following are prerequisites for the F5 2-NIC CFT:
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. If you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Detail](#securitydetail) for the exact code in each of the following sections.
-  - In the */config/verifyHash* section: **script-signature** and then a hashed signature
-  - In the */config/installCloudLibs.sh* section **"tmsh load sys config merge file /config/verifyHash"**
+  - In the /config/verifyHash section: script-signature and then a hashed signature.
+  - In the /config/installCloudLibs.sh section: **tmsh load sys config merge file /config/verifyHash**.
+  - In the *filesToVerify* variable: ensure this includes **tmsh run cli script verifyHash /config/cloud/f5-cloud-libs.tar.gz**.
   
   Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
   Note that in order to form a cluster of devices, a secure trust must be established between BIG-IP systems. To establish this trust, we generate and store credentials in an Amazon S3 bucket.
@@ -148,9 +149,9 @@ If you have an existing BIG-IQ device with a pool of BIG-IP licenses, you can us
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=SameAZClusterBigIp-2nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
 </a>
+<br>
+<br>
 
-<br>
-<br>
 **Parameters for BIG-IQ licensing**<br>
 After clicking the Launch button, you must specify the following parameters.
 

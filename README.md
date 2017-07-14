@@ -70,7 +70,7 @@ The following is a list of the current *supported* F5 CloudFormation templates. 
 
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-BIGIP-WAF-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-autoscale-bigip.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
-<a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/solutions/autoscale/waf/">**Auto Scaling the BIG-IP LTM in AWS**</a>
+<a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/solutions/autoscale/ltm/">**Auto Scaling the BIG-IP LTM in AWS**</a>
 
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-BIGIP-LTM-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-autoscale-bigip-ltm.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
   

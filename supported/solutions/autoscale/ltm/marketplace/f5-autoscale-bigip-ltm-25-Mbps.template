@@ -251,12 +251,12 @@
     },
     "scaleDownBytesThreshold": {
       "Description": "Incoming bytes threshold to begin scaling down BIG-IP VE instances",
-      "Default": "10000",
+      "Default": "655360",
       "Type": "Number"
     },
     "scaleUpBytesThreshold": {
       "Description": "Incoming bytes threshold to begin scaling up BIG-IP VE instances",
-      "Default": "35000",
+      "Default": "2621440",
       "Type": "Number"
     },
     "notificationEmail": {

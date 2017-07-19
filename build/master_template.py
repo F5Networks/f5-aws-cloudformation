@@ -270,13 +270,13 @@ def main():
                 "default": "Management Subnet AZ2"
             },
             "subnet1Az1": {
-                "default": "Subnet1 AZ1"
+                "default": "Subnet1 in AZ1"
             },
             "subnet1Az2": {
-                "default": "Subnet1 AZ2"
+                "default": "Subnet1 in AZ2"
             },
             "subnet2Az1": {
-                "default": "Subnet2 AZ1"
+                "default": "Subnet2 in AZ1"
             },
             "availabilityZone1": {
                 "default": "Availability Zone 1"
@@ -294,7 +294,7 @@ def main():
                 "default": "Internal Security Group"
             },
             "imageName": {
-                "default": "Image Name"
+                "default": "BIG-IP Image Name"
             },
             "instanceType": {
                 "default": "AWS Instance Size"
@@ -303,16 +303,16 @@ def main():
                 "default": "Application Instance Type"
             },
             "licenseKey1": {
-                "default": "License Key1"
+                "default": "License Key 1"
             },
             "licenseKey2": {
-                "default": "License Key2"
+                "default": "License Key 2"
             },
             "restrictedSrcAddress": {
                 "default": "Source Address(es) for SSH Access"
             },
             "managementGuiPort": {
-                "default": "Management Port"
+                "default": "BIG-IP Management Port"
             },
             "sshKey": {
                 "default": "SSH Key"
@@ -339,16 +339,16 @@ def main():
                 "default": "Timezone (Olson)"
             },
             "bigiqAddress": {
-                "default": "IP address of the BIG-IQ device that contains the pool of licenses"
+                "default": "IP address of BIG-IQ"
             },
             "bigiqLicensePoolName": {
-                "default": "Name of BIG-IQ License Pool"
+                "default": "BIG-IQ License Pool Name"
             },
             "bigiqUsername": {
-                "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
+                "default": "BIG-IQ user (admin or manager priviledges)"
             },
             "bigiqPasswordS3Arn": {
-                "default": "S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of BIG-IQ Password file"
+                "default": "S3 ARN of the BIG-IQ Password File"
             }
           }
         }
@@ -551,7 +551,7 @@ def main():
                 MinLength="1",
                 ConstraintDescription="Verify IP address of the BIG-IQ device that contains the pool of licenses",
                 Type="String",
-                Description="IP address of the BIG-IQ device that contains the pool of licenses",
+                Description="IP address of the BIG-IQ device that contains the pool of BIG-IP licenses",
                 MaxLength="255",
             ))
             bigiqUsername = t.add_parameter(Parameter(
@@ -559,13 +559,13 @@ def main():
                 MinLength="1",
                 ConstraintDescription="Verify BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
                 Type="String",
-                Description="BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
+                Description="BIG-IQ user with privileges to license BIG-IQ. This user must have admin or manager privileges",
                 MaxLength="255",
             ))
             bigiqPasswordS3Arn = t.add_parameter(Parameter(
                 "bigiqPasswordS3Arn",
                 Type="String",
-                Description="S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of BIG-IQ Password file",
+                Description="S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file",
                 MinLength="1",
                 MaxLength="255",
                 ConstraintDescription="Verify S3 ARN of BIG-IQ Password file",
@@ -575,7 +575,7 @@ def main():
                 MinLength="1",
                 ConstraintDescription="Verify Name of BIG-IQ License Pool",
                 Type="String",
-                Description="Name of BIG-IQ License Pool",
+                Description="Name of the pool on BIG-IQ that contains the BIG-IP licenses",
                 MaxLength="255",
             ))
     if stack == "existing" or stack == "security_groups":

@@ -78,7 +78,7 @@ The easiest way to deploy one of the CloudFormation templates is to use the appr
 
    <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-1nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-bigiq-1nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
-<br><br>
+<br>
 
 
 **Template Parameters**<br>
@@ -103,10 +103,10 @@ After clicking the Launch button, you must specify the following parameters.
 | Group | group | No | Group Tag (the default is f5group). |
 | Owner | owner | No | Owner Tag (the default is f5owner). |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
-| IP address of the BIG-IQ device that contains the pool of license | bigiqAddress | Yes (BIG-IQ) | BIG-IQ licensing only: IP address of the BIG-IQ device that contains the pool of licenses |
-| BIG-IQ user with privleges to license BIG-IQ (admin or manager) | bigiqUsername | Yes (BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IQ. Can be **admin** or **manager**. |
-| S3 ARN of BIG-IQ Password file | bigiqPasswordS3ARN | Yes (BIG-IQ) | BIG-IQ licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE |
-| Name of BIG-IQ License Pool | bigiqLicensePoolName | Yes (BIG-IQ) | BIG-IQ licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses. |
+| IP address of BIG-IQ | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ licensing only: IP address of the BIG-IQ device that contains the pool of licenses |
+| BIG-IQ user (admin or manager priviledges) | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IQ. Can be **admin** or **manager**. |
+| S3 ARN of the BIG-IQ Password File | bigiqPasswordS3ARN | Yes <br>(BIG-IQ) | BIG-IQ licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE |
+| BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses. |
 
 
 

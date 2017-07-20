@@ -345,7 +345,7 @@ def main():
                 "default": "BIG-IQ License Pool Name"
             },
             "bigiqUsername": {
-                "default": "BIG-IQ user (admin or manager priviledges)"
+                "default": "BIG-IQ user with licensing priviledges"
             },
             "bigiqPasswordS3Arn": {
                 "default": "S3 ARN of the BIG-IQ Password File"
@@ -557,9 +557,9 @@ def main():
             bigiqUsername = t.add_parameter(Parameter(
                 "bigiqUsername",
                 MinLength="1",
-                ConstraintDescription="Verify BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
+                ConstraintDescription="Verify BIG-IQ user with privileges to license BIG-IQ. Can be Admin, Device Manager, or Licensing Manager",
                 Type="String",
-                Description="BIG-IQ user with privileges to license BIG-IQ. This user must have admin or manager privileges",
+                Description="BIG-IQ user with privileges to license BIG-IQ. Must be 'Admin', 'Device Manager', or 'Licensing Manager'",
                 MaxLength="255",
             ))
             bigiqPasswordS3Arn = t.add_parameter(Parameter(

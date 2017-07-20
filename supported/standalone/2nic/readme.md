@@ -65,35 +65,34 @@ You have two options for launching this solution:
 The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
- - Hourly, which uses pay-as-you-go hourly billing<br>
+ - Hourly, which uses pay-as-you-go hourly billing  
    <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-2nic-bigip.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a> 
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a> 
 
- - BYOL (bring your own license), which allows you to use an existing BIG-IP license. 
-   
+ - BYOL (bring your own license), which allows you to use an existing BIG-IP license.   
    <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BYOL&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-2nic-bigip.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
- - BIG-IQ for licensing, which allows you to launch the template using an existing BIG-IQ device with a pool of licenses to license the BIG-IP VE(s). 
-
+ - BIG-IQ for licensing, which allows you to launch the template using an existing BIG-IQ device with a pool of licenses to license the BIG-IP VE(s).  
    <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-bigiq-2nic-bigip.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 <br>
 
 **Template Parameters**<br>
-After clicking the Launch button, you must specify the following parameters.
-<br>
+After clicking the Launch button, you must specify the following parameters.  
+
+
 | CFT Label | Parameter Name | Required | Description |
 | --- | --- | --- | --- |
-| VPC | Vpc | Yes | Common VPC for the deployment |
-| Management Subnet AZ1 | managementSubnetAz1 | Yes | Management subnet ID |
-| Management Security Group | bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
-| Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID |
+| VPC | Vpc | Yes | Common VPC for the deployment. |
+| Management Subnet AZ1 | managementSubnetAz1 | Yes | Management subnet ID. |
+| Management Security Group | bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID. |
+| Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID. |
 | External Security Group | bigipExternalSecurityGroup | Yes | Public or External Security Group ID. |
 | Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | License Key1 | licenseKey1 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey. |
-| SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
+| SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance. |
 | Source Address(es) for SSH Access | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances. |
 | NTP Server | ntpServer | Yes | NTP server you want to use for this implementation (the default is 0.pool.ntp.org). | 
 | Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC). |

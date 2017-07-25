@@ -566,6 +566,7 @@
             ]
            },
            "/${GATEWAY_PREFIX},vlan:external ",
+           "--vlan name:internal,nic:1.2 ",
            "--self-ip name:internal-self,address:",
            {
             "Fn::GetAtt": [

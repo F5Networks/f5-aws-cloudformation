@@ -1622,14 +1622,15 @@ def main():
                                 ]
             # Global Settings
             if num_nics == 1:
-                one_nic_setup += [
+                network_config = [
                                     "nohup /config/waitThenRun.sh",
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
                                     "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh",
                                     "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws",
                                     "--log-level debug",
                                     "-o /var/log/1nicSetup.log",
-                                    "--signal 1_NIC_SETUP_DONE",
+                                    "--wait-for ADMIN_CREATED",
+                                    "--signal NETWORK_CONFIG_DONE",
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                  ]
 
@@ -1673,7 +1674,6 @@ def main():
                             "date\n",
                             "echo 'starting custom-config.sh'\n",
                         ]
-            network_config = []
             if ha_type != "standalone":
                 custom_sh += [
                                     "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
@@ -1717,7 +1717,7 @@ def main():
                                             ]
             if num_nics > 1:
                 vlans = ""
-                network_config += [
+                network_config = [
                                     "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`; ",
                                     "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`; ",
                                     "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}; ",
@@ -1753,6 +1753,7 @@ def main():
                                             ]
                         if num_nics > 2:
                             network_config += [
+                                                "--vlan name:internal,nic:1.2 ",
                                                 "--self-ip name:internal-self,address:",GetAtt(InternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX2},vlan:internal "
                             ]
                     if 'waf' in components:

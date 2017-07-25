@@ -1659,6 +1659,15 @@ def main():
             ### Build Scripts
             custom_sh = [
                             "#!/bin/bash\n",
+                        ]
+            if stack == "full":
+                custom_sh +=  [
+                                    "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n",
+                                    "POOLMEMPORT=80\n",
+                                    "APPNAME='demo-app-1'\n",
+                                    "VIRTUALSERVERPORT=80\n",
+                              ]
+            custom_sh +=    [
                             "PROGNAME=$(basename $0)\n",
                             "function error_exit {\n",
                                 "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
@@ -1667,6 +1676,7 @@ def main():
                             "declare -a tmsh=()\n",
                             "date\n",
                             "echo 'starting custom-config.sh'\n",
+                            "tmsh+=(\n"
                         ]
             if ha_type != "standalone":
                 custom_sh += [
@@ -1677,19 +1687,10 @@ def main():
                 # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
                 if 'waf' in components:
                     custom_sh +=  [
-                                    "tmsh modify net self-allow defaults add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
+                                    "\"tmsh modify net self-allow defaults add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
                                     ]
             # Network Settings
-            if stack == "full":
-                custom_sh +=  [
-                                    "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n",
-                                    "POOLMEMPORT=80\n",
-                                    #"EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",
-                                    "APPNAME='demo-app-1'\n",
-                                    "VIRTUALSERVERPORT=80\n",
-                                    #"CRT='default.crt'\n",
-                                    #"KEY='default.key'\n",
-                              ]
+
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 custom_sh +=  [
                                     #"PEER_HOSTNAME='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "Instance", "PrivateDnsName"), "'\n",
@@ -1717,10 +1718,7 @@ def main():
                                     "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}; ",
                                     "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}; ",
                                     "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`; ",
-                                  ]
-                custom_sh +=  [
-                                "tmsh+=(\n",
-                              ]
+                                ]
                 if num_nics > 2:
                     network_config += [
                                     "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`; ",
@@ -1777,11 +1775,6 @@ def main():
                                     "\"tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\"\n",
                                     "\"tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\"\n",
                                 ]
-            else:
-                if num_nics > 1:
-                    custom_sh +=  [
-
-                                    ]
             if num_nics > 1:
                 network_config += [
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
@@ -1819,16 +1812,8 @@ def main():
                 "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
             # Cluster Devices if Cluster Seed
-            if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
-                custom_sh +=  [
-
-                                ]
             if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 if stack != "existing":
-                    if ha_type == "standalone" and num_nics == 1 and 'waf' not in components:
-                        custom_sh += [
-                                        "tmsh+=(\n",
-                                     ]
                     #Add Pool
                     custom_sh +=    [
                                         "\"tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\"\n",
@@ -1860,11 +1845,8 @@ def main():
                 if 'waf' in components:
                     # 12.1.0 requires "first match legacy"
                     custom_sh += [
-                                    ")\n",
-                                    "curl -s -f --retry 20 -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
-                                    "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
-                                    "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
-                                    "tmsh+=(\n",
+                                    "\"curl -s -f --retry 20 -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml\"\n",
+                                    "\"tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\"\n",
                                     "\"tmsh modify asm policy /Common/linux-high active\"\n",
                                     "\"tmsh create ltm policy app-ltm-policy strategy first-match legacy\"\n",
                                     "\"tmsh modify ltm policy app-ltm-policy controls add { asm }\"\n",
@@ -1901,10 +1883,7 @@ def main():
                                             "\"tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\"\n",
                                             "\"tmsh run cm config-sync to-group datasync-global-dg\"\n",
                                  ]
-            if ha_type == "standalone" and num_nics == 1 and 'waf' not in components and stack == "existing":
-                custom_sh += [
-                               "tmsh+=(\n",
-                               ]
+
             custom_sh += [
                                 "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
                                 "\"tmsh save /sys config\")\n",

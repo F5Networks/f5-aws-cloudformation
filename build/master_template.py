@@ -1617,14 +1617,14 @@ def main():
             # Global Settings
             if num_nics == 1:
                 network_config = [
-                                    "nohup /config/waitThenRun.sh",
-                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
-                                    "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh",
-                                    "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws",
-                                    "--log-level debug",
-                                    "-o /var/log/1nicSetup.log",
-                                    "--wait-for ADMIN_CREATED",
-                                    "--signal NETWORK_CONFIG_DONE",
+                                    "nohup /config/waitThenRun.sh ",
+                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js ",
+                                    "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh ",
+                                    "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws ",
+                                    "--log-level debug ",
+                                    "-o /var/log/1nicSetup.log ",
+                                    "--wait-for ADMIN_CREATED ",
+                                    "--signal NETWORK_CONFIG_DONE ",
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                  ]
 

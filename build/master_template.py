@@ -1716,12 +1716,24 @@ def main():
 
                                             ]
             if num_nics > 1:
+                vlans = ""
                 network_config += [
                                     "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`; ",
                                     "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`; ",
                                     "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}; ",
                                     "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}; ",
                                     "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`; ",
+                                  ]
+                custom_sh +=  [
+                                "tmsh+=(\n",
+                              ]
+                if num_nics > 2:
+                    network_config += [
+                                    "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`; ",
+                                    "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`; ",
+                                    "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}; ",
+                    ]
+                network_config += [
                                     "nohup /config/waitThenRun.sh ",
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/network.js ",
                                     "--host localhost ",
@@ -1733,15 +1745,16 @@ def main():
                                     "--signal NETWORK_CONFIG_DONE ",
                                     "--vlan name:external,nic:1.1 ",
                                     "--default-gw ${GATEWAY} ",
-                                  ]
-                custom_sh +=  [
-                                "tmsh+=(\n",
-                              ]
+                ]
                 if ha_type == "standalone":
                     if 'waf' not in components:
                         network_config +=   [
                                                 "--self-ip name:external-self,address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX},vlan:external ",
                                             ]
+                        if num_nics > 2:
+                            network_config += [
+                                                "--self-ip name:internal-self,address:",GetAtt(InternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX2},vlan:internal "
+                            ]
                     if 'waf' in components:
                         network_config +=   [
                                                 "--self-ip name:external-self, address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX}, vlan:external ",
@@ -1758,18 +1771,6 @@ def main():
                         custom_sh +=  [
                                         "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
                                         ]
-            if num_nics > 2:
-                custom_sh +=  [
-                                ")\n",
-                                "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
-                                "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}\n",
-                                "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
-                                "INTMASK=${GATEWAY_PREFIX2}\n",
-                                "tmsh+=(\n",
-                                "\"tmsh create net vlan internal interfaces add { 1.2 }\"\n",
-                                "\"tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\"\n",
-                                ]
             # Set Gateway
             if ha_type == "across-az":
                 cluster_BIG_IP +=   [

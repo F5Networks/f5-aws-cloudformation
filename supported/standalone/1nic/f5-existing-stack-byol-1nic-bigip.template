@@ -445,7 +445,6 @@
           [
            "nohup /config/waitThenRun.sh",
            " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
-           " --wait-for 1_NIC_SETUP_DONE",
            " --signal PASSWORD_CREATED",
            " --file f5-rest-node",
            " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",

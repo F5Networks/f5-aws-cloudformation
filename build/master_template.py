@@ -1461,26 +1461,20 @@ def main():
                                 "fi"
                             ]
             generate_password = [
-                              "nohup /config/waitThenRun.sh",
-                              " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                                "nohup /config/waitThenRun.sh",
+                                " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                                " --signal PASSWORD_CREATED",
+                                " --file f5-rest-node",
+                                " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
+                                " --log-level verbose",
+                                " -o /var/log/generatePassword.log",
+                                " &>> /var/log/cloudlibs-install.log < /dev/null",
+                                " &"
                                 ]
             admin_user  =   [
                                     "nohup /config/waitThenRun.sh",
                                     " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
                             ]
-            if num_nics == 1:
-                generate_password +=    [
-                                            " --wait-for 1_NIC_SETUP_DONE",
-                                        ]
-            generate_password +=    [
-                                        " --signal PASSWORD_CREATED",
-                                        " --file f5-rest-node",
-                                        " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
-                                        " --log-level verbose",
-                                        " -o /var/log/generatePassword.log",
-                                        " &>> /var/log/cloudlibs-install.log < /dev/null",
-                                        " &"
-                                    ]
             admin_user +=   [
                               " --wait-for PASSWORD_CREATED",
                               " --signal ADMIN_CREATED",
@@ -1758,11 +1752,13 @@ def main():
                             ]
                     if 'waf' in components:
                         network_config +=   [
-                                                "--self-ip name:external-self, address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX}, vlan:external ",
+                                                "--self-ip name:external-self,address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX},vlan:external,[allow:tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128] ",
                                             ]
-                        custom_sh +=  [
-                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
-                                        ]
+                        if num_nics > 2:
+                            network_config += [
+                                                "--vlan name:internal,nic:1.2 ",
+                                                "--self-ip name:internal-self,address:",GetAtt(InternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX2},vlan:internal,[allow:tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128] "
+                            ]
                 if ha_type != "standalone":
                     if 'waf' not in components:
                         custom_sh +=  [

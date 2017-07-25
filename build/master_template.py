@@ -127,15 +127,11 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    #version = "2.4.0"
-    version = "2.4.2"
+    version = "2.5.0"
     ### Cloudlib Branch
-    #branch_cloud = "v3.1.0"
-    branch_cloud = "v3.2.0"
-    #branch_aws = "v1.3.0"
-    branch_aws = "v1.4.0"
-    #branch_cloud_iapps = "v1.0.0"
-    branch_cloud_iapps = "v1.0.1"
+    branch_cloud = "ese-1120"
+    branch_aws = "develop"
+    branch_cloud_iapps = "develop"
     ### Build verifyHash file from published verifyHash on gitswarm. Or github (public) if gitswarm (private) not available
     urls = [ 'https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash',
              'https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/' + str(branch_cloud) + '/dist/verifyHash' ]
@@ -159,8 +155,8 @@ def main():
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"
     discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"
-    ### add hashmark to skip verification.
-    comment_out = ""
+    ### add hashmark to skip cloudlib verification script.
+    comment_out = "#"
     # Begin Template
     t = Template()
     ## add template version
@@ -1289,12 +1285,13 @@ def main():
                         GroupSet=[Ref(bigipInternalSecurityGroup)],
                         Description="Internal Interface for the BIG-IP",
                     ))
-            # build custom-confg.sh vars
+            # build variables for metadata
+            ## variable used to add byol license if flagged for byol
             license_byol =  [
                                 "--license ",
                                 Ref(licenseKey),
                             ]
-            # following to add to onboard
+            # bigiq logic
             if license_type == "bigiq":
                 license_bigiq = [
                                 "--license-pool --big-iq-host ",
@@ -1306,6 +1303,7 @@ def main():
                                 " --license-pool-name ",
                                 Ref(bigiqLicensePoolName),
                                 ]
+            ## variable used to provision asm
             provision_asm = [
                                 "echo 'provisioning asm'\n",
                                 "tmsh modify /sys provision asm level nominal\n",
@@ -1444,7 +1442,6 @@ def main():
                                     "done",
                                     "\"$@\""
                                 ]
-
             get_nameserver =    [
                                     "INTERFACE=$1",
                                     "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
@@ -1453,10 +1450,8 @@ def main():
                                     "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
                                     "echo $NAME_SERVER"
                                 ]
-            create_user =       [
-                                    "#!/bin/bash",
-                                ]
-            create_user +=  [
+            create_user =   [
+                                "#!/bin/bash",
                                 "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                                 "PASSWORD=$(/bin/sed -e $'s:[\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                                 "if [ \"$1\" = admin ]; then",
@@ -1486,7 +1481,6 @@ def main():
                                         " &>> /var/log/cloudlibs-install.log < /dev/null",
                                         " &"
                                     ]
-
             admin_user +=   [
                               " --wait-for PASSWORD_CREATED",
                               " --signal ADMIN_CREATED",
@@ -1508,7 +1502,7 @@ def main():
                                 ]
             one_nic_setup =     [
                                 ]
-            cluster_BIG_IP=     [
+            cluster_BIG_IP =    [
                                 ]
             custom_command =   [
                                     "nohup /config/waitThenRun.sh",
@@ -1653,7 +1647,7 @@ def main():
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
                                   ]
             onboard_BIG_IP += [
-                                "--wait-for ADMIN_CREATED",
+                                "--wait-for NETWORK_CONFIG_DONE",
                                 "-o /var/log/onboard.log",
                                 "--log-level debug",
                                 "--no-reboot",
@@ -1667,7 +1661,7 @@ def main():
                                 "--module ltm:nominal",
                                 ]
 
-            ### Build Custom Script
+            ### Build Scripts
             custom_sh = [
                             "#!/bin/bash\n",
                             "PROGNAME=$(basename $0)\n",
@@ -1679,6 +1673,7 @@ def main():
                             "date\n",
                             "echo 'starting custom-config.sh'\n",
                         ]
+            network_config = []
             if ha_type != "standalone":
                 custom_sh += [
                                     "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
@@ -1721,24 +1716,36 @@ def main():
 
                                             ]
             if num_nics > 1:
+                network_config += [
+                                    "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`; ",
+                                    "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`; ",
+                                    "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}; ",
+                                    "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}; ",
+                                    "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`; ",
+                                    "nohup /config/waitThenRun.sh ",
+                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/network.js ",
+                                    "--host localhost ",
+                                    "--user admin ",
+                                    "--password-url file:///config/cloud/aws/.adminPassword ",
+                                    "-o /var/log/network-config.log ",
+                                    "--log-level debug ",
+                                    "--wait-for ADMIN_CREATED ",
+                                    "--signal NETWORK_CONFIG_DONE ",
+                                    "--vlan name:external,nic:1.1 ",
+                                    "--default-gw ${GATEWAY} ",
+                                  ]
                 custom_sh +=  [
-                                "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
-                                "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
-                                "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
-                                "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                                "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
-                                "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",
-                                "EXTMASK=${GATEWAY_PREFIX}\n",
                                 "tmsh+=(\n",
-                                "\"tmsh create net vlan external interfaces add { 1.1 }\"\n",
                               ]
                 if ha_type == "standalone":
                     if 'waf' not in components:
-                        custom_sh +=  [
-                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\"\n",
-                                        ]
+                        network_config +=   [
+                                                "--self-ip name:external-self,address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX},vlan:external ",
+                                            ]
                     if 'waf' in components:
+                        network_config +=   [
+                                                "--self-ip name:external-self, address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX}, vlan:external ",
+                                            ]
                         custom_sh +=  [
                                         "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
                                         ]
@@ -1775,8 +1782,12 @@ def main():
             else:
                 if num_nics > 1:
                     custom_sh +=  [
-                                        "\"tmsh create net route default gw ${GATEWAY}\"\n",
+
                                     ]
+            if num_nics > 1:
+                network_config += [
+                                    "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                                  ]
             # Disable DHCP if clustering.
             if ha_type != "standalone":
                 custom_sh += [
@@ -1979,6 +1990,7 @@ def main():
                                 }
                             ),
                             commands={
+
                                         "001-disable-1nicautoconfig": {
                                             "command": "/usr/bin/setdb provision.1nicautoconfig disable"
                                         },
@@ -1987,22 +1999,22 @@ def main():
                                                                       ]
                                             }
                                         },
-                                        "003-1nic-setup": {
-                                            "command": {
-                                                "Fn::Join" : [ " ", one_nic_setup
-                                                             ]
-                                            }
-                                        },
-                                        "004-generate-password": {
+                                        "003-generate-password": {
                                             "command": {
                                                 "Fn::Join" : [ "", generate_password
                                                              ]
                                             }
                                         },
-                                        "005-create-admin-user": {
+                                        "004-create-admin-user": {
                                             "command": {
                                                 "Fn::Join" : [ "", admin_user
                                                              ]
+                                            }
+                                        },
+                                        "005-network-config": {
+                                            "command": {
+                                                "Fn::Join": ["", network_config
+                                                            ]
                                             }
                                         },
                                         "006-onboard-BIG-IP": {

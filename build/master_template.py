@@ -127,15 +127,11 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    #version = "2.4.0"
-    version = "2.4.2"
+    version = "2.5.0"
     ### Cloudlib Branch
-    #branch_cloud = "v3.1.0"
-    branch_cloud = "v3.2.0"
-    #branch_aws = "v1.3.0"
-    branch_aws = "v1.4.0"
-    #branch_cloud_iapps = "v1.0.0"
-    branch_cloud_iapps = "v1.0.1"
+    branch_cloud = "ese-1120"
+    branch_aws = "develop"
+    branch_cloud_iapps = "develop"
     ### Build verifyHash file from published verifyHash on gitswarm. Or github (public) if gitswarm (private) not available
     urls = [ 'https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash',
              'https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/' + str(branch_cloud) + '/dist/verifyHash' ]
@@ -159,8 +155,8 @@ def main():
     cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
     cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"
     discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"
-    ### add hashmark to skip verification.
-    comment_out = ""
+    ### add hashmark to skip cloudlib verification script.
+    comment_out = "#"
     # Begin Template
     t = Template()
     ## add template version
@@ -1289,12 +1285,13 @@ def main():
                         GroupSet=[Ref(bigipInternalSecurityGroup)],
                         Description="Internal Interface for the BIG-IP",
                     ))
-            # build custom-confg.sh vars
+            # build variables for metadata
+            ## variable used to add byol license if flagged for byol
             license_byol =  [
                                 "--license ",
                                 Ref(licenseKey),
                             ]
-            # following to add to onboard
+            # bigiq logic
             if license_type == "bigiq":
                 license_bigiq = [
                                 "--license-pool --big-iq-host ",
@@ -1306,6 +1303,7 @@ def main():
                                 " --license-pool-name ",
                                 Ref(bigiqLicensePoolName),
                                 ]
+            ## variable used to provision asm
             provision_asm = [
                                 "echo 'provisioning asm'\n",
                                 "tmsh modify /sys provision asm level nominal\n",
@@ -1444,7 +1442,6 @@ def main():
                                     "done",
                                     "\"$@\""
                                 ]
-
             get_nameserver =    [
                                     "INTERFACE=$1",
                                     "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
@@ -1453,10 +1450,8 @@ def main():
                                     "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
                                     "echo $NAME_SERVER"
                                 ]
-            create_user =       [
-                                    "#!/bin/bash",
-                                ]
-            create_user +=  [
+            create_user =   [
+                                "#!/bin/bash",
                                 "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                                 "PASSWORD=$(/bin/sed -e $'s:[\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                                 "if [ \"$1\" = admin ]; then",
@@ -1466,27 +1461,20 @@ def main():
                                 "fi"
                             ]
             generate_password = [
-                              "nohup /config/waitThenRun.sh",
-                              " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                                "nohup /config/waitThenRun.sh",
+                                " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                                " --signal PASSWORD_CREATED",
+                                " --file f5-rest-node",
+                                " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
+                                " --log-level verbose",
+                                " -o /var/log/generatePassword.log",
+                                " &>> /var/log/cloudlibs-install.log < /dev/null",
+                                " &"
                                 ]
             admin_user  =   [
                                     "nohup /config/waitThenRun.sh",
                                     " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
                             ]
-            if num_nics == 1:
-                generate_password +=    [
-                                            " --wait-for 1_NIC_SETUP_DONE",
-                                        ]
-            generate_password +=    [
-                                        " --signal PASSWORD_CREATED",
-                                        " --file f5-rest-node",
-                                        " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
-                                        " --log-level verbose",
-                                        " -o /var/log/generatePassword.log",
-                                        " &>> /var/log/cloudlibs-install.log < /dev/null",
-                                        " &"
-                                    ]
-
             admin_user +=   [
                               " --wait-for PASSWORD_CREATED",
                               " --signal ADMIN_CREATED",
@@ -1508,7 +1496,7 @@ def main():
                                 ]
             one_nic_setup =     [
                                 ]
-            cluster_BIG_IP=     [
+            cluster_BIG_IP =    [
                                 ]
             custom_command =   [
                                     "nohup /config/waitThenRun.sh",
@@ -1628,14 +1616,15 @@ def main():
                                 ]
             # Global Settings
             if num_nics == 1:
-                one_nic_setup += [
-                                    "nohup /config/waitThenRun.sh",
-                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
-                                    "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh",
-                                    "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws",
-                                    "--log-level debug",
-                                    "-o /var/log/1nicSetup.log",
-                                    "--signal 1_NIC_SETUP_DONE",
+                network_config = [
+                                    "nohup /config/waitThenRun.sh ",
+                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js ",
+                                    "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh ",
+                                    "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws ",
+                                    "--log-level debug ",
+                                    "-o /var/log/1nicSetup.log ",
+                                    "--wait-for ADMIN_CREATED ",
+                                    "--signal NETWORK_CONFIG_DONE ",
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                  ]
 
@@ -1653,7 +1642,7 @@ def main():
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
                                   ]
             onboard_BIG_IP += [
-                                "--wait-for ADMIN_CREATED",
+                                "--wait-for NETWORK_CONFIG_DONE",
                                 "-o /var/log/onboard.log",
                                 "--log-level debug",
                                 "--no-reboot",
@@ -1667,46 +1656,24 @@ def main():
                                 "--module ltm:nominal",
                                 ]
 
-            ### Build Custom Script
+            ### Build Scripts
             custom_sh = [
                             "#!/bin/bash\n",
-                            "PROGNAME=$(basename $0)\n",
-                            "function error_exit {\n",
-                                "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
-                            "exit 1\n",
-                            "}\n",
-                            "declare -a tmsh=()\n",
-                            "date\n",
-                            "echo 'starting custom-config.sh'\n",
                         ]
-            if ha_type != "standalone":
-                custom_sh += [
-                                    "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
-
-                             ]
-            if num_nics == 1:
-                # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
-                if 'waf' in components:
-                    custom_sh +=  [
-                                    "tmsh modify net self-allow defaults add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\n",
-                                    ]
-            # Network Settings
             if stack == "full":
                 custom_sh +=  [
                                     "POOLMEM='", GetAtt('Webserver','PrivateIp'), "'\n",
                                     "POOLMEMPORT=80\n",
-                                    #"EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",
                                     "APPNAME='demo-app-1'\n",
                                     "VIRTUALSERVERPORT=80\n",
-                                    #"CRT='default.crt'\n",
-                                    #"KEY='default.key'\n",
+                                    "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",
                               ]
+            if ha_type != "standalone":
+                custom_sh += [
+                                "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
+                                "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
+                             ]
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
-                custom_sh +=  [
-                                    #"PEER_HOSTNAME='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "Instance", "PrivateDnsName"), "'\n",
-                                    #"PEER_MGMTIP='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "ManagementInterface", "PrimaryPrivateIpAddress"), "'\n",
-                                    ]
-
                 if num_nics > 1:
                     if ha_type == "across-az":
                         custom_sh +=  [
@@ -1720,63 +1687,91 @@ def main():
                                             "VIPEIP='",Ref(VipEipAddress),"'\n",
 
                                             ]
+            custom_sh +=    [
+                            "PROGNAME=$(basename $0)\n",
+                            "function error_exit {\n",
+                                "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+                            "exit 1\n",
+                            "}\n",
+                            "declare -a tmsh=()\n",
+                            "date\n",
+                            "echo 'starting custom-config.sh'\n",
+                            "tmsh+=(\n"
+                        ]
+            if num_nics == 1:
+                # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
+                if 'waf' in components:
+                    custom_sh +=  [
+                                    "\"tmsh modify net self-allow defaults add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
+                                    ]
+            # Network Settings
+
             if num_nics > 1:
-                custom_sh +=  [
-                                "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`\n",
-                                "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}\n",
-                                "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}\n",
-                                "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                                "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
-                                "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",
-                                "EXTMASK=${GATEWAY_PREFIX}\n",
-                                "tmsh+=(\n",
-                                "\"tmsh create net vlan external interfaces add { 1.1 }\"\n",
-                              ]
+                vlans = ""
+                network_config = [
+                                    "GATEWAY_MAC=`ifconfig eth1 | egrep HWaddr | awk '{print tolower($5)}'`; ",
+                                    "GATEWAY_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`; ",
+                                    "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}; ",
+                                    "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}; ",
+                                    "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`; ",
+                                ]
+                if num_nics > 2:
+                    network_config += [
+                                    "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`; ",
+                                    "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`; ",
+                                    "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}; ",
+                    ]
+                network_config += [
+                                    "nohup /config/waitThenRun.sh ",
+                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/network.js ",
+                                    "--host localhost ",
+                                    "--user admin ",
+                                    "--password-url file:///config/cloud/aws/.adminPassword ",
+                                    "-o /var/log/network-config.log ",
+                                    "--log-level debug ",
+                                    "--wait-for ADMIN_CREATED ",
+                                    "--signal NETWORK_CONFIG_DONE ",
+                                    "--vlan name:external,nic:1.1 ",
+                                    "--default-gw ${GATEWAY} ",
+                ]
                 if ha_type == "standalone":
                     if 'waf' not in components:
-                        custom_sh +=  [
-                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 }\"\n",
-                                        ]
+                        network_config +=   [
+                                                "--self-ip name:external-self,address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX},vlan:external ",
+                                            ]
+                        if num_nics > 2:
+                            network_config += [
+                                                "--vlan name:internal,nic:1.2 ",
+                                                "--self-ip name:internal-self,address:",GetAtt(InternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX2},vlan:internal "
+                            ]
                     if 'waf' in components:
-                        custom_sh +=  [
-                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
-                                        ]
+                        network_config +=   [
+                                                "--self-ip name:external-self,address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX},vlan:external,[allow:tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128] ",
+                                            ]
+                        if num_nics > 2:
+                            network_config += [
+                                                "--vlan name:internal,nic:1.2 ",
+                                                "--self-ip name:internal-self,address:",GetAtt(InternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX2},vlan:internal,[allow:tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128] "
+                            ]
                 if ha_type != "standalone":
                     if 'waf' not in components:
-                        custom_sh +=  [
-                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\"\n",
-                                        ]
+                        network_config +=   [
+                                                "--self-ip name:external-self,address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX},vlan:external,[allow:tcp:4353 udp:1026] ",
+                                            ]
                     if 'waf' in components:
-                        custom_sh +=  [
-                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
-                                        ]
-            if num_nics > 2:
-                custom_sh +=  [
-                                ")\n",
-                                "GATEWAY_MAC2=`ifconfig eth2 | egrep HWaddr | awk '{print tolower($5)}'`\n",
-                                "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
-                                "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}\n",
-                                "INTIP='",GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),"'\n",
-                                "INTMASK=${GATEWAY_PREFIX2}\n",
-                                "tmsh+=(\n",
-                                "\"tmsh create net vlan internal interfaces add { 1.2 }\"\n",
-                                "\"tmsh create net self ${INTIP}/${INTMASK} vlan internal allow-service default\"\n",
-                                ]
+                        network_config +=   [
+                                                "--self-ip name:external-self,address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX},vlan:external,[allow:tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128] ",
+                                            ]
+                    if ha_type == "across-az":
+                        network_config += [
+                                            "--local-only ",
+                                          ]
             # Set Gateway
-            if ha_type == "across-az":
-                cluster_BIG_IP +=   [
 
-                                    ]
-                custom_sh +=  [
-                                    "\"tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\"\n",
-                                    "\"tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\"\n",
-                                ]
-            else:
-                if num_nics > 1:
-                    custom_sh +=  [
-                                        "\"tmsh create net route default gw ${GATEWAY}\"\n",
-                                    ]
+            if num_nics > 1:
+                network_config += [
+                                    "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                                  ]
             # Disable DHCP if clustering.
             if ha_type != "standalone":
                 custom_sh += [
@@ -1810,16 +1805,8 @@ def main():
                 "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
             # Cluster Devices if Cluster Seed
-            if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
-                custom_sh +=  [
-
-                                ]
             if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 if stack != "existing":
-                    if ha_type == "standalone" and num_nics == 1 and 'waf' not in components:
-                        custom_sh += [
-                                        "tmsh+=(\n",
-                                     ]
                     #Add Pool
                     custom_sh +=    [
                                         "\"tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\"\n",
@@ -1851,11 +1838,8 @@ def main():
                 if 'waf' in components:
                     # 12.1.0 requires "first match legacy"
                     custom_sh += [
-                                    ")\n",
-                                    "curl -s -f --retry 20 -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml \n",
-                                    "tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\n",
-                                    "# modify asm policy names below (ex. /Common/linux-high) to match name in xml\n",
-                                    "tmsh+=(\n",
+                                    "\"curl -s -f --retry 20 -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml\"\n",
+                                    "\"tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\"\n",
                                     "\"tmsh modify asm policy /Common/linux-high active\"\n",
                                     "\"tmsh create ltm policy app-ltm-policy strategy first-match legacy\"\n",
                                     "\"tmsh modify ltm policy app-ltm-policy controls add { asm }\"\n",
@@ -1892,10 +1876,7 @@ def main():
                                             "\"tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\"\n",
                                             "\"tmsh run cm config-sync to-group datasync-global-dg\"\n",
                                  ]
-            if ha_type == "standalone" and num_nics == 1 and 'waf' not in components and stack == "existing":
-                custom_sh += [
-                               "tmsh+=(\n",
-                               ]
+
             custom_sh += [
                                 "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
                                 "\"tmsh save /sys config\")\n",
@@ -1979,6 +1960,7 @@ def main():
                                 }
                             ),
                             commands={
+
                                         "001-disable-1nicautoconfig": {
                                             "command": "/usr/bin/setdb provision.1nicautoconfig disable"
                                         },
@@ -1987,22 +1969,22 @@ def main():
                                                                       ]
                                             }
                                         },
-                                        "003-1nic-setup": {
-                                            "command": {
-                                                "Fn::Join" : [ " ", one_nic_setup
-                                                             ]
-                                            }
-                                        },
-                                        "004-generate-password": {
+                                        "003-generate-password": {
                                             "command": {
                                                 "Fn::Join" : [ "", generate_password
                                                              ]
                                             }
                                         },
-                                        "005-create-admin-user": {
+                                        "004-create-admin-user": {
                                             "command": {
                                                 "Fn::Join" : [ "", admin_user
                                                              ]
+                                            }
+                                        },
+                                        "005-network-config": {
+                                            "command": {
+                                                "Fn::Join": ["", network_config
+                                                            ]
                                             }
                                         },
                                         "006-onboard-BIG-IP": {
@@ -2100,7 +2082,7 @@ def main():
                             NoDevice={}
                         )
                     ],
-                    IamInstanceProfile=Ref(bigipServiceDiscoveryAccessRole),
+                    IamInstanceProfile=Ref(bigipServiceDiscoveryProfile),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces
@@ -2133,7 +2115,7 @@ def main():
                             NoDevice={}
                         )
                     ],
-                    IamInstanceProfile=Ref(bigipServiceDiscoveryAccessRole),
+                    IamInstanceProfile=Ref(bigipServiceDiscoveryProfile),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces

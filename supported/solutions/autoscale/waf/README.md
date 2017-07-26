@@ -113,35 +113,35 @@ If you are using the CLI, you must create a JSON-formatted parameter file in sam
 Once you have launched the CFT, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
 
 
-| Parameter | Required | Description |
-| --- | --- | --- |
-| deploymentName | Yes | Name the template uses to create BIG-IP and AWS object names |
-| vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
-| availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
-| subnets | Yes | Public or External Subnet for the Availability Zones |
-| restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
-| bigipElasticLoadBalancer | Yes | AWS Elastic Load Balancer group for the BIG-IP VEs |
-| sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
-| instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
-| throughput | Yes | The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
-| adminUsername | Yes | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
-| managementGuiPort | Yes | Port of BIG-IP management Configuration utility (the default is 8443) |
-| timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
-| ntpServer | Yes | NTP server for this implementation (Default 0.pool.ntp.org) |
-| scalingMinSize | Yes | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack](#update) |
-| scalingMaxSize | Yes | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scaling Group (the default is 3) |
-| scaleDownBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
-| scaleUpBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
-| notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
-| virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
-| applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
-| appInternalDnsName | Yes | DNS name for the application pool |
-| [policyLevel](#security-blocking-levels-) | Yes | WAF Policy Level to protect the application (the default is high) |
-| application | No | Application Tag (the default is f5app) |
-| environment | No | Environment Name Tag (the default is f5env) |
-| group | No | Group Tag (the default is f5group) |
-| owner | No | Owner Tag (the default is f5owner) |
-| costcenter | No | Cost Center Tag (the default is f5costcenter) |
+| CFT Label | Parameter Name | Required | Description |
+| --- | --- | --- | --- |
+| Deployment Name | deploymentName | Yes | Name the template uses to create BIG-IP and AWS object names |
+| VPC ID | vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
+| Availabilty Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
+| Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
+| Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
+| Elastic Load Balancer for BIG-IP VEs | bigipElasticLoadBalancer | Yes | AWS Elastic Load Balancer group for the BIG-IP VEs |
+| SSH Key Name | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
+| AWS Instance Size | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
+| Maximum Throughput | throughput | Yes | The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
+| BIG-IP Admin User for clustering | adminUsername | Yes | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
+| Management Port | managementGuiPort | Yes | Port of BIG-IP management Configuration utility (the default is 8443) |
+| Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
+| NTP Server | ntpServer | Yes | NTP server for this implementation (Default 0.pool.ntp.org) |
+| Minimum Instances | scalingMinSize | Yes | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack](#restoring-or-upgrading-the-solution) |
+| Maximum Instances | scalingMaxSize | Yes | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scale Group |
+| Scale Down Bytes Threshold | scaleDownBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
+| Scale Up Bytes Threshold | scaleUpBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
+| Notification Email | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
+| Virtual Service Port | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
+| Application Pool Member Port | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
+| Application Pool DNS | appInternalDnsName | Yes | DNS name for the application pool |
+| [Web Application Firewall Policy Level](#security-blocking-levels-) | policyLevel | Yes | WAF Policy Level to protect the application (the default is high) |
+| Application | application | No | Application Tag (the default is f5app) |
+| Environment | environment | No | Environment Name Tag (the default is f5env) |
+| Group | group | No | Group Tag (the default is f5group) |
+| Owner | owner | No | Owner Tag (the default is f5owner) |
+| Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter) |
 <br>
 
 
@@ -256,11 +256,11 @@ The CloudFormation Template creates and leverages several AWS resources to suppo
   - Cloudwatch Alarms<br>
   These alarms are used to trigger scale Up / Down events.
   - Auto Scale Group<br>
-  By default, the number of auto scaled instances is set to 1 and the maximum is set to 8. We recommend you launch the solution with 1 instance to start, and increasing this to at least two by [updating the stack](#update). 
+  By default, the number of auto scaled instances is set to 1 and the maximum is set to 8. We recommend you launch the solution with 1 instance to start, and increasing this to at least two by [updating the stack](#restoring-or-upgrading-the-solution). 
 
 ---
 
-### Restoring or upgrading the solution <a name="update"></a>
+### Restoring or upgrading the solution
 Certain elements of this deployment can be updated with the CloudFormation stack itself. This is referred to as *Updating the Stack*. For instance, anything that causes the Auto Scale Launch Configuration to update, like changing the AMI IDs (to upgrade from one BIG-IP version to another), instance sizes, scaling thresholds, and many others, requires updating the stack. 
  
 Clustering is only done within a Launch Configuration ID basis, so any changes that result in a new Launch Configuration ID require the following procedure.

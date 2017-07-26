@@ -1666,37 +1666,14 @@ def main():
                                     "POOLMEMPORT=80\n",
                                     "APPNAME='demo-app-1'\n",
                                     "VIRTUALSERVERPORT=80\n",
+                                    "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",
                               ]
-            custom_sh +=    [
-                            "PROGNAME=$(basename $0)\n",
-                            "function error_exit {\n",
-                                "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
-                            "exit 1\n",
-                            "}\n",
-                            "declare -a tmsh=()\n",
-                            "date\n",
-                            "echo 'starting custom-config.sh'\n",
-                            "tmsh+=(\n"
-                        ]
             if ha_type != "standalone":
                 custom_sh += [
-                                    "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
-
+                                "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
+                                "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
                              ]
-            if num_nics == 1:
-                # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
-                if 'waf' in components:
-                    custom_sh +=  [
-                                    "\"tmsh modify net self-allow defaults add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
-                                    ]
-            # Network Settings
-
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
-                custom_sh +=  [
-                                    #"PEER_HOSTNAME='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "Instance", "PrivateDnsName"), "'\n",
-                                    #"PEER_MGMTIP='", GetAtt("Bigip" + str(BIGIP_INDEX + 2) + "ManagementInterface", "PrimaryPrivateIpAddress"), "'\n",
-                                    ]
-
                 if num_nics > 1:
                     if ha_type == "across-az":
                         custom_sh +=  [
@@ -1710,6 +1687,25 @@ def main():
                                             "VIPEIP='",Ref(VipEipAddress),"'\n",
 
                                             ]
+            custom_sh +=    [
+                            "PROGNAME=$(basename $0)\n",
+                            "function error_exit {\n",
+                                "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+                            "exit 1\n",
+                            "}\n",
+                            "declare -a tmsh=()\n",
+                            "date\n",
+                            "echo 'starting custom-config.sh'\n",
+                            "tmsh+=(\n"
+                        ]
+            if num_nics == 1:
+                # Sync and Failover ( UDP 1026 and TCP 4353 already included in self-allow defaults )
+                if 'waf' in components:
+                    custom_sh +=  [
+                                    "\"tmsh modify net self-allow defaults add { tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
+                                    ]
+            # Network Settings
+
             if num_nics > 1:
                 vlans = ""
                 network_config = [
@@ -1759,22 +1755,19 @@ def main():
                             ]
                 if ha_type != "standalone":
                     if 'waf' not in components:
-                        custom_sh +=  [
-                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 }\"\n",
-                                        ]
+                        network_config +=   [
+                                                "--self-ip name:external-self,address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX},vlan:external,[allow:tcp:4353 udp:1026] ",
+                                            ]
                     if 'waf' in components:
-                        custom_sh +=  [
-                                        "\"tmsh create net self ${EXTIP}/${EXTMASK} vlan external allow-service add { tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128 }\"\n",
-                                        ]
+                        network_config +=   [
+                                                "--self-ip name:external-self,address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX},vlan:external,[allow:tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128] ",
+                                            ]
+                    if ha_type == "across-az":
+                        network_config += [
+                                            "--local-only ",
+                                          ]
             # Set Gateway
-            if ha_type == "across-az":
-                cluster_BIG_IP +=   [
 
-                                    ]
-                custom_sh +=  [
-                                    "\"tmsh create sys folder /LOCAL_ONLY device-group none traffic-group traffic-group-local-only\"\n",
-                                    "\"tmsh create net route /LOCAL_ONLY/default network default gw ${GATEWAY}\"\n",
-                                ]
             if num_nics > 1:
                 network_config += [
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"

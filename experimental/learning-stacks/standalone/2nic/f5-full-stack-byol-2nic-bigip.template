@@ -930,6 +930,19 @@
            "POOLMEMPORT=80\n",
            "APPNAME='demo-app-1'\n",
            "VIRTUALSERVERPORT=80\n",
+           "EXTPRIVIP='",
+           {
+            "Fn::Select": [
+             "0",
+             {
+              "Fn::GetAtt": [
+               "Bigip1subnet1Az1Interface",
+               "SecondaryPrivateIpAddresses"
+              ]
+             }
+            ]
+           },
+           "'\n",
            "PROGNAME=$(basename $0)\n",
            "function error_exit {\n",
            "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",

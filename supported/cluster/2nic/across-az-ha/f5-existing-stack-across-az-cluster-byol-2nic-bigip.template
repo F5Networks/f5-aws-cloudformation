@@ -983,7 +983,7 @@
      }
     ],
     "IamInstanceProfile": {
-     "Ref": "bigipServiceDiscoveryAccessRole"
+     "Ref": "bigipServiceDiscoveryProfile"
     },
     "ImageId": {
      "Fn::FindInMap": [
@@ -1616,7 +1616,7 @@
      }
     ],
     "IamInstanceProfile": {
-     "Ref": "bigipServiceDiscoveryAccessRole"
+     "Ref": "bigipServiceDiscoveryProfile"
     },
     "ImageId": {
      "Fn::FindInMap": [

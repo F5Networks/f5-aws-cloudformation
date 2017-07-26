@@ -2082,7 +2082,7 @@ def main():
                             NoDevice={}
                         )
                     ],
-                    IamInstanceProfile=Ref(bigipServiceDiscoveryAccessRole),
+                    IamInstanceProfile=Ref(bigipServiceDiscoveryProfile),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces
@@ -2115,7 +2115,7 @@ def main():
                             NoDevice={}
                         )
                     ],
-                    IamInstanceProfile=Ref(bigipServiceDiscoveryAccessRole),
+                    IamInstanceProfile=Ref(bigipServiceDiscoveryProfile),
                     KeyName=Ref(sshKey),
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces

@@ -28,9 +28,9 @@ The following are prerequisites for this solution:
  
  
 ## Quick Start for launching the template
-This Readme file describes launching from the AWS Marketplace.
+This Readme file describes launching from the AWS Marketplace. There are three different BIG-IP VE instances you can choose from: [1Gbps](https://aws.amazon.com/marketplace/pp/B071GSJP9P), [200Mbps](https://aws.amazon.com/marketplace/pp/B072N6T653), or [25Mbps](https://aws.amazon.com/marketplace/pp/B071WY19JP).
 
-From the Marketplace: 
+From the Marketplace for the instance you want to use: 
 - From the **For Region** list, select your Region. 
 - From the **Delivery Methods** list, select **Auto Scale via CFT**
 - Click **Continue**

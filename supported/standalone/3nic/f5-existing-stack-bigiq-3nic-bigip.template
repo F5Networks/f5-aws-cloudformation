@@ -610,6 +610,7 @@
          "Fn::Join": [
           " ",
           [
+           "BIGIP_PUBLIC=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/public-ipv4`;",
            "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
            "nohup /config/waitThenRun.sh",
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
@@ -635,18 +636,19 @@
            {
             "Ref": "bigiqAddress"
            },
-           " --big-iq-user ",
+           "--big-iq-user ",
            {
             "Ref": "bigiqUsername"
            },
-           " --big-iq-password-uri ",
+           "--big-iq-password-uri ",
            {
             "Ref": "bigiqPasswordS3Arn"
            },
-           " --license-pool-name ",
+           "--license-pool-name ",
            {
             "Ref": "bigiqLicensePoolName"
            },
+           "--big-ip-mgmt-address ${BIGIP_PUBLIC}",
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]

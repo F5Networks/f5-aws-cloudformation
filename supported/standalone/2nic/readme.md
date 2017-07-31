@@ -22,14 +22,14 @@ See the **[Configuration Example](#configuration-example)** section for a config
 ## Prerequisites and configuration notes
 The following are prerequisites for the F5 2-NIC CFT:
   - An AWS VPC with three subnets: 
-    - Management subnet (called Public in the AWS UI)
-    - External subnet (called Private in the AWS UI) 
+    - Management subnet (called Public in the AWS UI). The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library.
+    - External subnet (called Private in the AWS UI). 
     - NAT instance and associated network interface for network translation.
-  - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
+  - Key pair for SSH access to BIG-IP VE (you can create or import in AWS). 
   - An AWS Security Group with the following inbound rules:
-    - Port 22 for SSH access to the BIG-IP VE
-    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility
-    - A port for accessing your applications via the BIG-IP virtual server
+    - Port 22 for SSH access to the BIG-IP VE. 
+    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility. 
+    - A port for accessing your applications via the BIG-IP virtual server. 
   - This solution uses the SSH key to enable access to the BIG-IP system. If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
@@ -52,7 +52,7 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
 ### Help 
-Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support.
+Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565).
  
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 
@@ -255,7 +255,7 @@ The following is a simple configuration diagram for this 2-NIC deployment. In th
 ![2-NIC configuration example](images/aws-standalone-2nic.png)
 
 ### Documentation
-The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also describes the configuration in more detail.
+The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  You can also see [this video](https://www.youtube.com/watch?v=509OS3x-k1A) on manually deploying the BIG-IP VE in AWS.
 
 ## Security Details
 This section has the entire code snippets for each of the lines you should ensure are present in your template file if you want to verify the integrity of the helper code in the template.

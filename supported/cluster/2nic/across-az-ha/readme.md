@@ -23,16 +23,16 @@ See the [Configuration Example](#configuration-example) section for a configurat
 ## Prerequisites and configuration notes
 The following are prerequisites for the F5 2-NIC CFT:
   - Two AWS VPC in separate Availability Zones, each with three subnets: 
-    - Management subnet (called Public in the AWS UI)
-    - External subnet (called Private in the AWS UI) 
-    - NAT instance and associated network interface for network translation.
+    - Management subnet (called Public in the AWS UI). The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
+    - External subnet (called Private in the AWS UI). 
+    - NAT instance and associated network interface for network translation. 
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   - An AWS Security Group in each Availability Zone with the following inbound rules:
-    - Port 22 for SSH access to the BIG-IP VE
-    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility
-    - UDP port 1026 for failover heartbeat
-    - TCP port 4353 for ConfigSync
-    - A port for accessing your applications via the BIG-IP virtual server
+    - Port 22 for SSH access to the BIG-IP VE.
+    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility.
+    - UDP port 1026 for failover heartbeat.
+    - TCP port 4353 for ConfigSync.
+    - A port for accessing your applications via the BIG-IP virtual server.
   - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
@@ -53,7 +53,7 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
 
 
 ### Help 
-Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support.
+Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565).
  
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 

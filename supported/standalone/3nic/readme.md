@@ -22,7 +22,7 @@ See the **[Configuration Example](#configuration-example)** section for a config
 ## Prerequisites and configuration notes
 The following are prerequisites for the F5 3-NIC CFT:
   - An AWS VPC with three subnets: 
-    - Management subnet
+    - Management subnet (the subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library)
     - External subnet
     - Internal subnet
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
@@ -48,7 +48,7 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
 ### Help 
-Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support.
+Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565).
  
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 

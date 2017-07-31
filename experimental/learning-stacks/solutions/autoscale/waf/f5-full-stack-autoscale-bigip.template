@@ -1,31 +1,29 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "v2.4.4: This full stack template deploys EC2/VPC resources and F5 autoscale WAF solution.  In particular, this template creates a VPC, subnets, a routing table, common security groups, and an ElasticLoadBalancer group to which all BIG-IPs will be added.",
+  "Description": "v2.4.4: This full stack template deploys EC2/VPC resources and F5 autoscale WAF solution.  In particular, this template creates a VPC, subnets, routing tables, security groups, and two Elastic Load Balancer groups (one to which all BIG-IP VEs are added and one to which the applications servers are added).",
   "Parameters": {
     "deploymentName" : {
-      "Description" : "Deployment Name - used for creating objects",
+      "Description" : "Name the template uses to create object names",
       "Type" : "String",
-      "MaxLength": 20,
-      "Default": "Autoscale"
+      "MaxLength": 25,
+      "Default": "example"
     },    
     "availabilityZones": {
-      "Description" : "Names of 2 Availability Zones in this Region",
-      "Type": "List<AWS::EC2::AvailabilityZone::Name>",
-      "Default": "[us-east-1b,us-east-1c]"
-    },  
-    "sshKey": {
-      "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instance",
-      "Type": "AWS::EC2::KeyPair::KeyName"
-    },          
+      "Description" : "2 Availability Zones where you want to deploy BIG-IP VEs",
+      "Type": "List<AWS::EC2::AvailabilityZone::Name>"
+    },    
     "restrictedSrcAddress" : {
-      "Description" : " The IP address range that can be used to SSH to the EC2 instances",
+      "Description" : "The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances",
       "Type": "String",
       "MinLength": "9",
       "MaxLength": "18",
-      "Default": "0.0.0.0/0",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
       "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
     },
+    "sshKey": {
+      "Description" : "EC2 KeyPair to enable SSH access to the BIG-IP instance",
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },   
     "instanceType": {
       "Description": "AWS Instance Size",
       "Type": "String",
@@ -106,7 +104,7 @@
       "Type": "Number"
     },
     "notificationEmail": {
-      "Description": "Valid email address to send Auto Scaling event notifications (optional)",
+      "Description": "Valid email address to send Auto Scaling event notifications",
       "ConstraintDescription": "Must be a valid email address.",
       "AllowedPattern": ".+@.+",
       "Type": "String"
@@ -262,10 +260,13 @@
         "availabilityZones": {
           "default": "Availability Zone(s)"
         },
+        "restrictedSrcAddress": {
+          "default": "Restricted Source Address"
+        },
         "sshKey": {
           "default": "SSH Key Name"
         },
-        "bigIpInstanceType": {
+        "instanceType": {
           "default": "AWS Instance Size"
         },
         "throughput": {
@@ -330,7 +331,7 @@
         }
       }
     },
-  "Version": "2.1.0"
+  "Version": "2.4.4"
   },
   "Mappings": {
     "appImageRegionMap": {
@@ -1178,7 +1179,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.1.0\n",
+                      "# Generated from Template Version 2.4.4\n",
                       "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                       "deploymentName='",
                       {
@@ -1294,7 +1295,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.1.0\n",
+                      "# Generated from Template Version 2.4.4\n",
                       "date\n",
                       ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
@@ -1344,7 +1345,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from Template Version 2.1.0\n",
+                      "# Generated from Template Version 2.4.4\n",
                       "echo about to execute",
                       "checks=0",
                       "while [ $checks -lt 120 ]; do echo checking mcpd",
@@ -1393,7 +1394,7 @@
                       "Fn::Join": [
                           "\n",
                           [
-                              "# Generated from Template Version 2.1.0\n",
+                              "# Generated from Template Version 2.4.4\n",
                               "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                               "PASSWORD=$(/bin/sed -e $'s:[!\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                               "if [ \"$1\" == admin ]; then",
@@ -1414,7 +1415,7 @@
                   "Fn::Join": [
                     "\n",
                     [
-                      "# Generated from Template Version 2.1.0\n",
+                      "# Generated from Template Version 2.4.4\n",
                       "INTERFACE=$1",
                       "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
                       "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
@@ -1434,7 +1435,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from Template Version 2.1.0\n",
+                      "# Generated from Template Version 2.4.4\n",
                       "while true; do echo waiting for cloud libs install to complete",
                       "    if [ -f /config/cloud/cloudLibsReady ]; then",
                       "        echo cloud libs installed",

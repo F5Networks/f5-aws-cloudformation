@@ -21,9 +21,10 @@ This CloudFormation template deploys a full stack, meaning it does not only depl
 The following are prerequisites for this solution:
  - The appropriate permission in AWS to launch CloudFormation templates (CFTs). You must be using an IAM user with the AdminstratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.  For details on permissions and all AWS configuration, see https://aws.amazon.com/documentation/.
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
+ - The classic ELB in front of the BIG-IP VEs performs SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration. You must first upload the SSL certificate to your AWS account for use in the classic ELB. For more information on uploading a certificate, see: http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html
  - Access to **Best** BIG-IP images in the Amazon region within which you are working.
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image. 
- - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
+ - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for information.
  - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
 
 ## Launching the template
@@ -38,7 +39,7 @@ The easiest way to deploy one of the CloudFormation templates is to use the Laun
 
 See [Template Parameters](#template-parameters) for guidance on the parameters presented by the template.
  
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=Full-Stack-F5-BIGIP-WAF-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-full-stack-autoscale-bigip.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=Full-Stack-F5-BIGIP-WAF-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/learning-stacks/f5-full-stack-autoscale-bigip.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
 ### Using the AWS Console
 Download the CloudFormation template from this repository and use it to create a stack in AWS CloudFormation using the AWS Console.<br> 
@@ -51,7 +52,7 @@ AWS Console
    1. Under AWS Services, click **CloudFormation**.
    2. Click the **Create Stack** button 
    3. In the Choose a template area, click **Upload a template to Amazon S3**.
-   4. Click **Choose File** and then browse to the **autoscale-bigip.template** file.
+   4. Click **Choose File** and then browse to the **f5-full-stack-autoscale-bigip.template** file.
  
  <br>
 
@@ -60,7 +61,7 @@ AWS Console
  
  From the AWS CLI, use the following command syntax:
  ```
- aws cloudformation create-stack --region us-east-1 --stack-name full-autoscale-bigip --template-url https://s3.amazonaws.com/f5-cft/f5-full-stack-autoscale-bigip.template --parameters file:///fullfilepath/f5-full-stack-autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM
+ aws cloudformation create-stack --region us-east-1 --stack-name full-autoscale-bigip --template-url https://s3.amazonaws.com/f5-cft/learning-stacks/f5-full-stack-autoscale-bigip.template --parameters file:///fullfilepath/f5-full-stack-autoscale-bigip-parameters.json --capabilities CAPABILITY_NAMED_IAM
 ```
 
 If you are using the CLI, you must create a JSON-formatted parameter and provide the full file pathname when executing the above command. The following example shows the minimum contents of the f5-full-stack-autoscale-bigip-parameters.json file, using default values for unlisted parameters.
@@ -266,7 +267,7 @@ This deployment creates an S3 bucket using the following naming convention: *(yo
 
 
 3. Delete the CloudFormation stack
-In the AWS Console, navigate to the CloudFormation page, select the stack created with the f5-autoscale-bigip.template and delete the stack by right-clicking or (selecting the Actions tab) and then clicking **Delete Stack**.
+In the AWS Console, navigate to the CloudFormation page, select the stack created with the f5-full-stack-autoscale-bigip.template and delete the stack by right-clicking or (selecting the Actions tab) and then clicking **Delete Stack**.
 
 ---
 
@@ -412,7 +413,7 @@ Note the hashes and script-signature may be different in your template. It is im
 ---
 
 ## Example ELB configuration <a name="elb"></a>
-The following is an example ELB configuration that could be used in this implementation. For specific instructions on configuring an ELB, see http://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/load-balancer-getting-started.html.
+The following is an example ELB configuration used in this implementation. For specific instructions on configuring an ELB, see http://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/load-balancer-getting-started.html.
 
 ```json
     "bigipElasticLoadBalancer": {

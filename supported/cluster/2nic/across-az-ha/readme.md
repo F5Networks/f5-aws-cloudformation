@@ -22,7 +22,7 @@ See the [Configuration Example](#configuration-example) section for a configurat
 
 ## Prerequisites and configuration notes
 The following are prerequisites for the F5 2-NIC CFT:
-  - Two AWS VPC in separate Availability Zones, each with three subnets: 
+  - An existing AWS VPC with two separate Availability Zones, each with three subnets: 
     - Management subnet (called Public in the AWS UI). The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
     - External subnet (called Private in the AWS UI). 
     - NAT instance and associated network interface for network translation. 

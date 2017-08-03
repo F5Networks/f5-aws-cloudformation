@@ -65,7 +65,7 @@ This Readme file describes launching from the AWS Marketplace (see also [non-mar
 
 From the Marketplace for the instance you want to use: 
 - From the **For Region** list, select your Region. 
-- From the **Delivery Methods** list, select **Auto Scale via CFT**
+- From the **Delivery Methods** list, select **HA across AZs via CFT**
 - Click **Continue**
 - Select either the **Hourly** or **Yearly** Subscription Term.
 - Select the appropriate version.

@@ -133,51 +133,51 @@ while [[ $# -gt 1 ]]
 do
     case "$1" in
         --licenseKey1)
-			licenseKey1=$2
-			shift 2;;
-		--licenseType)
-			licenseType=$2
-			shift 2;;
-		--managementSubnetAz1)
-			managementSubnetAz1=$2
-			shift 2;;
-		--sshKey)
-			sshKey=$2
-			shift 2;;
-		--licenseKey2)
-			licenseKey2=$2
-			shift 2;;
-		--managementSubnetAz2)
-			managementSubnetAz2=$2
-			shift 2;;
-		--bigipManagementSecurityGroup)
-			bigipManagementSecurityGroup=$2
-			shift 2;;
-		--subnet1Az1)
-			subnet1Az1=$2
-			shift 2;;
-		--bigipExternalSecurityGroup)
-			bigipExternalSecurityGroup=$2
-			shift 2;;
-		--subnet1Az2)
-			subnet1Az2=$2
-			shift 2;;
-		--stackName)
-			stackName=$2
-			shift 2;;
-		--imageName)
-			imageName=$2
-			shift 2;;
-		--Vpc)
-			Vpc=$2
-			shift 2;;
-		--instanceType)
-			instanceType=$2
-			shift 2;;
-		
+      licenseKey1=$2
+      shift 2;;
+    --licenseType)
+      licenseType=$2
+      shift 2;;
+    --managementSubnetAz1)
+      managementSubnetAz1=$2
+      shift 2;;
+    --sshKey)
+      sshKey=$2
+      shift 2;;
+    --licenseKey2)
+      licenseKey2=$2
+      shift 2;;
+    --managementSubnetAz2)
+      managementSubnetAz2=$2
+      shift 2;;
+    --bigipManagementSecurityGroup)
+      bigipManagementSecurityGroup=$2
+      shift 2;;
+    --subnet1Az1)
+      subnet1Az1=$2
+      shift 2;;
+    --bigipExternalSecurityGroup)
+      bigipExternalSecurityGroup=$2
+      shift 2;;
+    --subnet1Az2)
+      subnet1Az2=$2
+      shift 2;;
+    --stackName)
+      stackName=$2
+      shift 2;;
+    --imageName)
+      imageName=$2
+      shift 2;;
+    --Vpc)
+      Vpc=$2
+      shift 2;;
+    --instanceType)
+      instanceType=$2
+      shift 2;;
+    
         --)
-			shift
-			break;;
+      shift
+      break;;
     esac
 done
 
@@ -250,11 +250,11 @@ The iApp first looks for NIC resources with the tags you specify.  If it finds N
 **Important**: Make sure the tags and IP addresses you use are unique. You should not tag multiple AWS nodes with the same key/tag combination if those nodes use the same IP address.
 
 To launch the template:
-  1.	From the BIG-IP VE web-based Configuration utility, on the Main tab, click **iApps > Application Services > Create**.
-  2.	In the **Name** field, give the template a unique name.
-  3.	From the **Template** list, select **f5.service_discovery**.  The template opens.
-  4.	Complete the template with information from your environment.  For assistance, from the Do you want to see inline help? question, select Yes, show inline help.
-  5.	When you are done, click the **Finished** button.
+  1.  From the BIG-IP VE web-based Configuration utility, on the Main tab, click **iApps > Application Services > Create**.
+  2.  In the **Name** field, give the template a unique name.
+  3.  From the **Template** list, select **f5.service_discovery**.  The template opens.
+  4.  Complete the template with information from your environment.  For assistance, from the Do you want to see inline help? question, select Yes, show inline help.
+  5.  When you are done, click the **Finished** button.
   
 If you want to verify the integrity of the template, from the BIG-IP VE Configuration utility click **iApps > Templates**. In the template list, look for **f5.service_discovery**. In the Verification column, you should see **F5 Verified**.
 

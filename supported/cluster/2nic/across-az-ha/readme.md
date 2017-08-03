@@ -22,17 +22,17 @@ See the [Configuration Example](#configuration-example) section for a configurat
 
 ## Prerequisites and configuration notes
 The following are prerequisites for the F5 2-NIC CFT:
-  - Two AWS VPC in separate Availability Zones, each with three subnets: 
-    - Management subnet (called Public in the AWS UI)
-    - External subnet (called Private in the AWS UI) 
-    - NAT instance and associated network interface for network translation.
+  - An existing AWS VPC with two separate Availability Zones, each with three subnets: 
+    - Management subnet (called Public in the AWS UI). The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
+    - External subnet (called Private in the AWS UI). 
+    - NAT instance and associated network interface for network translation. 
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   - An AWS Security Group in each Availability Zone with the following inbound rules:
-    - Port 22 for SSH access to the BIG-IP VE
-    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility
-    - UDP port 1026 for failover heartbeat
-    - TCP port 4353 for ConfigSync
-    - A port for accessing your applications via the BIG-IP virtual server
+    - Port 22 for SSH access to the BIG-IP VE.
+    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility.
+    - UDP port 1026 for failover heartbeat.
+    - TCP port 4353 for ConfigSync.
+    - A port for accessing your applications via the BIG-IP virtual server.
   - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
@@ -53,7 +53,7 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
 
 
 ### Help 
-Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support.
+Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565).
  
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 
@@ -68,84 +68,43 @@ You have two options for deploying this template:
 The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
- - Hourly, which uses pay-as-you-go hourly billing
- - [BYOL](#byol-deploy-button) (bring your own license), which allows you to use an existing BIG-IP license.
+ - Hourly, which uses pay-as-you-go hourly billing  
+   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a> 
 
-
-#### Hourly deploy button
-
-Use this button to deploy the **hourly** template: 
-
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
-</a>
+ - BYOL (bring your own license), which allows you to use an existing BIG-IP license.  
+  <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-byol&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 <br>
 
+**Template Parameters**<br>
+After clicking the Launch button, you must specify the following parameters.  
 
-After clicking the Launch button, you must specify the following parameters.
+
+| CFT Label | Parameter Name | Required | Description |
+| --- | --- | --- | --- |
+| VPC | Vpc | Yes | Common VPC for the deployment. |
+| Management Subnet AZ1 | managementSubnetAz1 | Yes | Management subnet ID for Availability Zone 1. |
+| Management Subnet AZ2 | managementSubnetAz2 | Yes | Management subnet ID for Availability Zone 2. |
+| Management Security Group | bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
+| Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID for Availability Zone 1. |
+| Subnet1 AZ1 | subnet1Az2 | Yes | Public or External subnet ID for Availability Zone 2. |
+| External Security Group | bigipExternalSecurityGroup | Yes | Public or External Security Group ID. |
+| Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
+| AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
+| License Key1 | licenseKey1 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey. |
+| License Key2 | licenseKey2 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey for the second BIG-IP VE. |
+| SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
+| Source Address(es) for SSH Access | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances. |
+| NTP Server | ntpServer | Yes | NTP server you want to use for this implementation (the default is 0.pool.ntp.org). | 
+| Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC). |
+| Application | application | No | Application Tag (the default is f5app). |
+| Environment | environment | No | Environment Name Tag (the default is f5env). |
+| Group | group | No | Group Tag (the default is f5group). |
+| Owner | owner | No | Owner Tag (the default is f5owner). |
+| Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
+
 <br>
-
-| Parameter | Required | Description |
-| --- | --- | --- |
-| bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
-| bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
-| imageName | Yes | F5 BIG-IP Performance Type |
-| instanceType | Yes | BIG-IP virtual instance type |
-| managementSubnetAz1 | Yes | Management subnet ID |
-| managementSubnetAz2 | Yes | Management subnet ID |
-| restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
-| subnet1Az1 | Yes | Public or External subnet ID |
-| subnet1Az2 | Yes | Public or External subnet ID |
-| Vpc | Yes | Common VPC for the deployment |
-| ntpServer | Yes | NTP server you want to use for this implementation. The default is 0.pool.ntp.org. | 
-| timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
-| application | No | Application Tag (the default is f5app) |
-| environment | No | Environment Name Tag (the default is f5env) |
-| group | No | Group Tag (the default is f5group) |
-| owner | No | Owner Tag (the default is f5owner) |
-| costcenter | No | Cost Center Tag (the default is f5costcenter) |
-
-
-<br>
-
-  
-  
-#### BYOL deploy button
-
-Use this button to deploy the **BYOL** template: 
-
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-byol&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
-</a>
-<br>
-<br>
-
-After clicking the Launch button, you must specify the following parameters.
-<br>
-
-| Parameter | Required | Description |
-| --- | --- | --- |
-| bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
-| bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
-| imageName | Yes | F5 BIG-IP Performance Type |
-| instanceType | Yes | BIG-IP virtual instance type |
-| licenseKey1 | Yes | Type or paste your F5 BYOL regkey |
-| licenseKey2 | Yes | Type or paste your second F5 BYOL regkey  |
-| managementSubnetAz1 | Yes | Management subnet ID |
-| managementSubnetAz2 | Yes | Management subnet ID |
-| restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
-| subnet1Az1 | Yes | Public or External subnet ID |
-| subnet1Az2 | Yes | Public or External subnet ID |
-| Vpc | Yes | Common VPC for the deployment |
-| ntpServer | Yes | NTP server you want to use for this implementation. The default is 0.pool.ntp.org. | 
-| timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
-| application | No | Application Tag (the default is f5app) |
-| environment | No | Environment Name Tag (the default is f5env) |
-| group | No | Group Tag (the default is f5group) |
-| owner | No | Owner Tag (the default is f5owner) |
-| costcenter | No | Cost Center Tag (the default is f5costcenter) |
 
 
 ### Installing the template using the AWS CLI (aws-cli/1.11.76)
@@ -174,51 +133,51 @@ while [[ $# -gt 1 ]]
 do
     case "$1" in
         --licenseKey1)
-			licenseKey1=$2
-			shift 2;;
-		--licenseType)
-			licenseType=$2
-			shift 2;;
-		--managementSubnetAz1)
-			managementSubnetAz1=$2
-			shift 2;;
-		--sshKey)
-			sshKey=$2
-			shift 2;;
-		--licenseKey2)
-			licenseKey2=$2
-			shift 2;;
-		--managementSubnetAz2)
-			managementSubnetAz2=$2
-			shift 2;;
-		--bigipManagementSecurityGroup)
-			bigipManagementSecurityGroup=$2
-			shift 2;;
-		--subnet1Az1)
-			subnet1Az1=$2
-			shift 2;;
-		--bigipExternalSecurityGroup)
-			bigipExternalSecurityGroup=$2
-			shift 2;;
-		--subnet1Az2)
-			subnet1Az2=$2
-			shift 2;;
-		--stackName)
-			stackName=$2
-			shift 2;;
-		--imageName)
-			imageName=$2
-			shift 2;;
-		--Vpc)
-			Vpc=$2
-			shift 2;;
-		--instanceType)
-			instanceType=$2
-			shift 2;;
-		
+      licenseKey1=$2
+      shift 2;;
+    --licenseType)
+      licenseType=$2
+      shift 2;;
+    --managementSubnetAz1)
+      managementSubnetAz1=$2
+      shift 2;;
+    --sshKey)
+      sshKey=$2
+      shift 2;;
+    --licenseKey2)
+      licenseKey2=$2
+      shift 2;;
+    --managementSubnetAz2)
+      managementSubnetAz2=$2
+      shift 2;;
+    --bigipManagementSecurityGroup)
+      bigipManagementSecurityGroup=$2
+      shift 2;;
+    --subnet1Az1)
+      subnet1Az1=$2
+      shift 2;;
+    --bigipExternalSecurityGroup)
+      bigipExternalSecurityGroup=$2
+      shift 2;;
+    --subnet1Az2)
+      subnet1Az2=$2
+      shift 2;;
+    --stackName)
+      stackName=$2
+      shift 2;;
+    --imageName)
+      imageName=$2
+      shift 2;;
+    --Vpc)
+      Vpc=$2
+      shift 2;;
+    --instanceType)
+      instanceType=$2
+      shift 2;;
+    
         --)
-			shift
-			break;;
+      shift
+      break;;
     esac
 done
 
@@ -291,11 +250,11 @@ The iApp first looks for NIC resources with the tags you specify.  If it finds N
 **Important**: Make sure the tags and IP addresses you use are unique. You should not tag multiple AWS nodes with the same key/tag combination if those nodes use the same IP address.
 
 To launch the template:
-  1.	From the BIG-IP VE web-based Configuration utility, on the Main tab, click **iApps > Application Services > Create**.
-  2.	In the **Name** field, give the template a unique name.
-  3.	From the **Template** list, select **f5.service_discovery**.  The template opens.
-  4.	Complete the template with information from your environment.  For assistance, from the Do you want to see inline help? question, select Yes, show inline help.
-  5.	When you are done, click the **Finished** button.
+  1.  From the BIG-IP VE web-based Configuration utility, on the Main tab, click **iApps > Application Services > Create**.
+  2.  In the **Name** field, give the template a unique name.
+  3.  From the **Template** list, select **f5.service_discovery**.  The template opens.
+  4.  Complete the template with information from your environment.  For assistance, from the Do you want to see inline help? question, select Yes, show inline help.
+  5.  When you are done, click the **Finished** button.
   
 If you want to verify the integrity of the template, from the BIG-IP VE Configuration utility click **iApps > Templates**. In the template list, look for **f5.service_discovery**. In the Verification column, you should see **F5 Verified**.
 

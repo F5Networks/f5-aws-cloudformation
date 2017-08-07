@@ -36,6 +36,10 @@ The following are prerequisites for the F5 2-NIC CFT:
   - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
+  -	If you are using the *Licensing using BIG-IQ* template only:
+    - This solution only supports only BIG-IQ versions 5.0 - 5.3.
+    - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
+    - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only.  Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. If you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Details](#security-details) for the exact code in each of the following sections.
@@ -75,6 +79,10 @@ The easiest way to deploy one of the CloudFormation templates is to use the appr
  - BYOL (bring your own license), which allows you to use an existing BIG-IP license.  
   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-byol&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+
+- BIG-IQ for licensing, which allows you to launch the template using an existing BIG-IQ device with a pool of licenses to license the BIG-IP VE(s).  
+   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-3nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-bigiq-3nic-bigip.template">
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 <br>
 
 **Template Parameters**<br>
@@ -103,6 +111,10 @@ After clicking the Launch button, you must specify the following parameters.
 | Group | group | No | Group Tag (the default is f5group). |
 | Owner | owner | No | Owner Tag (the default is f5owner). |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
+| IP address of BIG-IQ | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ licensing only: IP address of the BIG-IQ device that contains the pool of licenses |
+| BIG-IQ user with Licensing Privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IQ. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
+| S3 ARN of the BIG-IQ Password File | bigiqPasswordS3ARN | Yes <br>(BIG-IQ) | BIG-IQ licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE |
+| BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses. |
 
 <br>
 

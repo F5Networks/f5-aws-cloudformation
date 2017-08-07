@@ -1302,7 +1302,6 @@ def main():
                                 Ref(bigiqPasswordS3Arn),
                                 "--license-pool-name ",
                                 Ref(bigiqLicensePoolName),
-                                "--big-ip-mgmt-address ${BIGIP_PUBLIC}",
                                 ]
 
             ## variable used to provision asm
@@ -1617,10 +1616,6 @@ def main():
                                     "&>> /var/log/cloudlibs-install.log < /dev/null &"
                                 ]
             # Global Settings
-            if license_type == "bigiq":
-                onboard_BIG_IP += [
-                                    "BIGIP_PUBLIC=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/public-ipv4`;"
-                ]
             if num_nics == 1:
                 network_config = [
                                     "nohup /config/waitThenRun.sh ",

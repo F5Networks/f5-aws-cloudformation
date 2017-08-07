@@ -1,247 +1,77 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.5.0: AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of 2NIC BIG-IPs, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.5.0: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Best1000Mbps": "ami-3a1c2d5d",
-    "Best200Mbps": "ami-301c2d57",
-    "Best25Mbps": "ami-3b1e2f5c",
-    "Best5000Mbps": "ami-b11f2ed6",
-    "Better1000Mbps": "ami-631b2a04",
-    "Better200Mbps": "ami-0c19286b",
-    "Better25Mbps": "ami-841a2be3",
-    "Better5000Mbps": "ami-a51e2fc2",
-    "Good1000Mbps": "ami-3d1e2f5a",
-    "Good200Mbps": "ami-781a2b1f",
-    "Good25Mbps": "ami-031c2d64",
-    "Good5000Mbps": "ami-a01c2dc7"
+    "Best": "ami-eb1d2c8c",
+    "Better": "ami-54192833",
+    "Good": "ami-c31a2ba4"
    },
    "ap-northeast-2": {
-    "Best1000Mbps": "ami-33dc015d",
-    "Best200Mbps": "ami-b9a37ed7",
-    "Best25Mbps": "ami-e0dc018e",
-    "Best5000Mbps": "ami-e4dd008a",
-    "Better1000Mbps": "ami-ada27fc3",
-    "Better200Mbps": "ami-b8a37ed6",
-    "Better25Mbps": "ami-e5dc018b",
-    "Better5000Mbps": "ami-15de037b",
-    "Good1000Mbps": "ami-2aa27f44",
-    "Good200Mbps": "ami-aba27fc5",
-    "Good25Mbps": "ami-c7df02a9",
-    "Good5000Mbps": "ami-dadf02b4"
+    "Best": "ami-dcdf02b2",
+    "Better": "ami-23a27f4d",
+    "Good": "ami-14de037a"
    },
    "ap-south-1": {
-    "Best1000Mbps": "ami-62dba90d",
-    "Best200Mbps": "ami-bad8aad5",
-    "Best25Mbps": "ami-07d5a768",
-    "Best5000Mbps": "ami-76d9ab19",
-    "Better1000Mbps": "ami-c4d8aaab",
-    "Better200Mbps": "ami-bbdfadd4",
-    "Better25Mbps": "ami-9ad9abf5",
-    "Better5000Mbps": "ami-00d4a66f",
-    "Good1000Mbps": "ami-f2deac9d",
-    "Good200Mbps": "ami-0fd4a660",
-    "Good25Mbps": "ami-e1d8aa8e",
-    "Good5000Mbps": "ami-c4dba9ab"
+    "Best": "ami-0ed4a661",
+    "Better": "ami-fed9ab91",
+    "Good": "ami-7bd8aa14"
    },
    "ap-southeast-1": {
-    "Best1000Mbps": "ami-4e0eb42d",
-    "Best200Mbps": "ami-5a0eb439",
-    "Best25Mbps": "ami-530eb430",
-    "Best5000Mbps": "ami-d70ab0b4",
-    "Better1000Mbps": "ami-800bb1e3",
-    "Better200Mbps": "ami-5c0eb43f",
-    "Better25Mbps": "ami-d608b2b5",
-    "Better5000Mbps": "ami-4e09b32d",
-    "Good1000Mbps": "ami-cb08b2a8",
-    "Good200Mbps": "ami-9708b2f4",
-    "Good25Mbps": "ami-dc08b2bf",
-    "Good5000Mbps": "ami-3a0eb459"
+    "Best": "ami-9b08b2f8",
+    "Better": "ami-f209b391",
+    "Good": "ami-5b09b338"
    },
    "ap-southeast-2": {
-    "Best1000Mbps": "ami-f4d8d397",
-    "Best200Mbps": "ami-18dfd47b",
-    "Best25Mbps": "ami-60d8d303",
-    "Best5000Mbps": "ami-f9d8d39a",
-    "Better1000Mbps": "ami-6ed8d30d",
-    "Better200Mbps": "ami-cdd9d2ae",
-    "Better25Mbps": "ami-ffd8d39c",
-    "Better5000Mbps": "ami-8eddd6ed",
-    "Good1000Mbps": "ami-e2ddd681",
-    "Good200Mbps": "ami-4bdfd428",
-    "Good25Mbps": "ami-05d8d366",
-    "Good5000Mbps": "ami-75d8d316"
+    "Best": "ami-67d8d304",
+    "Better": "ami-1fdfd47c",
+    "Good": "ami-10dfd473"
    },
    "ca-central-1": {
-    "Best1000Mbps": "ami-0894286c",
-    "Best200Mbps": "ami-0994286d",
-    "Best25Mbps": "ami-f895299c",
-    "Best5000Mbps": "ami-93902cf7",
-    "Better1000Mbps": "ami-43922e27",
-    "Better200Mbps": "ami-93912df7",
-    "Better25Mbps": "ami-fe95299a",
-    "Better5000Mbps": "ami-4d932f29",
-    "Good1000Mbps": "ami-a5922ec1",
-    "Good200Mbps": "ami-52932f36",
-    "Good25Mbps": "ami-318c3055",
-    "Good5000Mbps": "ami-0b94286f"
+    "Best": "ami-42922e26",
+    "Better": "ami-b2962ad6",
+    "Good": "ami-f98d319d"
    },
    "eu-central-1": {
-    "Best1000Mbps": "ami-db4f90b4",
-    "Best200Mbps": "ami-464d9229",
-    "Best25Mbps": "ami-c24e91ad",
-    "Best5000Mbps": "ami-87508fe8",
-    "Better1000Mbps": "ami-0c4f9063",
-    "Better200Mbps": "ami-f9518e96",
-    "Better25Mbps": "ami-444d922b",
-    "Better5000Mbps": "ami-904d92ff",
-    "Good1000Mbps": "ami-774d9218",
-    "Good200Mbps": "ami-d84f90b7",
-    "Good25Mbps": "ami-3f4d9250",
-    "Good5000Mbps": "ami-744d921b"
+    "Best": "ami-c74e91a8",
+    "Better": "ami-524d923d",
+    "Good": "ami-ed518e82"
    },
    "eu-west-1": {
-    "Best1000Mbps": "ami-87bbb6e1",
-    "Best200Mbps": "ami-30a2af56",
-    "Best25Mbps": "ami-1fbdb079",
-    "Best5000Mbps": "ami-adbcb1cb",
-    "Better1000Mbps": "ami-98bdb0fe",
-    "Better200Mbps": "ami-21a2af47",
-    "Better25Mbps": "ami-b6a3aed0",
-    "Better5000Mbps": "ami-ddbbb6bb",
-    "Good1000Mbps": "ami-c9b8b5af",
-    "Good200Mbps": "ami-0bb9b46d",
-    "Good25Mbps": "ami-d7bbb6b1",
-    "Good5000Mbps": "ami-1fb9b479"
+    "Best": "ami-e8a2af8e",
+    "Better": "ami-62a1ac04",
+    "Good": "ami-1bbfb27d"
    },
    "eu-west-2": {
-    "Best1000Mbps": "ami-91a0b4f5",
-    "Best200Mbps": "ami-dba5b1bf",
-    "Best25Mbps": "ami-81a5b1e5",
-    "Best5000Mbps": "ami-42a5b126",
-    "Better1000Mbps": "ami-97a0b4f3",
-    "Better200Mbps": "ami-96a0b4f2",
-    "Better25Mbps": "ami-d8a5b1bc",
-    "Better5000Mbps": "ami-07a6b263",
-    "Good1000Mbps": "ami-3fa7b35b",
-    "Good200Mbps": "ami-daa5b1be",
-    "Good25Mbps": "ami-92a0b4f6",
-    "Good5000Mbps": "ami-52a0b436"
+    "Best": "ami-dba7b3bf",
+    "Better": "ami-faa0b49e",
+    "Good": "ami-4da5b129"
    },
    "sa-east-1": {
-    "Best1000Mbps": "ami-a88ee2c4",
-    "Best200Mbps": "ami-0c8ce060",
-    "Best25Mbps": "ami-d58de1b9",
-    "Best5000Mbps": "ami-208ee24c",
-    "Better1000Mbps": "ami-418fe32d",
-    "Better200Mbps": "ami-dc8ee2b0",
-    "Better25Mbps": "ami-408fe32c",
-    "Better5000Mbps": "ami-4a8fe326",
-    "Good1000Mbps": "ami-c68fe3aa",
-    "Good200Mbps": "ami-0e8ce062",
-    "Good25Mbps": "ami-548fe338",
-    "Good5000Mbps": "ami-358ee259"
+    "Best": "ami-7d8ee211",
+    "Better": "ami-248de148",
+    "Good": "ami-2e8de142"
    },
    "us-east-1": {
-    "Best1000Mbps": "ami-52751b44",
-    "Best200Mbps": "ami-1a78160c",
-    "Best25Mbps": "ami-09721c1f",
-    "Best5000Mbps": "ami-20791736",
-    "Better1000Mbps": "ami-13791705",
-    "Better200Mbps": "ami-c77917d1",
-    "Better25Mbps": "ami-ea7b15fc",
-    "Better5000Mbps": "ami-e4751bf2",
-    "Good1000Mbps": "ami-bd701eab",
-    "Good200Mbps": "ami-4c741a5a",
-    "Good25Mbps": "ami-134a2405",
-    "Good5000Mbps": "ami-d0701ec6"
+    "Best": "ami-4c76185a",
+    "Better": "ami-46781650",
+    "Good": "ami-44751b52"
    },
    "us-east-2": {
-    "Best1000Mbps": "ami-6ce7c009",
-    "Best200Mbps": "ami-8be7c0ee",
-    "Best25Mbps": "ami-3c183f59",
-    "Best5000Mbps": "ami-d2e7c0b7",
-    "Better1000Mbps": "ami-c2193ea7",
-    "Better200Mbps": "ami-2ce6c149",
-    "Better25Mbps": "ami-46193e23",
-    "Better5000Mbps": "ami-3b183f5e",
-    "Good1000Mbps": "ami-29e6c14c",
-    "Good200Mbps": "ami-6de7c008",
-    "Good25Mbps": "ami-c0193ea5",
-    "Good5000Mbps": "ami-dfe7c0ba"
+    "Best": "ami-2be6c14e",
+    "Better": "ami-d31a3db6",
+    "Good": "ami-2ae6c14f"
    },
    "us-west-1": {
-    "Best1000Mbps": "ami-c76a4ca7",
-    "Best200Mbps": "ami-7a6c4a1a",
-    "Best25Mbps": "ami-c46f49a4",
-    "Best5000Mbps": "ami-9f6c4aff",
-    "Better1000Mbps": "ami-fa6c4a9a",
-    "Better200Mbps": "ami-e26d4b82",
-    "Better25Mbps": "ami-686a4c08",
-    "Better5000Mbps": "ami-da6f49ba",
-    "Good1000Mbps": "ami-486c4a28",
-    "Good200Mbps": "ami-fd6c4a9d",
-    "Good25Mbps": "ami-3f6d4b5f",
-    "Good5000Mbps": "ami-336d4b53"
+    "Best": "ami-e56d4b85",
+    "Better": "ami-766c4a16",
+    "Good": "ami-7d6a4c1d"
    },
    "us-west-2": {
-    "Best1000Mbps": "ami-66bd2606",
-    "Best200Mbps": "ami-7abd261a",
-    "Best25Mbps": "ami-6bbd260b",
-    "Best5000Mbps": "ami-c6bd26a6",
-    "Better1000Mbps": "ami-cfbd26af",
-    "Better200Mbps": "ami-91b328f1",
-    "Better25Mbps": "ami-24b12a44",
-    "Better5000Mbps": "ami-44b22924",
-    "Good1000Mbps": "ami-cbbc27ab",
-    "Good200Mbps": "ami-80b328e0",
-    "Good25Mbps": "ami-ebbc278b",
-    "Good5000Mbps": "ami-b2b229d2"
-   }
-  },
-  "WebserverRegionMap": {
-   "ap-northeast-1": {
-    "AMI": "ami-5b82503a"
-   },
-   "ap-northeast-2": {
-    "AMI": "ami-50e4343e"
-   },
-   "ap-south-1": {
-    "AMI": "ami-9390e1fc"
-   },
-   "ap-southeast-1": {
-    "AMI": "ami-2e67c24d"
-   },
-   "ap-southeast-2": {
-    "AMI": "ami-3af5c559"
-   },
-   "ca-central-1": {
-    "AMI": "ami-fda21f99"
-   },
-   "eu-central-1": {
-    "AMI": "ami-f8768b97"
-   },
-   "eu-west-1": {
-    "AMI": "ami-9c5f25ef"
-   },
-   "eu-west-2": {
-    "AMI": "ami-a51702c1"
-   },
-   "sa-east-1": {
-    "AMI": "ami-6a52c106"
-   },
-   "us-east-1": {
-    "AMI": "ami-93fa8284"
-   },
-   "us-east-2": {
-    "AMI": "ami-57e8cd32"
-   },
-   "us-west-1": {
-    "AMI": "ami-5f1b553f"
-   },
-   "us-west-2": {
-    "AMI": "ami-c1e13da1"
+    "Best": "ami-a4bc27c4",
+    "Better": "ami-e3be2583",
+    "Good": "ami-fdb3289d"
    }
   }
  },
@@ -297,9 +127,14 @@
     },
     {
      "Label": {
-      "default": ""
+      "default": "BIG-IQ LICENSING CONFIGURATION"
      },
-     "Parameters": []
+     "Parameters": [
+      "bigiqAddress",
+      "bigiqUsername",
+      "bigiqPasswordS3Arn",
+      "bigiqLicensePoolName"
+     ]
     }
    ],
    "ParameterLabels": {
@@ -398,12 +233,6 @@
   "Version": "2.5.0"
  },
  "Outputs": {
-  "Az1ApplicationSubnet": {
-   "Description": "Az1Application Subnet Id",
-   "Value": {
-    "Ref": "Az1ApplicationSubnet"
-   }
-  },
   "Bigip1ExternalInterfacePrivateIp": {
    "Description": "Internally routable IP of the public interface on BIG-IP",
    "Value": {
@@ -502,7 +331,7 @@
    "Description": "Internally routable IP of the public interface on BIG-IP",
    "Value": {
     "Fn::GetAtt": [
-     "Bigip2subnet1Az1Interface",
+     "Bigip2subnet1Az2Interface",
      "PrimaryPrivateIpAddress"
     ]
    }
@@ -551,52 +380,16 @@
     ]
    }
   },
-  "Bigip2subnet1Az1Interface": {
+  "Bigip2subnet1Az2Interface": {
    "Description": "External interface Id on BIG-IP",
    "Value": {
-    "Ref": "Bigip2subnet1Az1Interface"
+    "Ref": "Bigip2subnet1Az2Interface"
    }
   },
-  "Bigip2subnet1Az1SelfEipAddress": {
+  "Bigip2subnet1Az2SelfEipAddress": {
    "Description": "IP Address of the External interface attached to BIG-IP",
    "Value": {
-    "Ref": "Bigip2subnet1Az1SelfEipAddress"
-   }
-  },
-  "DnsServers": {
-   "Description": "DNS server for VPC",
-   "Value": "10.0.0.2"
-  },
-  "Vpc": {
-   "Description": "VPC ID",
-   "Value": {
-    "Ref": "Vpc"
-   }
-  },
-  "WebserverPublicIp": {
-   "Description": "Public IP for Webserver",
-   "Value": {
-    "Fn::GetAtt": [
-     "Webserver",
-     "PublicIp"
-    ]
-   }
-  },
-  "WebserverPublicUrl": {
-   "Description": "Public URL for the Webserver",
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "http://",
-      {
-       "Fn::GetAtt": [
-        "Webserver",
-        "PublicIp"
-       ]
-      }
-     ]
-    ]
+    "Ref": "Bigip2subnet1Az2SelfEipAddress"
    }
   },
   "availabilityZone1": {
@@ -616,65 +409,55 @@
      "AvailabilityZone"
     ]
    }
-  },
-  "bigipExternalSecurityGroup": {
-   "Description": "Public or External Security Group",
-   "Value": {
-    "Ref": "bigipExternalSecurityGroup"
-   }
-  },
-  "bigipManagementSecurityGroup": {
-   "Description": "Management Security Group",
-   "Value": {
-    "Ref": "bigipManagementSecurityGroup"
-   }
-  },
-  "managementSubnetAz1": {
-   "Description": "Az1Management Subnet Id",
-   "Value": {
-    "Ref": "managementSubnetAz1"
-   }
-  },
-  "subnet1Az1": {
-   "Description": "Az1External Subnet Id",
-   "Value": {
-    "Ref": "subnet1Az1"
-   }
-  },
-  "webserverPrivateIp": {
-   "Description": "Private IP for Webserver",
-   "Value": {
-    "Fn::GetAtt": [
-     "Webserver",
-     "PrivateIp"
-    ]
-   }
   }
  },
  "Parameters": {
+  "Vpc": {
+   "ConstraintDescription": "This must be an existing VPC within the working region.",
+   "Type": "AWS::EC2::VPC::Id"
+  },
   "application": {
    "Default": "f5app",
    "Description": "Name of the Application Tag",
    "Type": "String"
   },
-  "applicationInstanceType": {
-   "AllowedValues": [
-    "t1.micro",
-    "m3.medium",
-    "m3.xlarge",
-    "m2.xlarge",
-    "m3.2xlarge",
-    "c3.large",
-    "c3.xlarge"
-   ],
-   "ConstraintDescription": "Must be a valid EC2 instance type",
-   "Default": "t1.micro",
-   "Description": "Webserver EC2 instance type",
+  "bigipExternalSecurityGroup": {
+   "ConstraintDescription": "The security group ID must be within an existing VPC",
+   "Description": "Public or External Security Group",
+   "Type": "AWS::EC2::SecurityGroup::Id"
+  },
+  "bigipManagementSecurityGroup": {
+   "ConstraintDescription": "The security group ID must be within an existing VPC",
+   "Description": "BIG-IP Management Security Group",
+   "Type": "AWS::EC2::SecurityGroup::Id"
+  },
+  "bigiqAddress": {
+   "ConstraintDescription": "Verify IP address of the BIG-IQ device that contains the pool of licenses",
+   "Description": "IP address of the BIG-IQ device that contains the pool of BIG-IP licenses",
+   "MaxLength": "255",
+   "MinLength": "1",
    "Type": "String"
   },
-  "availabilityZone1": {
-   "Description": "Name of an Availability Zone in this Region",
-   "Type": "AWS::EC2::AvailabilityZone::Name"
+  "bigiqLicensePoolName": {
+   "ConstraintDescription": "Verify Name of BIG-IQ License Pool",
+   "Description": "Name of the pool on BIG-IQ that contains the BIG-IP licenses",
+   "MaxLength": "255",
+   "MinLength": "1",
+   "Type": "String"
+  },
+  "bigiqPasswordS3Arn": {
+   "ConstraintDescription": "Verify S3 ARN of BIG-IQ Password file",
+   "Description": "S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file",
+   "MaxLength": "255",
+   "MinLength": "1",
+   "Type": "String"
+  },
+  "bigiqUsername": {
+   "ConstraintDescription": "Verify BIG-IQ user with privileges to license BIG-IQ. Can be Admin, Device Manager, or Licensing Manager",
+   "Description": "BIG-IQ user with privileges to license BIG-IQ. Must be 'Admin', 'Device Manager', or 'Licensing Manager'",
+   "MaxLength": "255",
+   "MinLength": "1",
+   "Type": "String"
   },
   "costcenter": {
    "Default": "f5costcenter",
@@ -693,32 +476,49 @@
   },
   "imageName": {
    "AllowedValues": [
-    "Best25Mbps",
-    "Best200Mbps",
-    "Best1000Mbps",
-    "Best5000Mbps"
+    "Good",
+    "Better",
+    "Best"
    ],
    "ConstraintDescription": "Must be a valid F5 BIG-IP VE image type",
-   "Default": "Best1000Mbps",
+   "Default": "Best",
    "Description": "F5 BIG-IP Performance Type",
    "Type": "String"
   },
   "instanceType": {
    "AllowedValues": [
+    "t2.medium",
+    "t2.large",
+    "c3.2xlarge",
+    "c3.4xlarge",
+    "c3.8xlarge",
+    "c4.xlarge",
+    "c4.2xlarge",
+    "c4.4xlarge",
+    "c4.8xlarge",
+    "m3.xlarge",
     "m3.2xlarge",
+    "m4.large",
+    "m4.xlarge",
     "m4.2xlarge",
     "m4.4xlarge",
     "m4.10xlarge",
-    "c3.4xlarge",
-    "c3.8xlarge",
-    "c4.4xlarge",
-    "c4.8xlarge",
-    "cc2.8xlarge"
+    "m4.16xlarge"
    ],
    "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
    "Default": "m3.2xlarge",
-   "Description": "AWS instance type",
+   "Description": "Size of the F5 BIG-IP Virtual Instance",
    "Type": "String"
+  },
+  "managementSubnetAz1": {
+   "ConstraintDescription": "The subnet ID must be within an existing VPC",
+   "Description": "Management Subnet ID",
+   "Type": "AWS::EC2::Subnet::Id"
+  },
+  "managementSubnetAz2": {
+   "ConstraintDescription": "The subnet ID must be within an existing VPC",
+   "Description": "Management Subnet ID",
+   "Type": "AWS::EC2::Subnet::Id"
   },
   "ntpServer": {
    "Default": "0.pool.ntp.org",
@@ -743,6 +543,16 @@
    "Description": "Key pair for accessing the instance",
    "Type": "AWS::EC2::KeyPair::KeyName"
   },
+  "subnet1Az1": {
+   "ConstraintDescription": "The subnet ID must be within an existing VPC",
+   "Description": "Public or External subnet",
+   "Type": "AWS::EC2::Subnet::Id"
+  },
+  "subnet1Az2": {
+   "ConstraintDescription": "The subnet ID must be within an existing VPC",
+   "Description": "Public or External subnet",
+   "Type": "AWS::EC2::Subnet::Id"
+  },
   "timezone": {
    "Default": "UTC",
    "Description": "Olson timezone string from /usr/share/zoneinfo",
@@ -750,181 +560,6 @@
   }
  },
  "Resources": {
-  "ApplicationDefaultRoute": {
-   "DependsOn": "AttachGateway",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "InternetGateway"
-    },
-    "RouteTableId": {
-     "Ref": "ApplicationRouteTable"
-    }
-   },
-   "Type": "AWS::EC2::Route"
-  },
-  "ApplicationRouteTable": {
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "Application Route Table:",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Network",
-      "Value": "Application"
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::RouteTable"
-  },
-  "AttachGateway": {
-   "Properties": {
-    "InternetGatewayId": {
-     "Ref": "InternetGateway"
-    },
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::VPCGatewayAttachment"
-  },
-  "Az1ApplicationSubnet": {
-   "Properties": {
-    "AvailabilityZone": {
-     "Ref": "availabilityZone1"
-    },
-    "CidrBlock": "10.0.3.0/24",
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "Az",
-         "1",
-         " Application Subnet:",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::Subnet"
-  },
-  "Az1ApplicationSubnetRouteTableAssociation": {
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "ApplicationRouteTable"
-    },
-    "SubnetId": {
-     "Ref": "Az1ApplicationSubnet"
-    }
-   },
-   "Type": "AWS::EC2::SubnetRouteTableAssociation"
-  },
-  "Az1ExternalSubnetRouteTableAssociation": {
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "ExternalRouteTable"
-    },
-    "SubnetId": {
-     "Ref": "subnet1Az1"
-    }
-   },
-   "Type": "AWS::EC2::SubnetRouteTableAssociation"
-  },
-  "Az1ManagementSubnetRouteTableAssociation": {
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "ManagementRouteTable"
-    },
-    "SubnetId": {
-     "Ref": "managementSubnetAz1"
-    }
-   },
-   "Type": "AWS::EC2::SubnetRouteTableAssociation"
-  },
   "Bigip1Instance": {
    "Metadata": {
     "AWS::CloudFormation::Init": {
@@ -1011,7 +646,8 @@
              "PrimaryPrivateIpAddress"
             ]
            },
-           "/${GATEWAY_PREFIX},vlan:external,[allow:tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128] ",
+           "/${GATEWAY_PREFIX},vlan:external,[allow:tcp:4353 udp:1026] ",
+           "--local-only ",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
          ]
@@ -1043,7 +679,22 @@
            },
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
-           "--module asm:nominal",
+           "--license-pool --big-iq-host ",
+           {
+            "Ref": "bigiqAddress"
+           },
+           "--big-iq-user ",
+           {
+            "Ref": "bigiqUsername"
+           },
+           "--big-iq-password-uri ",
+           {
+            "Ref": "bigiqPasswordS3Arn"
+           },
+           "--license-pool-name ",
+           {
+            "Ref": "bigiqLicensePoolName"
+           },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
@@ -1133,30 +784,6 @@
           "",
           [
            "#!/bin/bash\n",
-           "POOLMEM='",
-           {
-            "Fn::GetAtt": [
-             "Webserver",
-             "PrivateIp"
-            ]
-           },
-           "'\n",
-           "POOLMEMPORT=80\n",
-           "APPNAME='demo-app-1'\n",
-           "VIRTUALSERVERPORT=80\n",
-           "EXTPRIVIP='",
-           {
-            "Fn::Select": [
-             "0",
-             {
-              "Fn::GetAtt": [
-               "Bigip1subnet1Az1Interface",
-               "SecondaryPrivateIpAddresses"
-              ]
-             }
-            ]
-           },
-           "'\n",
            "EXTIP='",
            {
             "Fn::GetAtt": [
@@ -1172,7 +799,7 @@
              "0",
              {
               "Fn::GetAtt": [
-               "Bigip2subnet1Az1Interface",
+               "Bigip2subnet1Az2Interface",
                "SecondaryPrivateIpAddresses"
               ]
              }
@@ -1195,16 +822,9 @@
            "tmsh+=(\n",
            "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
            "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
-           "\"tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\"\n",
-           "\"curl -s -f --retry 20 -o /home/admin/asm-policy-linux-high.xml http://cdn.f5.com/product/templates/utils/asm-policy-linux-high.xml\"\n",
-           "\"tmsh load asm policy file /home/admin/asm-policy-linux-high.xml\"\n",
-           "\"tmsh modify asm policy /Common/linux-high active\"\n",
-           "\"tmsh create ltm policy app-ltm-policy strategy first-match legacy\"\n",
-           "\"tmsh modify ltm policy app-ltm-policy controls add { asm }\"\n",
-           "\"tmsh modify ltm policy app-ltm-policy rules add { associate-asm-policy { actions replace-all-with { 0 { asm request enable policy /Common/linux-high } } } }\"\n",
-           "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp policies replace-all-with { app-ltm-policy { } } pool /Common/${APPNAME}-pool profiles replace-all-with { http { } tcp { } websecurity { } } security-log-profiles replace-all-with { \"Log illegal requests\" } source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled}\"\n",
-           "\"tmsh modify cm device-group datasync-global-dg devices modify { ${HOSTNAME} { set-sync-leader } }\"\n",
-           "\"tmsh run cm config-sync to-group datasync-global-dg\"\n",
+           "\"tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\"\n",
+           "\"tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.4.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\"\n",
+           "\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\"\n",
            "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
            "\"tmsh save /sys config\")\n",
            "for CMD in \"${tmsh[@]}\"\n",
@@ -1224,6 +844,12 @@
         "group": "root",
         "mode": "000755",
         "owner": "root"
+       },
+       "/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/v2.2.0/iApps/f5.aws_advanced_ha.v1.4.0rc1.tmpl"
        },
        "/config/cloud/aws/f5.service_discovery.tmpl": {
         "group": "root",
@@ -1316,7 +942,7 @@
            "#    exit",
            "#fi",
            "#echo loaded verifyHash",
-           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
+           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\" \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\")",
            "#for fileToVerify in \"${filesToVerify[@]}\"",
            "#do",
            "#    echo verifying \"$fileToVerify\"",
@@ -1492,14 +1118,12 @@
    "Type": "AWS::EC2::Instance"
   },
   "Bigip1ManagementEipAddress": {
-   "DependsOn": "AttachGateway",
    "Properties": {
     "Domain": "vpc"
    },
    "Type": "AWS::EC2::EIP"
   },
   "Bigip1ManagementEipAssociation": {
-   "DependsOn": "AttachGateway",
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
@@ -1528,14 +1152,12 @@
    "Type": "AWS::EC2::NetworkInterface"
   },
   "Bigip1VipEipAddress": {
-   "DependsOn": "AttachGateway",
    "Properties": {
     "Domain": "vpc"
    },
    "Type": "AWS::EC2::EIP"
   },
   "Bigip1VipEipAssociation": {
-   "DependsOn": "AttachGateway",
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
@@ -1576,14 +1198,12 @@
    "Type": "AWS::EC2::NetworkInterface"
   },
   "Bigip1subnet1Az1SelfEipAddress": {
-   "DependsOn": "AttachGateway",
    "Properties": {
     "Domain": "vpc"
    },
    "Type": "AWS::EC2::EIP"
   },
   "Bigip1subnet1Az1SelfEipAssociation": {
-   "DependsOn": "AttachGateway",
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
@@ -1686,11 +1306,12 @@
            "--self-ip name:external-self,address:",
            {
             "Fn::GetAtt": [
-             "Bigip2subnet1Az1Interface",
+             "Bigip2subnet1Az2Interface",
              "PrimaryPrivateIpAddress"
             ]
            },
-           "/${GATEWAY_PREFIX},vlan:external,[allow:tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128] ",
+           "/${GATEWAY_PREFIX},vlan:external,[allow:tcp:4353 udp:1026] ",
+           "--local-only ",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
          ]
@@ -1722,7 +1343,22 @@
            },
            "--dns ${NAME_SERVER}",
            "--module ltm:nominal",
-           "--module asm:nominal",
+           "--license-pool --big-iq-host ",
+           {
+            "Ref": "bigiqAddress"
+           },
+           "--big-iq-user ",
+           {
+            "Ref": "bigiqUsername"
+           },
+           "--big-iq-password-uri ",
+           {
+            "Ref": "bigiqPasswordS3Arn"
+           },
+           "--license-pool-name ",
+           {
+            "Ref": "bigiqLicensePoolName"
+           },
            "--ping",
            "&>> /var/log/cloudlibs-install.log < /dev/null &"
           ]
@@ -1770,7 +1406,7 @@
            "--config-sync-ip",
            {
             "Fn::GetAtt": [
-             "Bigip2subnet1Az1Interface",
+             "Bigip2subnet1Az2Interface",
              "PrimaryPrivateIpAddress"
             ]
            },
@@ -1813,34 +1449,10 @@
           "",
           [
            "#!/bin/bash\n",
-           "POOLMEM='",
-           {
-            "Fn::GetAtt": [
-             "Webserver",
-             "PrivateIp"
-            ]
-           },
-           "'\n",
-           "POOLMEMPORT=80\n",
-           "APPNAME='demo-app-1'\n",
-           "VIRTUALSERVERPORT=80\n",
-           "EXTPRIVIP='",
-           {
-            "Fn::Select": [
-             "0",
-             {
-              "Fn::GetAtt": [
-               "Bigip2subnet1Az1Interface",
-               "SecondaryPrivateIpAddresses"
-              ]
-             }
-            ]
-           },
-           "'\n",
            "EXTIP='",
            {
             "Fn::GetAtt": [
-             "Bigip2subnet1Az1Interface",
+             "Bigip2subnet1Az2Interface",
              "PrimaryPrivateIpAddress"
             ]
            },
@@ -1876,6 +1488,12 @@
         "group": "root",
         "mode": "000755",
         "owner": "root"
+       },
+       "/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/v2.2.0/iApps/f5.aws_advanced_ha.v1.4.0rc1.tmpl"
        },
        "/config/cloud/aws/f5.service_discovery.tmpl": {
         "group": "root",
@@ -1915,6 +1533,7 @@
            "date\n",
            "echo 'starting rm-password.sh'\n",
            "declare -a tmsh=()\n",
+           "tmsh+=(\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\")\n",
            "tmsh+=(\"rm /config/cloud/aws/.adminPassword\")\n",
            "for CMD in \"${tmsh[@]}\"\n",
            "do\n",
@@ -1968,7 +1587,7 @@
            "#    exit",
            "#fi",
            "#echo loaded verifyHash",
-           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
+           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\" \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\")",
            "#for fileToVerify in \"${filesToVerify[@]}\"",
            "#do",
            "#    echo verifying \"$fileToVerify\"",
@@ -2069,7 +1688,7 @@
       "Description": "Public or External Interface",
       "DeviceIndex": "1",
       "NetworkInterfaceId": {
-       "Ref": "Bigip2subnet1Az1Interface"
+       "Ref": "Bigip2subnet1Az2Interface"
       }
      }
     ],
@@ -2144,14 +1763,12 @@
    "Type": "AWS::EC2::Instance"
   },
   "Bigip2ManagementEipAddress": {
-   "DependsOn": "AttachGateway",
    "Properties": {
     "Domain": "vpc"
    },
    "Type": "AWS::EC2::EIP"
   },
   "Bigip2ManagementEipAssociation": {
-   "DependsOn": "AttachGateway",
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
@@ -2174,12 +1791,12 @@
      }
     ],
     "SubnetId": {
-     "Ref": "managementSubnetAz1"
+     "Ref": "managementSubnetAz2"
     }
    },
    "Type": "AWS::EC2::NetworkInterface"
   },
-  "Bigip2subnet1Az1Interface": {
+  "Bigip2subnet1Az2Interface": {
    "Properties": {
     "Description": "Public External Interface for the BIG-IP",
     "GroupSet": [
@@ -2189,655 +1806,42 @@
     ],
     "SecondaryPrivateIpAddressCount": "1",
     "SubnetId": {
-     "Ref": "subnet1Az1"
+     "Ref": "subnet1Az2"
     }
    },
    "Type": "AWS::EC2::NetworkInterface"
   },
-  "Bigip2subnet1Az1SelfEipAddress": {
-   "DependsOn": "AttachGateway",
+  "Bigip2subnet1Az2SelfEipAddress": {
    "Properties": {
     "Domain": "vpc"
    },
    "Type": "AWS::EC2::EIP"
   },
-  "Bigip2subnet1Az1SelfEipAssociation": {
-   "DependsOn": "AttachGateway",
+  "Bigip2subnet1Az2SelfEipAssociation": {
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
-      "Bigip2subnet1Az1SelfEipAddress",
+      "Bigip2subnet1Az2SelfEipAddress",
       "AllocationId"
      ]
     },
     "NetworkInterfaceId": {
-     "Ref": "Bigip2subnet1Az1Interface"
+     "Ref": "Bigip2subnet1Az2Interface"
     },
     "PrivateIpAddress": {
      "Fn::GetAtt": [
-      "Bigip2subnet1Az1Interface",
+      "Bigip2subnet1Az2Interface",
       "PrimaryPrivateIpAddress"
      ]
     }
    },
    "Type": "AWS::EC2::EIPAssociation"
   },
-  "ExternalDefaultRoute": {
-   "DependsOn": "AttachGateway",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "InternetGateway"
-    },
-    "RouteTableId": {
-     "Ref": "ExternalRouteTable"
-    }
-   },
-   "Type": "AWS::EC2::Route"
-  },
-  "ExternalRouteTable": {
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "External Route Table",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Network",
-      "Value": "External"
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::RouteTable"
-  },
-  "InternetGateway": {
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "InternetGateway: ",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ]
-   },
-   "Type": "AWS::EC2::InternetGateway"
-  },
-  "ManagementDefaultRoute": {
-   "DependsOn": "AttachGateway",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "InternetGateway"
-    },
-    "RouteTableId": {
-     "Ref": "ManagementRouteTable"
-    }
-   },
-   "Type": "AWS::EC2::Route"
-  },
-  "ManagementRouteTable": {
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "Management Route Table",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Network",
-      "Value": "Mgmt"
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::RouteTable"
-  },
   "S3Bucket": {
    "Properties": {
     "AccessControl": "BucketOwnerFullControl"
    },
    "Type": "AWS::S3::Bucket"
-  },
-  "Vpc": {
-   "Properties": {
-    "CidrBlock": "10.0.0.0/16",
-    "EnableDnsHostnames": "true",
-    "EnableDnsSupport": "true",
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "Vpc: ",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ]
-   },
-   "Type": "AWS::EC2::VPC"
-  },
-  "Webserver": {
-   "Properties": {
-    "ImageId": {
-     "Fn::FindInMap": [
-      "WebserverRegionMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "AMI"
-     ]
-    },
-    "InstanceType": {
-     "Ref": "applicationInstanceType"
-    },
-    "KeyName": {
-     "Ref": "sshKey"
-    },
-    "NetworkInterfaces": [
-     {
-      "AssociatePublicIpAddress": "true",
-      "Description": {
-       "Fn::Join": [
-        "",
-        [
-         {
-          "Ref": "AWS::StackName"
-         },
-         " Webserver Network Interface"
-        ]
-       ]
-      },
-      "DeviceIndex": "0",
-      "GroupSet": [
-       {
-        "Ref": "WebserverSecurityGroup"
-       }
-      ],
-      "SubnetId": {
-       "Ref": "Az1ApplicationSubnet"
-      }
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "Webserver:",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "\n",
-       [
-        "#cloud-config",
-        "runcmd:",
-        " - sudo docker run --name demo -p 80:80 -d f5devcentral/f5-demo-app:latest"
-       ]
-      ]
-     }
-    }
-   },
-   "Type": "AWS::EC2::Instance"
-  },
-  "WebserverSecurityGroup": {
-   "Properties": {
-    "GroupDescription": "Enable Access to Webserver",
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "22",
-      "IpProtocol": "tcp",
-      "ToPort": "22"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "80",
-      "IpProtocol": "tcp",
-      "ToPort": "80"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "443",
-      "IpProtocol": "tcp",
-      "ToPort": "443"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "-1",
-      "IpProtocol": "icmp",
-      "ToPort": "-1"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "Webserver Security Group:",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::SecurityGroup"
-  },
-  "bigipExternalSecurityGroup": {
-   "Properties": {
-    "GroupDescription": "Public or External interface rules",
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "80",
-      "IpProtocol": "tcp",
-      "ToPort": "80"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "443",
-      "IpProtocol": "tcp",
-      "ToPort": "443"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "4353",
-      "IpProtocol": "tcp",
-      "ToPort": "4353"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "1026",
-      "IpProtocol": "udp",
-      "ToPort": "1026"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "6123",
-      "IpProtocol": "tcp",
-      "ToPort": "6128"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "Bigip External Security Group:",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::SecurityGroup"
-  },
-  "bigipManagementSecurityGroup": {
-   "Properties": {
-    "GroupDescription": "BIG-IP Management UI rules",
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": {
-       "Ref": "restrictedSrcAddress"
-      },
-      "FromPort": "22",
-      "IpProtocol": "tcp",
-      "ToPort": "22"
-     },
-     {
-      "CidrIp": {
-       "Ref": "restrictedSrcAddress"
-      },
-      "FromPort": "443",
-      "IpProtocol": "tcp",
-      "ToPort": "443"
-     },
-     {
-      "CidrIp": {
-       "Ref": "restrictedSrcAddress"
-      },
-      "FromPort": "-1",
-      "IpProtocol": "icmp",
-      "ToPort": "-1"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "22",
-      "IpProtocol": "tcp",
-      "ToPort": "22"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "443",
-      "IpProtocol": "tcp",
-      "ToPort": "443"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "Bigip Management Security Group:",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::SecurityGroup"
   },
   "bigipServiceDiscoveryAccessRole": {
    "Properties": {
@@ -2880,6 +1884,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "bigiqPasswordS3Arn"
+         }
         },
         {
          "Action": [
@@ -2937,126 +1950,6 @@
     ]
    },
    "Type": "AWS::IAM::InstanceProfile"
-  },
-  "managementSubnetAz1": {
-   "Properties": {
-    "AvailabilityZone": {
-     "Ref": "availabilityZone1"
-    },
-    "CidrBlock": "10.0.0.0/24",
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "Az",
-         "1",
-         " Management Subnet:",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::Subnet"
-  },
-  "subnet1Az1": {
-   "Properties": {
-    "AvailabilityZone": {
-     "Ref": "availabilityZone1"
-    },
-    "CidrBlock": "10.0.1.0/24",
-    "Tags": [
-     {
-      "Key": "Application",
-      "Value": {
-       "Ref": "application"
-      }
-     },
-     {
-      "Key": "Costcenter",
-      "Value": {
-       "Ref": "costcenter"
-      }
-     },
-     {
-      "Key": "Environment",
-      "Value": {
-       "Ref": "environment"
-      }
-     },
-     {
-      "Key": "Group",
-      "Value": {
-       "Ref": "group"
-      }
-     },
-     {
-      "Key": "Name",
-      "Value": {
-       "Fn::Join": [
-        "",
-        [
-         "Az",
-         "1",
-         " External Subnet:",
-         {
-          "Ref": "AWS::StackName"
-         }
-        ]
-       ]
-      }
-     },
-     {
-      "Key": "Owner",
-      "Value": {
-       "Ref": "owner"
-      }
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc"
-    }
-   },
-   "Type": "AWS::EC2::Subnet"
   }
  }
 }

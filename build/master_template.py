@@ -129,7 +129,7 @@ def main():
     ### Template Version
     version = "2.5.0"
     ### Cloudlib Branch
-    branch_cloud = "ese-1120"
+    branch_cloud = "release-3.3.0"
     branch_aws = "develop"
     branch_cloud_iapps = "develop"
     ### Build verifyHash file from published verifyHash on gitswarm. Or github (public) if gitswarm (private) not available
@@ -1296,13 +1296,14 @@ def main():
                 license_bigiq = [
                                 "--license-pool --big-iq-host ",
                                 Ref(bigiqAddress),
-                                " --big-iq-user ",
+                                "--big-iq-user ",
                                 Ref(bigiqUsername),
-                                " --big-iq-password-uri ",
+                                "--big-iq-password-uri ",
                                 Ref(bigiqPasswordS3Arn),
-                                " --license-pool-name ",
+                                "--license-pool-name ",
                                 Ref(bigiqLicensePoolName),
                                 ]
+
             ## variable used to provision asm
             provision_asm = [
                                 "echo 'provisioning asm'\n",

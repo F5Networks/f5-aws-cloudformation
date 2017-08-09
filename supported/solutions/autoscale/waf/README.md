@@ -137,7 +137,9 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Notification Email | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
 | Virtual Service Port | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
 | Application Pool Member Port | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
-| Application Pool DNS | appInternalDnsName | Yes | DNS name for the application pool |
+| Application Pool DNS | appInternalDnsName | Yes | DNS name poolapp.example.com for the application pool.  This is not required if you are using the [Service Discovery feature](#service-discovery). |
+| Application Pool Tag Key | applicationPoolTagKey | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next. |
+| Application Pool Tag Value | applicationPoolTagValue | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with the key you specified and this value. |
 | [Web Application Firewall Policy Level](#security-blocking-levels-) | policyLevel | Yes | WAF Policy Level to protect the application (the default is high) |
 | Application | application | No | Application Tag (the default is f5app) |
 | Environment | environment | No | Environment Name Tag (the default is f5env) |
@@ -189,28 +191,21 @@ You can now configure the BIG-IP VE as applicable for your configuration.  See t
 ---
 
 ## Service Discovery
-Once you launch your BIG-IP instance using the CFT template, you can use the Service Discovery iApp template on the BIG-IP VE to automatically update pool members based on auto-scaled cloud application hosts.  In the iApp template, you enter information about your cloud environment, including the tag key and tag value for the pool members you want to include, and then the BIG-IP VE programmatically discovers (or removes) members using those tags.
+This CloudFormation template now includes service discovery, which means the BIG-IP VE automatically updates pool members based on auto-scaled cloud application hosts. In the template, you enter information about your cloud environment, specifically the tag key and tag value for the pool members you want to include in service discovery, and then the BIG-IP VE programmatically discovers (or removes) members using those tags.
 
 ### Tagging
-In AWS, you have two options for tagging objects that the Service Discovery iApp uses. Note that you select public or private IP addresses within the iApp.
+In AWS, you have two options for tagging objects that the service discovery feature uses. 
   - *Tag a VM resource*<br>
 The BIG-IP VE will discover the primary public or private IP addresses for the primary NIC configured for the tagged VM.
   - *Tag a NIC resource*<br>
 The BIG-IP VE will discover the primary public or private IP addresses for the tagged NIC.  Use this option if you want to use the secondary NIC of a VM in the pool.
 
 
-The iApp first looks for NIC resources with the tags you specify.  If it finds NICs with the proper tags, it does not look for VM resources. If it does not find NIC resources, it looks for VM resources with the proper tags. 
+The template first looks for NIC resources with the tags you specify. If it finds NICs with the proper tags, it does not look for VM resources. If it does not find NIC resources, it looks for VM resources with the proper tags.
 
 **Important**: Make sure the tags and IP addresses you use are unique. You should not tag multiple AWS nodes with the same key/tag combination if those nodes use the same IP address.
 
-To launch the template:
-  1.	From the BIG-IP VE web-based Configuration utility, on the Main tab, click **iApps > Application Services > Create**.
-  2.	In the **Name** field, give the template a unique name.
-  3.	From the **Template** list, select **f5.service_discovery**.  The template opens.
-  4.	Complete the template with information from your environment.  For assistance, from the Do you want to see inline help? question, select Yes, show inline help.
-  5.	When you are done, click the **Finished** button.
-  
-If you want to verify the integrity of the template, from the BIG-IP VE Configuration utility click **iApps > Templates**. In the template list, look for **f5.service_discovery**. In the Verification column, you should see **F5 Verified**.
+To use service discovery, in the **WAF Virtual Service Configuration** section of the template, in the **Application Pool Tag Key** and **Application Pool Tag Value** fields, enter your Key and Value information. If you leave these fields at the default, the template does not use service discovery, and uses the value you include for the Application Pool DNS.  Note that if you enter both the Application Pool DNS value and the Key/Value information, the template only uses the Key/Value fields, which enables service discovery. 
 
 ---
 

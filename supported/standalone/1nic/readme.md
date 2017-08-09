@@ -31,7 +31,7 @@ The following are prerequisites for the F5 single NIC CFT:
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
   -	If you are using the *Licensing using BIG-IQ* template only:
-    - This solution only supports only BIG-IQ versions 5.0 and 5.1.
+    - This solution only supports only BIG-IQ versions 5.0 - 5.3.
     - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
     - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only.  Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
 

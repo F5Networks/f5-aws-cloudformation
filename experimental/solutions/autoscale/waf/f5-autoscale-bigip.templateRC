@@ -166,7 +166,7 @@
         }
       }
     },
-  "Version": "v2.5.0RC"
+  "Version": "2.5.0RC"
   },
   "Parameters": {
     "deploymentName" : {

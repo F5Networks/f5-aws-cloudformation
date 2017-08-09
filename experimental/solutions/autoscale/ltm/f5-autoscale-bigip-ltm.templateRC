@@ -857,6 +857,7 @@
                       "    else\n",
                       "        tmsh create ltm node ${deploymentName} fqdn { name ${appInternalDnsName} }\n",
                       "        tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc7 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http11 } }}\n",
+                      "    fi\n",
                       "    ### END CUSTOM CONFIGURATION\n",
                       "    tmsh save /sys config\n",
                       "    f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},mgmtPort:${managementGuiPort}",

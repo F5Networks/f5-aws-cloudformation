@@ -322,7 +322,7 @@
     "appInternalDnsName": {
       "Description": "DNS name poolapp.example.com for the application pool.  This is not required if you are using the Service Discovery feature.",
       "Type": "String",
-      "Default": "poolapp.example.com"
+      "Default": "www.example.com"
     },
     "applicationPoolTagKey": {
       "Description": "This is used for the Service Discovery feature. If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next.",

@@ -129,7 +129,7 @@ def main():
     ### Template Version
     version = "2.5.0"
     ### Cloudlib Branch
-    branch_cloud = "v3.3.0"
+    branch_cloud = "v3.3.1"
     branch_aws = "v1.4.1"
     branch_cloud_iapps = "v1.0.2"
     ### Build verifyHash file from published verifyHash on gitswarm. Or github (public) if gitswarm (private) not available

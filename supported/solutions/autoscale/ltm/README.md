@@ -21,7 +21,9 @@ The following are prerequisites for this solution:
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
    - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP LTM auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
+   - The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
  - Access to BIG-IP images in the Amazon region within which you are working.
+ - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image. 
  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
  - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
@@ -113,35 +115,37 @@ If you are using the CLI, you must create a JSON-formatted parameter file in sam
 Once you have launched the CFT, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
 
 
-| Parameter | Required | Description |
-| --- | --- | --- |
-| deploymentName | Yes | Name the template uses to create BIG-IP and AWS object names |
-| vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
-| availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
-| subnets | Yes | Public or External Subnet for the Availability Zones |
-| restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
-| bigipElasticLoadBalancer | Yes | AWS Elastic Load Balancer group for the BIG-IP VEs |
-| sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
-| instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
-| throughput | Yes | The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
-| imageName | Yes | F5 Image Name to use (Good, Better, Best) |
-| adminUsername | Yes | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
-| managementGuiPort | Yes | Port of BIG-IP management Configuration utility (the default is 8443) |
-| timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
-| ntpServer | Yes | NTP server for this implementation (Default 0.pool.ntp.org) |
-| scalingMinSize | Yes | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack](#update) |
-| scalingMaxSize | Yes | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scaling Group (the default is 3) |
-| scaleDownBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
-| scaleUpBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
-| notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
-| virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
-| applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
-| appInternalDnsName | Yes | DNS name for the application pool |
-| application | No | Application Tag (the default is f5app) |
-| environment | No | Environment Name Tag (the default is f5env) |
-| group | No | Group Tag (the default is f5group) |
-| owner | No | Owner Tag (the default is f5owner) |
-| costcenter | No | Cost Center Tag (the default is f5costcenter) |
+| CFT Label | Parameter Name | Required | Description |
+| --- | --- | --- | --- |
+| Deployment Name | deploymentName | Yes | Name the template uses to create BIG-IP and AWS object names |
+| VPC ID | vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
+| Availabilty Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
+| Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
+| Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
+| Elastic Load Balancer for BIG-IP VEs | bigipElasticLoadBalancer | Yes | Name of the AWS Elastic Load Balancer group for the BIG-IP VEs |
+| SSH Key Name | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
+| AWS Instance Size | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
+| Maximum Throughput | throughput | Yes | The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
+| F5 Image Name | imageName | Yes | F5 Image Name to use (Good, Better, Best) |
+| BIG-IP Admin User for clustering | adminUsername | Yes | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
+| Management Port | managementGuiPort | Yes | Port of BIG-IP management Configuration utility (the default is 8443) |
+| Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
+| NTP Server | ntpServer | Yes | NTP server for this implementation (Default 0.pool.ntp.org) |
+| Minimum Instances | scalingMinSize | Yes | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack](#update) |
+| Maximum Instances | scalingMaxSize | Yes | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scale Group |
+| Scale Down Bytes Threshold | scaleDownBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
+| Scale Up Bytes Threshold | scaleUpBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
+| Notification Email | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
+| Virtual Service Port | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
+| Application Pool Member Port | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
+| Application Pool DNS | appInternalDnsName | Yes | DNS name poolapp.example.com for the application pool.  This is not required if you are using the [Service Discovery feature](#service-discovery). |
+| Application Pool Tag Key | applicationPoolTagKey | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next. |
+| Application Pool Tag Value | applicationPoolTagValue | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with the key you specified and this value. |
+| Application | application | No | Application Tag (the default is f5app) |
+| Environment | environment | No | Environment Name Tag (the default is f5env) |
+| Group | group | No | Group Tag (the default is f5group) |
+| Owner | owner | No | Owner Tag (the default is f5owner) |
+| Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter) |
 <br>
 
 
@@ -184,13 +188,32 @@ Once you have completed the template and the BIG-IP system instantiates *(estima
 
 You can now configure the BIG-IP VE as applicable for your configuration.  See the BIG-IP documentation for details (https://support.f5.com/csp/tech-documents)
 
+---
+
+## Service Discovery
+This CloudFormation template now includes service discovery, which means the BIG-IP VE automatically updates pool members based on auto-scaled cloud application hosts. In the template, you enter information about your cloud environment, specifically the tag key and tag value for the pool members you want to include in service discovery, and then the BIG-IP VE programmatically discovers (or removes) members using those tags.
+
+### Tagging
+In AWS, you have two options for tagging objects that the service discovery feature uses. 
+  - *Tag a VM resource*<br>
+The BIG-IP VE will discover the primary public or private IP addresses for the primary NIC configured for the tagged VM.
+  - *Tag a NIC resource*<br>
+The BIG-IP VE will discover the primary public or private IP addresses for the tagged NIC.  Use this option if you want to use the secondary NIC of a VM in the pool.
+
+
+The template first looks for NIC resources with the tags you specify. If it finds NICs with the proper tags, it does not look for VM resources. If it does not find NIC resources, it looks for VM resources with the proper tags.
+
+**Important**: Make sure the tags and IP addresses you use are unique. You should not tag multiple AWS nodes with the same key/tag combination if those nodes use the same IP address.
+
+To use service discovery, in the **WAF Virtual Service Configuration** section of the template, in the **Application Pool Tag Key** and **Application Pool Tag Value** fields, enter your Key and Value information. If you leave these fields at the default, the template does not use service discovery, and uses the value you include for the Application Pool DNS.  Note that if you enter both the Application Pool DNS value and the Key/Value information, the template only uses the Key/Value fields, which enables service discovery. 
 
 ---
 
 ### Help <a name="help"></a>
-Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support. You can modify the template itself if necessary, but if you modify any of the code outside of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
+Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565). You can modify the template itself if necessary, but if you modify any of the code outside of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
 
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
+
 
 ---
 ---

@@ -20,7 +20,8 @@ The following are prerequisites for this solution:
  - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdminstratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.  For details on permissions and all AWS configuration, see https://aws.amazon.com/documentation/.
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
-   - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP LTM auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration. You must first upload the SSL certificate to your AWS account for use in the classic ELB. For more information on uploading a certificate, see: http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html
+   - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP LTM auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration. You must first upload the SSL certificate to your AWS account for use in the classic ELB. For more information on uploading a certificate, see: http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html.
+   - The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library.
  - Access to BIG-IP images in the Amazon region within which you are working.
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image. 
  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for information.
@@ -117,8 +118,8 @@ You can now configure the BIG-IP VE as applicable for your configuration.  See t
 
 ---
 
-### Help <a name="help"></a>
-Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support. You can modify the template itself if necessary, but if you modify any of the code ***outside*** of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
+### Help
+Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565). You can modify the template itself if necessary, but if you modify any of the code ***outside*** of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
 
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 

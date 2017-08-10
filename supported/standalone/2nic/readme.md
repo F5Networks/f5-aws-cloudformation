@@ -22,19 +22,19 @@ See the **[Configuration Example](#configuration-example)** section for a config
 ## Prerequisites and configuration notes
 The following are prerequisites for the F5 2-NIC CFT:
   - An AWS VPC with three subnets: 
-    - Management subnet (called Public in the AWS UI)
-    - External subnet (called Private in the AWS UI) 
+    - Management subnet (called Public in the AWS UI). The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library.
+    - External subnet (called Private in the AWS UI). 
     - NAT instance and associated network interface for network translation.
-  - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
+  - Key pair for SSH access to BIG-IP VE (you can create or import in AWS). 
   - An AWS Security Group with the following inbound rules:
-    - Port 22 for SSH access to the BIG-IP VE
-    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility
-    - A port for accessing your applications via the BIG-IP virtual server
+    - Port 22 for SSH access to the BIG-IP VE. 
+    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility. 
+    - A port for accessing your applications via the BIG-IP virtual server. 
   - This solution uses the SSH key to enable access to the BIG-IP system. If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
   -	If you are using the *Licensing using BIG-IQ* template only:
-    - This solution only supports only BIG-IQ versions 5.0 and 5.1.
+    - This solution only supports only BIG-IQ versions 5.0 - 5.3.
     - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
     - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only.  Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
 
@@ -52,7 +52,7 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
 ### Help 
-Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support.
+Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from F5 Technical Support. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565).
  
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 
@@ -65,103 +65,47 @@ You have two options for launching this solution:
 The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
- - Hourly, which uses pay-as-you-go hourly billing
- - [BYOL](#byol-deploy-button) (bring your own license), which allows you to use an existing BIG-IP license.
- - [Using BIG-IQ for licensing](#big-iq-licensing-deploy-button), which allows you to launch the template using an existing BIG-IQ device with a pool of licenses to license the BIG-IP VE(s).
+ - Hourly, which uses pay-as-you-go hourly billing  
+   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-2nic-bigip.template">
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a> 
 
+ - BYOL (bring your own license), which allows you to use an existing BIG-IP license.   
+   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BYOL&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-2nic-bigip.template">
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
-#### Hourly deploy button
-
-Use this button to deploy the **hourly** template: 
-
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-2nic-bigip.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
-</a>
-<br>
+ - BIG-IQ for licensing, which allows you to launch the template using an existing BIG-IQ device with a pool of licenses to license the BIG-IP VE(s).  
+   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-bigiq-2nic-bigip.template">
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 <br>
 
-After clicking the Launch button, you must specify the following parameters.
+**Template Parameters**<br>
+After clicking the Launch button, you must specify the following parameters.  
+
+
+| CFT Label | Parameter Name | Required | Description |
+| --- | --- | --- | --- |
+| VPC | Vpc | Yes | Common VPC for the deployment. |
+| Management Subnet AZ1 | managementSubnetAz1 | Yes | Management subnet ID. |
+| Management Security Group | bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID. |
+| Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID. |
+| External Security Group | bigipExternalSecurityGroup | Yes | Public or External Security Group ID. |
+| Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
+| AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
+| License Key1 | licenseKey1 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey. |
+| SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance. |
+| Source Address(es) for SSH Access | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances. |
+| NTP Server | ntpServer | Yes | NTP server you want to use for this implementation (the default is 0.pool.ntp.org). | 
+| Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC). |
+| Application | application | No | Application Tag (the default is f5app). |
+| Environment | environment | No | Environment Name Tag (the default is f5env). |
+| Group | group | No | Group Tag (the default is f5group). |
+| Owner | owner | No | Owner Tag (the default is f5owner). |
+| Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
+| IP address of BIG-IQ | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ licensing only: IP address of the BIG-IQ device that contains the pool of licenses |
+| BIG-IQ user with Licensing Privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IQ. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
+| S3 ARN of the BIG-IQ Password File | bigiqPasswordS3ARN | Yes <br>(BIG-IQ) | BIG-IQ licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE |
+| BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses. |
 <br>
-
-| Parameter | Required | Description |
-| --- | --- | --- |
-| bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
-| bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
-| imageName | Yes | F5 BIG-IP Performance Type |
-| instanceType | Yes | BIG-IP virtual instance size in AWS |
-| managementSubnetAz1 | Yes | Management subnet ID |
-| restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
-| subnet1Az1 | Yes | Public or External subnet ID |
-| Vpc | Yes | Common VPC for the deployment |
-| ntpServer | Yes | NTP server you want to use for this implementation. The default is 0.pool.ntp.org. | 
-| timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
-| application | No | Application Tag (the default is f5app) |
-| environment | No | Environment Name Tag (the default is f5env) |
-| group | No | Group Tag (the default is f5group) |
-| owner | No | Owner Tag (the default is f5owner) |
-| costcenter | No | Cost Center Tag (the default is f5costcenter) |
-
-<br>
-
-
-#### BYOL deploy button
-
-Use this button to deploy the **BYOL** template: 
-
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BYOL&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-2nic-bigip.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
-</a>
-<br>
-After clicking the Launch button, you must specify the following parameters.
-
-| Parameter | Required | Description |
-| --- | --- | --- |
-| bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
-| bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
-| imageName | Yes | F5 BIG-IP Performance Type |
-| instanceType | Yes | BIG-IP virtual instance type |
-| licenseKey1 | Yes | Type or paste your F5 BYOL regkey here |
-| managementSubnetAz1 | Yes | Management subnet ID |
-| restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
-| subnet1Az1 | Yes | Public or External subnet ID |
-| Vpc | Yes | Common VPC for the deployment |
-| ntpServer | Yes | NTP server you want to use for this implementation. The default is 0.pool.ntp.org. | 
-| timezone | Yes | Olson timezone string from /usr/share/zoneinfo.  The default is UTC. |
-| application | No | Application Tag (the default is f5app) |
-| environment | No | Environment Name Tag (the default is f5env) |
-| group | No | Group Tag (the default is f5group) |
-| owner | No | Owner Tag (the default is f5owner) |
-| costcenter | No | Cost Center Tag (the default is f5costcenter) |
-
-#### BIG-IQ Licensing Deploy button
-If you have an existing BIG-IQ device with a pool of BIG-IP licenses, you can use this button to deploy the **BIG-IQ** template: 
- 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-2nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-bigiq-2nic-bigip.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/>
-</a>
-<br>
-<br>
-
-**Parameters for BIG-IQ licensing**<br>
-After clicking the Launch button, you must specify the following parameters.
-
-| Parameter | Required | Description |
-| --- | --- | --- |
-| bigipExternalSecurityGroup | Yes | Public or External Security Group ID |
-| bigiqAddress | Yes | IP address of the BIG-IQ device that contains the pool of licenses |
-| bigiqUsername | Yes | BIG-IQ user with privileges to license BIG-IQ. Can be **admin** or **manager**. |
-| bigiqPasswordS3ARN | Yes | S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE |
-| bigiqLicensePoolName | Yes | Name of the BIG-IQ License Pool |
-| imageName | Yes | F5 BIG-IP Performance Type |
-| instanceType | Yes | BIG-IP virtual instance type |
-| managementGuiPort | Yes | Port to use for the management port GUI |
-| restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances |
-| sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
-| subnet1Az1 | Yes | Public or External subnet ID |
-| Vpc | Yes | Common VPC for the deployment |
-
 
 ---
 ### Installing the template using the AWS CLI (aws-cli/1.11.76)
@@ -311,7 +255,7 @@ The following is a simple configuration diagram for this 2-NIC deployment. In th
 ![2-NIC configuration example](images/aws-standalone-2nic.png)
 
 ### Documentation
-The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also describes the configuration in more detail.
+The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  You can also see [this video](https://www.youtube.com/watch?v=509OS3x-k1A) on manually deploying the BIG-IP VE in AWS.
 
 ## Security Details
 This section has the entire code snippets for each of the lines you should ensure are present in your template file if you want to verify the integrity of the helper code in the template.

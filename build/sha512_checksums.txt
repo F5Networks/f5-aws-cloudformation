@@ -11,7 +11,7 @@
 **Cluster: - Same Azs2 NIC - HOURLY**(f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template)
 '6fcfebb1e351b66f839ef3691b8b38ff272b32c9e3d2f1d3d8e6c89527b00ebd220323dee2c8fd04c277dd62772fb493ac99cfa6d5f03624c0db533a4bd849bc'
 **Auto Scale LTM:**(f5-autoscale-bigip-ltm.template)
-'d7e45abada5e5d0857462903c160fbb158c87d9aa7059ed7b53c42df5a2f5b5fd7953e12d2bd80a8720ab7035855f2316840f35b9993a08b6b4a0ca0dc1d5612'
+'533a3d2589b785819ee8e51d411045def68edf3e5f9a8d121d16684b3e1ee5f7fb97d22c55e82ab243ce1194627e8220942d697441e13d43b878accf473813df'
 **Auto Scale LTM: - AWS Marketplace - 1000Mbps**(f5-autoscale-bigip-ltm-1000-Mbps.template)
 '83f7fd2e56523f75caa0df0eb57ed73fd385dbe04a65c40c129323e92cc26f2cb0c0ac7ec4a25204b1568bd136dc49ab4e4ed304aa836720f41bcd80b4d73ed3'
 **Auto Scale LTM: - AWS Marketplace - 200Mbps**(f5-autoscale-bigip-ltm-200-Mbps.template)
@@ -21,7 +21,7 @@
 **Auto Scale LTM:**(f5-autoscale-bigip-ltm-5000-Mbps.template)
 '9dcb80c9fb5ba3e1162b46072cff5b977c7275dbd13a063d4b44d662eeb4c458357d692ded8b50ebb288869b19351f0d20732313d1bebb9bcb3c7b22afa6d162'
 **Auto Scale WAF:**(f5-autoscale-bigip.template)
-'0f80e751fea98500a2d5aa5068476ee81872228cca900552f17b0901283863079666f93282fe82d73da44f81c2a04953ec4c76b553363fe909e6e1d5fdc48724'
+'29f3bc99915bb0e2646ce61ba79f36b96bb5020f0ce9ce9b453a4f6a782ef8405c2450519bd834f2e82d84a12685014aa4d41c43e0d0e503ba4f7382f062415c'
 **Auto Scale WAF: - AWS Marketplace - 1000Mbps**(f5-autoscale-bigip-1000-Mbps.template)
 '9fb5557fdb4a680c30817398bd31251234633f33d37ee3e7d47c7423df1aab638cd29a82528272b584ccccba65a1ff6ad3e8512038fbe25b1e9201e3e9cc458d'
 **Auto Scale WAF: - AWS Marketplace - 200Mbps**(f5-autoscale-bigip-200-Mbps.template)

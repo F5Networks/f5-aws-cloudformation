@@ -21,6 +21,7 @@ The following are prerequisites for this solution:
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
    - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
+   - The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library.
  - Access to **Best** BIG-IP images in the Amazon region within which you are working.
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image. 
  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
@@ -28,9 +29,9 @@ The following are prerequisites for this solution:
  
  
 ## Quick Start for launching the template
-This Readme file describes launching from the AWS Marketplace.
+This Readme file describes launching from the AWS Marketplace. There are three different BIG-IP VE instances you can choose from: [1Gbps](https://aws.amazon.com/marketplace/pp/B071GSJP9P), [200Mbps](https://aws.amazon.com/marketplace/pp/B072N6T653), or [25Mbps](https://aws.amazon.com/marketplace/pp/B071WY19JP).
 
-From the Marketplace: 
+From the Marketplace for the instance you want to use: 
 - From the **For Region** list, select your Region. 
 - From the **Delivery Methods** list, select **Auto Scale via CFT**
 - Click **Continue**
@@ -117,8 +118,8 @@ You can now configure the BIG-IP VE as applicable for your configuration.  See t
 
 ---
 
-### Help <a name="help"></a>
-Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from F5 Technical Support. You can modify the template itself if necessary, but if you modify any of the code ***outside*** of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
+### Help
+Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565). You can modify the template itself if necessary, but if you modify any of the code ***outside*** of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
 
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 
@@ -188,7 +189,7 @@ The CloudFormation Template creates and leverages several AWS resources to suppo
 ---
 
 ### Restoring or upgrading the solution <a name="update"></a>
-Certain elements of this deployment can be updated with the CloudFormation stack itself. This is referred to as *Updating the Stack*. For instance, anything that causes the Auto Scale Launch Configuration to update, like changing the AMI IDs (to upgrade from one BIG-IP version to another), instance sizes, scaling thresholds, and many others, requires updating the stack. 
+Certain elements of this deployment can be updated with the CloudFormation stack itself. This is referred to as *Updating the Stack*. For instance, anything that causes the Auto Scale Launch Configuration to update, like changing the AMI IDs (to upgrade from one BIG-IP version to another), instance sizes, scaling thresholds, and many others, requires updating the stack. [This video](https://www.youtube.com/watch?v=nKxF6thckNQ) shows how to perform the following procedure.
  
 Clustering is only done within a Launch Configuration ID basis, so any changes that result in a new Launch Configuration ID require the following procedure.
  

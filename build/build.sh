@@ -34,8 +34,9 @@ python master_template.py -s existing -n 2 -l byol > ../supported/standalone/2ni
 python master_template.py -s existing -n 3 -l byol > ../supported/standalone/3nic/f5-existing-stack-byol-3nic-bigip.template
 python master_template.py -s existing -n 1 -l bigiq > ../supported/standalone/1nic/f5-existing-stack-bigiq-1nic-bigip.template
 python master_template.py -s existing -n 2 -l bigiq > ../supported/standalone/2nic/f5-existing-stack-bigiq-2nic-bigip.template
+python master_template.py -s existing -n 3 -l bigiq > ../supported/standalone/3nic/f5-existing-stack-bigiq-3nic-bigip.template
+
 ## Experimental
-python master_template.py -s existing -n 3 -l bigiq > ../experimental/reference/3nic/bigiq/f5-existing-stack-bigiq-3nic-bigip.template
 python master_template.py -s existing -n 1 -l hourly -c waf > ../experimental/reference/1nic/waf/f5-existing-stack-hourly-1nic-bigip-w-waf.template
 python master_template.py -s existing -n 1 -l byol -c waf > ../experimental/reference/1nic/waf/f5-existing-stack-byol-1nic-bigip-w-waf.template
 python master_template.py -s existing -n 1 -l bigiq -c waf > ../experimental/reference/1nic/bigiq/f5-existing-stack-bigiq-1nic-bigip-w-waf.template
@@ -61,6 +62,7 @@ python master_template.py -s existing -n 2 -l byol -H same-az > ../supported/clu
 python master_template.py -s existing -n 2 -l bigiq -H same-az > ../supported/cluster/2nic/same-az-ha/f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template 
 python master_template.py -s existing -n 2 -l hourly -H across-az > ../supported/cluster/2nic/across-az-ha/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template
 python master_template.py -s existing -n 2 -l byol -H across-az > ../supported/cluster/2nic/across-az-ha/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template
+python master_template.py -s existing -n 2 -l bigiq -H across-az > ../supported/cluster/2nic/across-az-ha/f5-existing-stack-across-az-cluster-bigiq-2nic-bigip.template
 
 ## Experimental
 python master_template.py -s existing -n 2 -l hourly -c waf -H same-az > ../experimental/reference/2nic/waf/f5-existing-stack-same-az-cluster-hourly-2nic-bigip-w-waf.template
@@ -68,7 +70,6 @@ python master_template.py -s existing -n 2 -l byol -c waf -H same-az > ../experi
 python master_template.py -s existing -n 2 -l bigiq -c waf -H same-az > ../experimental/reference/2nic/bigiq/f5-existing-stack-same-az-cluster-bigiq-2nic-bigip-w-waf.template
 python master_template.py -s existing -n 2 -l hourly -c waf -H across-az > ../experimental/reference/2nic/waf/f5-existing-stack-across-az-cluster-hourly-2nic-bigip-w-waf.template
 python master_template.py -s existing -n 2 -l byol -c waf -H across-az > ../experimental/reference/2nic/waf/f5-existing-stack-across-az-cluster-byol-2nic-bigip-w-waf.template
-python master_template.py -s existing -n 2 -l bigiq -H across-az > ../experimental/reference/2nic/bigiq/f5-existing-stack-across-az-cluster-bigiq-2nic-bigip.template
 python master_template.py -s existing -n 2 -l bigiq -c waf -H across-az > ../experimental/reference/2nic/bigiq/f5-existing-stack-across-az-cluster-bigiq-2nic-bigip-w-waf.template
 
 ## Experimental - learning/POC

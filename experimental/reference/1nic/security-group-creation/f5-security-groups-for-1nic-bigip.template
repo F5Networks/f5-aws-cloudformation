@@ -1,6 +1,6 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.4.0: AWS CloudFormation Template for creating security groups for a 1NIC BIG-IP",
+ "Description": "Template Version 2.5.0: AWS CloudFormation Template for creating security groups for a 1NIC BIG-IP",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -84,16 +84,16 @@
      "default": "Management Security Group"
     },
     "bigiqAddress": {
-     "default": "IP address of the BIG-IQ device that contains the pool of licenses"
+     "default": "IP address of BIG-IQ"
     },
     "bigiqLicensePoolName": {
-     "default": "Name of BIG-IQ License Pool"
+     "default": "BIG-IQ License Pool Name"
     },
-    "bigiqPasswordS3Uri": {
-     "default": "S3 URI (s3://bucketname/objectname) of BIG-IQ Password file"
+    "bigiqPasswordS3Arn": {
+     "default": "S3 ARN of the BIG-IQ Password File"
     },
     "bigiqUsername": {
-     "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
+     "default": "BIG-IQ user with licensing priviledges"
     },
     "costcenter": {
      "default": "Cost Center"
@@ -105,19 +105,19 @@
      "default": "Group"
     },
     "imageName": {
-     "default": "Image Name"
+     "default": "BIG-IP Image Name"
     },
     "instanceType": {
      "default": "AWS Instance Size"
     },
     "licenseKey1": {
-     "default": "License Key1"
+     "default": "License Key 1"
     },
     "licenseKey2": {
-     "default": "License Key2"
+     "default": "License Key 2"
     },
     "managementGuiPort": {
-     "default": "Management Port"
+     "default": "BIG-IP Management Port"
     },
     "managementSubnetAz1": {
      "default": "Management Subnet AZ1"
@@ -138,20 +138,20 @@
      "default": "SSH Key"
     },
     "subnet1Az1": {
-     "default": "Subnet1 AZ1"
+     "default": "Subnet1 in AZ1"
     },
     "subnet1Az2": {
-     "default": "Subnet1 AZ2"
+     "default": "Subnet1 in AZ2"
     },
     "subnet2Az1": {
-     "default": "Subnet2 AZ1"
+     "default": "Subnet2 in AZ1"
     },
     "timezone": {
      "default": "Timezone (Olson)"
     }
    }
   },
-  "Version": "2.4.0"
+  "Version": "2.5.0"
  },
  "Outputs": {
   "bigipExternalSecurityGroup": {

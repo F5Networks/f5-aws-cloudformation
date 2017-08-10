@@ -1,6 +1,6 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.4.2: AWS CloudFormation Template for creating a full stack with a 1NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.5.0: AWS CloudFormation Template for creating a full stack with a 1NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -207,16 +207,16 @@
      "default": "Management Security Group"
     },
     "bigiqAddress": {
-     "default": "IP address of the BIG-IQ device that contains the pool of licenses"
+     "default": "IP address of BIG-IQ"
     },
     "bigiqLicensePoolName": {
-     "default": "Name of BIG-IQ License Pool"
+     "default": "BIG-IQ License Pool Name"
     },
     "bigiqPasswordS3Arn": {
-     "default": "S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of BIG-IQ Password file"
+     "default": "S3 ARN of the BIG-IQ Password File"
     },
     "bigiqUsername": {
-     "default": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager"
+     "default": "BIG-IQ user with licensing priviledges"
     },
     "costcenter": {
      "default": "Cost Center"
@@ -228,19 +228,19 @@
      "default": "Group"
     },
     "imageName": {
-     "default": "Image Name"
+     "default": "BIG-IP Image Name"
     },
     "instanceType": {
      "default": "AWS Instance Size"
     },
     "licenseKey1": {
-     "default": "License Key1"
+     "default": "License Key 1"
     },
     "licenseKey2": {
-     "default": "License Key2"
+     "default": "License Key 2"
     },
     "managementGuiPort": {
-     "default": "Management Port"
+     "default": "BIG-IP Management Port"
     },
     "managementSubnetAz1": {
      "default": "Management Subnet AZ1"
@@ -261,20 +261,20 @@
      "default": "SSH Key"
     },
     "subnet1Az1": {
-     "default": "Subnet1 AZ1"
+     "default": "Subnet1 in AZ1"
     },
     "subnet1Az2": {
-     "default": "Subnet1 AZ2"
+     "default": "Subnet1 in AZ2"
     },
     "subnet2Az1": {
-     "default": "Subnet2 AZ1"
+     "default": "Subnet2 in AZ1"
     },
     "timezone": {
      "default": "Timezone (Olson)"
     }
    }
   },
-  "Version": "2.4.2"
+  "Version": "2.5.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -443,28 +443,28 @@
   },
   "bigiqAddress": {
    "ConstraintDescription": "Verify IP address of the BIG-IQ device that contains the pool of licenses",
-   "Description": "IP address of the BIG-IQ device that contains the pool of licenses",
+   "Description": "IP address of the BIG-IQ device that contains the pool of BIG-IP licenses",
    "MaxLength": "255",
    "MinLength": "1",
    "Type": "String"
   },
   "bigiqLicensePoolName": {
    "ConstraintDescription": "Verify Name of BIG-IQ License Pool",
-   "Description": "Name of BIG-IQ License Pool",
+   "Description": "Name of the pool on BIG-IQ that contains the BIG-IP licenses",
    "MaxLength": "255",
    "MinLength": "1",
    "Type": "String"
   },
   "bigiqPasswordS3Arn": {
    "ConstraintDescription": "Verify S3 ARN of BIG-IQ Password file",
-   "Description": "S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of BIG-IQ Password file",
+   "Description": "S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file",
    "MaxLength": "255",
    "MinLength": "1",
    "Type": "String"
   },
   "bigiqUsername": {
-   "ConstraintDescription": "Verify BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
-   "Description": "BIG-IQ user with privileges to license BIG-IQ. Can be admin or manager",
+   "ConstraintDescription": "Verify BIG-IQ user with privileges to license BIG-IQ. Can be Admin, Device Manager, or Licensing Manager",
+   "Description": "BIG-IQ user with privileges to license BIG-IQ. Must be 'Admin', 'Device Manager', or 'Licensing Manager'",
    "MaxLength": "255",
    "MinLength": "1",
    "Type": "String"
@@ -739,31 +739,13 @@
          ]
         }
        },
-       "003-1nic-setup": {
-        "command": {
-         "Fn::Join": [
-          " ",
-          [
-           "nohup /config/waitThenRun.sh",
-           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
-           "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh",
-           "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws",
-           "--log-level debug",
-           "-o /var/log/1nicSetup.log",
-           "--signal 1_NIC_SETUP_DONE",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
-          ]
-         ]
-        }
-       },
-       "004-generate-password": {
+       "003-generate-password": {
         "command": {
          "Fn::Join": [
           "",
           [
            "nohup /config/waitThenRun.sh",
            " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
-           " --wait-for 1_NIC_SETUP_DONE",
            " --signal PASSWORD_CREATED",
            " --file f5-rest-node",
            " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
@@ -775,7 +757,7 @@
          ]
         }
        },
-       "005-create-admin-user": {
+       "004-create-admin-user": {
         "command": {
          "Fn::Join": [
           "",
@@ -796,6 +778,24 @@
          ]
         }
        },
+       "005-network-config": {
+        "command": {
+         "Fn::Join": [
+          "",
+          [
+           "nohup /config/waitThenRun.sh ",
+           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js ",
+           "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh ",
+           "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws ",
+           "--log-level debug ",
+           "-o /var/log/1nicSetup.log ",
+           "--wait-for ADMIN_CREATED ",
+           "--signal NETWORK_CONFIG_DONE ",
+           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+          ]
+         ]
+        }
+       },
        "006-onboard-BIG-IP": {
         "command": {
          "Fn::Join": [
@@ -809,7 +809,7 @@
            {
             "Ref": "managementGuiPort"
            },
-           "--wait-for ADMIN_CREATED",
+           "--wait-for NETWORK_CONFIG_DONE",
            "-o /var/log/onboard.log",
            "--log-level debug",
            "--no-reboot",
@@ -831,15 +831,15 @@
            {
             "Ref": "bigiqAddress"
            },
-           " --big-iq-user ",
+           "--big-iq-user ",
            {
             "Ref": "bigiqUsername"
            },
-           " --big-iq-password-uri ",
+           "--big-iq-password-uri ",
            {
             "Ref": "bigiqPasswordS3Arn"
            },
-           " --license-pool-name ",
+           "--license-pool-name ",
            {
             "Ref": "bigiqLicensePoolName"
            },
@@ -900,14 +900,6 @@
           "",
           [
            "#!/bin/bash\n",
-           "PROGNAME=$(basename $0)\n",
-           "function error_exit {\n",
-           "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
-           "exit 1\n",
-           "}\n",
-           "declare -a tmsh=()\n",
-           "date\n",
-           "echo 'starting custom-config.sh'\n",
            "POOLMEM='",
            {
             "Fn::GetAtt": [
@@ -919,6 +911,27 @@
            "POOLMEMPORT=80\n",
            "APPNAME='demo-app-1'\n",
            "VIRTUALSERVERPORT=80\n",
+           "EXTPRIVIP='",
+           {
+            "Fn::Select": [
+             "0",
+             {
+              "Fn::GetAtt": [
+               "Bigip1subnet1Az1Interface",
+               "SecondaryPrivateIpAddresses"
+              ]
+             }
+            ]
+           },
+           "'\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
+           "declare -a tmsh=()\n",
+           "date\n",
+           "echo 'starting custom-config.sh'\n",
            "tmsh+=(\n",
            "\"tmsh create ltm pool ${APPNAME}-pool members add { ${POOLMEM}:${POOLMEMPORT} } monitor http\"\n",
            "\"tmsh create ltm policy uri-routing-policy controls add { forwarding } requires add { http } strategy first-match legacy\"\n",
@@ -950,7 +963,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v1.0.1/f5-service-discovery/f5.service_discovery.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v1.0.2/f5-service-discovery/f5.service_discovery.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
@@ -1005,13 +1018,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.4.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.4.1/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.2.0/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.3.1/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -1062,7 +1075,7 @@
         "owner": "root"
        },
        "/config/verifyHash": {
-        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 8103cc640a41ad327fe103463e262ba5f700df51f9b8304723b2cf33bfd5c80e4a1bb7869f7b466dddd6f6e9351286e0024c0b212d29dc55b849d15558f66369\n            set hashes(f5-cloud-libs-aws.tar.gz) 6689f940fa4863dda289a16b73b64284efc5f88a7aad3e6f574d9928704ef587728765bbfc39454172cd9624f31096f5335432ec7eb3bff67aaf1313b5d6553d\n            set hashes(f5-cloud-libs-azure.tar.gz) a4ff4a9af058ce6058159531fd7bca07eb8808cdd1b1e13de0e1324ec7e4692211991ecaa58dc36021c6c88c7783837d480584393753c3dfc2fddf623781e3a9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 4c125f7cbc4d701cf50f03de479ebe99a08c2b2c3fa6aae3e229eb3f0bba98bb513d630368229c98e7c5c907e6a3168ece2f8f576267514bad4f6730ea14d454\n            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a\n            set hashes(f5.service_discovery.tmpl) 40664fe0d8d822378256949e60167a06df0b1f36d6fda1a74d9e704728d48d281ccd703f779cae4b2d029cd2c690d7774fdc0bb29de9592bffabc51638c88ff1\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature YMSDDRfh5B1TW+mZA8lacERGCa56OnIwUVaVNk5fPK0lSsIXmrM7+5YxErnxNrfAm/RZXwB4YmzafdAPD/UajXITuWxiOH5HLeFHeuXNc6MIT57YyB2nwW4gRhsI5ywI1p+L8N5wlZEn9PHIDRQg6Jwd5NaG8vBT2nvRzV6NBdsEeFnMl4MSW42evxdeRAu/HLDjJo4PgpsC0Wnm7NA0LQg8pm7vLLCKoMnCBTW9hCC2womHmup6uebp8XTRrsk/pA1f7zWHmXwOEdIGpqiXDXH7wSFvAcm+xQGPkJWF+vbJNFWbE0/PKoqu5eVE8gk3Vrgt8jV/wbmNFnbZ6635rg==\n    signing-key /Common/f5-irule\n}",
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 1e7b5cb66e140bb4c5650b225612905e17bd167556b0b4366efce2d9138f8be86eec51c09eb96c3ffc2d25ba8965bae840e9d43b7c42dab08cdfad4d3d152509\n            set hashes(f5-cloud-libs-aws.tar.gz) 549aa436be806c80640f8dce570128fdf84613bf0688392e018639412c63818d25f26635b0aaf23e8cdf60b0d331de9218ed51a9cdfbf33db6e683727169a727\n            set hashes(f5-cloud-libs-azure.tar.gz) a4ff4a9af058ce6058159531fd7bca07eb8808cdd1b1e13de0e1324ec7e4692211991ecaa58dc36021c6c88c7783837d480584393753c3dfc2fddf623781e3a9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 4c125f7cbc4d701cf50f03de479ebe99a08c2b2c3fa6aae3e229eb3f0bba98bb513d630368229c98e7c5c907e6a3168ece2f8f576267514bad4f6730ea14d454\n            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a\n            set hashes(f5.service_discovery.tmpl) 8d7491accdb1818f09353cd5b03d317ccd87e6801ac25b47aa49984a0f4ca313e8f3ecc1c9c904ce01c89dfeeacd3487655c8d45cc43f83c2ccd54d71f4f7d5f\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature AFE2XgLHOiehaIUPzg72a5DrSmRciYP6BwVBIjNvwFiOdQqP+R4SBDzvrWbOiD+k97y8LthVlNbgQ4t2Elo8zMHHLdj62CmxB8KQSzZ1WVxHWiHIyakLri/RcoPVOeo4Tu/VZ78ICmw6SaH7tApcZUjsrTNLv7D8FLDysf9WRM+6eaDQ4FrxhDralIN989Xf2s0MUdH8RF7+FK8RIK7P7SFJDLIqsrHTl75EfNPOMTny/0dv6BO9G5Q6E0ik8quccbtPtAHrXA/dotqAvvvtYisNF3D4mMfTaRBhJYnN/W05syJDX+D95UtpK4F5DY2BmVBdQ9lvucnvMHrhEjbq9g==\n    signing-key /Common/f5-irule\n}",
         "group": "root",
         "mode": "000755",
         "owner": "root"
@@ -1754,15 +1767,6 @@
        "Statement": [
         {
          "Action": [
-          "s3:GetObject"
-         ],
-         "Effect": "Allow",
-         "Resource": {
-          "Ref": "bigiqPasswordS3Arn"
-         }
-        },
-        {
-         "Action": [
           "ec2:DescribeInstances",
           "ec2:DescribeInstanceStatus",
           "ec2:DescribeAddresses",
@@ -1779,6 +1783,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "bigiqPasswordS3Arn"
+         }
         }
        ],
        "Version": "2012-10-17"

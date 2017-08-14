@@ -1353,8 +1353,8 @@
            "--remote-host ",
            {
             "Fn::GetAtt": [
-             "Bigip1Instance",
-             "PrivateDnsName"
+             "Bigip1ManagementInterface",
+             "PrimaryPrivateIpAddress"
             ]
            },
            "&>> /var/log/cloudlibs-install.log < /dev/null &"

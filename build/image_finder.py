@@ -131,7 +131,6 @@ class BigIpImageFinder(object):
             if kwargs['version'] is not None:
                 images = [i for i in images if i['version'] is not None and
                 re.match('^({})'.format(kwargs['version']), i['version'])]
-
             package_dict = {}
             for image in images:
                 if image['license'] == "byol":
@@ -150,7 +149,7 @@ class BigIpImageFinder(object):
                         if image['throughput'] == "1gbps":
                             package_dict['Good1000Mbps'] = image['id']
                         if image['throughput'] == "5gbps":
-                            package_dict['Good5000Mbps'] = image['id']                             
+                            package_dict['Good5000Mbps'] = image['id']
                     elif image['package'] == "better":
                         if image['throughput'] == "25mbps":
                             package_dict['Better25Mbps'] = image['id']
@@ -159,7 +158,7 @@ class BigIpImageFinder(object):
                         if image['throughput'] == "1gbps":
                             package_dict['Better1000Mbps'] = image['id']
                         if image['throughput'] == "5gbps":
-                            package_dict['Better5000Mbps'] = image['id']                             
+                            package_dict['Better5000Mbps'] = image['id']
                     elif image['package'] == "best":
                         if image['throughput'] == "25mbps":
                             package_dict['Best25Mbps'] = image['id']
@@ -168,7 +167,7 @@ class BigIpImageFinder(object):
                         if image['throughput'] == "1gbps":
                             package_dict['Best1000Mbps'] = image['id']
                         if image['throughput'] == "5gbps":
-                            package_dict['Best5000Mbps'] = image['id']                            
+                            package_dict['Best5000Mbps'] = image['id']
 
             BigipRegionMap[region] = package_dict
 
@@ -222,19 +221,19 @@ def main():
     image_finder_obj = BigIpImageFinder()
 
     # Hourly Region Map ( Need to wait for v12/v13 to be released before can use Cloudinit )
-    HourlyRegionMap = image_finder_obj.getBigipRegionMap(license="hourly", version="13.0.0.2.0.1671", regions=regions)
+    HourlyRegionMap = image_finder_obj.getBigipRegionMap(license="hourly", version="13.0.0.2.0.1671", regions=regions,)
     
     with open('cached-hourly-region-map.json', 'w') as outfile:
         json.dump(HourlyRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)
 
     # BYOL Region Map:
-    ByolRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="13.0.0.2.0.1671", regions=regions)
+    ByolRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="13.0.0.2.0.1671", regions=regions,)
 
     with open('cached-byol-region-map.json', 'w') as outfile:
         json.dump(ByolRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)
         
     # BIG-IQ Region Map:
-    BigiqRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="5.1.0.0.0.631", regions=regions)
+    BigiqRegionMap = image_finder_obj.getBigipRegionMap(license="byol", version="5.1.0.0.0.631", regions=regions,)
     
     with open('cached-bigiq-region-map.json', 'w') as outfile:
         json.dump(BigiqRegionMap, outfile, sort_keys = True, indent = 2, ensure_ascii=False)    

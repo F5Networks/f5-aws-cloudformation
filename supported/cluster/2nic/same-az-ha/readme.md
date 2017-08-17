@@ -26,7 +26,7 @@ See the [Configuration Example](#configuration-example) section for a configurat
 ## Prerequisites and configuration notes
 The following are prerequisites for the F5 clustered 2-NIC CFT:
   - An AWS VPC with three subnets: 
-    - Management subnet (called Public in the AWS UI). This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565).
+    - Management subnet (called Public in the AWS UI). The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
     - External subnet (called Private in the AWS UI).  
     - NAT instance and associated network interface for network translation.
   - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = < region >.compute.internal domain-name-servers = AmazonProvidedDNS* is required.

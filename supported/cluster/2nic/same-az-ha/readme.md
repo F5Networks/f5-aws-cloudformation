@@ -29,7 +29,7 @@ The following are prerequisites for the F5 clustered 2-NIC CFT:
     - Management subnet (called Public in the AWS UI). This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565).
     - External subnet (called Private in the AWS UI).  
     - NAT instance and associated network interface for network translation.
-  - The AWS VPC must have **DNS Hostnames** enabled.
+  - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = <region>.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   - An AWS Security Group with the following inbound rules:
     - Port 22 for SSH access to the BIG-IP VE. 

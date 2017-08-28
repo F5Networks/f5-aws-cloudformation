@@ -1,4 +1,4 @@
-# Deploying the BIG-IP in AWS - Clustered 2-NIC across Availability Zones
+ # Deploying the BIG-IP in AWS - Clustered 2-NIC across Availability Zones
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 [![Releases](https://img.shields.io/github/release/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/releases)
@@ -28,7 +28,7 @@ The following are prerequisites for the F5 2-NIC CFT:
     - Management subnet (called Public in the AWS UI). The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
     - External subnet (called Private in the AWS UI). 
     - NAT instance and associated network interface for network translation. 
-  - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = <region>.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
+  - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = < region >.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   - An AWS Security Group in each Availability Zone with the following inbound rules:
     - Port 22 for SSH access to the BIG-IP VE.

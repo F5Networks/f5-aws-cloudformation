@@ -1,8 +1,8 @@
-# Deploying the BIG-IP in AWS - Clustered 2-NIC across Availability Zones
+# Deploying the BIG-IP in AWS - Clustered 2-NIC across Availability Zones From AWS Marketplace
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
-[![Releases](https://img.shields.io/github/release/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/releases)
-[![Issues](https://img.shields.io/github/issues/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/issues)
+
+
 
 **Contents**
  - [Introduction](#introduction)
@@ -15,10 +15,10 @@
  
 ## Introduction
 
-This solution uses a CloudFormation Template to launch and configure two BIG-IP 2-NIC VEs in a clustered, highly available configuration across Amazon Availability Zones. The BIG-IP VE can detect Availability Zone failure and automatically shift public traffic to the BIG-IP in the Availability Zone that is unaffected. In a 2-NIC implementation, each BIG-IP VE has one interface used for management and data-plane traffic from the Internet, and the second interface connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.
+This solution uses a CloudFormation Template to launch and configure two BIG-IP 2-NIC VEs in a clustered, highly available configuration across Amazon Availability Zones. The BIG-IP VE can detect Availability Zone failure and automatically shift public traffic to the BIG-IP in the Availability Zone that is unaffected. In a 2-NIC implementation, each BIG-IP VE has one interface used for management and data-plane traffic from the Internet, and the second interface connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.  
 
+When deploying this solution from the AWS Marketplace, you can launch the BIG-IP VE image (Good, Better, or Best) with the following throughput levels: 5Gbps, 1Gbps, 200Mbps, or 25Mbps. Each has a separate page, meaning there are 12 separate Marketplace pages for this solution.
 
-The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the *learning-stacks* folder in the **Experimental** directory.
 
 See the [Configuration Example](#configuration-example) section for a configuration diagram and description for this solution.
 
@@ -29,7 +29,7 @@ The following are prerequisites for the F5 2-NIC CFT:
     - External subnet (called Private in the AWS UI). 
     - NAT instance and associated network interface for network translation. 
   - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = <region>.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
-  - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
+  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for information.
   - An AWS Security Group in each Availability Zone with the following inbound rules:
     - Port 22 for SSH access to the BIG-IP VE.
     - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility.
@@ -39,10 +39,10 @@ The following are prerequisites for the F5 2-NIC CFT:
   - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
-  -	If you are using the *Licensing using BIG-IQ* template only:
-    - This solution only supports only BIG-IQ versions 5.0 - 5.3.
-    - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
-    - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only.  Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
+
+
+
+
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. If you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Details](#security-details) for the exact code in each of the following sections.
@@ -65,31 +65,22 @@ Because this template has been created and fully tested by F5 Networks, it is fu
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
 
 
-## Deploying the solution
+## Quick Start for launching the template
+This Readme file describes launching from the AWS Marketplace (see also [non-marketplace readme](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/cluster/2nic/across-az-ha/readme.md)). You can deploy this solution using one of four different throughput values (25Mbps, 200Mbps, 1000Mbps, 5000Mbps) on one of three different BIG-IP performance types (Good, Better, Best). Use the appropriate AWS Marketplace page for the template you want to launch. 
 
-You have two options for deploying this template: 
-  - Using the [Launch Stack buttons](#installing-the-image-using-the-aws-launch-stack-buttons) 
-  - Using the [AWS CLI](#installing-the-template-using-the-aws-cli-aws-cli11176)
 
-### Installing the image using the AWS Launch Stack buttons
-The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.<br>
-**Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
+From the Marketplace for the image you want to use: 
+- From the **For Region** list, select your Region. 
+- From the **Delivery Methods** list, select **HA across AZs via CFT**
+- Click **Continue**
+- Select either the **Hourly** or **Yearly** Subscription Term.
+- Select the appropriate version.
+- Click **Launch the CloudFormation template**.
 
- - Hourly, which uses pay-as-you-go hourly billing  
-   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a> 
-
- - BYOL (bring your own license), which allows you to use an existing BIG-IP license.  
-  <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Across-Az-Cluster-2nic-byol&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
-
- - BIG-IQ for licensing, which allows you to launch the template using an existing BIG-IQ device with a pool of licenses to license the BIG-IP VE(s).  
-   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=AcrossAZClusterBigIp-2nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-bigiq-2nic-bigip.template">
-   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
-<br>
 
 **Template Parameters**<br>
-After clicking the Launch button, you must specify the following parameters.  
+Once you have launched the CFT from the marketplace, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
+
 
 
 | CFT Label | Parameter Name | Required | Description |
@@ -101,10 +92,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID for Availability Zone 1. |
 | Subnet1 AZ1 | subnet1Az2 | Yes | Public or External subnet ID for Availability Zone 2. |
 | External Security Group | bigipExternalSecurityGroup | Yes | Public or External Security Group ID. |
-| Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
-| License Key1 | licenseKey1 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey. |
-| License Key2 | licenseKey2 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey for the second BIG-IP VE. |
 | SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | Source Address(es) for SSH Access | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances. |
 | NTP Server | ntpServer | Yes | NTP server you want to use for this implementation (the default is 0.pool.ntp.org). | 
@@ -114,140 +102,15 @@ After clicking the Launch button, you must specify the following parameters.
 | Group | group | No | Group Tag (the default is f5group). |
 | Owner | owner | No | Owner Tag (the default is f5owner). |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
-| IP address of BIG-IQ | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ licensing only: IP address of the BIG-IQ device that contains the pool of licenses |
-| BIG-IQ user with Licensing Privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IQ. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
-| S3 ARN of the BIG-IQ Password File | bigiqPasswordS3ARN | Yes <br>(BIG-IQ) | BIG-IQ licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE |
-| BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses. |
+
+
+
+
 
 <br>
 
 
-### Installing the template using the AWS CLI (aws-cli/1.11.76)
-If you want to deploy the template using the AWS CLI, use the following example script, replacing the static items (or make them parameters).  Use the following command syntax:
- 
-```./deploy_via_bash.sh --stackName <value> --licenseType Hourly --bigipManagementSecurityGroup <value> --sshKey <value> --managementSubnetAz2 <value> --managementSubnetAz1 <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --subnet1Az2 <value> --Vpc <value> --instanceType t2.medium --imageName Good200Mbps```
 
-The following is the script file.  This file (**deploy_via_bash.sh**) is also available in this repository. 
-
-```bash
-#!/bin/bash
-
-## Bash Script to deploy F5 template into AWS, using aws-cli/1.11.76 ##
-# Example Command: ./deploy_via_bash.sh --stackName <value> --licenseType Hourly --bigipManagementSecurityGroup <value> --sshKey <value> --managementSubnetAz2 <value> --managementSubnetAz1 <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --subnet1Az2 <value> --Vpc <value> --instanceType t2.medium --imageName Good200Mbps
-
-# Assign Script Parameters and Define Variables
-# Specify static items, change these as needed or make them parameters
-region="us-west-2"
-restrictedSrcAddress="0.0.0.0/0"
-tagValues='[{"Key": "application", "Value": "f5app"},{"Key": "environment", "Value": "f5env"},{"Key": "group", "Value": "f5group"},{"Key": "owner", "Value": "f5owner"},{"Key": "costcenter", "Value": "f5costcenter"}]'
-ntpServer="0.pool.ntp.org"
-timezone="UTC"
-
-# Parse the command line arguments, primarily checking full params as short params are just placeholders
-while [[ $# -gt 1 ]]
-do
-    case "$1" in
-        --licenseKey1)
-      licenseKey1=$2
-      shift 2;;
-    --licenseType)
-      licenseType=$2
-      shift 2;;
-    --managementSubnetAz1)
-      managementSubnetAz1=$2
-      shift 2;;
-    --sshKey)
-      sshKey=$2
-      shift 2;;
-    --licenseKey2)
-      licenseKey2=$2
-      shift 2;;
-    --managementSubnetAz2)
-      managementSubnetAz2=$2
-      shift 2;;
-    --bigipManagementSecurityGroup)
-      bigipManagementSecurityGroup=$2
-      shift 2;;
-    --subnet1Az1)
-      subnet1Az1=$2
-      shift 2;;
-    --bigipExternalSecurityGroup)
-      bigipExternalSecurityGroup=$2
-      shift 2;;
-    --subnet1Az2)
-      subnet1Az2=$2
-      shift 2;;
-    --stackName)
-      stackName=$2
-      shift 2;;
-    --imageName)
-      imageName=$2
-      shift 2;;
-    --Vpc)
-      Vpc=$2
-      shift 2;;
-    --instanceType)
-      instanceType=$2
-      shift 2;;
-    
-        --)
-      shift
-      break;;
-    esac
-done
-
-#If a required parameter is not passed, the script will prompt for it below
-required_variables="stackName licenseType bigipManagementSecurityGroup sshKey managementSubnetAz2 managementSubnetAz1 subnet1Az1 bigipExternalSecurityGroup subnet1Az2 Vpc instanceType imageName "
-for variable in $required_variables
-do
-    while [ -z ${!variable} ]
-    do
-        read -p "Please enter value for $variable:" $variable
-    done
-done
-
-# Prompt for license key if not supplied and BYOL is selected 
-if [ $licenseType == "BYOL" ]
-then 
-    while [ -z $licenseKey1 ]
-    do
-        read -p "Please enter value for licenseKey1:" licenseKey1
-    done
-    while [ -z $licenseKey2 ]
-    do
-        read -p "Please enter value for licenseKey2:" licenseKey2
-    done
-    
-    template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template"
-fi 
-
-# Prompt for license bandwidth if not supplied and Hourly is selected 
-if [ $licenseType == "Hourly" ]
-then 
-    while [ -z $imageName ]
-    do 
-        read -p "Please enter value for imageName:" imageName
-    done
-    
-    template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template"
-fi
-
-echo "Disclaimer: Scripting to Deploy F5 Solution templates into Cloud Environments are provided as examples. They will be treated as best effort for issues that occur, feedback is encouraged."
-sleep 3
-
-# Deploy Template
-if [ $licenseType == "BYOL" ]
-then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --capabilities CAPABILITY_IAM --parameters ParameterKey=licenseKey1,ParameterValue=$licenseKey1 ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=licenseKey2,ParameterValue=$licenseKey2 ParameterKey=managementSubnetAz2,ParameterValue=$managementSubnetAz2 ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=subnet1Az2,ParameterValue=$subnet1Az2 ParameterKey=imageName,ParameterValue=$imageName ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
-
-elif [ $licenseType == "Hourly" ]
-then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --capabilities CAPABILITY_IAM --parameters ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=managementSubnetAz2,ParameterValue=$managementSubnetAz2 ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=subnet1Az2,ParameterValue=$subnet1Az2 ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=imageName,ParameterValue=$imageName ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
-else 
-    echo "This failure may have been caused by an error in license type: Please ensure license type is either Hourly or BYOL'"
-    exit 1
-fi
-```
 
 ## Service Discovery
 Once you launch your BIG-IP instance using the CFT template, you can use the Service Discovery iApp template on the BIG-IP VE to automatically update pool members based on auto-scaled cloud application hosts.  In the iApp template, you enter information about your cloud environment, including the tag key and tag value for the pool members you want to include, and then the BIG-IP VE programmatically discovers (or removes) members using those tags.
@@ -276,7 +139,7 @@ If you want to verify the integrity of the template, from the BIG-IP VE Configur
 ## Configuration Example
 
 The following is a simple configuration diagram for this clustered, 2-NIC deployment. In this diagram, the IP addresses are provided as examples. This solution creates the instances with the BIG-IP v13.0 AMI image, and uses IAM roles for authentication.<br>
-![Clustered 2-NIC configuration example](images/aws-2nic-cluster-across-azs.png)
+![Clustered 2-NIC configuration example](../images/aws-2nic-cluster-across-azs.png)
 
 
 
@@ -391,9 +254,7 @@ Apache V2.0
 ~~~~~~~~~~~
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
-License at
-
-http://www.apache.org/licenses/LICENSE-2.0
+License at http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

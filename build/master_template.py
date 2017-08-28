@@ -53,6 +53,7 @@ def main():
     parser.add_option("-l", "--license", action="store", type="string", dest="license_type", default="hourly", help="Type of License: hourly, BYOL, or BIG-IQ" )
     parser.add_option("-c", "--components", action="store", type="string", dest="components", help="Comma seperated list of components: ex. WAF" )
     parser.add_option("-H", "--ha-type", action="store", type="string", dest="ha_type", default="standalone", help="HA Type: standalone, same-az, across-az" )
+    parser.add_option("-M", "--marketplace", action="store", type="string", dest="marketplace", default="no", help="Marketplace: no, Good25Mbps, Good200Mbps, Good1000Mbps, Good5000Mbps, Better25Mbps, Better200Mbps, Better1000Mbps, Better5000Mbps, Best25Mbps, Best200Mbps, Best1000Mbps, Best5000Mbps" )
 
     (options, args) = parser.parse_args()
 
@@ -63,6 +64,7 @@ def main():
     num_bigips = options.num_bigips
     ha_type = options.ha_type
     num_azs = options.num_azs
+    marketplace = options.marketplace
 
     # 1st BIG-IP will always be cluster seed
     CLUSTER_SEED = 1
@@ -151,9 +153,14 @@ def main():
     iApp_version = "v1.4.0rc1"
     iapp_branch = "v2.2.0"
     iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
-    cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
-    cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"
-    discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"
+    if marketplace == "no":
+        cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
+        cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"
+        discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"
+    else:
+        cloudlib_url = "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/" + str(branch_cloud) + "/f5-cloud-libs.tar.gz"
+        cloudlib_aws_url = "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs-aws/" + str(branch_aws) + "/f5-cloud-libs-aws.tar.gz"
+        discovery_url =  "http://cdn.f5.com/product/cloudsolutions/iapps/common/f5-service-discovery/" + str(branch_cloud_iapps) + "/f5.service_discovery.tmpl"
     ### add hashmark to skip cloudlib verification script.
     comment_out = ""
     # Begin Template
@@ -436,15 +443,10 @@ def main():
             Default="UTC",
             Type="String"
         ))
+        allowedvalues = []
+        defaultinstance="m3.2xlarge"
         if 'waf' in components:
-            # Default to 2xlarge
-            instanceType = t.add_parameter(Parameter(
-                "instanceType",
-                Default="m3.2xlarge",
-                ConstraintDescription="Must be a valid EC2 instance type for BIG-IP",
-                Type="String",
-                Description="AWS instance type",
-                AllowedValues=[
+            allowedvalues.extend ([
                                 "m3.2xlarge",
                                 "m4.2xlarge",
                                 "m4.4xlarge",
@@ -454,36 +456,98 @@ def main():
                                 "c4.4xlarge",
                                 "c4.8xlarge",
                                 "cc2.8xlarge",
-                              ],
-            ))
-        else:
+                              ])
+            # Default to 2xlarge
             instanceType = t.add_parameter(Parameter(
                 "instanceType",
                 Default="m3.2xlarge",
                 ConstraintDescription="Must be a valid EC2 instance type for BIG-IP",
                 Type="String",
-                Description="Size of the F5 BIG-IP Virtual Instance",
-                AllowedValues=[
-                                "t2.medium",
-                                "t2.large",
-                                "c3.2xlarge",
-                                "c3.4xlarge",
-                                "c3.8xlarge",
-                                "c4.xlarge",
-                                "c4.2xlarge",
-                                "c4.4xlarge",
-                                "c4.8xlarge",
-                                "m3.xlarge",
-                                "m3.2xlarge",
-                                "m4.large",
-                                "m4.xlarge",
-                                "m4.2xlarge",
-                                "m4.4xlarge",
-                                "m4.10xlarge",
-                                "m4.16xlarge",
-                              ],
+                Description="AWS instance type",
+                AllowedValues=allowedvalues,
             ))
-        if license_type == "hourly" and 'waf' not in components:
+        else:
+            allowedvalues.extend([
+                    "t2.medium",
+                    "t2.large",
+                    "c3.2xlarge",
+                    "c3.4xlarge",
+                    "c3.8xlarge",
+                    "c4.xlarge",
+                    "c4.2xlarge",
+                    "c4.4xlarge",
+                    "c4.8xlarge",
+                    "m3.xlarge",
+                    "m3.2xlarge",
+                    "m4.large",
+                    "m4.xlarge",
+                    "m4.2xlarge",
+                    "m4.4xlarge",
+                    "m4.10xlarge",
+                    "m4.16xlarge",
+            ])
+            if '5000' in marketplace:
+                defaultinstance="m4.10xlarge"
+                allowedvalues[:] = []
+                allowedvalues.extend([
+                    "c3.8xlarge",
+                    "c4.8xlarge",
+                    "m4.10xlarge",
+                    "m4.16xlarge",
+                ])
+            if '1000' in marketplace:
+                allowedvalues[:] = []
+                allowedvalues.extend([
+                    "c3.xlarge",
+                    "c3.2xlarge",
+                    "c3.4xlarge",
+                    "c3.8xlarge",
+                    "c4.xlarge",
+                    "c4.2xlarge",
+                    "c4.4xlarge",
+                    "c4.8xlarge",
+                    "m3.large",
+                    "m3.xlarge",
+                    "m3.2xlarge",
+                    "m4.large",
+                    "m4.xlarge",
+                    "m4.2xlarge",
+                    "m4.4xlarge",
+                    "m4.10xlarge",
+                    "m4.16xlarge",
+                ])
+            if '200' in marketplace or '25' in marketplace:
+                allowedvalues[:] = []
+                allowedvalues.extend([
+                    "t2.medium",
+                    "t2.large",
+                    "c3.xlarge",
+                    "c3.2xlarge",
+                    "c3.4xlarge",
+                    "c3.8xlarge",
+                    "c4.xlarge",
+                    "c4.2xlarge",
+                    "c4.4xlarge",
+                    "c4.8xlarge",
+                    "m3.large",
+                    "m3.xlarge",
+                    "m3.2xlarge",
+                    "m4.large",
+                    "m4.xlarge",
+                    "m4.2xlarge",
+                    "m4.4xlarge",
+                    "m4.10xlarge",
+                    "m4.16xlarge",
+                ])
+            instanceType = t.add_parameter(Parameter(
+                "instanceType",
+                Default=defaultinstance,
+                ConstraintDescription="Must be a valid EC2 instance type for BIG-IP",
+                Type="String",
+                Description="Size of the F5 BIG-IP Virtual Instance",
+                AllowedValues=allowedvalues,
+            ))
+        if license_type == "hourly" and 'waf' not in components and marketplace == "no":
             imageName = t.add_parameter(Parameter(
                 "imageName",
                 Default="Best1000Mbps",
@@ -505,7 +569,7 @@ def main():
                                 "Best5000Mbps",
                               ],
             ))
-        if license_type == "hourly" and 'waf' in components:
+        if license_type == "hourly" and 'waf' in components and marketplace == "no":
             imageName = t.add_parameter(Parameter(
                 "imageName",
                 Default="Best1000Mbps",
@@ -626,12 +690,62 @@ def main():
             ))
     # BEGIN REGION MAPPINGS FOR AMI IDS
     if bigip == True:
-        if license_type == "hourly":
+        if license_type == "hourly" and marketplace == "Good25Mbps":
+            with open("../build/marketplace/cached-good25Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Good25Mbps"
+        if license_type == "hourly" and marketplace == "Good200Mbps":
+            with open("../build/marketplace/cached-good200Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Good200Mbps"
+        if license_type == "hourly" and marketplace == "Good1000Mbps":
+            with open("../build/marketplace/cached-good1000Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Good1000Mbps"
+        if license_type == "hourly" and marketplace == "Good5000Mbps":
+            with open("../build/marketplace/cached-good5000Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Good5000Mbps"
+        if license_type == "hourly" and marketplace == "Better25Mbps":
+            with open("../build/marketplace/cached-better25Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Better25Mbps"
+        if license_type == "hourly" and marketplace == "Better200Mbps":
+            with open("../build/marketplace/cached-better200Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Better200Mbps"
+        if license_type == "hourly" and marketplace == "Better1000Mbps":
+            with open("../build/marketplace/cached-better1000Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Better1000Mbps"
+        if license_type == "hourly" and marketplace == "Better5000Mbps":
+            with open("../build/marketplace/cached-better5000Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Better5000Mbps"
+        if license_type == "hourly" and marketplace == "Best25Mbps":
+            with open("../build/marketplace/cached-best25Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Best25Mbps"
+        if license_type == "hourly" and marketplace == "Best200Mbps":
+            with open("../build/marketplace/cached-best200Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Best200Mbps"
+        if license_type == "hourly" and marketplace == "Best1000Mbps":
+            with open("../build/marketplace/cached-best1000Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Best1000Mbps"
+        if license_type == "hourly" and marketplace == "Best5000Mbps":
+            with open("../build/marketplace/cached-best5000Mbps-region-map.json") as json_file:
+                RegionMap = json.load(json_file)
+            imageidref="Best5000Mbps"
+        if license_type == "hourly" and marketplace == "no":
             with open("cached-hourly-region-map.json") as json_file:
                 RegionMap = json.load(json_file)
+            imageidref=Ref(imageName)
         if license_type != "hourly":
             with open("cached-byol-region-map.json") as json_file:
                 RegionMap = json.load(json_file)
+            imageidref=Ref(imageName)
         t.add_mapping("BigipRegionMap", RegionMap )
     # WEB SERVER MAPPING
     if webserver == True:
@@ -1387,7 +1501,10 @@ def main():
             if ha_type == "across-az":
                 iApp_verify = " \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\""
                 ha_iapp = "/config/cloud/aws/" + str(iapp_name)
-                ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/" + str(iapp_branch) + "/iApps/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
+                if marketplace == "no":
+                    ha_across_az_iapp_url = "https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/" + str(iapp_branch) + "/iApps/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
+                else:
+                    ha_across_az_iapp_url = "http://cdn.f5.com/product/cloudsolutions/iapps/aws/f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
             cloudlibs_sh =  [
                       "#!/bin/bash",
                       "echo about to execute",
@@ -2068,7 +2185,7 @@ def main():
                         Owner=Ref(owner),
                         Costcenter=Ref(costcenter),
                     ),
-                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
+                    ImageId=FindInMap('BigipRegionMap', Ref('AWS::Region'), imageidref),
                     BlockDeviceMappings=[
                         ec2.BlockDeviceMapping(
                             DeviceName="/dev/xvda",
@@ -2101,7 +2218,7 @@ def main():
                         Owner=Ref(owner),
                         Costcenter=Ref(costcenter),
                     ),
-                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
+                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), imageidref),
                     BlockDeviceMappings=[
                         ec2.BlockDeviceMapping(
                             DeviceName="/dev/xvda",
@@ -2120,7 +2237,7 @@ def main():
                     InstanceType=Ref(instanceType),
                     NetworkInterfaces=NetworkInterfaces
                 ))
-            if ha_type == "standalone":
+            if ha_type == "standalone" and marketplace == "no":
                 RESOURCES[BigipInstance] = t.add_resource(Instance(
                     BigipInstance,
                     Metadata=metadata,
@@ -2133,7 +2250,7 @@ def main():
                         Owner=Ref(owner),
                         Costcenter=Ref(costcenter),
                     ),
-                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), Ref(imageName)),
+                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), imageidref),
                     BlockDeviceMappings=[
                         ec2.BlockDeviceMapping(
                             DeviceName="/dev/xvda",

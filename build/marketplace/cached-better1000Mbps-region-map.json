@@ -1,0 +1,44 @@
+{
+  "ap-northeast-1": {
+    "Better1000Mbps": "ami-631b2a04"
+  }, 
+  "ap-northeast-2": {
+    "Better1000Mbps": "ami-ada27fc3"
+  }, 
+  "ap-south-1": {
+    "Better1000Mbps": "ami-c4d8aaab"
+  }, 
+  "ap-southeast-1": {
+    "Better1000Mbps": "ami-800bb1e3"
+  }, 
+  "ap-southeast-2": {
+    "Better1000Mbps": "ami-6ed8d30d"
+  }, 
+  "ca-central-1": {
+    "Better1000Mbps": "ami-43922e27"
+  }, 
+  "eu-central-1": {
+    "Better1000Mbps": "ami-0c4f9063"
+  }, 
+  "eu-west-1": {
+    "Better1000Mbps": "ami-98bdb0fe"
+  }, 
+  "eu-west-2": {
+    "Better1000Mbps": "ami-97a0b4f3"
+  }, 
+  "sa-east-1": {
+    "Better1000Mbps": "ami-418fe32d"
+  }, 
+  "us-east-1": {
+    "Better1000Mbps": "ami-13791705"
+  }, 
+  "us-east-2": {
+    "Better1000Mbps": "ami-c2193ea7"
+  }, 
+  "us-west-1": {
+    "Better1000Mbps": "ami-fa6c4a9a"
+  }, 
+  "us-west-2": {
+    "Better1000Mbps": "ami-cfbd26af"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "ap-northeast-1": {
+    "Best200Mbps": "ami-301c2d57"
+  }, 
+  "ap-northeast-2": {
+    "Best200Mbps": "ami-b9a37ed7"
+  }, 
+  "ap-south-1": {
+    "Best200Mbps": "ami-bad8aad5"
+  }, 
+  "ap-southeast-1": {
+    "Best200Mbps": "ami-5a0eb439"
+  }, 
+  "ap-southeast-2": {
+    "Best200Mbps": "ami-18dfd47b"
+  }, 
+  "ca-central-1": {
+    "Best200Mbps": "ami-0994286d"
+  }, 
+  "eu-central-1": {
+    "Best200Mbps": "ami-464d9229"
+  }, 
+  "eu-west-1": {
+    "Best200Mbps": "ami-30a2af56"
+  }, 
+  "eu-west-2": {
+    "Best200Mbps": "ami-dba5b1bf"
+  }, 
+  "sa-east-1": {
+    "Best200Mbps": "ami-0c8ce060"
+  }, 
+  "us-east-1": {
+    "Best200Mbps": "ami-1a78160c"
+  }, 
+  "us-east-2": {
+    "Best200Mbps": "ami-8be7c0ee"
+  }, 
+  "us-west-1": {
+    "Best200Mbps": "ami-7a6c4a1a"
+  }, 
+  "us-west-2": {
+    "Best200Mbps": "ami-7abd261a"
+  }
+}

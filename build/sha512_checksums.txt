@@ -4,6 +4,30 @@
 'b7766bf539b08cbfd8a9e273288c1238787fea5c41757930f18951795a933f5e2f495ad6bce817acf6812584f33b6a7f036dd014cad5c108a31e1f3aad49a56e'
 **Cluster: - Across AZs2 NIC - HOURLY**(f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template)
 'dd402f703234e4ccb384c36df41c32307e328b9abf8f83642a230ecb211c8f7c7120fc3f569fa761b93c82dafa97aa4894841c97fe785f1e1800a1842cbefaec'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Best:1000Mbps**(f5-existing-stack-across-az-cluster-Best1000Mbps-2nic-bigip.template)
+'22b33af338c189cb9df09fd923482c9dc2151ab08f26292a806c64e2d441e480c46423c9983098d75ca4bec366d34f0ed7cb79b3907abc054116d52c3d18d0b9'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Best:200Mbps**(f5-existing-stack-across-az-cluster-Best200Mbps-2nic-bigip.template)
+'ba563c3b67f1e6aa0448f5809b18ccb3c426fa48a2e44d2d0da71958e81fab30ff7512dccd0d9cdaa7dbb8fcd736b1ff7325e1b84099348acd32aca0456bac9b'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Best:25Mbps**(f5-existing-stack-across-az-cluster-Best25Mbps-2nic-bigip.template)
+'4129a6e07711295c5c5dad51f884d599f9bdf49b224fd52bead7213678d36788921beefda8a45476d4a1d226396ebfb7c4e142bbf69ff8e6a345ea3fb18fc861'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Best:5000Mbps**(f5-existing-stack-across-az-cluster-Best5000Mbps-2nic-bigip.template)
+'9a84f2a9dfd2be0866c2c846f87c085fd10b9c6b59c21b7575d46d748cae54898da8d0e7dd86f24b922d5fb28ca6f462331d4f8856c6d136f20c3ed17ef74cae'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Better:1000Mbps**(f5-existing-stack-across-az-cluster-Better1000Mbps-2nic-bigip.template)
+'3ab4f3f11a64480ca5ae15beb576114ae101756482cfbc6798465c48db9fc10fdf2cb7dde501b9c0bc3725acdb0bbabf386724ddea3a6cb43b63c5cee57c4748'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Better:200Mbps**(f5-existing-stack-across-az-cluster-Better200Mbps-2nic-bigip.template)
+'06161adff40d500b453a61033af422ef3f3146ba10d0735b36e56e503386d522ff93c3966a71c4a45edb9ad84a7f14c50c69f5d0979aeefb7e4dbae53dc41ef3'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Better:25Mbps**(f5-existing-stack-across-az-cluster-Better25Mbps-2nic-bigip.template)
+'494e0999b41dee797c98f9420ba58912798b2bb82e39211cdf1acdf06ded19da25ebc02943871cde2e2ea2bd6c4bd854352b3309470e4c7d5a565d505a9b965e'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Better:5000Mbps**(f5-existing-stack-across-az-cluster-Better5000Mbps-2nic-bigip.template)
+'e5c352495bd5408a707fe727bc096d3419fa8fe4ca88bc23eb392e2e8dd677e5bb1b7a151b1dc90fd3c7cd345bb821d5c4b1730f7529db3427588d6c23a6c962'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Good:1000Mbps**(f5-existing-stack-across-az-cluster-Good1000Mbps-2nic-bigip.template)
+'6dd0c9dbdab5428063dd8d49a094c7897878af256b3f1b79ac2b7fa110ebaf34305d441699747f24fffd26bd6358e11fb35eb0f1a74b0af07615caf06551c60b'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Good:200Mbps**(f5-existing-stack-across-az-cluster-Good200Mbps-2nic-bigip.template)
+'7b8b03cf97a052c12b6b36e036b63184fbc08b77e5722359ac51e0977b131ed5bc7597dec2542904de3eab00ca1e1eac4c61e3f8d715852a56a5eac1b5f40ee9'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Good:25Mbps**(f5-existing-stack-across-az-cluster-Good25Mbps-2nic-bigip.template)
+'4310e2cb5bcfe7406aed39b832ce7529821dc987c1e1ae39b8528d146d9e082e9aa4aa408fa3d2e0c8e1c53adeb3d84f34495cecd645cf3506009a946470f162'
+**Cluster: - Across AZs2 NIC - AWS Marketplace - Good:5000Mbps**(f5-existing-stack-across-az-cluster-Good5000Mbps-2nic-bigip.template)
+'998e8cc50cee104d8c3ba8f196a064bda415f6f78e790ab20e031139b686f6d03e9230ab7894af4a8b9dfad234c3c4f75ebc4af2f3f4121a2eed0dd9091c598e'
 **Cluster: - Same Azs2 NIC - BIGIQ**(f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template)
 '02efb7024a3b4390c311c3e9935b24c2172164368c3d21cda684e3b6c8f00a3984d163033b879cf9485ca199c8b5a5d06b61639d3a56d4f139e6404bdda1d0af'
 **Cluster: - Same Azs2 NIC - BYOL**(f5-existing-stack-same-az-cluster-byol-2nic-bigip.template)
@@ -13,13 +37,13 @@
 **Auto Scale LTM:**(f5-autoscale-bigip-ltm.template)
 '533a3d2589b785819ee8e51d411045def68edf3e5f9a8d121d16684b3e1ee5f7fb97d22c55e82ab243ce1194627e8220942d697441e13d43b878accf473813df'
 **Auto Scale LTM: - AWS Marketplace - 1000Mbps**(f5-autoscale-bigip-ltm-1000-Mbps.template)
-'83f7fd2e56523f75caa0df0eb57ed73fd385dbe04a65c40c129323e92cc26f2cb0c0ac7ec4a25204b1568bd136dc49ab4e4ed304aa836720f41bcd80b4d73ed3'
+'f59c65d28552364a9170e1e0f8561fd59d6542c5762c16057a174cf12b88728c92b146efff565b3d6e152d515a9650b6a6436e579f5fbb127d47ae955689c564'
 **Auto Scale LTM: - AWS Marketplace - 200Mbps**(f5-autoscale-bigip-ltm-200-Mbps.template)
-'b6792f81a366268d95558609eb06c97350ead6797bd4e604778fdf2b609f8424acd3274f2093510394d0e9d06dcfb2714b57cc140683cce70e027a3354be9bf5'
+'eafed8caec070304167877230bdad4cacf3c8c9673838840b6f14b661d5cc87c650ef42c60eb4fff8deb7b86f2dbda1e30fc311ce34d82027cf3cb58379f7bf0'
 **Auto Scale LTM: - AWS Marketplace - 25Mbps**(f5-autoscale-bigip-ltm-25-Mbps.template)
-'06848af26975e83ab553b773f3a5a950b6f8455939a108707115717d6a1dd09a8d127ca8d606741dbaa4c7a7a14e3f88667a42c472935c66b88e0e08a0e62794'
+'990b73b9ce98725e3c8a82297f5587e89b080c7bca36061a81d369b835c6f7d738e1a132941b3c24b98aefa640d5fa1c3044b77736c53fed418829cf0f0b62b6'
 **Auto Scale LTM: - AWS Marketplace - 5000Mbps**(f5-autoscale-bigip-ltm-5000-Mbps.template)
-'9dcb80c9fb5ba3e1162b46072cff5b977c7275dbd13a063d4b44d662eeb4c458357d692ded8b50ebb288869b19351f0d20732313d1bebb9bcb3c7b22afa6d162'
+'c4ea96f5396a2b6cccf8110b9f9c8715e29ec108b908b030fc58dd6a8103e384f58b717433a20a8bb4c91074ac3ae00ed0f3539d35392b18327841f174c91b9a'
 **Auto Scale WAF:**(f5-autoscale-bigip.template)
 '29f3bc99915bb0e2646ce61ba79f36b96bb5020f0ce9ce9b453a4f6a782ef8405c2450519bd834f2e82d84a12685014aa4d41c43e0d0e503ba4f7382f062415c'
 **Auto Scale WAF: - AWS Marketplace - 1000Mbps**(f5-autoscale-bigip-1000-Mbps.template)

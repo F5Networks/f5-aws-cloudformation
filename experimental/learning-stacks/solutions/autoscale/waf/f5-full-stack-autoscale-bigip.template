@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "v2.5.1: This full stack template deploys EC2/VPC resources and F5 autoscale WAF solution.  In particular, this template creates a VPC, subnets, routing tables, security groups, and two Elastic Load Balancer groups (one to which all BIG-IP VEs are added and one to which the applications servers are added).",
+  "Description": "v2.5.2: This full stack template deploys EC2/VPC resources and F5 autoscale WAF solution.  In particular, this template creates a VPC, subnets, routing tables, security groups, and two Elastic Load Balancer groups (one to which all BIG-IP VEs are added and one to which the applications servers are added).",
   "Parameters": {
     "deploymentName" : {
       "Description" : "Name the template uses to create object names",
@@ -331,7 +331,7 @@
         }
       }
     },
-  "Version": "2.5.1"
+  "Version": "2.5.2"
   },
   "Mappings": {
     "appImageRegionMap": {
@@ -412,9 +412,9 @@
         "Best25Mbps": "ami-9e89e6f2"
       }, 
       "us-east-1": {
-        "Best1000Mbps": "ami-70d0b166", 
+        "Best1000Mbps": "ami-1afa870c", 
         "Best200Mbps": "ami-9cf5888a", 
-        "Best25Mbps": "ami-ebd0b1fd"
+        "Best25Mbps": "ami-51fb8647"
       }, 
       "us-east-2": {
         "Best1000Mbps": "ami-f8def99d", 
@@ -1089,7 +1089,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.5.1\n",
+                      "# Generated from Template Version 2.5.2\n",
                       "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                       "deploymentName='",
                       {
@@ -1205,7 +1205,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.5.1\n",
+                      "# Generated from Template Version 2.5.2\n",
                       "date\n",
                       ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
@@ -1255,7 +1255,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from Template Version 2.5.1\n",
+                      "# Generated from Template Version 2.5.2\n",
                       "echo about to execute",
                       "checks=0",
                       "while [ $checks -lt 120 ]; do echo checking mcpd",
@@ -1304,7 +1304,7 @@
                       "Fn::Join": [
                           "\n",
                           [
-                              "# Generated from Template Version 2.5.1\n",
+                              "# Generated from Template Version 2.5.2\n",
                               "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                               "PASSWORD=$(/bin/sed -e $'s:[!\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                               "if [ \"$1\" == admin ]; then",
@@ -1325,7 +1325,7 @@
                   "Fn::Join": [
                     "\n",
                     [
-                      "# Generated from Template Version 2.5.1\n",
+                      "# Generated from Template Version 2.5.2\n",
                       "INTERFACE=$1",
                       "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
                       "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
@@ -1345,7 +1345,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from Template Version 2.5.1\n",
+                      "# Generated from Template Version 2.5.2\n",
                       "while true; do echo waiting for cloud libs install to complete",
                       "    if [ -f /config/cloud/cloudLibsReady ]; then",
                       "        echo cloud libs installed",

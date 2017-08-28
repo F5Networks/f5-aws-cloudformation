@@ -1,6 +1,8 @@
-# Deploying the BIG-IP in AWS - Clustered 2-NIC across Availability Zones
+# Deploying the BIG-IP in AWS - Clustered 2-NIC across Availability Zones From AWS Marketplace
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
+
+
 
 **Contents**
  - [Introduction](#introduction)
@@ -15,10 +17,8 @@
 
 This solution uses a CloudFormation Template to launch and configure two BIG-IP 2-NIC VEs in a clustered, highly available configuration across Amazon Availability Zones. The BIG-IP VE can detect Availability Zone failure and automatically shift public traffic to the BIG-IP in the Availability Zone that is unaffected. In a 2-NIC implementation, each BIG-IP VE has one interface used for management and data-plane traffic from the Internet, and the second interface connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.  
 
-When deploying this solution from the AWS Marketplace, you can launch the BIG-IP VE with the following throughput levels: 5Gbps, 1Gbps, 200Mbps, or 25Mbps. 
+When deploying this solution from the AWS Marketplace, you can launch the BIG-IP VE image (Good, Better, or Best) with the following throughput levels: 5Gbps, 1Gbps, 200Mbps, or 25Mbps. Each has a separate page, meaning there are 12 separate Marketplace pages for this solution.
 
-
-The **existing stack** CloudFormation template incorporates an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the *learning-stacks* folder in the **Experimental** directory.
 
 See the [Configuration Example](#configuration-example) section for a configuration diagram and description for this solution.
 
@@ -28,7 +28,8 @@ The following are prerequisites for the F5 2-NIC CFT:
     - Management subnet (called Public in the AWS UI). The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
     - External subnet (called Private in the AWS UI). 
     - NAT instance and associated network interface for network translation. 
-  - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
+  - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = <region>.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
+  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for information.
   - An AWS Security Group in each Availability Zone with the following inbound rules:
     - Port 22 for SSH access to the BIG-IP VE.
     - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility.
@@ -38,6 +39,10 @@ The following are prerequisites for the F5 2-NIC CFT:
   - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
+
+
+
+
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. If you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Details](#security-details) for the exact code in each of the following sections.
@@ -61,9 +66,10 @@ We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.c
 
 
 ## Quick Start for launching the template
-This Readme file describes launching from the AWS Marketplace (see also [non-marketplace readme](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/cluster/2nic/across-az-ha/readme.md). There are four different BIG-IP VE instances you can choose from (5Gbps, 1Gbps, 200Mbps, or 25Mbps), each with a different page on the Marketplace..
+This Readme file describes launching from the AWS Marketplace (see also [non-marketplace readme](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/cluster/2nic/across-az-ha/readme.md)). You can deploy this solution using one of four different throughput values (25Mbps, 200Mbps, 1000Mbps, 5000Mbps) on one of three different BIG-IP performance types (Good, Better, Best). Use the appropriate AWS Marketplace page for the template you want to launch. 
 
-From the Marketplace for the instance you want to use: 
+
+From the Marketplace for the image you want to use: 
 - From the **For Region** list, select your Region. 
 - From the **Delivery Methods** list, select **HA across AZs via CFT**
 - Click **Continue**
@@ -71,8 +77,10 @@ From the Marketplace for the instance you want to use:
 - Select the appropriate version.
 - Click **Launch the CloudFormation template**.
 
+
 **Template Parameters**<br>
-After clicking the Launch button, you must specify the following parameters.  
+Once you have launched the CFT from the marketplace, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
+
 
 
 | CFT Label | Parameter Name | Required | Description |
@@ -84,10 +92,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID for Availability Zone 1. |
 | Subnet1 AZ1 | subnet1Az2 | Yes | Public or External subnet ID for Availability Zone 2. |
 | External Security Group | bigipExternalSecurityGroup | Yes | Public or External Security Group ID. |
-| Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
-| License Key1 | licenseKey1 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey. |
-| License Key2 | licenseKey2 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey for the second BIG-IP VE. |
 | SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | Source Address(es) for SSH Access | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances. |
 | NTP Server | ntpServer | Yes | NTP server you want to use for this implementation (the default is 0.pool.ntp.org). | 
@@ -97,6 +102,10 @@ After clicking the Launch button, you must specify the following parameters.
 | Group | group | No | Group Tag (the default is f5group). |
 | Owner | owner | No | Owner Tag (the default is f5owner). |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
+
+
+
+
 
 <br>
 
@@ -130,7 +139,7 @@ If you want to verify the integrity of the template, from the BIG-IP VE Configur
 ## Configuration Example
 
 The following is a simple configuration diagram for this clustered, 2-NIC deployment. In this diagram, the IP addresses are provided as examples. This solution creates the instances with the BIG-IP v13.0 AMI image, and uses IAM roles for authentication.<br>
-![Clustered 2-NIC configuration example](images/aws-2nic-cluster-across-azs.png)
+![Clustered 2-NIC configuration example](../images/aws-2nic-cluster-across-azs.png)
 
 
 
@@ -245,9 +254,7 @@ Apache V2.0
 ~~~~~~~~~~~
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
-License at
-
-http://www.apache.org/licenses/LICENSE-2.0
+License at http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

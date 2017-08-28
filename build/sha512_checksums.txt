@@ -4,6 +4,30 @@
 'b7766bf539b08cbfd8a9e273288c1238787fea5c41757930f18951795a933f5e2f495ad6bce817acf6812584f33b6a7f036dd014cad5c108a31e1f3aad49a56e'
 **Cluster: - Across AZs2 NIC - HOURLY**(f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template)
 'dd402f703234e4ccb384c36df41c32307e328b9abf8f83642a230ecb211c8f7c7120fc3f569fa761b93c82dafa97aa4894841c97fe785f1e1800a1842cbefaec'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Best1000Mbps-2nic-bigip.template)
+'22b33af338c189cb9df09fd923482c9dc2151ab08f26292a806c64e2d441e480c46423c9983098d75ca4bec366d34f0ed7cb79b3907abc054116d52c3d18d0b9'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Best200Mbps-2nic-bigip.template)
+'ba563c3b67f1e6aa0448f5809b18ccb3c426fa48a2e44d2d0da71958e81fab30ff7512dccd0d9cdaa7dbb8fcd736b1ff7325e1b84099348acd32aca0456bac9b'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Best25Mbps-2nic-bigip.template)
+'4129a6e07711295c5c5dad51f884d599f9bdf49b224fd52bead7213678d36788921beefda8a45476d4a1d226396ebfb7c4e142bbf69ff8e6a345ea3fb18fc861'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Best5000Mbps-2nic-bigip.template)
+'9a84f2a9dfd2be0866c2c846f87c085fd10b9c6b59c21b7575d46d748cae54898da8d0e7dd86f24b922d5fb28ca6f462331d4f8856c6d136f20c3ed17ef74cae'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Better1000Mbps-2nic-bigip.template)
+'3ab4f3f11a64480ca5ae15beb576114ae101756482cfbc6798465c48db9fc10fdf2cb7dde501b9c0bc3725acdb0bbabf386724ddea3a6cb43b63c5cee57c4748'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Better200Mbps-2nic-bigip.template)
+'06161adff40d500b453a61033af422ef3f3146ba10d0735b36e56e503386d522ff93c3966a71c4a45edb9ad84a7f14c50c69f5d0979aeefb7e4dbae53dc41ef3'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Better25Mbps-2nic-bigip.template)
+'494e0999b41dee797c98f9420ba58912798b2bb82e39211cdf1acdf06ded19da25ebc02943871cde2e2ea2bd6c4bd854352b3309470e4c7d5a565d505a9b965e'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Better5000Mbps-2nic-bigip.template)
+'e5c352495bd5408a707fe727bc096d3419fa8fe4ca88bc23eb392e2e8dd677e5bb1b7a151b1dc90fd3c7cd345bb821d5c4b1730f7529db3427588d6c23a6c962'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Good1000Mbps-2nic-bigip.template)
+'6dd0c9dbdab5428063dd8d49a094c7897878af256b3f1b79ac2b7fa110ebaf34305d441699747f24fffd26bd6358e11fb35eb0f1a74b0af07615caf06551c60b'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Good200Mbps-2nic-bigip.template)
+'7b8b03cf97a052c12b6b36e036b63184fbc08b77e5722359ac51e0977b131ed5bc7597dec2542904de3eab00ca1e1eac4c61e3f8d715852a56a5eac1b5f40ee9'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Good25Mbps-2nic-bigip.template)
+'4310e2cb5bcfe7406aed39b832ce7529821dc987c1e1ae39b8528d146d9e082e9aa4aa408fa3d2e0c8e1c53adeb3d84f34495cecd645cf3506009a946470f162'
+**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Good5000Mbps-2nic-bigip.template)
+'998e8cc50cee104d8c3ba8f196a064bda415f6f78e790ab20e031139b686f6d03e9230ab7894af4a8b9dfad234c3c4f75ebc4af2f3f4121a2eed0dd9091c598e'
 **Cluster: - Same Azs2 NIC - BIGIQ**(f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template)
 '02efb7024a3b4390c311c3e9935b24c2172164368c3d21cda684e3b6c8f00a3984d163033b879cf9485ca199c8b5a5d06b61639d3a56d4f139e6404bdda1d0af'
 **Cluster: - Same Azs2 NIC - BYOL**(f5-existing-stack-same-az-cluster-byol-2nic-bigip.template)

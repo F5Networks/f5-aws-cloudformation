@@ -64,6 +64,20 @@ python master_template.py -s existing -n 2 -l hourly -H across-az > ../supported
 python master_template.py -s existing -n 2 -l byol -H across-az > ../supported/cluster/2nic/across-az-ha/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template
 python master_template.py -s existing -n 2 -l bigiq -H across-az > ../supported/cluster/2nic/across-az-ha/f5-existing-stack-across-az-cluster-bigiq-2nic-bigip.template
 
+## Marketplace
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Good25Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Good25Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Good200Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Good200Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Good1000Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Good1000Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Good5000Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Good5000Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Better25Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Better25Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Better200Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Better200Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Better1000Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Better1000Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Better5000Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Better5000Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Best25Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Best25Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Best200Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Best200Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Best1000Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Best1000Mbps-2nic-bigip.template
+python master_template.py -s existing -n 2 -l hourly -H across-az -M Best5000Mbps > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Best5000Mbps-2nic-bigip.template
+
 ## Experimental
 python master_template.py -s existing -n 2 -l hourly -c waf -H same-az > ../experimental/reference/2nic/waf/f5-existing-stack-same-az-cluster-hourly-2nic-bigip-w-waf.template
 python master_template.py -s existing -n 2 -l byol -c waf -H same-az > ../experimental/reference/2nic/waf/f5-existing-stack-same-az-cluster-byol-2nic-bigip-w-waf.template

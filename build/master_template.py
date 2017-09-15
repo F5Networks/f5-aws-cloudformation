@@ -348,7 +348,7 @@ def main():
                 "default": "BIG-IQ License Pool Name"
             },
             "bigiqUsername": {
-                "default": "BIG-IQ user with licensing priviledges"
+                "default": "BIG-IQ user with licensing privileges"
             },
             "bigiqPasswordS3Arn": {
                 "default": "S3 ARN of the BIG-IQ Password File"

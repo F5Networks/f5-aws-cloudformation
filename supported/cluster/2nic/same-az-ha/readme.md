@@ -30,11 +30,8 @@ The following are prerequisites for the F5 clustered 2-NIC CFT:
     - External subnet (called Private in the AWS UI).  
     - NAT instance and associated network interface for network translation.
   - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = < region >.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
-  - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
-  - An AWS Security Group with the following inbound rules:
-    - Port 22 for SSH access to the BIG-IP VE. 
-    - Port 8443 (or other port) for accessing the BIG-IP web-based Configuration utility. 
-    - A port for accessing your applications via the BIG-IP virtual server. 
+  - This template creates AWS Security Groups as a part of the deployment. For the external Security Group, this includes a port for accessing your applications on port 80/443.  If your applications need additional ports, you must add those to the external Security Group created by the template.  For instructions on adding ports, see the AWS documentation.
+  - Key pair for management access to BIG-IP VE (you can create or import in AWS)
   - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
@@ -93,9 +90,7 @@ After clicking the Launch button, you must specify the following parameters.
 | --- | --- | --- | --- |
 | VPC | Vpc | Yes | Common VPC for the deployment |
 | Management Subnet AZ1 | managementSubnetAz1 | Yes | Management subnet ID |
-| Management Security Group | bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID |
-| External Security Group | bigipExternalSecurityGroup | Yes | Public or External Security Group ID. |
 | Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | License Key1 | licenseKey1 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey. |

@@ -312,7 +312,7 @@ def main():
                 "default": "License Key 2"
             },
             "restrictedSrcAddress": {
-                "default": "Source Address(es) for SSH Access"
+                "default": "Source Address(es) for Management Access"
             },
             "managementGuiPort": {
                 "default": "BIG-IP Management Port"
@@ -348,7 +348,7 @@ def main():
                 "default": "BIG-IQ License Pool Name"
             },
             "bigiqUsername": {
-                "default": "BIG-IQ user with licensing privileges"
+                "default": "BIG-IQ user with Licensing Privileges"
             },
             "bigiqPasswordS3Arn": {
                 "default": "S3 ARN of the BIG-IQ Password File"
@@ -609,7 +609,7 @@ def main():
             bigiqAddress = t.add_parameter(Parameter(
                 "bigiqAddress",
                 MinLength="1",
-                ConstraintDescription="Verify IP address of the BIG-IQ device that contains the pool of licenses",
+                ConstraintDescription="Verify the IP address of the BIG-IQ device that contains the pool of licenses",
                 Type="String",
                 Description="IP address of the BIG-IQ device that contains the pool of BIG-IP licenses",
                 MaxLength="255",
@@ -617,7 +617,7 @@ def main():
             bigiqUsername = t.add_parameter(Parameter(
                 "bigiqUsername",
                 MinLength="1",
-                ConstraintDescription="Verify BIG-IQ user with privileges to license BIG-IQ. Can be Admin, Device Manager, or Licensing Manager",
+                ConstraintDescription="Verify the BIG-IQ user with privileges to license BIG-IQ. Can be Admin, Device Manager, or Licensing Manager",
                 Type="String",
                 Description="BIG-IQ user with privileges to license BIG-IQ. Must be 'Admin', 'Device Manager', or 'Licensing Manager'",
                 MaxLength="255",
@@ -633,7 +633,7 @@ def main():
             bigiqLicensePoolName = t.add_parameter(Parameter(
                 "bigiqLicensePoolName",
                 MinLength="1",
-                ConstraintDescription="Verify Name of BIG-IQ License Pool",
+                ConstraintDescription="Verify the Name of BIG-IQ License Pool",
                 Type="String",
                 Description="Name of the pool on BIG-IQ that contains the BIG-IP licenses",
                 MaxLength="255",

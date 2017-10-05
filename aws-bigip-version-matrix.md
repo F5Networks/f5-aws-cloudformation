@@ -3,36 +3,40 @@ The following table contains all of the tagged releases of the F5 Cloud Formatio
 
 | Release Tag | Template Family | BIG-IP Versions | License Bundles and Throughput Rates |
 | --- | --- | --- | --- |
-| [v2.5.2](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.5.2) | Standalone | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps
-|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
+| [v2.6.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.6.0) | Standalone | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
+|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
+|  | Auto Scale WAF | BIG-IP v12.1 | Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
+|  | Auto Scale LTM | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
+| [v2.5.2](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.5.2) | Standalone | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
+|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale WAF | BIG-IP v12.1 | Best: 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale LTM | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
-| [v2.5.1](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.5.1) | Standalone | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps
-|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
+| [v2.5.1](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.5.1) | Standalone | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
+|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
+|  | Auto Scale WAF | BIG-IP v12.1 | Best: 1Gbps, 200Mbps, 25Mbps |
+|  | Auto Scale LTM | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
+| [v2.5.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.5.0) | Standalone | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
+|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale WAF | BIG-IP v12.1 | Best: 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale LTM | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
-| [v2.5.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.5.0) | Standalone | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps
-|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
+| [v2.4.4](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.4.4) | Standalone | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
+|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale WAF | BIG-IP v12.1 | Best: 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale LTM | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
-| [v2.4.4](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.4.4) | Standalone | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps
-|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
+| [v2.4.3](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.4.3) | Standalone | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
+|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale WAF | BIG-IP v12.1 | Best: 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale LTM | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
-| [v2.4.3](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.4.3) | Standalone | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps
-|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
+| [v2.4.2](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.4.2) | Standalone | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
+|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale WAF | BIG-IP v12.1 | Best: 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale LTM | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
-| [v2.4.2](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.4.2) | Standalone | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps
-|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
+| [v2.4.1](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.4.1) | Standalone | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
+|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale WAF | BIG-IP v12.1 | Best: 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale LTM | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
-| [v2.4.1](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.4.1) | Standalone | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps
-|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
-|  | Auto Scale WAF | BIG-IP v12.1 | Best: 1Gbps, 200Mbps, 25Mbps |
-|  | Auto Scale LTM | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
-| [v2.4.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.4.0) | Standalone | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps
-|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
+| [v2.4.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.4.0) | Standalone | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
+|  | Cluster | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale WAF | BIG-IP v12.1 | Best: 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale LTM | BIG-IP v13.0 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps |
 | [v2.3.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.3.0) | Standalone | BIG-IP v11.4.1 | Good/Better/Best: 1Gbps, 200Mbps, 25Mbps

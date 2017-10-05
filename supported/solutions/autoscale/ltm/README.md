@@ -30,7 +30,7 @@ The following are prerequisites for this solution:
  
  ## Important configuration notes
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
- - All of the BIG-IP VE members in the cluster are active and process traffic.  See [Detailed Clustering Information] (#detailed-clustering-information).
+ - All of the BIG-IP VE members in the cluster are active and process traffic.  See [Detailed Clustering Information](#detailed-clustering-information).
  - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
  - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
  - After deploying the template, if you make manual changes to the BIG-IP configuration, you must see [this section](#important-if-you-make-manual-changes-to-big-ip-after-launching-the-template).

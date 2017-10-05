@@ -6,7 +6,8 @@
 **Contents**             
 
  - [Introduction](#introduction) 
- - [Prerequisites](#prerequisites-and-configuration-notes)
+ - [Prerequisites](#prerequisites)
+ - [Important Configuration Notes](#important-configuration-notes)
  - [Launching the template](#launching-the-template) 
  - [Getting Help](#help)
  - [Additional BIG-IP VE Deployment and Configuration Details](#additional-big-ip-ve-deployment-and-configuration-details)
@@ -17,10 +18,9 @@
 This solution implements auto scaling of BIG-IP Virtual Edition (VE) Web Application Firewall (WAF) systems in Amazon Web Services. The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) and <a href="https://f5.com/products/big-ip/application-security-manager-asm">Application Security Manager</a> (ASM) modules enabled to provide advanced traffic management and web application security functionality.  As traffic increases or decreases, the number of BIG-IP VE WAF instances automatically increases or decreases accordingly. 
 
 
-## Prerequisites and configuration notes
+## Prerequisites
 The following are prerequisites and notes for this solution:
  - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdminstratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.  For details on permissions and all AWS configuration, see https://aws.amazon.com/documentation/.
- - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
    - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
    - The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
@@ -28,8 +28,15 @@ The following are prerequisites and notes for this solution:
  - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image. 
  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
- - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
- - This template includes a master election feature, which ensures that if the existing master BIG-IP VE is unavailable, a new master is selected from the BIG-IP VEs in the cluster. As a part of this process, the template creates an IAM role-protected SQS queue (https://aws.amazon.com/sqs/) for communication between the BIG-IP VEs, and encrypted credentials are sent on this queue. Additionally, the template creates public keys for the BIG-IP VEs and puts them in an S3 bucket in the public_keys folder. See [How this solution works](#how-this-solution-works) for more details.
+
+## Important configuration notes
+- The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
+- All of the BIG-IP VE members in the cluster are active and process traffic.  See [Detailed Clustering Information] (#detailed-clustering-information).
+- After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
+- After deploying the template, if you make manual changes to the BIG-IP configuration, you must see [this section](#important-if-you-make-manual-changes-to-big-ip-after-launching-the-template).
+- This template includes a master election feature, which ensures that if the existing master BIG-IP VE is unavailable, a new master is selected from the BIG-IP VEs in the cluster. As a part of this process, the template creates an IAM role-protected SQS queue (https://aws.amazon.com/sqs/) for communication between the BIG-IP VEs, and encrypted credentials are sent on this queue. Additionally, the template creates public keys for the BIG-IP VEs and puts them in an S3 bucket in the public_keys folder. See [How this solution works](#how-this-solution-works) for more details.
+- This template can send non-identifiable statistical information to F5 Networks to help us improve our templates.  See [Sending statistical information to F5](#sending-statistical-information-to-f5).
+- F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughputs available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/aws-bigip-version-matrix.md.
 
 ## Launching the template
 You have three options for launching this solution:
@@ -122,7 +129,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | --- | --- | --- | --- |
 | Deployment Name | deploymentName | Yes | Name the template uses to create BIG-IP and AWS object names |
 | VPC ID | vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
-| Availabilty Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
+| Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
 | Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
 | Elastic Load Balancer for BIG-IP VEs | bigipElasticLoadBalancer | Yes | Name of the AWS Elastic Load Balancer group for the BIG-IP VEs |
@@ -149,6 +156,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Group | group | No | Group Tag (the default is f5group) |
 | Owner | owner | No | Owner Tag (the default is f5owner) |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter) |
+| Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |
 <br>
 
 
@@ -190,6 +198,14 @@ Once you have completed the template and the BIG-IP system instantiates *(estima
 
 
 You can now configure the BIG-IP VE as applicable for your configuration.  See the BIG-IP documentation for details (https://support.f5.com/csp/tech-documents)
+
+<a name="manual"></a>
+#### IMPORTANT: If you make manual changes to BIG-IP after launching the template
+After you initially launch the template, if you make manual changes to the BIG-IP configuration, you must make a backup of your BIG-IP configuration and store the resulting UCS file in the S3 bucket created by the template to ensure the master election process functions properly.
+
+  1. Backup your BIG-IP configuration (ideally the cluster primary) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive.  Use the following syntax to save the backup UCS file:<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
+  
+  2. Store the UCS file in the S3 bucket created by the solution in folder called **/backup**.
 
 ---
 
@@ -251,7 +267,7 @@ Note: There is no indication of the "primary" instance in the BIG-IP Configurati
 
 When the first auto scale instance is launched, a Device Group called "autoscale-group" is automatically created. 
 
-Whenever a new instance is launched, it joins the cluster. If those instances are scaled down, they are removed from the cluster and the original instance remains. The cluster membership is updated once every 10 minutes and sends metrics every 60 seconds using [iCall](https://devcentral.f5.com/icall).
+Whenever a new instance is launched, it joins the cluster. If those instances are scaled down, they are removed from the cluster and the original instance remains. The cluster membership is updated once every 2 minutes and sends metrics every 60 seconds.
 
 This deployment creates an initial BIG-IP configuration using an [iApp](https://devcentral.f5.com/iapps) that includes a basic virtual service (listening on 0.0.0.0:80) with a WAF policy.   
 
@@ -287,13 +303,17 @@ The CloudFormation Template creates and leverages several AWS resources to suppo
 ### Restoring or upgrading the solution
 Certain elements of this deployment can be updated with the CloudFormation stack itself. This is referred to as *Updating the Stack*. For instance, anything that causes the Auto Scale Launch Configuration to update, like changing the AMI IDs (to upgrade from one BIG-IP version to another), instance sizes, scaling thresholds, and many others, requires updating the stack. [This video](https://www.youtube.com/watch?v=nKxF6thckNQ) shows how to perform the following procedure.
  
-Clustering is only done within a Launch Configuration ID basis, so any changes that result in a new Launch Configuration ID require the following procedure.
+Clustering is only done within a Launch Configuration ID basis, so any changes that result in a new Launch Configuration ID require the following procedure.  
+
+Note: Steps 1 and 2 are not necessary if you have already saved the backup as described <a href="#manual">above</a>.
  
-  1. Backup your BIG-IP configuration (ideally the cluster primary) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive and store it in the S3 bucket created by the solution in folder called /backup:<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
+  1. Backup your BIG-IP configuration (ideally the cluster primary) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive.  Use the following syntax to save the backup UCS file:<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
+  
+  2. Store the UCS file in the S3 bucket created by the solution in folder called **/backup**.
     
-  2. Update the Stack in AWS (click **CloudFormation > Action > Update Stack**).  
+  3. Update the Stack in AWS (click **CloudFormation > Action > Update Stack**).  
  
-  3. The first instance from the new Launch Config becomes the new cluster primary and looks for a UCS in that backup folder for the latest configuration. NOTE: It selects the UCS with the latest timestamp. All subsequent instances from that launch config then sync the latest configuration from the cluster primary as usual. 
+  4. The first instance from the new Launch Config becomes the new cluster primary and looks for a UCS in that backup folder for the latest configuration. NOTE: It selects the UCS with the latest timestamp. All subsequent instances from that launch config then sync the latest configuration from the cluster primary as usual. 
 
 ---
 ### Removing the deployment
@@ -309,6 +329,25 @@ This deployment creates an S3 bucket using the following naming convention: *(yo
 
 3. Delete the CloudFormation stack
 In the AWS Console, navigate to the CloudFormation page, select the stack created with the f5-autoscale-bigip.template and delete the stack by right-clicking or (selecting the Actions tab) and then clicking **Delete Stack**.
+
+---
+
+### Sending statistical information to F5
+All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  
+None of the information we collect is personally identifiable, and only includes:  
+
+- Customer ID: this is a hash of the customer ID, not the actual ID
+- Deployment ID: hash of stack ID
+- F5 template name
+- F5 template version
+- Cloud Name
+- AWS region 
+- BIG-IP version 
+- F5 license type
+- F5 Cloud libs version
+- F5 script name
+ 
+This information is critical to the future improvements of templates, but should you decide to select **No**, information will not be sent.
 
 ---
 

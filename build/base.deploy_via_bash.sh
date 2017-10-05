@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Bash Script to deploy F5 template into AWS, using aws-cli/1.11.76 ##
+## Bash Script to deploy F5 template into AWS, using aws-cli/1.11.165 ##
 # Example Command: <EXAMPLE_CMD>
 
 # Assign Script Paramters and Define Variables

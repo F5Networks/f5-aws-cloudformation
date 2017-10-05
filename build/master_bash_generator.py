@@ -1,9 +1,8 @@
+#/usr/bin/python env
 # This class exists to automate the creation of bash deployment scripts (example: deploy_via_bash.sh for all supported templates)
-
 from optparse import OptionParser
 from collections import defaultdict
 import copy
-
 def main():
     # parser instance for command line arguments passed in when running this script (master_bash_generator.py)
     cli_argument_parser = parse_args()
@@ -88,24 +87,22 @@ def create_all_parameters(cli_argument_parser):
     parameters["licenseType"]
     parameters["imageName"]
     parameters["instanceType"]
-    parameters["bigipExternalSecurityGroup"]
     parameters["sshKey"]
     parameters["subnet1Az1"]
     parameters["Vpc"]
     parameters["stackName"]
     parameters["licenseKey1"]
-
+    parameters["restrictedSrcAddress"]
+    parameters["restrictedSrcAddressApp"]
     # add differentiating parameters
     if(cli_argument_parser.num_nics == 3):
-        parameters["bigipInternalSecurityGroup"]
         parameters["subnet2Az1"]
     if(cli_argument_parser.num_nics >=2):
-        parameters["bigipManagementSecurityGroup"]
-        parameters["licenseKey2"]
         parameters["managementSubnetAz1"]
     if(cli_argument_parser.num_nics == 2 and cli_argument_parser.ha_type == "across-az"):
         parameters["managementSubnetAz2"]
         parameters["subnet1Az2"]
+        parameters["licenseKey2"]
             
     return parameters
 

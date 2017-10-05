@@ -1,4 +1,4 @@
-# Deploying the BIG-IP in AWS - Clustered 2 NIC - Same Availability Zone
+# Deploying the BIG-IP VE in AWS - Clustered 2 NIC - Same Availability Zone
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 [![Releases](https://img.shields.io/github/release/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/releases)
@@ -6,7 +6,8 @@
  
 **Contents**
  - [Introduction](#introduction) 
- - [Prerequisites](#prerequisites-and-configuration-notes)
+ - [Prerequisites](#prerequisites)
+ - [Important Configuration Notes](#important-configuration-notes)
  - [Security](#security)
  - [Getting Help](#help)
  - [Deploying the solution](#deploying-the-solution)
@@ -30,11 +31,16 @@ The following are prerequisites for the F5 clustered 2-NIC CFT:
     - External subnet (called Private in the AWS UI).  
     - NAT instance and associated network interface for network translation.
   - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = < region >.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
+  
+## Important configuration notes 
   - This template creates AWS Security Groups as a part of the deployment. For the external Security Group, this includes a port for accessing your applications on port 80/443.  If your applications need additional ports, you must add those to the external Security Group created by the template.  For instructions on adding ports, see the AWS documentation.
   - Key pair for management access to BIG-IP VE (you can create or import in AWS)
   - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
+  - In order to pass traffic from your clients to the servers, after launching the template you must create virtual servers on the BIG-IP VE.  See [Creating a virtual server](#creating-virtual-servers-on-the-big-ip-ve).
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
+  - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates.  See [Sending statistical information to F5](#sending-statistical-information-to-f5).
+  - F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughputs available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/aws-bigip-version-matrix.md.
   -	If you are using the *Licensing using BIG-IQ* template only:
     - This solution only supports only BIG-IQ versions 5.0 - 5.3.
     - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
@@ -91,7 +97,7 @@ After clicking the Launch button, you must specify the following parameters.
 | VPC | Vpc | Yes | Common VPC for the deployment |
 | Management Subnet AZ1 | managementSubnetAz1 | Yes | Management subnet ID |
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID |
-| Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
+| BIG-IP Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | License Key1 | licenseKey1 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey. |
 | License Key2 | licenseKey2 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey for the second BIG-IP VE. |
@@ -104,132 +110,17 @@ After clicking the Launch button, you must specify the following parameters.
 | Group | group | No | Group Tag (the default is f5group). |
 | Owner | owner | No | Owner Tag (the default is f5owner). |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
-| IP address of BIG-IQ | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ licensing only: IP address of the BIG-IQ device that contains the pool of licenses |
-| BIG-IQ user with Licensing Privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IQ. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
+| BIG-IQ Address | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ licensing only: IP address or DNS hostname of the BIG-IQ device that contains the pool of licenses |
+| BIG-IQ user with Licensing Privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IP. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
 | S3 ARN of the BIG-IQ Password File | bigiqPasswordS3ARN | Yes <br>(BIG-IQ) | BIG-IQ licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE |
 | BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses. |
+| Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |
 <br>
 
-### Installing the template using the AWS CLI (aws-cli/1.11.76)
-If you want to deploy the template using the AWS CLI (does not include licensing using BIG-IQ, use the Launch button for that option), use the following example script, replacing the static items (or make them parameters).  Use the following command syntax:
- 
-```./deploy_via_bash.sh --stackName <value> --licenseType Hourly --managementSubnetAz1 <value> --sshKey <value> --bigipManagementSecurityGroup <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --instanceType t2.medium --Vpc <value> --imageName Good200Mbps```
+### Installing the template using the AWS CLI (aws-cli/1.11.165)
+If you want to deploy the template using the AWS CLI, use the example **deploy_via_bash.sh** script available [in this repository](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/cluster/2nic/same-az-ha/deploy_via_bash.sh). Replace the static items (or make them parameters).  
 
-The following is the script file.  This file (**deploy_via_bash.sh**) is also available in this repository. 
-
-```bash
-#!/bin/bash
-
-## Bash Script to deploy F5 template into AWS, using aws-cli/1.11.76 ##
-# Example Command: ./deploy_via_bash.sh --stackName <value> --licenseType Hourly --managementSubnetAz1 <value> --sshKey <value> --bigipManagementSecurityGroup <value> --subnet1Az1 <value> --bigipExternalSecurityGroup <value> --instanceType t2.medium --Vpc <value> --imageName Good200Mbps
-
-# Assign Script Parameters and Define Variables
-# Specify static items, change these as needed or make them parameters
-region="us-west-2"
-restrictedSrcAddress="0.0.0.0/0"
-tagValues='[{"Key": "application", "Value": "f5app"},{"Key": "environment", "Value": "f5env"},{"Key": "group", "Value": "f5group"},{"Key": "owner", "Value": "f5owner"},{"Key": "costcenter", "Value": "f5costcenter"}]'
-ntpServer="0.pool.ntp.org"
-timezone="UTC"
-
-# Parse the command line arguments, primarily checking full params as short params are just placeholders
-while [[ $# -gt 1 ]]
-do
-    case "$1" in
-        --licenseKey1)
-			licenseKey1=$2
-			shift 2;;
-		--licenseType)
-			licenseType=$2
-			shift 2;;
-		--managementSubnetAz1)
-			managementSubnetAz1=$2
-			shift 2;;
-		--sshKey)
-			sshKey=$2
-			shift 2;;
-		--licenseKey2)
-			licenseKey2=$2
-			shift 2;;
-		--bigipManagementSecurityGroup)
-			bigipManagementSecurityGroup=$2
-			shift 2;;
-		--subnet1Az1)
-			subnet1Az1=$2
-			shift 2;;
-		--bigipExternalSecurityGroup)
-			bigipExternalSecurityGroup=$2
-			shift 2;;
-		--stackName)
-			stackName=$2
-			shift 2;;
-		--imageName)
-			imageName=$2
-			shift 2;;
-		--Vpc)
-			Vpc=$2
-			shift 2;;
-		--instanceType)
-			instanceType=$2
-			shift 2;;
-		
-        --)
-			shift
-			break;;
-    esac
-done
-
-#If a required parameter is not passed, the script will prompt for it below
-required_variables="stackName licenseType managementSubnetAz1 sshKey bigipManagementSecurityGroup subnet1Az1 bigipExternalSecurityGroup instanceType Vpc imageName "
-for variable in $required_variables
-do
-    while [ -z ${!variable} ]
-    do
-        read -p "Please enter value for $variable:" $variable
-    done
-done
-
-# Prompt for license key if not supplied and BYOL is selected 
-if [ $licenseType == "BYOL" ]
-then 
-    while [ -z $licenseKey1 ]
-    do
-        read -p "Please enter value for licenseKey1:" licenseKey1
-    done
-    while [ -z $licenseKey2 ]
-    do
-        read -p "Please enter value for licenseKey2:" licenseKey2
-    done
-    
-    template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-byol-2nic-bigip.template"
-fi 
-
-# Prompt for license bandwidth if not supplied and Hourly is selected 
-if [ $licenseType == "Hourly" ]
-then 
-    while [ -z $imageName ]
-    do 
-        read -p "Please enter value for imageName:" imageName
-    done
-    
-    template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template"
-fi
-
-echo "Disclaimer: Scripting to Deploy F5 Solution templates into Cloud Environments are provided as examples. They will be treated as best effort for issues that occur, feedback is encouraged."
-sleep 3
-
-# Deploy Template
-if [ $licenseType == "BYOL" ]
-then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --capabilities CAPABILITY_IAM --parameters ParameterKey=licenseKey1,ParameterValue=$licenseKey1 ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=licenseKey2,ParameterValue=$licenseKey2 ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=imageName,ParameterValue=$imageName ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
-
-elif [ $licenseType == "Hourly" ]
-then
-    aws cloudformation create-stack --stack-name $stackName --template-url $template --capabilities CAPABILITY_IAM --parameters ParameterKey=managementSubnetAz1,ParameterValue=$managementSubnetAz1 ParameterKey=sshKey,ParameterValue=$sshKey ParameterKey=bigipManagementSecurityGroup,ParameterValue=$bigipManagementSecurityGroup ParameterKey=subnet1Az1,ParameterValue=$subnet1Az1 ParameterKey=bigipExternalSecurityGroup,ParameterValue=$bigipExternalSecurityGroup ParameterKey=instanceType,ParameterValue=$instanceType ParameterKey=Vpc,ParameterValue=$Vpc ParameterKey=imageName,ParameterValue=$imageName ParameterKey=restrictedSrcAddress,ParameterValue=$restrictedSrcAddress ParameterKey=ntpServer,ParameterValue=$ntpServer ParameterKey=timezone,ParameterValue=$timezone --tags "$tagValues"
-else 
-    echo "This failure may have been caused by an error in license type: Please ensure license type is either Hourly or BYOL'"
-    exit 1
-fi
-```
+---
 
 ## Service Discovery
 Once you launch your BIG-IP instance using the CFT template, you can use the Service Discovery iApp template on the BIG-IP VE to automatically update pool members based on auto-scaled cloud application hosts.  In the iApp template, you enter information about your cloud environment, including the tag key and tag value for the pool members you want to include, and then the BIG-IP VE programmatically discovers (or removes) members using those tags.
@@ -255,12 +146,48 @@ To launch the template:
   
 If you want to verify the integrity of the template, from the BIG-IP VE Configuration utility click **iApps > Templates**. In the template list, look for **f5.service_discovery**. In the Verification column, you should see **F5 Verified**.
 
+## Creating virtual servers on the BIG-IP VE
+
+In order to pass traffic from your clients to the servers through the BIG-IP system, you must create at least two virtual servers on the BIG-IP VE using Traffic Group **None** using the following guidance. To create a BIG-IP virtual server you need to know the AWS secondary private IP addresses for each BIG-IP VE created by the template. If you need additional virtual servers for your applications/servers, you can add more secondary private IP addresses in AWS, and corresponding virtual servers on the BIG-IP system. See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html for information on multiple IP addresses.
+
+**To create virtual servers on the BIG-IP system**
+
+1. Once your BIG-IP VE has launched, open the BIG-IP VE Configuration utility.
+2. On the Main tab, click **Local Traffic > Virtual Servers** and then click the **Create** button.
+3. In the **Name** field, give the Virtual Server a unique name.
+4. In the **Destination/Mask** field, type the AWS secondary private IP address.
+5. In the **Service Port** field, type the appropriate port. 
+6. Configure the rest of the virtual server as appropriate.
+7. If you used the Service Discovery iApp template: <br>In the Resources section, from the **Default Pool** list, select the name of the pool created by the iApp.
+8. Click the **Finished** button.
+9. Repeat as necessary.  <br>
+When you have completed the virtual server configuration, you must modify the virtual addresses to use Traffic Group None using the following guidance.
+10. On the Main tab, click **Local Traffic > Virtual Servers**.
+11. On the Menu bar, click the **Virtual Address List** tab.
+12. Click the address of one of the virtual servers you just created.
+13. From the **Traffic Group** list, select **None**.
+14. Click **Update**.
+15. Repeat for each virtual server.
+
 ## Configuration Example
 
 The following is a simple configuration diagram for this clustered, 2-NIC deployment. This solution creates the instances with the BIG-IP v13.0 AMI image, and uses IAM roles for authentication.<br>
 ![Clustered 2-NIC configuration example](images/cluster2nic-same-az.png)
 
+### Sending statistical information to F5
+All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  
+None of the information we collect is personally identifiable, and only includes:  
 
+- Customer ID: this is a hash of the customer ID, not the actual ID
+- Deployment ID: hash of stack ID
+- F5 template name
+- F5 template version
+- Cloud Name
+- AWS region 
+- BIG-IP version 
+- F5 license type
+- F5 Cloud libs version
+- F5 script name
 
 ## Security Details
 This section has the entire code snippets for each of the lines you should ensure are present in your template file if you want to verify the integrity of the helper code in the template.
@@ -371,8 +298,8 @@ Copyright 2014-2017 F5 Networks Inc.
 ## License
 
 
-Apache V2.0
-~~~~~~~~~~~
+### Apache V2.0
+
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
 License at
@@ -385,7 +312,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations
 under the License.
 
-Contributor License Agreement
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### Contributor License Agreement
+
 Individuals or business entities who contribute to this project must have
 completed and submitted the [F5 Contributor License Agreement](http://f5-openstack-docs.readthedocs.io/en/latest/cla_landing.html).

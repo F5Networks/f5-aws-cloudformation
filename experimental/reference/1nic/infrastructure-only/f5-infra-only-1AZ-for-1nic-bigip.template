@@ -1,6 +1,16 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.5.0: AWS CloudFormation Template for creating a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Conditions": {
+  "optin": {
+   "Fn::Equals": [
+    "Yes",
+    {
+     "Ref": "allowUsageAnalytics"
+    }
+   ]
+  }
+ },
+ "Description": "Template Version 2.6.0: AWS CloudFormation Template for creating a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "WebserverRegionMap": {
    "ap-northeast-1": {
@@ -58,12 +68,9 @@
       "Vpc",
       "managementSubnetAz1",
       "managementSubnetAz2",
-      "bigipManagementSecurityGroup",
       "subnet1Az1",
       "subnet1Az2",
-      "bigipExternalSecurityGroup",
       "subnet2Az1",
-      "bigipInternalSecurityGroup",
       "availabilityZone1",
       "availabilityZone2"
      ]
@@ -81,6 +88,7 @@
       "managementGuiPort",
       "sshKey",
       "restrictedSrcAddress",
+      "restrictedSrcAddressApp",
       "ntpServer",
       "timezone"
      ]
@@ -102,11 +110,22 @@
       "default": ""
      },
      "Parameters": []
+    },
+    {
+     "Label": {
+      "default": "TEMPLATE ANALYTICS"
+     },
+     "Parameters": [
+      "allowUsageAnalytics"
+     ]
     }
    ],
    "ParameterLabels": {
     "Vpc": {
      "default": "VPC"
+    },
+    "allowUsageAnalytics": {
+     "default": "Send Anonymous Statistics to F5"
     },
     "application": {
      "default": "Application"
@@ -120,17 +139,8 @@
     "availabilityZone2": {
      "default": "Availability Zone 2"
     },
-    "bigipExternalSecurityGroup": {
-     "default": "External Security Group"
-    },
-    "bigipInternalSecurityGroup": {
-     "default": "Internal Security Group"
-    },
-    "bigipManagementSecurityGroup": {
-     "default": "Management Security Group"
-    },
     "bigiqAddress": {
-     "default": "IP address of BIG-IQ"
+     "default": "BIG-IQ address"
     },
     "bigiqLicensePoolName": {
      "default": "BIG-IQ License Pool Name"
@@ -139,7 +149,7 @@
      "default": "S3 ARN of the BIG-IQ Password File"
     },
     "bigiqUsername": {
-     "default": "BIG-IQ user with licensing priviledges"
+     "default": "BIG-IQ user with Licensing Privileges"
     },
     "costcenter": {
      "default": "Cost Center"
@@ -178,7 +188,10 @@
      "default": "Owner"
     },
     "restrictedSrcAddress": {
-     "default": "Source Address(es) for SSH Access"
+     "default": "Source Address(es) for Management Access"
+    },
+    "restrictedSrcAddressApp": {
+     "default": "Source Address(es) for Web Application Access (80/443)"
     },
     "sshKey": {
      "default": "SSH Key"
@@ -197,7 +210,7 @@
     }
    }
   },
-  "Version": "2.5.0"
+  "Version": "2.6.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -265,6 +278,15 @@
   }
  },
  "Parameters": {
+  "allowUsageAnalytics": {
+   "AllowedValues": [
+    "Yes",
+    "No"
+   ],
+   "Default": "Yes",
+   "Description": "This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent.",
+   "Type": "String"
+  },
   "application": {
    "Default": "f5app",
    "Description": "Name of the Application Tag",
@@ -318,8 +340,15 @@
   "restrictedSrcAddress": {
    "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
    "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
-   "Default": "0.0.0.0/0",
-   "Description": " The IP address range that can be used to SSH to the EC2 instances",
+   "Description": " The IP address range used to SSH and access managment GUI on the EC2 instances",
+   "MaxLength": "18",
+   "MinLength": "9",
+   "Type": "String"
+  },
+  "restrictedSrcAddressApp": {
+   "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+   "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+   "Description": " The IP address range that can be used to access web traffic (80/443) to the EC2 instances",
    "MaxLength": "18",
    "MinLength": "9",
    "Type": "String"
@@ -778,28 +807,28 @@
     "GroupDescription": "Enable Access to Webserver",
     "SecurityGroupIngress": [
      {
-      "CidrIp": "0.0.0.0/0",
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
       "FromPort": "22",
       "IpProtocol": "tcp",
       "ToPort": "22"
      },
      {
-      "CidrIp": "0.0.0.0/0",
+      "CidrIp": {
+       "Ref": "restrictedSrcAddressApp"
+      },
       "FromPort": "80",
       "IpProtocol": "tcp",
       "ToPort": "80"
      },
      {
-      "CidrIp": "0.0.0.0/0",
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
       "FromPort": "443",
       "IpProtocol": "tcp",
       "ToPort": "443"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "-1",
-      "IpProtocol": "icmp",
-      "ToPort": "-1"
      }
     ],
     "Tags": [
@@ -856,7 +885,7 @@
   },
   "bigipExternalSecurityGroup": {
    "Properties": {
-    "GroupDescription": "Public or External interface rules",
+    "GroupDescription": "Public or External interface rules, including BIG-IP management",
     "SecurityGroupIngress": [
      {
       "CidrIp": {
@@ -880,47 +909,19 @@
      },
      {
       "CidrIp": {
-       "Ref": "restrictedSrcAddress"
+       "Ref": "restrictedSrcAddressApp"
       },
-      "FromPort": "-1",
-      "IpProtocol": "icmp",
-      "ToPort": "-1"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
       "FromPort": "80",
       "IpProtocol": "tcp",
       "ToPort": "80"
      },
      {
-      "CidrIp": "0.0.0.0/0",
+      "CidrIp": {
+       "Ref": "restrictedSrcAddressApp"
+      },
       "FromPort": "443",
       "IpProtocol": "tcp",
       "ToPort": "443"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "4353",
-      "IpProtocol": "tcp",
-      "ToPort": "4353"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "22",
-      "IpProtocol": "tcp",
-      "ToPort": "22"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "1026",
-      "IpProtocol": "udp",
-      "ToPort": "1026"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "6123",
-      "IpProtocol": "tcp",
-      "ToPort": "6128"
      }
     ],
     "Tags": [

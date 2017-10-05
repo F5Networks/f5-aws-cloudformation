@@ -1,6 +1,16 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.5.0: AWS CloudFormation Template for creating a full stack with a 3NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Conditions": {
+  "optin": {
+   "Fn::Equals": [
+    "Yes",
+    {
+     "Ref": "allowUsageAnalytics"
+    }
+   ]
+  }
+ },
+ "Description": "Template Version 2.6.0: AWS CloudFormation Template for creating a full stack with a 3NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -130,12 +140,9 @@
       "Vpc",
       "managementSubnetAz1",
       "managementSubnetAz2",
-      "bigipManagementSecurityGroup",
       "subnet1Az1",
       "subnet1Az2",
-      "bigipExternalSecurityGroup",
       "subnet2Az1",
-      "bigipInternalSecurityGroup",
       "availabilityZone1",
       "availabilityZone2"
      ]
@@ -153,6 +160,7 @@
       "managementGuiPort",
       "sshKey",
       "restrictedSrcAddress",
+      "restrictedSrcAddressApp",
       "ntpServer",
       "timezone"
      ]
@@ -174,11 +182,22 @@
       "default": ""
      },
      "Parameters": []
+    },
+    {
+     "Label": {
+      "default": "TEMPLATE ANALYTICS"
+     },
+     "Parameters": [
+      "allowUsageAnalytics"
+     ]
     }
    ],
    "ParameterLabels": {
     "Vpc": {
      "default": "VPC"
+    },
+    "allowUsageAnalytics": {
+     "default": "Send Anonymous Statistics to F5"
     },
     "application": {
      "default": "Application"
@@ -192,17 +211,8 @@
     "availabilityZone2": {
      "default": "Availability Zone 2"
     },
-    "bigipExternalSecurityGroup": {
-     "default": "External Security Group"
-    },
-    "bigipInternalSecurityGroup": {
-     "default": "Internal Security Group"
-    },
-    "bigipManagementSecurityGroup": {
-     "default": "Management Security Group"
-    },
     "bigiqAddress": {
-     "default": "IP address of BIG-IQ"
+     "default": "BIG-IQ address"
     },
     "bigiqLicensePoolName": {
      "default": "BIG-IQ License Pool Name"
@@ -211,7 +221,7 @@
      "default": "S3 ARN of the BIG-IQ Password File"
     },
     "bigiqUsername": {
-     "default": "BIG-IQ user with licensing priviledges"
+     "default": "BIG-IQ user with Licensing Privileges"
     },
     "costcenter": {
      "default": "Cost Center"
@@ -250,7 +260,10 @@
      "default": "Owner"
     },
     "restrictedSrcAddress": {
-     "default": "Source Address(es) for SSH Access"
+     "default": "Source Address(es) for Management Access"
+    },
+    "restrictedSrcAddressApp": {
+     "default": "Source Address(es) for Web Application Access (80/443)"
     },
     "sshKey": {
      "default": "SSH Key"
@@ -269,7 +282,7 @@
     }
    }
   },
-  "Version": "2.5.0"
+  "Version": "2.6.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -479,6 +492,15 @@
   }
  },
  "Parameters": {
+  "allowUsageAnalytics": {
+   "AllowedValues": [
+    "Yes",
+    "No"
+   ],
+   "Default": "Yes",
+   "Description": "This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent.",
+   "Type": "String"
+  },
   "application": {
    "Default": "f5app",
    "Description": "Name of the Application Tag",
@@ -575,8 +597,15 @@
   "restrictedSrcAddress": {
    "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
    "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
-   "Default": "0.0.0.0/0",
-   "Description": " The IP address range that can be used to SSH to the EC2 instances",
+   "Description": " The IP address range used to SSH and access managment GUI on the EC2 instances",
+   "MaxLength": "18",
+   "MinLength": "9",
+   "Type": "String"
+  },
+  "restrictedSrcAddressApp": {
+   "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+   "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+   "Description": " The IP address range that can be used to access web traffic (80/443) to the EC2 instances",
    "MaxLength": "18",
    "MinLength": "9",
    "Type": "String"
@@ -884,37 +913,92 @@
        },
        "006-onboard-BIG-IP": {
         "command": {
-         "Fn::Join": [
-          " ",
-          [
-           "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
-           "nohup /config/waitThenRun.sh",
-           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
-           "--wait-for NETWORK_CONFIG_DONE",
-           "-o /var/log/onboard.log",
-           "--log-level debug",
-           "--no-reboot",
-           "--host localhost",
-           "--user admin",
-           "--password-url file:///config/cloud/aws/.adminPassword",
-           "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
-           "--ntp ",
-           {
-            "Ref": "ntpServer"
-           },
-           "--tz ",
-           {
-            "Ref": "timezone"
-           },
-           "--dns ${NAME_SERVER}",
-           "--module ltm:nominal",
-           "--license ",
-           {
-            "Ref": "licenseKey1"
-           },
-           "--ping",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
-          ]
+         "Fn::If": [
+          "optin",
+          {
+           "Fn::Join": [
+            " ",
+            [
+             "REGION=\"",
+             {
+              "Ref": "AWS::Region"
+             },
+             "\";",
+             "DEPLOYMENTID=`echo \"",
+             {
+              "Ref": "AWS::StackId"
+             },
+             "\"|sha512sum|cut -d \" \" -f 1`;",
+             "CUSTOMERID=`echo \"",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             "\"|sha512sum|cut -d \" \" -f 1`;",
+             "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
+             "nohup /config/waitThenRun.sh",
+             "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+             "--wait-for NETWORK_CONFIG_DONE",
+             "-o /var/log/onboard.log",
+             "--log-level debug",
+             "--no-reboot",
+             "--host localhost",
+             "--user admin",
+             "--password-url file:///config/cloud/aws/.adminPassword",
+             "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+             "--ntp ",
+             {
+              "Ref": "ntpServer"
+             },
+             "--tz ",
+             {
+              "Ref": "timezone"
+             },
+             "--dns ${NAME_SERVER}",
+             "--module ltm:nominal",
+             "--license ",
+             {
+              "Ref": "licenseKey1"
+             },
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-byol-3nic-bigip.template,templateVersion:2.6.0,licenseType:byol\"",
+             "--ping",
+             "&>> /var/log/cloudlibs-install.log < /dev/null &"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            " ",
+            [
+             "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
+             "nohup /config/waitThenRun.sh",
+             "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+             "--wait-for NETWORK_CONFIG_DONE",
+             "-o /var/log/onboard.log",
+             "--log-level debug",
+             "--no-reboot",
+             "--host localhost",
+             "--user admin",
+             "--password-url file:///config/cloud/aws/.adminPassword",
+             "--hostname `curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+             "--ntp ",
+             {
+              "Ref": "ntpServer"
+             },
+             "--tz ",
+             {
+              "Ref": "timezone"
+             },
+             "--dns ${NAME_SERVER}",
+             "--module ltm:nominal",
+             "--license ",
+             {
+              "Ref": "licenseKey1"
+             },
+             "--ping",
+             "&>> /var/log/cloudlibs-install.log < /dev/null &"
+            ]
+           ]
+          }
          ]
         }
        },
@@ -1032,7 +1116,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v1.0.2/f5-service-discovery/f5.service_discovery.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v1.1.1/f5-service-discovery/f5.service_discovery.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
@@ -1087,13 +1171,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.4.1/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.5.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.3.1/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.4.1/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -1114,21 +1198,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "if ! tmsh load sys config merge file /config/verifyHash; then",
-           "    echo cannot validate signature of /config/verifyHash",
-           "    exit",
-           "fi",
-           "echo loaded verifyHash",
-           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
-           "for fileToVerify in \"${filesToVerify[@]}\"",
-           "do",
-           "    echo verifying \"$fileToVerify\"",
-           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "        echo \"$fileToVerify\" is not valid",
-           "        exit 1",
-           "    fi",
-           "    echo verified \"$fileToVerify\"",
-           "done",
+           "#if ! tmsh load sys config merge file /config/verifyHash; then",
+           "#    echo cannot validate signature of /config/verifyHash",
+           "#    exit",
+           "#fi",
+           "#echo loaded verifyHash",
+           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
+           "#for fileToVerify in \"${filesToVerify[@]}\"",
+           "#do",
+           "#    echo verifying \"$fileToVerify\"",
+           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "#        echo \"$fileToVerify\" is not valid",
+           "#        exit 1",
+           "#    fi",
+           "#    echo verified \"$fileToVerify\"",
+           "#done",
            "mkdir -p /config/cloud/aws/node_modules",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -1144,7 +1228,7 @@
         "owner": "root"
        },
        "/config/verifyHash": {
-        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 1e7b5cb66e140bb4c5650b225612905e17bd167556b0b4366efce2d9138f8be86eec51c09eb96c3ffc2d25ba8965bae840e9d43b7c42dab08cdfad4d3d152509\n            set hashes(f5-cloud-libs-aws.tar.gz) 549aa436be806c80640f8dce570128fdf84613bf0688392e018639412c63818d25f26635b0aaf23e8cdf60b0d331de9218ed51a9cdfbf33db6e683727169a727\n            set hashes(f5-cloud-libs-azure.tar.gz) a4ff4a9af058ce6058159531fd7bca07eb8808cdd1b1e13de0e1324ec7e4692211991ecaa58dc36021c6c88c7783837d480584393753c3dfc2fddf623781e3a9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 4c125f7cbc4d701cf50f03de479ebe99a08c2b2c3fa6aae3e229eb3f0bba98bb513d630368229c98e7c5c907e6a3168ece2f8f576267514bad4f6730ea14d454\n            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a\n            set hashes(f5.service_discovery.tmpl) 8d7491accdb1818f09353cd5b03d317ccd87e6801ac25b47aa49984a0f4ca313e8f3ecc1c9c904ce01c89dfeeacd3487655c8d45cc43f83c2ccd54d71f4f7d5f\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature AFE2XgLHOiehaIUPzg72a5DrSmRciYP6BwVBIjNvwFiOdQqP+R4SBDzvrWbOiD+k97y8LthVlNbgQ4t2Elo8zMHHLdj62CmxB8KQSzZ1WVxHWiHIyakLri/RcoPVOeo4Tu/VZ78ICmw6SaH7tApcZUjsrTNLv7D8FLDysf9WRM+6eaDQ4FrxhDralIN989Xf2s0MUdH8RF7+FK8RIK7P7SFJDLIqsrHTl75EfNPOMTny/0dv6BO9G5Q6E0ik8quccbtPtAHrXA/dotqAvvvtYisNF3D4mMfTaRBhJYnN/W05syJDX+D95UtpK4F5DY2BmVBdQ9lvucnvMHrhEjbq9g==\n    signing-key /Common/f5-irule\n}",
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 5b5035fe7e1d98260be409cc29d65da49bcaaa9becb4124b308023ce8790439356a2b85de4ce5a4433532967e1d5f13379e98eeadcf251b607032f47481d832f\n            set hashes(f5-cloud-libs-aws.tar.gz) 279254b05d175df4ba1155fa810b3ea66a38e69198d7a6840ac9443ce730a5997e12c3b76af76ebadf13550d8bb0d45a5b09badfff4aac89e75d121bc166358d\n            set hashes(f5-cloud-libs-azure.tar.gz) 3c52145334fe80da577f980cdfbb1ef71fa4284b2f7fb4fa6f241cf50528e9fdc8df088a8312c3f6b90d3db198c787f7c10739e4098efb071cc29bf0ed70437b\n            set hashes(f5-cloud-libs-gce.tar.gz) 6ef33cc94c806b1e4e9e25ebb96a20eb1fe5975a83b2cd82b0d6ccbc8374be113ac74121d697f3bfc26bf49a55e948200f731607ce9aa9d23cd2e81299a653c1\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 4c125f7cbc4d701cf50f03de479ebe99a08c2b2c3fa6aae3e229eb3f0bba98bb513d630368229c98e7c5c907e6a3168ece2f8f576267514bad4f6730ea14d454\n            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a\n            set hashes(f5.service_discovery.tmpl) d4008a2c5a7f26cc42eb5cbe2171e15e6e95afb1b34fb03d04f6c1b80f154d896e6faaa2e04fbb85fd8e0e51b479dbfcd286357ce0967b162233cc57e0138b96\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature QyT1FQtNajuJkkmgI6ypFnbFu+JJw2UDV673xVwdt8LbE/aQ6JNS0QINerma90YU/uzj8ppThge5jttl3zSVYFkGXmHrvyDujdq50+/HfRnXBtieR+eW0Ro+4Kqfw83NLdebhsyRxJvfrzeAcJ/3VSnfmcERo/PKytcjtL5GFJpvUoaphfPz6YebbBg9VImBjfMBFczaWdKosLwriqG45Goh918lJLa6xYlLVRG+r+FJ9EXYaGty8jt/w4B0gl9oA4iqwmGPaB/GLBYgvek1tYeTl71wRRn/C8e0hsECqI0BAF6Yc7K06uzZcSYhTYQmMKIuebB/ckSdERzA3Mao+Q==\n    signing-key /Common/f5-irule\n}",
         "group": "root",
         "mode": "000755",
         "owner": "root"
@@ -1853,28 +1937,28 @@
     "GroupDescription": "Enable Access to Webserver",
     "SecurityGroupIngress": [
      {
-      "CidrIp": "0.0.0.0/0",
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
       "FromPort": "22",
       "IpProtocol": "tcp",
       "ToPort": "22"
      },
      {
-      "CidrIp": "0.0.0.0/0",
+      "CidrIp": {
+       "Ref": "restrictedSrcAddressApp"
+      },
       "FromPort": "80",
       "IpProtocol": "tcp",
       "ToPort": "80"
      },
      {
-      "CidrIp": "0.0.0.0/0",
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
       "FromPort": "443",
       "IpProtocol": "tcp",
       "ToPort": "443"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "-1",
-      "IpProtocol": "icmp",
-      "ToPort": "-1"
      }
     ],
     "Tags": [
@@ -1931,37 +2015,23 @@
   },
   "bigipExternalSecurityGroup": {
    "Properties": {
-    "GroupDescription": "Public or External interface rules",
+    "GroupDescription": "Public or external interface rules",
     "SecurityGroupIngress": [
      {
-      "CidrIp": "0.0.0.0/0",
+      "CidrIp": {
+       "Ref": "restrictedSrcAddressApp"
+      },
       "FromPort": "80",
       "IpProtocol": "tcp",
       "ToPort": "80"
      },
      {
-      "CidrIp": "0.0.0.0/0",
+      "CidrIp": {
+       "Ref": "restrictedSrcAddressApp"
+      },
       "FromPort": "443",
       "IpProtocol": "tcp",
       "ToPort": "443"
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "4353",
-      "IpProtocol": "tcp",
-      "ToPort": "4353"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "1026",
-      "IpProtocol": "udp",
-      "ToPort": "1026"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "6123",
-      "IpProtocol": "tcp",
-      "ToPort": "6128"
      }
     ],
     "Tags": [
@@ -2019,14 +2089,6 @@
   "bigipInternalSecurityGroup": {
    "Properties": {
     "GroupDescription": "Allow All from Intra-VPC only",
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "-1",
-      "IpProtocol": "-1",
-      "ToPort": "-1"
-     }
-    ],
     "Tags": [
      {
       "Key": "Application",
@@ -2081,7 +2143,7 @@
   },
   "bigipManagementSecurityGroup": {
    "Properties": {
-    "GroupDescription": "BIG-IP Management UI rules",
+    "GroupDescription": "BIG-IP management interface policy",
     "SecurityGroupIngress": [
      {
       "CidrIp": {
@@ -2095,26 +2157,6 @@
       "CidrIp": {
        "Ref": "restrictedSrcAddress"
       },
-      "FromPort": "443",
-      "IpProtocol": "tcp",
-      "ToPort": "443"
-     },
-     {
-      "CidrIp": {
-       "Ref": "restrictedSrcAddress"
-      },
-      "FromPort": "-1",
-      "IpProtocol": "icmp",
-      "ToPort": "-1"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
-      "FromPort": "22",
-      "IpProtocol": "tcp",
-      "ToPort": "22"
-     },
-     {
-      "CidrIp": "10.0.0.0/16",
       "FromPort": "443",
       "IpProtocol": "tcp",
       "ToPort": "443"

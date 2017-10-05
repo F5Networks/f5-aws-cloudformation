@@ -1,6 +1,16 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
- "Description": "Template Version 2.5.0: AWS CloudFormation Template for creating network components for a 2 Availability Zone VPC",
+ "Conditions": {
+  "optin": {
+   "Fn::Equals": [
+    "Yes",
+    {
+     "Ref": "allowUsageAnalytics"
+    }
+   ]
+  }
+ },
+ "Description": "Template Version 2.6.0: AWS CloudFormation Template for creating network components for a 2 Availability Zone VPC",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -12,12 +22,9 @@
       "Vpc",
       "managementSubnetAz1",
       "managementSubnetAz2",
-      "bigipManagementSecurityGroup",
       "subnet1Az1",
       "subnet1Az2",
-      "bigipExternalSecurityGroup",
       "subnet2Az1",
-      "bigipInternalSecurityGroup",
       "availabilityZone1",
       "availabilityZone2"
      ]
@@ -35,6 +42,7 @@
       "managementGuiPort",
       "sshKey",
       "restrictedSrcAddress",
+      "restrictedSrcAddressApp",
       "ntpServer",
       "timezone"
      ]
@@ -56,11 +64,22 @@
       "default": ""
      },
      "Parameters": []
+    },
+    {
+     "Label": {
+      "default": "TEMPLATE ANALYTICS"
+     },
+     "Parameters": [
+      "allowUsageAnalytics"
+     ]
     }
    ],
    "ParameterLabels": {
     "Vpc": {
      "default": "VPC"
+    },
+    "allowUsageAnalytics": {
+     "default": "Send Anonymous Statistics to F5"
     },
     "application": {
      "default": "Application"
@@ -74,17 +93,8 @@
     "availabilityZone2": {
      "default": "Availability Zone 2"
     },
-    "bigipExternalSecurityGroup": {
-     "default": "External Security Group"
-    },
-    "bigipInternalSecurityGroup": {
-     "default": "Internal Security Group"
-    },
-    "bigipManagementSecurityGroup": {
-     "default": "Management Security Group"
-    },
     "bigiqAddress": {
-     "default": "IP address of BIG-IQ"
+     "default": "BIG-IQ address"
     },
     "bigiqLicensePoolName": {
      "default": "BIG-IQ License Pool Name"
@@ -93,7 +103,7 @@
      "default": "S3 ARN of the BIG-IQ Password File"
     },
     "bigiqUsername": {
-     "default": "BIG-IQ user with licensing priviledges"
+     "default": "BIG-IQ user with Licensing Privileges"
     },
     "costcenter": {
      "default": "Cost Center"
@@ -132,7 +142,10 @@
      "default": "Owner"
     },
     "restrictedSrcAddress": {
-     "default": "Source Address(es) for SSH Access"
+     "default": "Source Address(es) for Management Access"
+    },
+    "restrictedSrcAddressApp": {
+     "default": "Source Address(es) for Web Application Access (80/443)"
     },
     "sshKey": {
      "default": "SSH Key"
@@ -151,7 +164,7 @@
     }
    }
   },
-  "Version": "2.5.0"
+  "Version": "2.6.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -190,6 +203,15 @@
   }
  },
  "Parameters": {
+  "allowUsageAnalytics": {
+   "AllowedValues": [
+    "Yes",
+    "No"
+   ],
+   "Default": "Yes",
+   "Description": "This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent.",
+   "Type": "String"
+  },
   "application": {
    "Default": "f5app",
    "Description": "Name of the Application Tag",

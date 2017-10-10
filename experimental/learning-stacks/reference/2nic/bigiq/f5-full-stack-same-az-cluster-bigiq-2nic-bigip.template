@@ -10,7 +10,7 @@
    ]
   }
  },
- "Description": "Template Version 2.6.0: AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of 2NIC BIG-IPs, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.6.1: AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of 2NIC BIG-IPs, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -287,7 +287,7 @@
     }
    }
   },
-  "Version": "2.6.0"
+  "Version": "2.6.1"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -1020,7 +1020,7 @@
              {
               "Ref": "bigiqLicensePoolName"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-bigiq-2nic-bigip.template,templateVersion:2.6.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-bigiq-2nic-bigip.template,templateVersion:2.6.1,licenseType:bigiq\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
@@ -1332,21 +1332,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "#if ! tmsh load sys config merge file /config/verifyHash; then",
-           "#    echo cannot validate signature of /config/verifyHash",
-           "#    exit",
-           "#fi",
-           "#echo loaded verifyHash",
-           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
-           "#for fileToVerify in \"${filesToVerify[@]}\"",
-           "#do",
-           "#    echo verifying \"$fileToVerify\"",
-           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "#        echo \"$fileToVerify\" is not valid",
-           "#        exit 1",
-           "#    fi",
-           "#    echo verified \"$fileToVerify\"",
-           "#done",
+           "if ! tmsh load sys config merge file /config/verifyHash; then",
+           "    echo cannot validate signature of /config/verifyHash",
+           "    exit",
+           "fi",
+           "echo loaded verifyHash",
+           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
+           "for fileToVerify in \"${filesToVerify[@]}\"",
+           "do",
+           "    echo verifying \"$fileToVerify\"",
+           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "        echo \"$fileToVerify\" is not valid",
+           "        exit 1",
+           "    fi",
+           "    echo verified \"$fileToVerify\"",
+           "done",
            "mkdir -p /config/cloud/aws/node_modules",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -1777,7 +1777,7 @@
              {
               "Ref": "bigiqLicensePoolName"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-bigiq-2nic-bigip.template,templateVersion:2.6.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-bigiq-2nic-bigip.template,templateVersion:2.6.1,licenseType:bigiq\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
@@ -2066,21 +2066,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "#if ! tmsh load sys config merge file /config/verifyHash; then",
-           "#    echo cannot validate signature of /config/verifyHash",
-           "#    exit",
-           "#fi",
-           "#echo loaded verifyHash",
-           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
-           "#for fileToVerify in \"${filesToVerify[@]}\"",
-           "#do",
-           "#    echo verifying \"$fileToVerify\"",
-           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "#        echo \"$fileToVerify\" is not valid",
-           "#        exit 1",
-           "#    fi",
-           "#    echo verified \"$fileToVerify\"",
-           "#done",
+           "if ! tmsh load sys config merge file /config/verifyHash; then",
+           "    echo cannot validate signature of /config/verifyHash",
+           "    exit",
+           "fi",
+           "echo loaded verifyHash",
+           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
+           "for fileToVerify in \"${filesToVerify[@]}\"",
+           "do",
+           "    echo verifying \"$fileToVerify\"",
+           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "        echo \"$fileToVerify\" is not valid",
+           "        exit 1",
+           "    fi",
+           "    echo verified \"$fileToVerify\"",
+           "done",
            "mkdir -p /config/cloud/aws/node_modules",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -2908,6 +2908,28 @@
    },
    "Type": "AWS::EC2::SecurityGroup"
   },
+  "bigipSecurityGroupIngressBigiqLic": {
+   "Properties": {
+    "CidrIp": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "bigiqAddress"
+       },
+       "/32"
+      ]
+     ]
+    },
+    "FromPort": "443",
+    "GroupId": {
+     "Ref": "bigipManagementSecurityGroup"
+    },
+    "IpProtocol": "tcp",
+    "ToPort": "443"
+   },
+   "Type": "AWS::EC2::SecurityGroupIngress"
+  },
   "bigipSecurityGroupIngressConfigSync": {
    "Properties": {
     "FromPort": "4353",
@@ -2936,7 +2958,7 @@
    },
    "Type": "AWS::EC2::SecurityGroupIngress"
   },
-  "bigipSecurityGroupIngressManagment": {
+  "bigipSecurityGroupIngressManagmentSame": {
    "Properties": {
     "FromPort": "443",
     "GroupId": {
@@ -2944,7 +2966,7 @@
     },
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
-     "Ref": "bigipExternalSecurityGroup"
+     "Ref": "bigipManagementSecurityGroup"
     },
     "ToPort": "443"
    },

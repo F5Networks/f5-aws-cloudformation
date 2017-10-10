@@ -1839,12 +1839,16 @@
       ]
      ]
     },
-    "FromPort": "443",
+    "FromPort": {
+     "Ref": "managementGuiPort"
+    },
     "GroupId": {
      "Ref": "bigipExternalSecurityGroup"
     },
     "IpProtocol": "tcp",
-    "ToPort": "443"
+    "ToPort": {
+     "Ref": "managementGuiPort"
+    }
    },
    "Type": "AWS::EC2::SecurityGroupIngress"
   },

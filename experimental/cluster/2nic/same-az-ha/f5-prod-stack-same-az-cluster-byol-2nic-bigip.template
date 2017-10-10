@@ -1844,7 +1844,7 @@
    },
    "Type": "AWS::EC2::SecurityGroupIngress"
   },
-  "bigipSecurityGroupIngressManagment": {
+  "bigipSecurityGroupIngressManagmentSame": {
    "Properties": {
     "FromPort": "443",
     "GroupId": {

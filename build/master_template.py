@@ -1039,8 +1039,8 @@ def main():
                     "bigipSecurityGroupIngressBigiqLic",
                     GroupId=Ref(bigipExternalSecurityGroup),
                     IpProtocol="tcp",
-                    FromPort="443",
-                    ToPort="443",
+                    FromPort=Ref(managementGuiPort),
+                    ToPort=Ref(managementGuiPort),
                     CidrIp=Join("", [Ref(bigiqAddress), "/32"]),
                 ))
         if num_nics > 1:
@@ -1154,15 +1154,25 @@ def main():
                 ToPort="1026",
                 SourceSecurityGroupId=Ref(bigipExternalSecurityGroup),
             ))
-            # Required for initial cluster configuration
-            bigipSecurityGroupIngressManagment = t.add_resource(SecurityGroupIngress(
-                "bigipSecurityGroupIngressManagment",
-                GroupId=Ref(bigipManagementSecurityGroup),
-                IpProtocol="tcp",
-                FromPort="443",
-                ToPort="443",
-                SourceSecurityGroupId=Ref(bigipManagementSecurityGroup),
-            ))
+            if ha_type == "same-az":
+                # Required for initial cluster configuration
+                bigipSecurityGroupIngressManagmentSame = t.add_resource(SecurityGroupIngress(
+                    "bigipSecurityGroupIngressManagmentSame",
+                    GroupId=Ref(bigipManagementSecurityGroup),
+                    IpProtocol="tcp",
+                    FromPort="443",
+                    ToPort="443",
+                    SourceSecurityGroupId=Ref(bigipManagementSecurityGroup),
+                ))
+            if ha_type == "across-az":
+                bigipSecurityGroupIngressManagmentAcross = t.add_resource(SecurityGroupIngress(
+                    "bigipSecurityGroupIngressManagmentAcross",
+                    GroupId=Ref(bigipManagementSecurityGroup),
+                    IpProtocol="tcp",
+                    FromPort="443",
+                    ToPort="443",
+                    SourceSecurityGroupId=Ref(bigipExternalSecurityGroup),
+                ))
         if webserver == True:
             WebserverSecurityGroup = t.add_resource(SecurityGroup(
                 "WebserverSecurityGroup",

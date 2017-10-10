@@ -3094,7 +3094,7 @@
    },
    "Type": "AWS::EC2::SecurityGroupIngress"
   },
-  "bigipSecurityGroupIngressManagment": {
+  "bigipSecurityGroupIngressManagmentAcross": {
    "Properties": {
     "FromPort": "443",
     "GroupId": {
@@ -3102,7 +3102,7 @@
     },
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
-     "Ref": "bigipManagementSecurityGroup"
+     "Ref": "bigipExternalSecurityGroup"
     },
     "ToPort": "443"
    },

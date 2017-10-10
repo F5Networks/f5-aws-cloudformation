@@ -132,7 +132,7 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    version = "2.6.0"
+    version = "2.6.1"
     ### Big-IP mapped
     BIGIP_VERSION = "13.0.0.2.0.1671"
     ### Cloudlib Branch
@@ -168,7 +168,7 @@ def main():
         cloudlib_aws_url = "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs-aws/" + str(branch_aws) + "/f5-cloud-libs-aws.tar.gz"
         discovery_url =  "http://cdn.f5.com/product/cloudsolutions/iapps/common/f5-service-discovery/" + str(branch_cloud_iapps) + "/f5.service_discovery.tmpl"
     ### add hashmark to skip cloudlib verification script.
-    comment_out = "#"
+    comment_out = ""
     # Begin Template
     t = Template()
     ## add template version
@@ -1033,6 +1033,16 @@ def main():
                     Costcenter=Ref("costcenter"),
                 ),
             ))
+            if license_type == "bigiq":
+                # ALLOW BIG-IQ to configure license
+                bigipSecurityGroupIngressBigiqLic = t.add_resource(SecurityGroupIngress(
+                    "bigipSecurityGroupIngressBigiqLic",
+                    GroupId=Ref(bigipExternalSecurityGroup),
+                    IpProtocol="tcp",
+                    FromPort="443",
+                    ToPort="443",
+                    CidrIp=Join("", [Ref(bigiqAddress), "/32"]),
+                ))
         if num_nics > 1:
             bigipExternalSecurityGroup = t.add_resource(SecurityGroup(
                 "bigipExternalSecurityGroup",
@@ -1090,6 +1100,16 @@ def main():
                     Costcenter=Ref("costcenter"),
                 ),
             ))
+            if license_type == "bigiq":
+                # ALLOW BIG-IQ to configure license
+                bigipSecurityGroupIngressBigiqLic = t.add_resource(SecurityGroupIngress(
+                    "bigipSecurityGroupIngressBigiqLic",
+                    GroupId=Ref(bigipManagementSecurityGroup),
+                    IpProtocol="tcp",
+                    FromPort="443",
+                    ToPort="443",
+                    CidrIp=Join("", [Ref(bigiqAddress), "/32"]),
+                ))
         # If a 3 nic with additional Internal interface.
         if num_nics > 2:
             bigipInternalSecurityGroup = t.add_resource(SecurityGroup(
@@ -1141,7 +1161,7 @@ def main():
                 IpProtocol="tcp",
                 FromPort="443",
                 ToPort="443",
-                SourceSecurityGroupId=Ref(bigipExternalSecurityGroup),
+                SourceSecurityGroupId=Ref(bigipManagementSecurityGroup),
             ))
         if webserver == True:
             WebserverSecurityGroup = t.add_resource(SecurityGroup(

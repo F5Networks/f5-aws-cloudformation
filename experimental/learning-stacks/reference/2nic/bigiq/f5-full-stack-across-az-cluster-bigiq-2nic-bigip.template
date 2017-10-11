@@ -10,7 +10,7 @@
    ]
   }
  },
- "Description": "Template Version 2.6.0: AWS CloudFormation Template for creating a full stack with a Across-AZs cluster of 2NIC BIG-IPs, a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.6.1: AWS CloudFormation Template for creating a full stack with a Across-AZs cluster of 2NIC BIG-IPs, a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -287,7 +287,7 @@
     }
    }
   },
-  "Version": "2.6.0"
+  "Version": "2.6.1"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -1136,7 +1136,7 @@
              {
               "Ref": "bigiqLicensePoolName"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-across-az-cluster-bigiq-2nic-bigip.template,templateVersion:2.6.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-across-az-cluster-bigiq-2nic-bigip.template,templateVersion:2.6.1,licenseType:bigiq\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
@@ -1906,7 +1906,7 @@
              {
               "Ref": "bigiqLicensePoolName"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-across-az-cluster-bigiq-2nic-bigip.template,templateVersion:2.6.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-across-az-cluster-bigiq-2nic-bigip.template,templateVersion:2.6.1,licenseType:bigiq\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
@@ -3044,6 +3044,28 @@
    },
    "Type": "AWS::EC2::SecurityGroup"
   },
+  "bigipSecurityGroupIngressBigiqLic": {
+   "Properties": {
+    "CidrIp": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "bigiqAddress"
+       },
+       "/32"
+      ]
+     ]
+    },
+    "FromPort": "443",
+    "GroupId": {
+     "Ref": "bigipManagementSecurityGroup"
+    },
+    "IpProtocol": "tcp",
+    "ToPort": "443"
+   },
+   "Type": "AWS::EC2::SecurityGroupIngress"
+  },
   "bigipSecurityGroupIngressConfigSync": {
    "Properties": {
     "FromPort": "4353",
@@ -3072,7 +3094,7 @@
    },
    "Type": "AWS::EC2::SecurityGroupIngress"
   },
-  "bigipSecurityGroupIngressManagment": {
+  "bigipSecurityGroupIngressManagmentAcross": {
    "Properties": {
     "FromPort": "443",
     "GroupId": {

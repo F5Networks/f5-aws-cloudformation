@@ -17,6 +17,9 @@ Welcome to the GitHub repository for F5's CloudFormation templates for deploying
 Descriptions for each template are contained at the top of each template in the *Description* key.
 For additional information, including how the templates are generated, and assistance in deploying a template, see the README file on the individual template pages.
 
+### Matrix for tagged releases
+F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughputs available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md.
+
 
 ## List of Supported F5 CloudFormation templates for AWS deployments
 The following is a list of the current *supported* F5 CloudFormation templates. Click the links below to view the README files which include the Launch buttons, or click the **Launch Stack** buttons to immediately launch the stack. Because individual templates may have specific prerequisites, we strongly recommend you view the README file before attempting to launch a template. 

@@ -10,7 +10,7 @@
    ]
   }
  },
- "Description": "Template Version 2.6.0: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.6.1: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -243,7 +243,7 @@
     }
    }
   },
-  "Version": "2.6.0"
+  "Version": "2.6.1"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -608,7 +608,7 @@
               "Ref": "bigiqLicensePoolName"
              },
              "--module asm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-bigiq-1nic-bigip-w-waf.template,templateVersion:2.6.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-bigiq-1nic-bigip-w-waf.template,templateVersion:2.6.1,licenseType:bigiq\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
@@ -1160,6 +1160,32 @@
      "Ref": "bigipExternalSecurityGroup"
     },
     "ToPort": "6128"
+   },
+   "Type": "AWS::EC2::SecurityGroupIngress"
+  },
+  "bigipSecurityGroupIngressBigiqLic": {
+   "Properties": {
+    "CidrIp": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "bigiqAddress"
+       },
+       "/32"
+      ]
+     ]
+    },
+    "FromPort": {
+     "Ref": "managementGuiPort"
+    },
+    "GroupId": {
+     "Ref": "bigipExternalSecurityGroup"
+    },
+    "IpProtocol": "tcp",
+    "ToPort": {
+     "Ref": "managementGuiPort"
+    }
    },
    "Type": "AWS::EC2::SecurityGroupIngress"
   },

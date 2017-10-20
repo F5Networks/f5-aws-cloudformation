@@ -18,18 +18,33 @@ for dirpath,subdirs,files in os.walk(r'../supported'):
                 # pipe contents of the file through
                 sh512_returned = hashlib.sha512(data).hexdigest()
             # compare original MD5 with freshly calculated
-            if 'across' in file:
-                ha = " - Across AZs"
-            elif 'same' in file:
-                ha = " - Same Azs"
-            else:
-                ha = ""
             if 'byol' in file:
                 license = " - BYOL"
             elif 'hourly' in file:
                 license = " - HOURLY"
             else:
                 license = " - BIGIQ"
+            if 'across' in file:
+                ha = " - Across AZs"
+                gbb = ''
+                if 'Good' in file:
+                    gbb = 'Good:'
+                elif 'Better' in file:
+                    gbb = 'Better:'
+                elif 'Best' in file:
+                    gbb = 'Best:'
+                if '5000' in file:
+                    license = " - AWS Marketplace - " + gbb + "5000Mbps"
+                elif '1000' in file:
+                    license = " - AWS Marketplace - " + gbb + "1000Mbps"
+                elif '200' in file:
+                    license = " - AWS Marketplace - " + gbb + "200Mbps"
+                elif '25' in file:
+                    license = " - AWS Marketplace - " + gbb + "25Mbps"
+            elif 'same' in file:
+                ha = " - Same Azs"
+            else:
+                ha = ""
             if '1nic' in file:
                 nics = "1 NIC"
             elif '2nic' in file:
@@ -40,7 +55,9 @@ for dirpath,subdirs,files in os.walk(r'../supported'):
                 nics = ""
             if 'autoscale' in file:
                 type = "Auto Scale"
-                if '1000' in file:
+                if '5000' in file:
+                    license = " - AWS Marketplace - 5000Mbps"
+                elif '1000' in file:
                     license = " - AWS Marketplace - 1000Mbps"
                 elif '200' in file:
                     license = " - AWS Marketplace - 200Mbps"

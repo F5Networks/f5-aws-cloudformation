@@ -1,5 +1,4 @@
 **Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-bigiq-2nic-bigip.template)
-<<<<<<< HEAD
 '07bf0e89c4e2b96fa1d94792eb28932303ee22d4c83d0404fc688198caf7a36ba7abf9074f3402c83bd60928c18af98b6a7ad4ac1008e74f099ec64464e9d462'
 **Cluster: - Across AZs2 NIC - BYOL**(f5-existing-stack-across-az-cluster-byol-2nic-bigip.template)
 'f75f3a0ff76791026e5db67967e8e59416d45f88cd681e20cd7ed5121662159ba2531f932d51c50f987f56ed2a269e40cfba03153e442a27d7b54a9d56fe172e'
@@ -35,43 +34,6 @@
 '6b284e33abbd8e29c4c2fa81d0b04cfd84e06bf06ce1bc73f62b4a1a9581d1a2e6c666403d653d83c77a9cda12e592be355cebeba4f74c57bb92df669fe3bd2f'
 **Cluster: - Same Azs2 NIC - HOURLY**(f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template)
 '67a5569e9ea3fb49675970ff609ec418ac0d8733daeb2f96cc7dea54e6c5340d9bf0daadd3af7c0e413d060c54ecaf440cbf75fd3d9cd1b0f2b08999f84b98f7'
-=======
-'eefcc4905ff41facbbff200d8b0c91fb8115485e04883964feb779213b95493263ffe1df85870d2ef76b8c4f30e3fb3196f95a30a6302253a29dfae0f7ea078b'
-**Cluster: - Across AZs2 NIC - BYOL**(f5-existing-stack-across-az-cluster-byol-2nic-bigip.template)
-'398480145d7c802eefdb0e4fc48d52b2255360d263b50bce6eb9d94992acf31a0edc3cf453a8041ddbaeaebec0f55a3c3033d5eba69274ee2c691ab60046ece5'
-**Cluster: - Across AZs2 NIC - HOURLY**(f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template)
-'cf1ce0c6129bf71fe80c70561f6e23affaeae8d155d94c3399ac6af36d76f8618ff1009f7cc4888ef731f200dd423d0f672c2ca61f1f3fafd58714471dde5621'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Best1000Mbps-2nic-bigip.template)
-'e3ecaf9ce711d7f9c12d88b093fa187f7571426dd6c06883a3bcdaaca0f51b0bd843ebee029802ac2a4e391f686a1b8478e4abe383b31976e61c604a9a4d0a1d'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Best200Mbps-2nic-bigip.template)
-'a7c197dda9d9e759aa250b1444172268215c79f90ef623382a1e9af2c40a1ae05e350f9de50bd29a90e6b5777963b1e4fdfd20a833ca22260f61c95319c7bff0'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Best25Mbps-2nic-bigip.template)
-'b6eeff840b8a8fe7bfb73538801e0c0f5c23f1636e81e2026b79e9e82536284cc737589d9470915d168392dcb7f6aab7d914509ca97486f733824ddc036765c7'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Best5000Mbps-2nic-bigip.template)
-'9af2442508ee11995bd57e1e9299cd224e62f6edfe956fd0c00622443d86627a6495a25b1ebd50bce127ce39cf41995ddcf5c255d2bf5c0f481549c0a77d999c'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Better1000Mbps-2nic-bigip.template)
-'2b7746a795bf17fca59a782591f7489a354277eb8af9b559c3a064d04a7667918931d6476d9004595415af49d63dac0fdac4839f89e606d5c46c63111575bccf'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Better200Mbps-2nic-bigip.template)
-'86eba45d98ef626ae7d3fd45759830a55d278731c526d8f77b54c1615ac19902d29f8bf2c7b29ae4eef40afc0ffe1d1f4b30dbc2a3a5cec26099ce7ec2c6f410'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Better25Mbps-2nic-bigip.template)
-'56f0384a1e4b5afe50c3003e5460689b0615d70cdeef7ce679159732a943d43bc44d9ce0c16b571b26fc57bf2e955608bed1a2e3876988be4b359a71a84e2284'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Better5000Mbps-2nic-bigip.template)
-'d702cfba66ff79d6bdb9ef8ed74c826116923b0cc88b6353a92b4fda95153b9b9f0da416353993d5daafd31804bb089d2afe4215b2588542e1ee7afd9336840a'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Good1000Mbps-2nic-bigip.template)
-'f18140acf866403f90be61459517ff5a9702cf6b7453c61fdb5c339a1e605d56622de979c68a5482e1f4e1e7b565f5fb94e9c56fe87e8a16bdfb4eba61499674'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Good200Mbps-2nic-bigip.template)
-'3bdebb959d58b48fa46192a0e04250bb232404a9b85f83bf562ab046b90a0a5f771c5790b17a204e6474a3c66e1c66d4ce3307783d14716257b78e1cc2bb96d5'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Good25Mbps-2nic-bigip.template)
-'a34972fc89b8cea014ce10b9a91dd4892c47a52ab3d25055a4ea87ad39b5b4595f0020b119ab96b0959e9e6efa343b39e3926768b50c33d232d8c7ef54790d37'
-**Cluster: - Across AZs2 NIC - BIGIQ**(f5-existing-stack-across-az-cluster-Good5000Mbps-2nic-bigip.template)
-'150a9e34eff4f035bca4587ebcd45a693d52638f88fb3c870d0ae293ea38de907f58d508b06e90030795bcbf5f874690d6772b35858551a2c42ae3c3f00528a9'
-**Cluster: - Same Azs2 NIC - BIGIQ**(f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template)
-'deeba28a0b99b527f28cfd87e37127b4194b3712873ced677e3eaec94b3814e7f1c28472c67cbf40ac6d14a1afa2e0e30cc92a18d8b97865a0d661108592590d'
-**Cluster: - Same Azs2 NIC - BYOL**(f5-existing-stack-same-az-cluster-byol-2nic-bigip.template)
-'fab023f23e80ff25ea367cce9bde52f3391ba55b63f0f4bebc86c507d89f1ca8725745711fa573feb1095ef77b9ae3a61bdfdaaf73ff30c2f509dc57225e9c3a'
-**Cluster: - Same Azs2 NIC - HOURLY**(f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template)
-'3708af9114c274b6b1fe2950c7a18aa94b0035824c20022ad32f5b8368fa0d0ca5e1d030d375487dac1d7a728506b464f5bdbbe060f89e0d46829d9d235dc281'
->>>>>>> master
 **Auto Scale LTM:**(f5-autoscale-bigip-ltm.template)
 '8d0dfe4b75c82c1eedc925990f52de3e4c86c77e27f27c001a519149d3196ec23e2d426517e5c1a12603f4583ff7a83174e5444f7e4e596d31d688ebe12347b6'
 **Auto Scale LTM: - AWS Marketplace - 1000Mbps**(f5-autoscale-bigip-ltm-1000-Mbps.template)
@@ -91,7 +53,6 @@
 **Auto Scale WAF: - AWS Marketplace - 25Mbps**(f5-autoscale-bigip-25-Mbps.template)
 '7a367f0f0d3ad7416b41eee1efa1bcf490d803c12beccf31bbff0fa85462b14a2ebb719b76d1e990a15e755b7c134a9fc6118edd58ff87128c7ceb2e0d57f3ff'
 **Standalone:1 NIC - BIGIQ**(f5-existing-stack-bigiq-1nic-bigip.template)
-<<<<<<< HEAD
 '31ce51e0a103c1379d171f6585913e0236f8d583c43aaa6242da7e3a57b7a7cce2bfb5b53859248dfc9d3dafd8c599b4d0eaf77da440c5c3010c3f03cca94ecc'
 **Standalone:1 NIC - BYOL**(f5-existing-stack-byol-1nic-bigip.template)
 '005c8bdc844c5e6421f51f9738c42cd9e3e719cbfc09c1258ce185e5c4485c04b1be5a194dc2721cf53acc2b8149f387596b0887fdaf4cd5a7f59659ad1e8d72'
@@ -109,22 +70,3 @@
 'e73b8db0b71683da217affa77db4b372b9dea713f9e53bf75cf819a7b7736a5136d35d2193a569f9af8bff39bb5c847455c366dc3577e2dc8af9a827a7942700'
 **Standalone:3 NIC - HOURLY**(f5-existing-stack-hourly-3nic-bigip.template)
 '28620b5f9bc77785177b521ae28e1ed3306f63b3f90d812c20f9ac9a2ba3ef23a792c65428981102e6317e9964997633260851c4b71d451247469f58b4d74e61'
-=======
-'1b063cc58c3220157df9f6e4aff9e348d2b2681047acca597c7735b0b91160082bacdc492aea063af9532ec1e2b7179488aedffb2f533762ba886e700e142d1b'
-**Standalone:1 NIC - BYOL**(f5-existing-stack-byol-1nic-bigip.template)
-'4378e2763339e0e8eb63707c4e0353ab7201cd19198924783294128fbb86822e95262bfa38567eda798993abff96ed10fd1ab4ba8877678e254f61dfaa7dbdb7'
-**Standalone:1 NIC - HOURLY**(f5-existing-stack-hourly-1nic-bigip.template)
-'caa08e33a7c862873a0772605d6c5d968781c19fee6147d60fd82982f923adbf40759983b8b9d84878e92c8cf1d2ab9162b14c58ca2aceb233a91518cc715929'
-**Standalone:2 NIC - BIGIQ**(f5-existing-stack-bigiq-2nic-bigip.template)
-'c3700778790d658623afaaf5a50b7f90357dafb5bb436973a883e9e53dfc85d30a09d095e6a3ca61d9888de78e970fa46904eafb94063cb311a9fbc6e2feb749'
-**Standalone:2 NIC - BYOL**(f5-existing-stack-byol-2nic-bigip.template)
-'dc85add72679ec025cc0d4d3248ec0bbb305cfe135a1cb70f1550a5b3e7760adae700e577afdb8be2f72cf3daa3d6847e94becd55284b79e49d4f3fc972674af'
-**Standalone:2 NIC - HOURLY**(f5-existing-stack-hourly-2nic-bigip.template)
-'b62340d6ca041cefe2744938450d58c19855d0f0879ab43c268f6bd806dd564fbb8d92dd156755633fe9fcf019e6bb5b9e88b66b933745f8deafba2564317666'
-**Standalone:3 NIC - BIGIQ**(f5-existing-stack-bigiq-3nic-bigip.template)
-'5bb45e4703fdd781f21db89dd20cfe48f4179e17c593da581e60242a7b0826d7c9b859f433cdf932d9395583a7e62dc90e3230370a6dfc2418854873405bdc56'
-**Standalone:3 NIC - BYOL**(f5-existing-stack-byol-3nic-bigip.template)
-'b770406b291b7dc0bba80999373eecb1d38411f5862e69b6cc75ee73eb90b2647fd4a4359a3efd9c44df2529bf964b2fdc97b68ceaf43c5cb8fad75b719b8bbf'
-**Standalone:3 NIC - HOURLY**(f5-existing-stack-hourly-3nic-bigip.template)
-'cd87c151d28ffc4e0e6f5921b64d04ef988bc3dbf0267971869db070f4ff765de5c6e906d607d2da21ca490a28072fb7f242dd64a8f16c5891cefdbb6f906ee1'
->>>>>>> master

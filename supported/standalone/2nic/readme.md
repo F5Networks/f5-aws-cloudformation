@@ -182,6 +182,8 @@ None of the information we collect is personally identifiable, and only includes
 - F5 Cloud libs version
 - F5 script name
 
+This information is critical to the future improvements of templates, but should you decide to select **No**, information will not be sent to F5.
+
 ## Security Details
 This section has the entire code snippets for each of the lines you should ensure are present in your template file if you want to verify the integrity of the helper code in the template.
 

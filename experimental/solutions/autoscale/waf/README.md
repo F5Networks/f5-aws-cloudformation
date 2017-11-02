@@ -144,6 +144,8 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Maximum Instances | scalingMaxSize | Yes | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scale Group |
 | Scale Down Bytes Threshold | scaleDownBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
 | Scale Up Bytes Threshold | scaleUpBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
+| Low CPU % Threshold | lowCpuThreshold | Yes | Low CPU % threshold to begin scaling up BIG-IP VE instances |
+| High CPU % Threshold | highCpuThreshold | Yes | High CPU % threshold to begin scaling up BIG-IP VE instances |
 | Notification Email | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
 | Virtual Service Port | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
 | Application Pool Member Port | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
@@ -156,6 +158,10 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Group | group | No | Group Tag (the default is f5group) |
 | Owner | owner | No | Owner Tag (the default is f5owner) |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter) |
+| IP address of BIG-IQ | bigiqAddress | Yes | IP address of the BIG-IQ device that contains the pool of BIG-IP licenses |
+| BIG-IQ user with licensing priviledges | bigiqUsername | Yes | BIG-IQ user with privileges to license BIG-IQ. Must be 'Admin', 'Device Manager', or 'Licensing Manager' |
+| S3 ARN of the BIG-IQ Password File | bigiqPasswordS3Arn | Yes | S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file |
+| BIG-IQ License Pool Name | bigiqLicensePoolName | Yes | Name of the pool on BIG-IQ that contains the BIG-IP licenses |
 | Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |
 <br>
 

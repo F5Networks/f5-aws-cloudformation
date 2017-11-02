@@ -559,6 +559,9 @@ The following is an example ELB configuration that could be used in this impleme
 
 ```
 
+### More documentation
+For more information on F5 solutions for AWS, including manual configuration instructions for many of our AWS templates, see our Cloud Docs site: http://clouddocs.f5.com/cloud/public/v1/.
+
 ## Filing Issues
 If you find an issue, we would love to hear about it. 
 You have a choice when it comes to filing issues:

@@ -164,8 +164,9 @@ The following is a simple configuration diagram for this single NIC deployment. 
 This solution uses the BIG-IP v13.0 AMI image.
 
 ![Single NIC configuration example](images/AWS-1nic.png)
-### Documentation
-The ***BIG-IP Virtual Edition and Amazon Web Services: Single NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  You can also see [this video](https://www.youtube.com/watch?v=509OS3x-k1A) on manually deploying the BIG-IP VE in AWS.
+
+### More documentation
+For more information on F5 solutions for AWS, including manual configuration instructions for many of our AWS templates, see our Cloud Docs site: http://clouddocs.f5.com/cloud/public/v1/.
 
 
 ### Sending statistical information to F5

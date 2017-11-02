@@ -171,8 +171,8 @@ In order to pass traffic from your clients to the servers through the BIG-IP sys
 The following is a simple configuration diagram for this 3-NIC deployment. In this diagram, the IP addresses are provided as examples. This solution uses the BIG-IP v13.0 AMI image.<br>
 ![2-NIC configuration example](images/aws-3-nic.png)
 
-### Documentation
-The ***BIG-IP Virtual Edition and Amazon Web Services: Multi-NIC Setup*** guide (https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/bigip-ve-multi-nic-setup-amazon-ec2-12-1-0.html) details how to create the configuration manually without using the CloudFormation template.  This document also describes the configuration in more detail.
+### More documentation
+For more information on F5 solutions for AWS, including manual configuration instructions for many of our AWS templates, see our Cloud Docs site: http://clouddocs.f5.com/cloud/public/v1/.
 
 ### Sending statistical information to F5
 All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  

@@ -26,6 +26,9 @@
   "eu-west-2": {
     "Better5000Mbps": "ami-07a6b263"
   }, 
+  "eu-west-3": {
+    "Better5000Mbps": ""
+  }, 
   "sa-east-1": {
     "Better5000Mbps": "ami-4a8fe326"
   }, 
@@ -34,6 +37,9 @@
   }, 
   "us-east-2": {
     "Better5000Mbps": "ami-3b183f5e"
+  }, 
+  "us-gov-west-1": {
+    "Better5000Mbps": ""
   }, 
   "us-west-1": {
     "Better5000Mbps": "ami-da6f49ba"

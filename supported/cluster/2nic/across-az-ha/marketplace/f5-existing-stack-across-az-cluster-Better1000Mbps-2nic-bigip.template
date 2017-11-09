@@ -40,6 +40,9 @@
    "eu-west-2": {
     "Better1000Mbps": "ami-97a0b4f3"
    },
+   "eu-west-3": {
+    "Better1000Mbps": ""
+   },
    "sa-east-1": {
     "Better1000Mbps": "ami-418fe32d"
    },
@@ -48,6 +51,9 @@
    },
    "us-east-2": {
     "Better1000Mbps": "ami-c2193ea7"
+   },
+   "us-gov-west-1": {
+    "Better1000Mbps": ""
    },
    "us-west-1": {
     "Better1000Mbps": "ami-fa6c4a9a"

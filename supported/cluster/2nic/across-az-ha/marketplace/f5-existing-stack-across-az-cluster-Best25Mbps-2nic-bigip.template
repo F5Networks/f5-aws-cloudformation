@@ -40,6 +40,9 @@
    "eu-west-2": {
     "Best25Mbps": "ami-81a5b1e5"
    },
+   "eu-west-3": {
+    "Best25Mbps": ""
+   },
    "sa-east-1": {
     "Best25Mbps": "ami-d58de1b9"
    },
@@ -48,6 +51,9 @@
    },
    "us-east-2": {
     "Best25Mbps": "ami-3c183f59"
+   },
+   "us-gov-west-1": {
+    "Best25Mbps": ""
    },
    "us-west-1": {
     "Best25Mbps": "ami-c46f49a4"

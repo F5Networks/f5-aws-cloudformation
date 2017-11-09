@@ -26,6 +26,9 @@
   "eu-west-2": {
     "Good5000Mbps": "ami-52a0b436"
   }, 
+  "eu-west-3": {
+    "Good5000Mbps": ""
+  }, 
   "sa-east-1": {
     "Good5000Mbps": "ami-358ee259"
   }, 
@@ -34,6 +37,9 @@
   }, 
   "us-east-2": {
     "Good5000Mbps": "ami-dfe7c0ba"
+  }, 
+  "us-gov-west-1": {
+    "Good5000Mbps": ""
   }, 
   "us-west-1": {
     "Good5000Mbps": "ami-336d4b53"

@@ -332,48 +332,54 @@
   },
   "Mappings": {
     "BigipRegionMap": {
-      "ap-northeast-1": {
-        "Good200Mbps": "ami-781a2b1f"
-      }, 
-      "ap-northeast-2": {
-        "Good200Mbps": "ami-aba27fc5"
-      }, 
-      "ap-south-1": {
-        "Good200Mbps": "ami-0fd4a660"
-      }, 
-      "ap-southeast-1": {
-        "Good200Mbps": "ami-9708b2f4"
-      }, 
-      "ap-southeast-2": {
-        "Good200Mbps": "ami-4bdfd428"
-      }, 
-      "ca-central-1": {
-        "Good200Mbps": "ami-52932f36"
-      }, 
-      "eu-central-1": {
-        "Good200Mbps": "ami-d84f90b7"
-      }, 
-      "eu-west-1": {
-        "Good200Mbps": "ami-0bb9b46d"
-      }, 
-      "eu-west-2": {
-        "Good200Mbps": "ami-daa5b1be"
-      }, 
-      "sa-east-1": {
-        "Good200Mbps": "ami-0e8ce062"
-      }, 
-      "us-east-1": {
-        "Good200Mbps": "ami-4c741a5a"
-      }, 
-      "us-east-2": {
-        "Good200Mbps": "ami-6de7c008"
-      }, 
-      "us-west-1": {
-        "Good200Mbps": "ami-fd6c4a9d"
-      }, 
-      "us-west-2": {
-        "Good200Mbps": "ami-80b328e0"
-      }
+     "ap-northeast-1": {
+      "Good200Mbps": "ami-781a2b1f"
+     },
+     "ap-northeast-2": {
+      "Good200Mbps": "ami-aba27fc5"
+     },
+     "ap-south-1": {
+      "Good200Mbps": "ami-0fd4a660"
+     },
+     "ap-southeast-1": {
+      "Good200Mbps": "ami-9708b2f4"
+     },
+     "ap-southeast-2": {
+      "Good200Mbps": "ami-4bdfd428"
+     },
+     "ca-central-1": {
+      "Good200Mbps": "ami-52932f36"
+     },
+     "eu-central-1": {
+      "Good200Mbps": "ami-d84f90b7"
+     },
+     "eu-west-1": {
+      "Good200Mbps": "ami-0bb9b46d"
+     },
+     "eu-west-2": {
+      "Good200Mbps": "ami-daa5b1be"
+     },
+     "eu-west-3": {
+      "Good200Mbps": ""
+     },
+     "sa-east-1": {
+      "Good200Mbps": "ami-0e8ce062"
+     },
+     "us-east-1": {
+      "Good200Mbps": "ami-4c741a5a"
+     },
+     "us-east-2": {
+      "Good200Mbps": "ami-6de7c008"
+     },
+     "us-gov-west-1": {
+      "Good200Mbps": ""
+     },
+     "us-west-1": {
+      "Good200Mbps": "ami-fd6c4a9d"
+     },
+     "us-west-2": {
+      "Good200Mbps": "ami-80b328e0"
+     }
     }
   },
   "Resources": {

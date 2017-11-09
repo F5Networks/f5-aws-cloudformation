@@ -40,6 +40,9 @@
    "eu-west-2": {
     "Best200Mbps": "ami-dba5b1bf"
    },
+   "eu-west-3": {
+    "Best200Mbps": ""
+   },
    "sa-east-1": {
     "Best200Mbps": "ami-0c8ce060"
    },
@@ -48,6 +51,9 @@
    },
    "us-east-2": {
     "Best200Mbps": "ami-8be7c0ee"
+   },
+   "us-gov-west-1": {
+    "Best200Mbps": ""
    },
    "us-west-1": {
     "Best200Mbps": "ami-7a6c4a1a"

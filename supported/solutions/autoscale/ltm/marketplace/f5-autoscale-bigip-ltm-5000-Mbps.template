@@ -332,48 +332,54 @@
   },
   "Mappings": {
     "BigipRegionMap": {
-      "ap-northeast-1": {
-        "Good5000Mbps": "ami-a01c2dc7"
-      }, 
-      "ap-northeast-2": {
-        "Good5000Mbps": "ami-dadf02b4"
-      }, 
-      "ap-south-1": {
-        "Good5000Mbps": "ami-c4dba9ab"
-      }, 
-      "ap-southeast-1": {
-        "Good5000Mbps": "ami-3a0eb459"
-      }, 
-      "ap-southeast-2": {
-        "Good5000Mbps": "ami-75d8d316"
-      }, 
-      "ca-central-1": {
-        "Good5000Mbps": "ami-0b94286f"
-      }, 
-      "eu-central-1": {
-        "Good5000Mbps": "ami-744d921b"
-      }, 
-      "eu-west-1": {
-        "Good5000Mbps": "ami-1fb9b479"
-      }, 
-      "eu-west-2": {
-        "Good5000Mbps": "ami-52a0b436"
-      }, 
-      "sa-east-1": {
-        "Good5000Mbps": "ami-358ee259"
-      }, 
-      "us-east-1": {
-        "Good5000Mbps": "ami-d0701ec6"
-      }, 
-      "us-east-2": {
-        "Good5000Mbps": "ami-dfe7c0ba"
-      }, 
-      "us-west-1": {
-        "Good5000Mbps": "ami-336d4b53"
-      }, 
-      "us-west-2": {
-        "Good5000Mbps": "ami-b2b229d2"
-      }
+     "ap-northeast-1": {
+      "Good5000Mbps": "ami-a01c2dc7"
+     },
+     "ap-northeast-2": {
+      "Good5000Mbps": "ami-dadf02b4"
+     },
+     "ap-south-1": {
+      "Good5000Mbps": "ami-c4dba9ab"
+     },
+     "ap-southeast-1": {
+      "Good5000Mbps": "ami-3a0eb459"
+     },
+     "ap-southeast-2": {
+      "Good5000Mbps": "ami-75d8d316"
+     },
+     "ca-central-1": {
+      "Good5000Mbps": "ami-0b94286f"
+     },
+     "eu-central-1": {
+      "Good5000Mbps": "ami-744d921b"
+     },
+     "eu-west-1": {
+      "Good5000Mbps": "ami-1fb9b479"
+     },
+     "eu-west-2": {
+      "Good5000Mbps": "ami-52a0b436"
+     },
+     "eu-west-3": {
+      "Good5000Mbps": ""
+     },
+     "sa-east-1": {
+      "Good5000Mbps": "ami-358ee259"
+     },
+     "us-east-1": {
+      "Good5000Mbps": "ami-d0701ec6"
+     },
+     "us-east-2": {
+      "Good5000Mbps": "ami-dfe7c0ba"
+     },
+     "us-gov-west-1": {
+      "Good5000Mbps": ""
+     },
+     "us-west-1": {
+      "Good5000Mbps": "ami-336d4b53"
+     },
+     "us-west-2": {
+      "Good5000Mbps": "ami-b2b229d2"
+     }
     }
   },
   "Resources": {

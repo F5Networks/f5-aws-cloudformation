@@ -26,6 +26,9 @@
   "eu-west-2": {
     "Good1000Mbps": "ami-3fa7b35b"
   }, 
+  "eu-west-3": {
+    "Good1000Mbps": ""
+  }, 
   "sa-east-1": {
     "Good1000Mbps": "ami-c68fe3aa"
   }, 
@@ -34,6 +37,9 @@
   }, 
   "us-east-2": {
     "Good1000Mbps": "ami-29e6c14c"
+  }, 
+  "us-gov-west-1": {
+    "Good1000Mbps": ""
   }, 
   "us-west-1": {
     "Good1000Mbps": "ami-486c4a28"

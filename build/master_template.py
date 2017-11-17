@@ -168,7 +168,7 @@ def main():
         cloudlib_aws_url = "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs-aws/" + str(branch_aws) + "/f5-cloud-libs-aws.tar.gz"
         discovery_url =  "http://cdn.f5.com/product/cloudsolutions/iapps/common/f5-service-discovery/" + str(branch_cloud_iapps) + "/f5.service_discovery.tmpl"
     ### add hashmark to skip cloudlib verification script.
-    comment_out = "#"
+    comment_out = ""
     # Begin Template
     t = Template()
     ## add template version

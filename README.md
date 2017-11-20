@@ -11,8 +11,8 @@
   <td>BIG-IP virtual servers configured with a Client SSL profile may be vulnerable to an Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack). For complete information on this vulnerability, see https://support.f5.com/csp/article/K21905460. <br>F5 has released hotfixes for all vulnerable releases. <br>  
    <ul>
     <li><em>If you have an existing BIG-IP VE deployment in AWS</em>  <br>See the <a href="https://support.f5.com/csp/article/K21905460">Security Advisory</a>, which contains information about upgrading your BIG-IP VE to a non-vulnerable version.</li>
-    <li><em>For <strong>new</strong> BIG-IP VE deployments in AWS</em><br> F5 has uploaded new BIG-IP versions into AWS, but they are not yet available.  We will update this page as soon as the images are available. Until the new images are available, we recommend new deployments of BIG-IP immediately apply the hotfix as described in the Security Advisory.</li>
-    <li><em>For <strong>new</strong> BIG-IP VE deployments using a template in an older F5 tagged release on GitHub</em><br>  F5 has uploaded new BIG-IP versions into AWS, but they are not yet available.  We will update this page as soon as the images are available. Until the new images are available, we recommend new deployments of BIG-IP immediately apply the hotfix as described in the Security Advisory.</li>
+    <li><em>For <strong>new</strong> BIG-IP VE deployments in AWS</em><br> The F5 CFT templates in the latest release (3.7.1) use non-vulnerable images. We recommending using the templates in this release for new deployments.</li>
+    <li><em>For <strong>new</strong> BIG-IP VE deployments using a template in an older tagged release on GitHub</em><br>  If you have a specific need for using an older F5 ARM template, see <a href="azure-update-bigip-image.md">Changing the BIG-IP VE image in an F5 ARM template</a> for instructions on updating the BIG-IP images referenced in the template.</li>
    </ul></td>
  </tr>
  </table>
@@ -32,7 +32,7 @@ Descriptions for each template are contained at the top of each template in the 
 For additional information, including how the templates are generated, and assistance in deploying a template, see the README file on the individual template pages.
 
 ### Matrix for tagged releases
-F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughputs available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md.
+F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types, and throughput levels available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md.
 
 
 ## List of Supported F5 CloudFormation templates for AWS deployments
@@ -110,8 +110,8 @@ Copyright 2014-2017 F5 Networks Inc.
 ### License
 
 
-Apache V2.0
-~~~~~~~~~~~
+## Apache V2.0
+
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
 License at:
@@ -125,7 +125,7 @@ See the License for the specific language governing permissions and limitations
 under the License.
 
 
-Contributor License Agreement
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Contributor License Agreement
+
 Individuals or business entities who contribute to this project must have
 completed and submitted the `F5 Contributor License Agreement`

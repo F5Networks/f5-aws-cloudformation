@@ -33,7 +33,7 @@ Refer to the [AWS CFT Template Matrix](https://github.com/F5Networks/f5-aws-clou
    ]  
   }  
  },  
- "Description": "Template Version 2.6.1: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",  
+ "Description": "Template Version 2.6.1: AWS CloudFormation ....",  
  "Mappings": {  
   "BigipRegionMap": {  
       "ap-northeast-1": {  
@@ -43,9 +43,10 @@ Refer to the [AWS CFT Template Matrix](https://github.com/F5Networks/f5-aws-clou
 
 7.  After the **"BigipRegionMap":**, select everything, including the bracket, until the **Metadata** line, and replace it with the contents of the AMI Map file you copied.
 8. Save the new file.
-8.  Deploy the CFT template as you typically do.  For example, you can:
-    - Use CLI tools to deploy the template.  See the individual README file for instructions.
-    - Deploy using the Azure portal by uploading the template file using the Templates blade.  Once it is uploaded, you can launch the new template from there.
-    - This is not an exhaustive list, simply deploy the new template as you normally would in Azure.
+9.  Deploy the CFT template as you typically do.  For example, you can:
+    - Use the AWS CLI to deploy the template.  See the individual README file for instructions.
+    - Deploy using the AWS CloudFormation UI by uploading the template file.  
+      ![Finding tagged releases](images/upload-template.png)
+    - This is not an exhaustive list, simply deploy the new template as you normally would in AWS.
 
 

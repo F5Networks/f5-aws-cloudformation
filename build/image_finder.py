@@ -260,43 +260,51 @@ def main():
     image_finder_obj = BigIpImageFinder()
 
     # Hourly Region Map ( Need to wait for v12/v13 to be released before can use Cloudinit )
-    HourlyMG25 = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="25", license="hourly", version="13.0.0.2.0.1671", regions=regions,)
-    HourlyMG200 = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="200", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    HourlyMG1000 = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="1000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    HourlyMG5000 = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="5000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    HourlyMBR25 = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="25", license="hourly", version="13.0.0.2.0.1671", regions=regions,)
-    HourlyMBR200 = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="200", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    HourlyMBR1000 = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="1000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    HourlyMBR5000 = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="5000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    HourlyMBT25 = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="25", license="hourly", version="13.0.0.2.0.1671", regions=regions,)
-    HourlyMBT200 = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="200", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    HourlyMBT1000 = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="1000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    HourlyMBT5000 = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="5000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    mp = {} # Marketplace Dict
+    mp["HourlyMG25"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="25", license="hourly", version="13.0.0.2.0.1671", regions=regions,)
+    mp["HourlyMG200"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="200", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    mp["HourlyMG1000"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="1000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    mp["HourlyMG5000"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="5000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    mp["HourlyMBR25"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="25", license="hourly", version="13.0.0.2.0.1671", regions=regions,)
+    mp["HourlyMBR200"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="200", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    mp["HourlyMBR1000"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="1000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    mp["HourlyMBR5000"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="5000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    mp["HourlyMBT25"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="25", license="hourly", version="13.0.0.2.0.1671", regions=regions,)
+    mp["HourlyMBT200"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="200", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    mp["HourlyMBT1000"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="1000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    mp["HourlyMBT5000"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="5000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
     HourlyRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    
+    # For marketplace templates only, add two regions for CAR support in the Gov Cloud and CDG regions (us-gov-west-1 and eu-west-3)
+    for key, value in mp.items(): # returns the dictionary as a list of value pairs
+        car_regions = ['us-gov-west-1', 'eu-west-3']
+        for car_region in car_regions:
+            value[car_region] = {value['us-east-1'].keys()[0]:""}
+    # Dump to files
     with open('../build/marketplace/cached-good25Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMG25, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMG25"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build//marketplace/cached-good200Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMG200, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMG200"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-good1000Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMG1000, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMG1000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-good5000Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMG5000, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMG5000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-better25Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMBR25, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMBR25"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build//marketplace/cached-better200Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMBR200, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMBR200"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-better1000Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMBR1000, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMBR1000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-better5000Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMBR5000, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMBR5000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-best25Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMBT25, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMBT25"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build//marketplace/cached-best200Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMBT200, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMBT200"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-best1000Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMBT1000, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMBT1000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-best5000Mbps-region-map.json', 'w') as outfile:
-        json.dump(HourlyMBT5000, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["HourlyMBT5000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('cached-hourly-region-map.json', 'w') as outfile:
         json.dump(HourlyRegionMap, outfile, sort_keys=True, indent=2, ensure_ascii=False)
     # BYOL Region Map:

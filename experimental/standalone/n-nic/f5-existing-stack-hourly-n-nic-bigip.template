@@ -381,6 +381,9 @@
     "Vpc": {
      "default": "VPC"
     },
+    "additionalNicLocation": {
+     "default": "Additional NIC Location"
+    },
     "allowUsageAnalytics": {
      "default": "Send Anonymous Statistics to F5"
     },
@@ -440,6 +443,9 @@
     },
     "ntpServer": {
      "default": "NTP Server"
+    },
+    "numberOfAdditionalNics": {
+     "default": "Number Of Additional NICs"
     },
     "owner": {
      "default": "Owner"
@@ -788,7 +794,7 @@
   "numberOfAdditionalNics": {
    "ConstraintDescription": "Must be a number between 1-5.",
    "Default": "1",
-   "Description": "By default this solution deploys the BIG-IP in a 3 NIC configuration, however it will also add a select number of additional NICs to the BIG-IP using this parameter",
+   "Description": "By default this solution deploys the BIG-IP in a 3 NIC configuration, however it will also add a select number(1-5) of additional NICs to the BIG-IP using this parameter",
    "MaxValue": "5",
    "MinValue": "1",
    "Type": "Number"

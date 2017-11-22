@@ -36,6 +36,15 @@ class BigIpImageFinder(object):
         conn = boto.ec2.connect_to_region(region)
         images = conn.get_all_images(filters={'name': 'F5*'})
 
+        #print images
+        f5_init_images = {}
+        for i in images:
+            start_position = i.name.find("ami-")
+            if start_position > 0:
+                #print (i.name[start_position:])[0:12]
+                f5_init_images[(i.name[start_position:])[0:12]]=True
+                #print f5_init_images
+
         # dimensions
         packages = ['good', 'better', 'best']
         throughputs = ['[0-9]+gbps', '[0-9]+mbps']
@@ -49,6 +58,8 @@ class BigIpImageFinder(object):
 
         structured = []
         for i in images:
+            if f5_init_images.get(i.id.lower(),None):
+                continue
             try:
                 image_name = i.name.lower()
                 image_id = i.id.lower()
@@ -258,22 +269,22 @@ def main():
     ]
 
     image_finder_obj = BigIpImageFinder()
+    marketplace_version = "13.0.0.3.0.1679"
 
-    # Hourly Region Map ( Need to wait for v12/v13 to be released before can use Cloudinit )
+    # Hourly Region Map Marketplace ( Need to wait for v12/v13 to be released before can use Cloudinit )
     mp = {} # Marketplace Dict
-    mp["HourlyMG25"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="25", license="hourly", version="13.0.0.2.0.1671", regions=regions,)
-    mp["HourlyMG200"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="200", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    mp["HourlyMG1000"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="1000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    mp["HourlyMG5000"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="5000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    mp["HourlyMBR25"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="25", license="hourly", version="13.0.0.2.0.1671", regions=regions,)
-    mp["HourlyMBR200"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="200", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    mp["HourlyMBR1000"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="1000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    mp["HourlyMBR5000"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="5000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    mp["HourlyMBT25"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="25", license="hourly", version="13.0.0.2.0.1671", regions=regions,)
-    mp["HourlyMBT200"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="200", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    mp["HourlyMBT1000"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="1000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    mp["HourlyMBT5000"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="5000", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
-    HourlyRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="hourly", version="13.0.0.2.0.1671", regions=regions, )
+    mp["HourlyMG25"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="25", license="hourly", version=marketplace_version, regions=regions,)
+    mp["HourlyMG200"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="200", license="hourly", version=marketplace_version, regions=regions, )
+    mp["HourlyMG1000"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="1000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["HourlyMG5000"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="5000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["HourlyMBR25"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="25", license="hourly", version=marketplace_version, regions=regions,)
+    mp["HourlyMBR200"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="200", license="hourly", version=marketplace_version, regions=regions, )
+    mp["HourlyMBR1000"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="1000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["HourlyMBR5000"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="5000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["HourlyMBT25"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="25", license="hourly", version=marketplace_version, regions=regions,)
+    mp["HourlyMBT200"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="200", license="hourly", version=marketplace_version, regions=regions, )
+    mp["HourlyMBT1000"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="1000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["HourlyMBT5000"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="5000", license="hourly", version=marketplace_version, regions=regions, )
     
     # For marketplace templates only, add two regions for CAR support in the Gov Cloud and CDG regions (us-gov-west-1 and eu-west-3)
     for key, value in mp.items(): # returns the dictionary as a list of value pairs
@@ -305,31 +316,29 @@ def main():
         json.dump(mp["HourlyMBT1000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-best5000Mbps-region-map.json', 'w') as outfile:
         json.dump(mp["HourlyMBT5000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+
+    # Hourly Region Map Non-Marketplace
+    HourlyRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="hourly", version="13.0.0.3.0.1679", regions=regions, )
     with open('cached-hourly-region-map.json', 'w') as outfile:
         json.dump(HourlyRegionMap, outfile, sort_keys=True, indent=2, ensure_ascii=False)
     # BYOL Region Map:
-    ByolRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="byol", version="13.0.0.2.0.1671", regions=regions, )
-
+    ByolRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="byol", version="13.0.0.3.0.1679", regions=regions, )
     with open('cached-byol-region-map.json', 'w') as outfile:
         json.dump(ByolRegionMap, outfile, sort_keys=True, indent=2, ensure_ascii=False)
-
     # BIG-IQ Region Map:
     BigiqRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="byol", version="5.1.0.0.0.631", regions=regions, )
-
     with open('cached-bigiq-region-map.json', 'w') as outfile:
         json.dump(BigiqRegionMap, outfile, sort_keys=True, indent=2, ensure_ascii=False)
 
         # Webserver Region Map:
     # bitnami-lampstack-5.5.13-0-dev-linux-ubuntu-12.04.4-x86_64-ebs-ami-a9f58699-3-ami-9dcd82ad
     # aws ec2 describe-images --region us-west-2 --filter 'Name=name,Values="bitnami-lampstack-5.5.13-0-dev-linux-ubuntu-12.04.4-x86_64-ebs*"' --query 'Images[*].[CreationDate,ImageId,Name,Description]' --output=text | awk '{print $2}'
-
     name_string = "F5 Demo App v0.0.1"
     image_finder_obj = WebImageFinder()
     WebserverRegionMap = image_finder_obj.getWebRegionMap(name_string=name_string, regions=regions)
 
     with open('cached-webserver-region-map.json', 'w') as outfile:
         json.dump(WebserverRegionMap, outfile, sort_keys=True, indent=2, ensure_ascii=False)
-
 
 if __name__ == "__main__":
     main()

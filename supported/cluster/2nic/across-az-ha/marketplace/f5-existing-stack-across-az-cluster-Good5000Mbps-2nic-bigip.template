@@ -14,52 +14,52 @@
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Good5000Mbps": "ami-a01c2dc7"
+    "Good5000Mbps": "ami-899320ef"
    },
    "ap-northeast-2": {
-    "Good5000Mbps": "ami-dadf02b4"
+    "Good5000Mbps": "ami-b8b91ed6"
    },
    "ap-south-1": {
-    "Good5000Mbps": "ami-c4dba9ab"
+    "Good5000Mbps": "ami-81a6e9ee"
    },
    "ap-southeast-1": {
-    "Good5000Mbps": "ami-3a0eb459"
+    "Good5000Mbps": "ami-4496c227"
    },
    "ap-southeast-2": {
-    "Good5000Mbps": "ami-75d8d316"
+    "Good5000Mbps": "ami-0807ec6a"
    },
    "ca-central-1": {
-    "Good5000Mbps": "ami-0b94286f"
+    "Good5000Mbps": "ami-789a211c"
    },
    "eu-central-1": {
-    "Good5000Mbps": "ami-744d921b"
+    "Good5000Mbps": "ami-da44c7b5"
    },
    "eu-west-1": {
-    "Good5000Mbps": "ami-1fb9b479"
+    "Good5000Mbps": "ami-4866d331"
    },
    "eu-west-2": {
-    "Good5000Mbps": "ami-52a0b436"
+    "Good5000Mbps": "ami-882936ec"
    },
    "eu-west-3": {
     "Good5000Mbps": ""
    },
    "sa-east-1": {
-    "Good5000Mbps": "ami-358ee259"
+    "Good5000Mbps": "ami-09420765"
    },
    "us-east-1": {
-    "Good5000Mbps": "ami-d0701ec6"
+    "Good5000Mbps": "ami-64901f1e"
    },
    "us-east-2": {
-    "Good5000Mbps": "ami-dfe7c0ba"
+    "Good5000Mbps": "ami-981937fd"
    },
    "us-gov-west-1": {
     "Good5000Mbps": ""
    },
    "us-west-1": {
-    "Good5000Mbps": "ami-336d4b53"
+    "Good5000Mbps": "ami-55407835"
    },
    "us-west-2": {
-    "Good5000Mbps": "ami-b2b229d2"
+    "Good5000Mbps": "ami-61db0919"
    }
   }
  },

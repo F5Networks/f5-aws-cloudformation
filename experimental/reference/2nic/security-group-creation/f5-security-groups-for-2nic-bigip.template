@@ -10,7 +10,7 @@
    ]
   }
  },
- "Description": "Template Version 2.6.1: AWS CloudFormation Template for creating security groups for a 2NIC BIG-IP",
+ "Description": "Template Version 2.7.1: AWS CloudFormation Template for creating security groups for a 2NIC BIG-IP",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -164,7 +164,7 @@
     }
    }
   },
-  "Version": "2.6.1"
+  "Version": "2.7.1"
  },
  "Outputs": {
   "bigipExternalSecurityGroup": {

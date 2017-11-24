@@ -10,7 +10,7 @@
      ]
     }
   },
-  "Description": "LTM v2.6.0ALPHA: This template deploys an auto scaling group for BYOL instances BIG-IP licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
+  "Description": "LTM v2.7.1ALPHA: This template deploys an auto scaling group for BYOL instances BIG-IP licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -218,7 +218,7 @@
         }
       }
     },
-  "Version": "2.6.0ALPHA"
+  "Version": "2.7.1ALPHA"
   },
   "Parameters": {
     "deploymentName" : {
@@ -284,18 +284,6 @@
         "c4.8xlarge"
       ],
       "ConstraintDescription": "Must be a valid BIG-IP BEST virtual EC2 instance type."
-    },
-    "throughput": {
-      "Description": "Maximum amount of throughput for BIG-IP VE",
-      "Type": "String",
-      "Default": "1000Mbps",
-      "AllowedValues": [
-        "25Mbps",
-        "200Mbps",
-        "1000Mbps",
-        "5000Mbps"
-      ],
-      "ConstraintDescription": "Select the BIG-IP throughput you want to use"
     },
     "imageName": {
       "Description": "F5 Image Name for the BIG-IP VE",
@@ -467,222 +455,74 @@
   "Mappings": {
     "BigipRegionMap": {
       "ap-northeast-1": {
-        "Best1000Mbps": "ami-3a1c2d5d", 
-        "Best200Mbps": "ami-301c2d57", 
-        "Best25Mbps": "ami-3b1e2f5c", 
-        "Best5000Mbps": "ami-b11f2ed6", 
-        "Better1000Mbps": "ami-631b2a04", 
-        "Better200Mbps": "ami-0c19286b", 
-        "Better25Mbps": "ami-841a2be3", 
-        "Better5000Mbps": "ami-a51e2fc2", 
-        "Good1000Mbps": "ami-3d1e2f5a", 
-        "Good200Mbps": "ami-781a2b1f", 
-        "Good25Mbps": "ami-031c2d64", 
-        "Good5000Mbps": "ami-a01c2dc7"
+        "Best": "ami-da9526bc", 
+        "Better": "ami-629b2804", 
+        "Good": "ami-9a9122fc"
       }, 
       "ap-northeast-2": {
-        "Best1000Mbps": "ami-33dc015d", 
-        "Best200Mbps": "ami-b9a37ed7", 
-        "Best25Mbps": "ami-e0dc018e", 
-        "Best5000Mbps": "ami-e4dd008a", 
-        "Better1000Mbps": "ami-ada27fc3", 
-        "Better200Mbps": "ami-b8a37ed6", 
-        "Better25Mbps": "ami-e5dc018b", 
-        "Better5000Mbps": "ami-15de037b", 
-        "Good1000Mbps": "ami-2aa27f44", 
-        "Good200Mbps": "ami-aba27fc5", 
-        "Good25Mbps": "ami-c7df02a9", 
-        "Good5000Mbps": "ami-dadf02b4"
+        "Best": "ami-05b81f6b", 
+        "Better": "ami-92bb1cfc", 
+        "Good": "ami-72b91e1c"
       }, 
       "ap-south-1": {
-        "Best1000Mbps": "ami-62dba90d", 
-        "Best200Mbps": "ami-bad8aad5", 
-        "Best25Mbps": "ami-07d5a768", 
-        "Best5000Mbps": "ami-76d9ab19", 
-        "Better1000Mbps": "ami-c4d8aaab", 
-        "Better200Mbps": "ami-bbdfadd4", 
-        "Better25Mbps": "ami-9ad9abf5", 
-        "Better5000Mbps": "ami-00d4a66f", 
-        "Good1000Mbps": "ami-f2deac9d", 
-        "Good200Mbps": "ami-0fd4a660", 
-        "Good25Mbps": "ami-e1d8aa8e", 
-        "Good5000Mbps": "ami-c4dba9ab"
+        "Best": "ami-e4a5ea8b", 
+        "Better": "ami-dca4ebb3", 
+        "Good": "ami-2fa7e840"
       }, 
       "ap-southeast-1": {
-        "Best1000Mbps": "ami-4e0eb42d", 
-        "Best200Mbps": "ami-5a0eb439", 
-        "Best25Mbps": "ami-530eb430", 
-        "Best5000Mbps": "ami-d70ab0b4", 
-        "Better1000Mbps": "ami-800bb1e3", 
-        "Better200Mbps": "ami-5c0eb43f", 
-        "Better25Mbps": "ami-d608b2b5", 
-        "Better5000Mbps": "ami-4e09b32d", 
-        "Good1000Mbps": "ami-cb08b2a8", 
-        "Good200Mbps": "ami-9708b2f4", 
-        "Good25Mbps": "ami-dc08b2bf", 
-        "Good5000Mbps": "ami-3a0eb459"
+        "Best": "ami-bc96c2df", 
+        "Better": "ami-1d95c17e", 
+        "Good": "ami-a694c0c5"
       }, 
       "ap-southeast-2": {
-        "Best1000Mbps": "ami-f4d8d397", 
-        "Best200Mbps": "ami-18dfd47b", 
-        "Best25Mbps": "ami-60d8d303", 
-        "Best5000Mbps": "ami-f9d8d39a", 
-        "Better1000Mbps": "ami-6ed8d30d", 
-        "Better200Mbps": "ami-cdd9d2ae", 
-        "Better25Mbps": "ami-ffd8d39c", 
-        "Better5000Mbps": "ami-8eddd6ed", 
-        "Good1000Mbps": "ami-e2ddd681", 
-        "Good200Mbps": "ami-4bdfd428", 
-        "Good25Mbps": "ami-05d8d366", 
-        "Good5000Mbps": "ami-75d8d316"
+        "Best": "ami-d501eab7", 
+        "Better": "ami-d901eabb", 
+        "Good": "ami-0800eb6a"
       }, 
       "ca-central-1": {
-        "Best1000Mbps": "ami-0894286c", 
-        "Best200Mbps": "ami-0994286d", 
-        "Best25Mbps": "ami-f895299c", 
-        "Best5000Mbps": "ami-93902cf7", 
-        "Better1000Mbps": "ami-43922e27", 
-        "Better200Mbps": "ami-93912df7", 
-        "Better25Mbps": "ami-fe95299a", 
-        "Better5000Mbps": "ami-4d932f29", 
-        "Good1000Mbps": "ami-a5922ec1", 
-        "Good200Mbps": "ami-52932f36", 
-        "Good25Mbps": "ami-318c3055", 
-        "Good5000Mbps": "ami-0b94286f"
+        "Best": "ami-7e9a211a", 
+        "Better": "ami-46a61d22", 
+        "Good": "ami-e3a71c87"
       }, 
       "eu-central-1": {
-        "Best1000Mbps": "ami-db4f90b4", 
-        "Best200Mbps": "ami-464d9229", 
-        "Best25Mbps": "ami-c24e91ad", 
-        "Best5000Mbps": "ami-87508fe8", 
-        "Better1000Mbps": "ami-0c4f9063", 
-        "Better200Mbps": "ami-f9518e96", 
-        "Better25Mbps": "ami-444d922b", 
-        "Better5000Mbps": "ami-904d92ff", 
-        "Good1000Mbps": "ami-774d9218", 
-        "Good200Mbps": "ami-d84f90b7", 
-        "Good25Mbps": "ami-3f4d9250", 
-        "Good5000Mbps": "ami-744d921b"
+        "Best": "ami-a444c7cb", 
+        "Better": "ami-7744c718", 
+        "Good": "ami-5a4ac935"
       }, 
       "eu-west-1": {
-        "Best1000Mbps": "ami-87bbb6e1", 
-        "Best200Mbps": "ami-30a2af56", 
-        "Best25Mbps": "ami-1fbdb079", 
-        "Best5000Mbps": "ami-adbcb1cb", 
-        "Better1000Mbps": "ami-98bdb0fe", 
-        "Better200Mbps": "ami-21a2af47", 
-        "Better25Mbps": "ami-b6a3aed0", 
-        "Better5000Mbps": "ami-ddbbb6bb", 
-        "Good1000Mbps": "ami-c9b8b5af", 
-        "Good200Mbps": "ami-0bb9b46d", 
-        "Good25Mbps": "ami-d7bbb6b1", 
-        "Good5000Mbps": "ami-1fb9b479"
+        "Best": "ami-f666d38f", 
+        "Better": "ami-b060d5c9", 
+        "Good": "ami-5a67d223"
       }, 
       "eu-west-2": {
-        "Best1000Mbps": "ami-91a0b4f5", 
-        "Best200Mbps": "ami-dba5b1bf", 
-        "Best25Mbps": "ami-81a5b1e5", 
-        "Best5000Mbps": "ami-42a5b126", 
-        "Better1000Mbps": "ami-97a0b4f3", 
-        "Better200Mbps": "ami-96a0b4f2", 
-        "Better25Mbps": "ami-d8a5b1bc", 
-        "Better5000Mbps": "ami-07a6b263", 
-        "Good1000Mbps": "ami-3fa7b35b", 
-        "Good200Mbps": "ami-daa5b1be", 
-        "Good25Mbps": "ami-92a0b4f6", 
-        "Good5000Mbps": "ami-52a0b436"
+        "Best": "ami-2d2c3349", 
+        "Better": "ami-482b342c", 
+        "Good": "ami-c02b34a4"
       }, 
       "sa-east-1": {
-        "Best1000Mbps": "ami-a88ee2c4", 
-        "Best200Mbps": "ami-0c8ce060", 
-        "Best25Mbps": "ami-d58de1b9", 
-        "Best5000Mbps": "ami-208ee24c", 
-        "Better1000Mbps": "ami-418fe32d", 
-        "Better200Mbps": "ami-dc8ee2b0", 
-        "Better25Mbps": "ami-408fe32c", 
-        "Better5000Mbps": "ami-4a8fe326", 
-        "Good1000Mbps": "ami-c68fe3aa", 
-        "Good200Mbps": "ami-0e8ce062", 
-        "Good25Mbps": "ami-548fe338", 
-        "Good5000Mbps": "ami-358ee259"
+        "Best": "ami-564f0a3a", 
+        "Better": "ami-0a4d0866", 
+        "Good": "ami-4b4c0927"
       }, 
       "us-east-1": {
-        "Best1000Mbps": "ami-52751b44", 
-        "Best200Mbps": "ami-1a78160c", 
-        "Best25Mbps": "ami-09721c1f", 
-        "Best5000Mbps": "ami-20791736", 
-        "Better1000Mbps": "ami-13791705", 
-        "Better200Mbps": "ami-c77917d1", 
-        "Better25Mbps": "ami-ea7b15fc", 
-        "Better5000Mbps": "ami-e4751bf2", 
-        "Good1000Mbps": "ami-bd701eab", 
-        "Good200Mbps": "ami-4c741a5a", 
-        "Good25Mbps": "ami-134a2405", 
-        "Good5000Mbps": "ami-d0701ec6"
+        "Best": "ami-12a92668", 
+        "Better": "ami-7fad2205", 
+        "Good": "ami-f6af208c"
       }, 
       "us-east-2": {
-        "Best1000Mbps": "ami-6ce7c009", 
-        "Best200Mbps": "ami-8be7c0ee", 
-        "Best25Mbps": "ami-3c183f59", 
-        "Best5000Mbps": "ami-d2e7c0b7", 
-        "Better1000Mbps": "ami-c2193ea7", 
-        "Better200Mbps": "ami-2ce6c149", 
-        "Better25Mbps": "ami-46193e23", 
-        "Better5000Mbps": "ami-3b183f5e", 
-        "Good1000Mbps": "ami-29e6c14c", 
-        "Good200Mbps": "ami-6de7c008", 
-        "Good25Mbps": "ami-c0193ea5", 
-        "Good5000Mbps": "ami-dfe7c0ba"
+        "Best": "ami-74193711", 
+        "Better": "ami-ce1836ab", 
+        "Good": "ami-2a17394f"
       }, 
       "us-west-1": {
-        "Best1000Mbps": "ami-c76a4ca7", 
-        "Best200Mbps": "ami-7a6c4a1a", 
-        "Best25Mbps": "ami-c46f49a4", 
-        "Best5000Mbps": "ami-9f6c4aff", 
-        "Better1000Mbps": "ami-fa6c4a9a", 
-        "Better200Mbps": "ami-e26d4b82", 
-        "Better25Mbps": "ami-686a4c08", 
-        "Better5000Mbps": "ami-da6f49ba", 
-        "Good1000Mbps": "ami-486c4a28", 
-        "Good200Mbps": "ami-fd6c4a9d", 
-        "Good25Mbps": "ami-3f6d4b5f", 
-        "Good5000Mbps": "ami-336d4b53"
+        "Best": "ami-074f7767", 
+        "Better": "ami-3a41795a", 
+        "Good": "ami-0d4f776d"
       }, 
       "us-west-2": {
-        "Best1000Mbps": "ami-66bd2606", 
-        "Best200Mbps": "ami-7abd261a", 
-        "Best25Mbps": "ami-6bbd260b", 
-        "Best5000Mbps": "ami-c6bd26a6", 
-        "Better1000Mbps": "ami-cfbd26af", 
-        "Better200Mbps": "ami-91b328f1", 
-        "Better25Mbps": "ami-24b12a44", 
-        "Better5000Mbps": "ami-44b22924", 
-        "Good1000Mbps": "ami-cbbc27ab", 
-        "Good200Mbps": "ami-80b328e0", 
-        "Good25Mbps": "ami-ebbc278b", 
-        "Good5000Mbps": "ami-b2b229d2"
-      }
-    },
-    "AWSBigipThrougput": {
-      "25Mbps": {
-        "Good": "Good25Mbps",
-        "Better": "Better25Mbps",
-        "Best": "Best25Mbps"
-      },
-      "200Mbps": {
-        "Good": "Good200Mbps",
-        "Better": "Better200Mbps",
-        "Best": "Best200Mbps"
-      },
-      "1000Mbps": {
-        "Good": "Good1000Mbps",
-        "Better": "Better1000Mbps",
-        "Best": "Best1000Mbps"
-      },
-      "5000Mbps": {
-        "Good": "Good5000Mbps",
-        "Better": "Better5000Mbps",
-        "Best": "Best5000Mbps"
+        "Best": "ami-67d90b1f", 
+        "Better": "ami-e2d5079a", 
+        "Good": "ami-39da0841"
       }
     }
   },
@@ -976,7 +816,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from v2.6.0ALPHA\n",
+                      "# Generated from v2.7.1ALPHA\n",
                       "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                       "region='",{"Ref": "AWS::Region"},"'\n",
                       "deploymentName='",{"Ref": "deploymentName"},"'\n",
@@ -1038,7 +878,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from v2.6.0ALPHA\n",
+                      "# Generated from v2.7.1ALPHA\n",
                       "date\n",
                       ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
@@ -1087,7 +927,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from v2.6.0ALPHA\n",
+                      "# Generated from v2.7.1ALPHA\n",
                       "echo about to execute",
                       "checks=0",
                       "while [ $checks -lt 120 ]; do echo checking mcpd",
@@ -1135,7 +975,7 @@
                       "Fn::Join": [
                           "\n",
                           [
-                              "# Generated from v2.6.0ALPHA\n",
+                              "# Generated from v2.7.1ALPHA\n",
                               "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                               "PASSWORD=$(/bin/sed -e $'s:[!\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                               "if [ \"$1\" == admin ]; then",
@@ -1156,7 +996,7 @@
                   "Fn::Join": [
                     "\n",
                     [
-                      "# Generated from v2.6.0ALPHA\n",
+                      "# Generated from v2.7.1ALPHA\n",
                       "INTERFACE=$1",
                       "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
                       "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
@@ -1176,7 +1016,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from v2.6.0ALPHA\n",
+                      "# Generated from v2.7.1ALPHA\n",
                       "while true; do echo waiting for cloud libs install to complete",
                       "    if [ -f /config/cloud/cloudLibsReady ]; then",
                       "        echo cloud libs installed",
@@ -1278,7 +1118,7 @@
                         "--ssl-port ",
                         { "Ref": "managementGuiPort" },
                         "--module ltm:nominal",
-                        "--metrics \"cloudName:aws,region:${region},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-autoscale-bigip-ltm.templateALPHA,templateVersion:2.6.0ALPHA,licenseType:bigiq\"",
+                        "--metrics \"cloudName:aws,region:${region},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-autoscale-bigip-ltm.templateALPHA,templateVersion:2.7.1ALPHA,licenseType:bigiq\"",
                         "--license-pool --big-iq-host ",
                         {
                         "Ref": "bigiqAddress"
@@ -1393,17 +1233,7 @@
             {
               "Ref": "AWS::Region"
             },
-            {
-              "Fn::FindInMap": [
-                "AWSBigipThrougput",
-                {
-                  "Ref": "throughput"
-                },
-                {
-                  "Ref": "imageName"
-                }
-              ]
-            }
+              "Ref": "imageName"
           ]
         },
         "InstanceMonitoring": false,

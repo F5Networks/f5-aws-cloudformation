@@ -59,8 +59,9 @@ class BigIpImageFinder(object):
         structured = []
         for i in images:
             if region == "us-east-1":
-                if (i.name.lower())[-1] != "4":
-                    continue
+                if re.search(r'BIGIP', i.name):
+                    if (i.name.lower())[-1] != "4":
+                        continue
             #if f5_init_images.get(i.id.lower(),None):
             #    continue
             try:

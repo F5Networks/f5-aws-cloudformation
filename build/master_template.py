@@ -132,9 +132,9 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    version = "2.6.1"
+    version = "2.7.1"
     ### Big-IP mapped
-    BIGIP_VERSION = "13.0.0.2.0.1671"
+    BIGIP_VERSION = "13.0.0.3.0.1679"
     ### Cloudlib Branch
     branch_cloud = "v3.4.1"
     branch_aws = "v1.5.0"

@@ -10,56 +10,56 @@
    ]
   }
  },
- "Description": "Template Version 2.6.1: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.7.1: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Best25Mbps": "ami-3b1e2f5c"
+    "Best25Mbps": "ami-20992a46"
    },
    "ap-northeast-2": {
-    "Best25Mbps": "ami-e0dc018e"
+    "Best25Mbps": "ami-0cb91e62"
    },
    "ap-south-1": {
-    "Best25Mbps": "ami-07d5a768"
+    "Best25Mbps": "ami-eba5ea84"
    },
    "ap-southeast-1": {
-    "Best25Mbps": "ami-530eb430"
+    "Best25Mbps": "ami-9e90c4fd"
    },
    "ap-southeast-2": {
-    "Best25Mbps": "ami-60d8d303"
+    "Best25Mbps": "ami-4a06ed28"
    },
    "ca-central-1": {
-    "Best25Mbps": "ami-f895299c"
+    "Best25Mbps": "ami-e6a71c82"
    },
    "eu-central-1": {
-    "Best25Mbps": "ami-c24e91ad"
+    "Best25Mbps": "ami-1849ca77"
    },
    "eu-west-1": {
-    "Best25Mbps": "ami-1fbdb079"
+    "Best25Mbps": "ami-7763d60e"
    },
    "eu-west-2": {
-    "Best25Mbps": "ami-81a5b1e5"
+    "Best25Mbps": "ami-462b3422"
    },
    "eu-west-3": {
     "Best25Mbps": ""
    },
    "sa-east-1": {
-    "Best25Mbps": "ami-d58de1b9"
+    "Best25Mbps": "ami-a04c09cc"
    },
    "us-east-1": {
-    "Best25Mbps": "ami-09721c1f"
+    "Best25Mbps": "ami-73a92609"
    },
    "us-east-2": {
-    "Best25Mbps": "ami-3c183f59"
+    "Best25Mbps": "ami-dc1b35b9"
    },
    "us-gov-west-1": {
     "Best25Mbps": ""
    },
    "us-west-1": {
-    "Best25Mbps": "ami-c46f49a4"
+    "Best25Mbps": "ami-c14078a1"
    },
    "us-west-2": {
-    "Best25Mbps": "ami-6bbd260b"
+    "Best25Mbps": "ami-81d507f9"
    }
   }
  },
@@ -216,7 +216,7 @@
     }
    }
   },
-  "Version": "2.6.1"
+  "Version": "2.7.1"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -664,7 +664,7 @@
              },
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Best25Mbps-2nic-bigip.template,templateVersion:2.6.1,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Best25Mbps-2nic-bigip.template,templateVersion:2.7.1,licenseType:hourly\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
@@ -1361,7 +1361,7 @@
              },
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Best25Mbps-2nic-bigip.template,templateVersion:2.6.1,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Best25Mbps-2nic-bigip.template,templateVersion:2.7.1,licenseType:hourly\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]

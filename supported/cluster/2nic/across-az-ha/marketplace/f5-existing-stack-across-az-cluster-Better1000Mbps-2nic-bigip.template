@@ -10,56 +10,56 @@
    ]
   }
  },
- "Description": "Template Version 2.6.1: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.7.1: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Better1000Mbps": "ami-631b2a04"
+    "Better1000Mbps": "ami-e3962585"
    },
    "ap-northeast-2": {
-    "Better1000Mbps": "ami-ada27fc3"
+    "Better1000Mbps": "ami-acba1dc2"
    },
    "ap-south-1": {
-    "Better1000Mbps": "ami-c4d8aaab"
+    "Better1000Mbps": "ami-dfa4ebb0"
    },
    "ap-southeast-1": {
-    "Better1000Mbps": "ami-800bb1e3"
+    "Better1000Mbps": "ami-6596c206"
    },
    "ap-southeast-2": {
-    "Better1000Mbps": "ami-6ed8d30d"
+    "Better1000Mbps": "ami-d900ebbb"
    },
    "ca-central-1": {
-    "Better1000Mbps": "ami-43922e27"
+    "Better1000Mbps": "ami-189b207c"
    },
    "eu-central-1": {
-    "Better1000Mbps": "ami-0c4f9063"
+    "Better1000Mbps": "ami-a544c7ca"
    },
    "eu-west-1": {
-    "Better1000Mbps": "ami-98bdb0fe"
+    "Better1000Mbps": "ami-7f63d606"
    },
    "eu-west-2": {
-    "Better1000Mbps": "ami-97a0b4f3"
+    "Better1000Mbps": "ami-c62c33a2"
    },
    "eu-west-3": {
     "Better1000Mbps": ""
    },
    "sa-east-1": {
-    "Better1000Mbps": "ami-418fe32d"
+    "Better1000Mbps": "ami-ab4c09c7"
    },
    "us-east-1": {
-    "Better1000Mbps": "ami-13791705"
+    "Better1000Mbps": "ami-eaae2190"
    },
    "us-east-2": {
-    "Better1000Mbps": "ami-c2193ea7"
+    "Better1000Mbps": "ami-cc1836a9"
    },
    "us-gov-west-1": {
     "Better1000Mbps": ""
    },
    "us-west-1": {
-    "Better1000Mbps": "ami-fa6c4a9a"
+    "Better1000Mbps": "ami-31427a51"
    },
    "us-west-2": {
-    "Better1000Mbps": "ami-cfbd26af"
+    "Better1000Mbps": "ami-bad406c2"
    }
   }
  },
@@ -216,7 +216,7 @@
     }
    }
   },
-  "Version": "2.6.1"
+  "Version": "2.7.1"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -662,7 +662,7 @@
              },
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Better1000Mbps-2nic-bigip.template,templateVersion:2.6.1,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Better1000Mbps-2nic-bigip.template,templateVersion:2.7.1,licenseType:hourly\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
@@ -1359,7 +1359,7 @@
              },
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Better1000Mbps-2nic-bigip.template,templateVersion:2.6.1,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Better1000Mbps-2nic-bigip.template,templateVersion:2.7.1,licenseType:hourly\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]

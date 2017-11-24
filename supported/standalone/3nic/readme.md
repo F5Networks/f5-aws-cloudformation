@@ -10,7 +10,7 @@
  - [Important Configuration Notes](#important-configuration-notes)
  - [Security](#security)
  - [Getting Help](#help)
- - [Deploying the solution](#deploying-the-f5-2-nic-solution)
+ - [Deploying the solution](#deploying-the-f5-3-nic-solution)
  - [Service Discovery](#service-discovery)
  - [Configuration Example](#configuration-example)
 

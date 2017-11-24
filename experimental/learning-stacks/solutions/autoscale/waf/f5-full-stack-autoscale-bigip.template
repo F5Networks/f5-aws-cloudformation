@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "v2.5.2: This full stack template deploys EC2/VPC resources and F5 autoscale WAF solution.  In particular, this template creates a VPC, subnets, routing tables, security groups, and two Elastic Load Balancer groups (one to which all BIG-IP VEs are added and one to which the applications servers are added).",
+  "Description": "v2.7.1: This full stack template deploys EC2/VPC resources and F5 autoscale WAF solution.  In particular, this template creates a VPC, subnets, routing tables, security groups, and two Elastic Load Balancer groups (one to which all BIG-IP VEs are added and one to which the applications servers are added).",
   "Parameters": {
     "deploymentName" : {
       "Description" : "Name the template uses to create object names",
@@ -48,7 +48,8 @@
       "AllowedValues": [
         "25Mbps",
         "200Mbps",
-        "1000Mbps"
+        "1000Mbps",
+        "5000Mbps"
       ],
       "ConstraintDescription": "Select the BIG-IP throughput you want to use"
     },
@@ -331,7 +332,7 @@
         }
       }
     },
-  "Version": "2.5.2"
+  "Version": "2.7.1"
   },
   "Mappings": {
     "appImageRegionMap": {
@@ -362,74 +363,88 @@
     },
     "BigipRegionMap": {
       "ap-northeast-1": {
-        "Best1000Mbps": "ami-bc4778db", 
-        "Best200Mbps": "ami-37477850", 
-        "Best25Mbps": "ami-ee497689"
+        "Best1000Mbps": "ami-55982b33", 
+        "Best200Mbps": "ami-a79a29c1", 
+        "Best25Mbps": "ami-20992a46", 
+        "Best5000Mbps": "ami-8d9a29eb"
       }, 
       "ap-northeast-2": {
-        "Best1000Mbps": "ami-3f03de51", 
-        "Best200Mbps": "ami-f500dd9b", 
-        "Best25Mbps": "ami-f200dd9c"
+        "Best1000Mbps": "ami-ebbb1c85", 
+        "Best200Mbps": "ami-74b81f1a", 
+        "Best25Mbps": "ami-0cb91e62", 
+        "Best5000Mbps": "ami-0fb91e61"
       }, 
       "ap-south-1": {
-        "Best1000Mbps": "ami-154c317a", 
-        "Best200Mbps": "ami-bd4f32d2", 
-        "Best25Mbps": "ami-324d305d"
+        "Best1000Mbps": "ami-24a5ea4b", 
+        "Best200Mbps": "ami-1ca7e873", 
+        "Best25Mbps": "ami-eba5ea84", 
+        "Best5000Mbps": "ami-2aa6e945"
       }, 
       "ap-southeast-1": {
-        "Best1000Mbps": "ami-3961e55a", 
-        "Best200Mbps": "ami-f367e390", 
-        "Best25Mbps": "ami-ca60e4a9"
+        "Best1000Mbps": "ami-ff91c59c", 
+        "Best200Mbps": "ami-b097c3d3", 
+        "Best25Mbps": "ami-9e90c4fd", 
+        "Best5000Mbps": "ami-e690c485"
       }, 
       "ap-southeast-2": {
-        "Best1000Mbps": "ami-c5a4aea6", 
-        "Best200Mbps": "ami-2aa4ae49", 
-        "Best25Mbps": "ami-27a4ae44"
+        "Best1000Mbps": "ami-9502e9f7", 
+        "Best200Mbps": "ami-ef06ed8d", 
+        "Best25Mbps": "ami-4a06ed28", 
+        "Best5000Mbps": "ami-ea06ed88"
       }, 
       "ca-central-1": {
-        "Best1000Mbps": "ami-ad77cbc9", 
-        "Best200Mbps": "ami-9675c9f2", 
-        "Best25Mbps": "ami-6b76ca0f"
+        "Best1000Mbps": "ami-a6a41fc2", 
+        "Best200Mbps": "ami-44a41f20", 
+        "Best25Mbps": "ami-e6a71c82", 
+        "Best5000Mbps": "ami-5ba71c3f"
       }, 
       "eu-central-1": {
-        "Best1000Mbps": "ami-d6f821b9", 
-        "Best200Mbps": "ami-16fb2279", 
-        "Best25Mbps": "ami-46fb2229"
+        "Best1000Mbps": "ami-9a4ac9f5", 
+        "Best200Mbps": "ami-a64bc8c9", 
+        "Best25Mbps": "ami-1849ca77", 
+        "Best5000Mbps": "ami-d244c7bd"
       }, 
       "eu-west-1": {
-        "Best1000Mbps": "ami-b57f77d3", 
-        "Best200Mbps": "ami-cf7f77a9", 
-        "Best25Mbps": "ami-347c7452"
+        "Best1000Mbps": "ami-4a63d633", 
+        "Best200Mbps": "ami-8964d1f0", 
+        "Best25Mbps": "ami-7763d60e", 
+        "Best5000Mbps": "ami-fb67d282"
       }, 
       "eu-west-2": {
-        "Best1000Mbps": "ami-e2736486", 
-        "Best200Mbps": "ami-65736401", 
-        "Best25Mbps": "ami-c37463a7"
+        "Best1000Mbps": "ami-662c3302", 
+        "Best200Mbps": "ami-4f29362b", 
+        "Best25Mbps": "ami-462b3422", 
+        "Best5000Mbps": "ami-472b3423"
       }, 
       "sa-east-1": {
-        "Best1000Mbps": "ami-9d87e8f1", 
-        "Best200Mbps": "ami-1489e678", 
-        "Best25Mbps": "ami-9e89e6f2"
+        "Best1000Mbps": "ami-a34c09cf", 
+        "Best200Mbps": "ami-d84c09b4", 
+        "Best25Mbps": "ami-a04c09cc", 
+        "Best5000Mbps": "ami-c34f0aaf"
       }, 
       "us-east-1": {
-        "Best1000Mbps": "ami-1afa870c", 
-        "Best200Mbps": "ami-9cf5888a", 
-        "Best25Mbps": "ami-51fb8647"
+        "Best1000Mbps": "ami-f2ab2488", 
+        "Best200Mbps": "ami-d1ad22ab", 
+        "Best25Mbps": "ami-73a92609", 
+        "Best5000Mbps": "ami-f1ab248b"
       }, 
       "us-east-2": {
-        "Best1000Mbps": "ami-f8def99d", 
-        "Best200Mbps": "ami-c7def9a2", 
-        "Best25Mbps": "ami-c6def9a3"
+        "Best1000Mbps": "ami-da1b35bf", 
+        "Best200Mbps": "ami-27173942", 
+        "Best25Mbps": "ami-dc1b35b9", 
+        "Best5000Mbps": "ami-dd1b35b8"
       }, 
       "us-west-1": {
-        "Best1000Mbps": "ami-c25574a2", 
-        "Best200Mbps": "ami-f4567794", 
-        "Best25Mbps": "ami-f5567795"
+        "Best1000Mbps": "ami-70417910", 
+        "Best200Mbps": "ami-31417951", 
+        "Best25Mbps": "ami-c14078a1", 
+        "Best5000Mbps": "ami-2b41794b"
       }, 
       "us-west-2": {
-        "Best1000Mbps": "ami-6f23440f", 
-        "Best200Mbps": "ami-d42146b4", 
-        "Best25Mbps": "ami-59234439"
+        "Best1000Mbps": "ami-8cd80af4", 
+        "Best200Mbps": "ami-1ad80a62", 
+        "Best25Mbps": "ami-81d507f9", 
+        "Best5000Mbps": "ami-8bd80af3"
       }
     },
     "AWSBigipThrougput": {
@@ -1089,7 +1104,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.5.2\n",
+                      "# Generated from Template Version 2.7.1\n",
                       "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                       "deploymentName='",
                       {
@@ -1205,7 +1220,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.5.2\n",
+                      "# Generated from Template Version 2.7.1\n",
                       "date\n",
                       ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
@@ -1255,7 +1270,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from Template Version 2.5.2\n",
+                      "# Generated from Template Version 2.7.1\n",
                       "echo about to execute",
                       "checks=0",
                       "while [ $checks -lt 120 ]; do echo checking mcpd",
@@ -1304,7 +1319,7 @@
                       "Fn::Join": [
                           "\n",
                           [
-                              "# Generated from Template Version 2.5.2\n",
+                              "# Generated from Template Version 2.7.1\n",
                               "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                               "PASSWORD=$(/bin/sed -e $'s:[!\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                               "if [ \"$1\" == admin ]; then",
@@ -1325,7 +1340,7 @@
                   "Fn::Join": [
                     "\n",
                     [
-                      "# Generated from Template Version 2.5.2\n",
+                      "# Generated from Template Version 2.7.1\n",
                       "INTERFACE=$1",
                       "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
                       "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
@@ -1345,7 +1360,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from Template Version 2.5.2\n",
+                      "# Generated from Template Version 2.7.1\n",
                       "while true; do echo waiting for cloud libs install to complete",
                       "    if [ -f /config/cloud/cloudLibsReady ]; then",
                       "        echo cloud libs installed",

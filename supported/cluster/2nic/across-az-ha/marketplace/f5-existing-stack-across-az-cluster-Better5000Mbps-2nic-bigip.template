@@ -10,56 +10,56 @@
    ]
   }
  },
- "Description": "Template Version 2.6.1: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.7.1: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Better5000Mbps": "ami-a51e2fc2"
+    "Better5000Mbps": "ami-11952677"
    },
    "ap-northeast-2": {
-    "Better5000Mbps": "ami-15de037b"
+    "Better5000Mbps": "ami-adba1dc3"
    },
    "ap-south-1": {
-    "Better5000Mbps": "ami-00d4a66f"
+    "Better5000Mbps": "ami-aba8e7c4"
    },
    "ap-southeast-1": {
-    "Better5000Mbps": "ami-4e09b32d"
+    "Better5000Mbps": "ami-1d96c27e"
    },
    "ap-southeast-2": {
-    "Better5000Mbps": "ami-8eddd6ed"
+    "Better5000Mbps": "ami-6b06ed09"
    },
    "ca-central-1": {
-    "Better5000Mbps": "ami-4d932f29"
+    "Better5000Mbps": "ami-249b2040"
    },
    "eu-central-1": {
-    "Better5000Mbps": "ami-904d92ff"
+    "Better5000Mbps": "ami-9845c6f7"
    },
    "eu-west-1": {
-    "Better5000Mbps": "ami-ddbbb6bb"
+    "Better5000Mbps": "ami-1160d568"
    },
    "eu-west-2": {
-    "Better5000Mbps": "ami-07a6b263"
+    "Better5000Mbps": "ami-fe2b349a"
    },
    "eu-west-3": {
     "Better5000Mbps": ""
    },
    "sa-east-1": {
-    "Better5000Mbps": "ami-4a8fe326"
+    "Better5000Mbps": "ami-044d0868"
    },
    "us-east-1": {
-    "Better5000Mbps": "ami-e4751bf2"
+    "Better5000Mbps": "ami-7dab2407"
    },
    "us-east-2": {
-    "Better5000Mbps": "ami-3b183f5e"
+    "Better5000Mbps": "ami-de1b35bb"
    },
    "us-gov-west-1": {
     "Better5000Mbps": ""
    },
    "us-west-1": {
-    "Better5000Mbps": "ami-da6f49ba"
+    "Better5000Mbps": "ami-7f41791f"
    },
    "us-west-2": {
-    "Better5000Mbps": "ami-44b22924"
+    "Better5000Mbps": "ami-65de0c1d"
    }
   }
  },
@@ -216,7 +216,7 @@
     }
    }
   },
-  "Version": "2.6.1"
+  "Version": "2.7.1"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -649,7 +649,7 @@
              },
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Better5000Mbps-2nic-bigip.template,templateVersion:2.6.1,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Better5000Mbps-2nic-bigip.template,templateVersion:2.7.1,licenseType:hourly\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
@@ -1346,7 +1346,7 @@
              },
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.2.0.1671,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Better5000Mbps-2nic-bigip.template,templateVersion:2.6.1,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Better5000Mbps-2nic-bigip.template,templateVersion:2.7.1,licenseType:hourly\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]

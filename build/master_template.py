@@ -132,12 +132,12 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    version = "2.7.1"
+    version = "2.8.0"
     ### Big-IP mapped
     BIGIP_VERSION = "13.0.0.3.0.1679"
     ### Cloudlib Branch
-    branch_cloud = "v3.4.1"
-    branch_aws = "v1.5.0"
+    branch_cloud = "develop"
+    branch_aws = "develop"
     branch_cloud_iapps = "v1.1.1"
     ### Build verifyHash file from published verifyHash on gitswarm. Or github (public) if gitswarm (private) not available
     urls = [ 'https://gitswarm.f5net.com/cloudsolutions/f5-cloud-libs/raw/' + str(branch_cloud) + '/dist/verifyHash',
@@ -168,7 +168,7 @@ def main():
         cloudlib_aws_url = "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs-aws/" + str(branch_aws) + "/f5-cloud-libs-aws.tar.gz"
         discovery_url =  "http://cdn.f5.com/product/cloudsolutions/iapps/common/f5-service-discovery/" + str(branch_cloud_iapps) + "/f5.service_discovery.tmpl"
     ### add hashmark to skip cloudlib verification script.
-    comment_out = ""
+    comment_out = "#"
     # Begin Template
     t = Template()
     ## add template version

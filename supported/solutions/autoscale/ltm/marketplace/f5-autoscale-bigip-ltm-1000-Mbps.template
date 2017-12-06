@@ -10,7 +10,7 @@
      ]
     }
   },
-  "Description": "LTM v2.7.1: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
+  "Description": "LTM 2.7.2: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -179,7 +179,7 @@
         }
       }
     },
-  "Version": "2.7.1"
+  "Version": "2.7.2"
   },
   "Parameters": {
     "deploymentName" : {
@@ -670,13 +670,13 @@
                 "group": "root"
               },
               "/config/cloud/f5-cloud-libs.tar.gz": {
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.4.1/dist/f5-cloud-libs.tar.gz",
+                "source": "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/v3.4.1/f5-cloud-libs.tar.gz",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
               },
               "/config/cloud/f5-cloud-libs-aws.tar.gz": {
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.5.0/dist/f5-cloud-libs-aws.tar.gz",
+                "source": "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs-aws/v1.5.0/f5-cloud-libs-aws.tar.gz",
                 "mode": "000644",
                 "owner": "root",
                 "group": "root"
@@ -685,7 +685,7 @@
               "group": "root",
               "mode": "000644",
               "owner": "root",
-              "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v1.1.1/f5-service-discovery/f5.service_discovery.tmpl"
+              "source": "http://cdn.f5.com/product/cloudsolutions/iapps/common/f5-service-discovery/v1.1.1/f5.service_discovery.tmpl"
               },
               "/config/cloud/aws/onboard_config_vars": {
                 "content": {
@@ -693,7 +693,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from v2.7.1\n",
+                      "# Generated from v2.7.2\n",
                       "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                       "region='",{"Ref": "AWS::Region"},"'\n",
                       "deploymentName='",{"Ref": "deploymentName"},"'\n",
@@ -755,7 +755,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from v2.7.1\n",
+                      "# Generated from v2.7.2\n",
                       "date\n",
                       ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
@@ -804,7 +804,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from v2.7.1\n",
+                      "# Generated from v2.7.2\n",
                       "echo about to execute",
                       "checks=0",
                       "while [ $checks -lt 120 ]; do echo checking mcpd",
@@ -852,7 +852,7 @@
                       "Fn::Join": [
                           "\n",
                           [
-                              "# Generated from v2.7.1\n",
+                              "# Generated from v2.7.2\n",
                               "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                               "PASSWORD=$(/bin/sed -e $'s:[!\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                               "if [ \"$1\" == admin ]; then",
@@ -873,7 +873,7 @@
                   "Fn::Join": [
                     "\n",
                     [
-                      "# Generated from v2.7.1\n",
+                      "# Generated from v2.7.2\n",
                       "INTERFACE=$1",
                       "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
                       "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
@@ -893,7 +893,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from v2.7.1\n",
+                      "# Generated from v2.7.2\n",
                       "while true; do echo waiting for cloud libs install to complete",
                       "    if [ -f /config/cloud/cloudLibsReady ]; then",
                       "        echo cloud libs installed",
@@ -996,7 +996,7 @@
                         "--ssl-port ",
                         { "Ref": "managementGuiPort" },
                         "--module ltm:nominal",
-                        "--metrics \"cloudName:aws,region:${region},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:ff5-autoscale-bigip-ltm.template,templateVersion:2.7.1,licenseType:hourly\"",
+                        "--metrics \"cloudName:aws,region:${region},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-autoscale-bigip-ltm.template,templateVersion:2.7.2,licenseType:hourly\"",
                         "--ping",
                         "&>> /var/log/cloudlibs-install.log < /dev/null",
                         "&"

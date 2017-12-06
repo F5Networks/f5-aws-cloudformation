@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Template Version 2.4.0: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
+  "Description": "Template Version 2.4.0.2.7.2: This template deploys an auto scaling group for utility instances BIG-IP. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -154,7 +154,7 @@
         }
       }
     },
-  "Version": "2.4.0"
+  "Version": "2.4.0.2.7.2"
   },
   "Parameters": {
     "deploymentName" : {
@@ -326,48 +326,20 @@
   },
   "Mappings": {
     "BigipRegionMap": {
-      "ap-northeast-1": {
-        "Best200Mbps": "ami-56eee931"
-      }, 
-      "ap-northeast-2": {
-        "Best200Mbps": "ami-8ede02e0"
-      }, 
-      "ap-south-1": {
-        "Best200Mbps": "ami-6b681404"
-      }, 
-      "ap-southeast-1": {
-        "Best200Mbps": "ami-3884055b"
-      }, 
-      "ap-southeast-2": {
-        "Best200Mbps": "ami-07bda964"
-      }, 
-      "ca-central-1": {
-        "Best200Mbps": "ami-ea41fd8e"
-      }, 
-      "eu-central-1": {
-        "Best200Mbps": "ami-44548f2b"
-      }, 
-      "eu-west-1": {
-        "Best200Mbps": "ami-3a03155c"
-      },
-      "eu-west-2": {
-        "Best200Mbps": "ami-51d3c435"
-      }, 
-      "sa-east-1": {
-        "Best200Mbps": "ami-3111785d"
-      }, 
-      "us-east-1": {
-        "Best200Mbps": "ami-bba0eead"
-      }, 
-      "us-east-2": {
-        "Best200Mbps": "ami-55557330"
-      }, 
-      "us-west-1": {
-        "Best200Mbps": "ami-958cacf5"
-      }, 
-      "us-west-2": {
-        "Best200Mbps": "ami-23791b43"
-      }
+      "us-east-1": {"Best200Mbps": "ami-0ae48170"},
+      "us-east-2": {"Best200Mbps": "ami-00371e65"},
+      "us-west-1": {"Best200Mbps": "ami-5cf7cd3c"},
+      "us-west-2": {"Best200Mbps": "ami-7d37ec05"},
+      "ca-central-1": {"Best200Mbps": "ami-f4219a90"},
+      "eu-central-1": {"Best200Mbps": "ami-e3e26c8c"},
+      "eu-west-1": {"Best200Mbps": "ami-f18a3588"},
+      "eu-west-2": {"Best200Mbps": "ami-41362825"},
+      "ap-southeast-1": {"Best200Mbps": "ami-94b5e9f7"},
+      "ap-southeast-2": {"Best200Mbps": "ami-23d02441"},
+      "ap-south-1": {"Best200Mbps": "ami-d1642dbe"},
+      "ap-northeast-1": {"Best200Mbps": "ami-f9199c9f"},
+      "ap-northeast-2": {"Best200Mbps": "ami-7cc96f12"},
+      "sa-east-1": {"Best200Mbps": "ami-4111562d"}
     }
   },
   "Resources": {
@@ -632,7 +604,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.4.0\n",
+                      "# Generated from Template Version 2.4.0.2.7.2\n",
                       "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
                       "deploymentName='",
                       {
@@ -745,7 +717,7 @@
                     "",
                     [
                       "#!/bin/bash\n",
-                      "# Generated from Template Version 2.4.0\n",
+                      "# Generated from Template Version 2.4.0.2.7.2\n",
                       "date\n",
                       ". /config/cloud/aws/onboard_config_vars\n",
                       "BIGIP_ASG_NAME=`f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/node_modules/f5-cloud-libs-aws/scripts/getAutoscaleGroupName.js` \n",
@@ -796,7 +768,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from Template Version 2.4.0\n",
+                      "# Generated from Template Version 2.4.0.2.7.2\n",
                       "echo about to execute",
                       "checks=0",
                       "while [ $checks -lt 120 ]; do echo checking mcpd",
@@ -845,7 +817,7 @@
                       "Fn::Join": [
                           "\n",
                           [
-                              "# Generated from Template Version 2.4.0\n",
+                              "# Generated from Template Version 2.4.0.2.7.2\n",
                               "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                               "PASSWORD=$(/bin/sed -e $'s:[!\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                               "if [ \"$1\" == admin ]; then",
@@ -866,7 +838,7 @@
                   "Fn::Join": [
                     "\n",
                     [
-                      "# Generated from Template Version 2.4.0\n",
+                      "# Generated from Template Version 2.4.0.2.7.2\n",
                       "INTERFACE=$1",
                       "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
                       "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
@@ -886,7 +858,7 @@
                     "\n",
                     [
                       "#!/bin/bash",
-                      "# Generated from Template Version 2.4.0\n",
+                      "# Generated from Template Version 2.4.0.2.7.2\n",
                       "while true; do echo waiting for cloud libs install to complete",
                       "    if [ -f /config/cloud/cloudLibsReady ]; then",
                       "        echo cloud libs installed",

@@ -36,21 +36,26 @@ python master_template.py -s existing -n 1 -l bigiq -T f5-existing-stack-bigiq-1
 python master_template.py -s existing -n 2 -l bigiq -T f5-existing-stack-bigiq-2nic-bigip.template > ../supported/standalone/2nic/f5-existing-stack-bigiq-2nic-bigip.template
 python master_template.py -s existing -n 3 -l bigiq -T f5-existing-stack-bigiq-3nic-bigip.template > ../supported/standalone/3nic/f5-existing-stack-bigiq-3nic-bigip.template
 
+## Supported - prod stacks
+python master_template.py -s prod -n 1 -l hourly -T f5-prod-stack-hourly-1nic-bigip.template > ../supported/standalone/1nic/f5-prod-stack-hourly-1nic-bigip.template
+python master_template.py -s prod -n 2 -l hourly -T f5-prod-stack-hourly-2nic-bigip.template > ../supported/standalone/2nic/f5-prod-stack-hourly-2nic-bigip.template
+python master_template.py -s prod -n 3 -l hourly -T f5-prod-stack-hourly-3nic-bigip.template > ../supported/standalone/3nic/f5-prod-stack-hourly-3nic-bigip.template
+python master_template.py -s prod -n 1 -l byol -T f5-prod-stack-byol-1nic-bigip.template > ../supported/standalone/1nic/f5-prod-stack-byol-1nic-bigip.template
+python master_template.py -s prod -n 2 -l byol -T f5-prod-stack-byol-2nic-bigip.template > ../supported/standalone/2nic/f5-prod-stack-byol-2nic-bigip.template
+python master_template.py -s prod -n 3 -l byol -T f5-prod-stack-byol-3nic-bigip.template > ../supported/standalone/3nic/f5-prod-stack-byol-3nic-bigip.template
+python master_template.py -s prod -n 1 -l bigiq -T f5-prod-stack-bigiq-1nic-bigip.template > ../supported/standalone/1nic/f5-prod-stack-bigiq-1nic-bigip.template
+python master_template.py -s prod -n 2 -l bigiq -T f5-prod-stack-bigiq-2nic-bigip.template > ../supported/standalone/2nic/f5-prod-stack-bigiq-2nic-bigip.template
+python master_template.py -s prod -n 3 -l bigiq -T f5-prod-stack-bigiq-3nic-bigip.template > ../supported/standalone/3nic/f5-prod-stack-bigiq-3nic-bigip.template
+
+## Experimental n-nic
+python master_template.py -s existing -n 8 -l hourly -T f5-existing-stack-hourly-n-nic-bigip.template > ../experimental/standalone/n-nic/f5-existing-stack-hourly-n-nic-bigip.template
+python master_template.py -s existing -n 8 -l byol -T f5-existing-stack-byol-n-nic-bigip.template > ../experimental/standalone/n-nic/f5-existing-stack-byol-n-nic-bigip.template
+python master_template.py -s existing -n 8 -l bigiq -T f5-existing-stack-bigiq-n-nic-bigip.template > ../experimental/standalone/n-nic/f5-existing-stack-bigiq-n-nic-bigip.template
+
 ## Experimental
 python master_template.py -s existing -n 1 -l hourly -c waf -T f5-existing-stack-hourly-1nic-bigip-w-waf.template > ../experimental/reference/1nic/waf/f5-existing-stack-hourly-1nic-bigip-w-waf.template
 python master_template.py -s existing -n 1 -l byol -c waf -T f5-existing-stack-byol-1nic-bigip-w-waf.template > ../experimental/reference/1nic/waf/f5-existing-stack-byol-1nic-bigip-w-waf.template
 python master_template.py -s existing -n 1 -l bigiq -c waf -T f5-existing-stack-bigiq-1nic-bigip-w-waf.template > ../experimental/reference/1nic/bigiq/f5-existing-stack-bigiq-1nic-bigip-w-waf.template
-
-## Experimental - prod stacks
-python master_template.py -s prod -n 1 -l hourly -T f5-prod-stack-hourly-1nic-bigip.template > ../experimental/standalone/1nic/f5-prod-stack-hourly-1nic-bigip.template
-python master_template.py -s prod -n 2 -l hourly -T f5-prod-stack-hourly-2nic-bigip.template > ../experimental/standalone/2nic/f5-prod-stack-hourly-2nic-bigip.template
-python master_template.py -s prod -n 3 -l hourly -T f5-prod-stack-hourly-3nic-bigip.template > ../experimental/standalone/3nic/f5-prod-stack-hourly-3nic-bigip.template
-python master_template.py -s prod -n 1 -l byol -T f5-prod-stack-byol-1nic-bigip.template > ../experimental/standalone/1nic/f5-prod-stack-byol-1nic-bigip.template
-python master_template.py -s prod -n 2 -l byol -T f5-prod-stack-byol-2nic-bigip.template > ../experimental/standalone/2nic/f5-prod-stack-byol-2nic-bigip.template
-python master_template.py -s prod -n 3 -l byol -T f5-prod-stack-byol-3nic-bigip.template > ../experimental/standalone/3nic/f5-prod-stack-byol-3nic-bigip.template
-python master_template.py -s prod -n 1 -l bigiq -T f5-prod-stack-bigiq-1nic-bigip.template > ../experimental/standalone/1nic/f5-prod-stack-bigiq-1nic-bigip.template
-python master_template.py -s prod -n 2 -l bigiq -T f5-prod-stack-bigiq-2nic-bigip.template > ../experimental/standalone/2nic/f5-prod-stack-bigiq-2nic-bigip.template
-python master_template.py -s prod -n 3 -l bigiq -T f5-prod-stack-bigiq-3nic-bigip.template > ../experimental/standalone/3nic/f5-prod-stack-bigiq-3nic-bigip.template
 
 ## Experimental - learning/POC
 python master_template.py -s full -n 1 -l hourly -T f5-full-stack-hourly-1nic-bigip.template > ../experimental/learning-stacks/standalone/1nic/f5-full-stack-hourly-1nic-bigip.template

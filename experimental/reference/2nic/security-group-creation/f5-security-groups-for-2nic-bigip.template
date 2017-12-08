@@ -26,7 +26,9 @@
       "subnet1Az2",
       "subnet2Az1",
       "availabilityZone1",
-      "availabilityZone2"
+      "availabilityZone2",
+      "numberOfAdditionalNics",
+      "additionalNicLocation"
      ]
     },
     {
@@ -77,6 +79,9 @@
    "ParameterLabels": {
     "Vpc": {
      "default": "VPC"
+    },
+    "additionalNicLocation": {
+     "default": "Additional NIC Location"
     },
     "allowUsageAnalytics": {
      "default": "Send Anonymous Statistics to F5"
@@ -137,6 +142,9 @@
     },
     "ntpServer": {
      "default": "NTP Server"
+    },
+    "numberOfAdditionalNics": {
+     "default": "Number Of Additional NICs"
     },
     "owner": {
      "default": "Owner"

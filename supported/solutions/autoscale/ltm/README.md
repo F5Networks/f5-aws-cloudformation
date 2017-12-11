@@ -32,7 +32,7 @@ The following are prerequisites for this solution:
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image.
  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
  
- ## Important configuration notes
+## Important configuration notes
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
  - All of the BIG-IP VE members in the cluster are active and process traffic.  See [Detailed Clustering Information](#detailed-clustering-information).
  - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.

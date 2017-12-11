@@ -1,4 +1,4 @@
-# Deploying the BIG-IP VE in AWS - 3 NIC
+# Deploying the BIG-IP VE in AWS - N NIC (variable number of additional NICs)
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 [![Releases](https://img.shields.io/github/release/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/releases)
@@ -16,7 +16,7 @@
 
 ## Introduction
  
-This solution uses a CloudFormation Template to launch a 3-NIC deployment of a BIG-IP VE in an Amazon Virtual Private Cloud.  Traffic flows from the BIG-IP VE to the application servers. This is the standard "on-premise like" cloud design where the compute instance of F5 is running with a management, front-end application traffic (virtual server), and a back-end application interface. The BIG-IP VE has the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality. This means you can also configure the BIG-IP VE to enable F5's L4/L7 security features, access control, and intelligent traffic management.
+This solution uses a CloudFormation Template to launch a 3-NIC deployment of a BIG-IP VE in an Amazon Virtual Private Cloud.  This template can optionally also add additional NIC(s) to the BIG-IP VE to be used as needed, up to 5 additional NICs for a total of 8.  Traffic flows from the BIG-IP VE to the application servers. This is the standard "on-premise like" cloud design where the compute instance of F5 is running with a management, front-end application traffic (virtual server), and a back-end application interface. The BIG-IP VE has the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality. This means you can also configure the BIG-IP VE to enable F5's L4/L7 security features, access control, and intelligent traffic management.
 
 For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
 
@@ -25,7 +25,7 @@ You have the option of using a [BIG-IQ device](https://f5.com/products/big-iq-ce
 For each licensing option (hourly billing, bring your own license, licensing via BIG-IQ), you have the option of using a *production stack* template. This template differs from the typical *existing stack* templates in that a production stack template deploys without creating or attaching any public IP addresses to the BIG-IP VEs (note that outbound Internet access for the BIG-IP is still required). This can be useful, or possibly required, where dictated by security policy or in deployments where accessing resources does not require a public IP address on the BIG-IP VE, such as users connecting to internal applications using a VPN.
 
 ## Prerequisites
-The following are prerequisites for the F5 3-NIC CFT:
+The following are prerequisites for this CFT:
   - An AWS VPC with three subnets: 
     - Management subnet (the subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library)
     - External subnet
@@ -36,11 +36,12 @@ The following are prerequisites for the F5 3-NIC CFT:
 ## Important configuration notes
   - This template creates AWS Security Groups as a part of the deployment. For the external Security Group, this includes a port for accessing your applications on port 80/443.  If your applications need additional ports, you must add those to the external Security Group created by the template.  For instructions on adding ports, see the AWS documentation.
   - This solution uses the SSH key to enable access to the BIG-IP system. If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
+  - As a result of this template deploying a variable number of NICs using the value you choose in the **Number of Additional NICs** field, it will preconfigure the BIG-IP VLAN(s) and place the interfaces into the corresponding VLAN (based on the subnet name(s) you specify in the **Additional NIC Location** field).
   - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
   - In order to pass traffic from your clients to the servers, after launching the template you must create a virtual server on the BIG-IP VE.  See [Creating a virtual server](#creating-virtual-servers-on-the-big-ip-ve).
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
   - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates.  See [Sending statistical information to F5](#sending-statistical-information-to-f5).
-  - F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughputs available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md.
+  - F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughput levels available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md.
   - These CloudFormation templates incorporate an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the *learning-stacks* folder in the **experimental** directory.
   -	If you are using the *Licensing using BIG-IQ* template only:
     - This solution only supports only BIG-IQ versions 5.0 - 5.3.
@@ -69,11 +70,6 @@ Because this template has been created and fully tested by F5 Networks, it is fu
 We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates. There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance. This slack channel community support should **not** be considered a substitute for F5 Technical Support.
 
 ## Deploying the F5 3 NIC solution
-You have two options for launching this solution:
-  - Using the [Launch Stack buttons](#installing-the-image-using-the-aws-launch-stack-buttons)
-  - Using the [AWS CLI](#installing-the-template-using-the-aws-cli-aws-cli11176) 
-
-### Installing the image using the AWS Launch Stack buttons
 The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
@@ -108,6 +104,8 @@ After clicking the Launch button, you must specify the following parameters.
 | Management Subnet AZ1 | managementSubnetAz1 | Yes | Management subnet ID |
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID |
 | Subnet2 AZ1 | subnet1Az1 | Yes | Public or External subnet ID for the second subnet. |
+| Number of Additional NICs | numberOfAdditionalNics| Yes | By default this solution deploys the BIG-IP in a 3 NIC configuration, however it will also add a 1-5 additional NICs to the BIG-IP using this parameter. |
+| Additional NIC Location | additionalNicLocation | Yes | This parameter specifies where the additional NICs should go.  This value must be a comma delimited string of subnets, equal to the number of additional NICs being deployed.  For example (for 2 additional NICs): **subnet01,subnet02**. NOTE: Ensure that there are no spaces and that the correct number of subnets are provided based on the value you chose in **Number of Additional NICs**. IMPORTANT: The subnet you provide for each additional NIC MUST be unique.
 | BIG-IP Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | License Key1 | licenseKey1 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey. |
@@ -122,15 +120,13 @@ After clicking the Launch button, you must specify the following parameters.
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
 | BIG-IQ Address | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ licensing only: IP address or DNS hostname of the BIG-IQ device that contains the pool of licenses |
 | BIG-IQ user with Licensing Privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IP. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
-| S3 ARN of the BIG-IQ Password File | bigiqPasswordS3ARN | Yes <br>(BIG-IQ) | BIG-IQ licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE. |
+| S3 ARN of the BIG-IQ Password File | bigiqPasswordS3ARN | Yes <br>(BIG-IQ) | BIG-IQ licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE |
 | BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses. |
 | Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |
 
 <br>
 
 
-### Installing the template using the AWS CLI (aws-cli/1.11.165)
-If you want to deploy the template using the AWS CLI, use the example **deploy_via_bash.sh** script available [in this repository](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/standalone/3nic/deploy_via_bash.sh). Replace the static items (or make them parameters).  
 
 ---
 

@@ -1506,16 +1506,6 @@
         "Ref": "bigipSecurityGroup"
       }
     },
-    "bigipSecurityGroupIngressManagementGuiPort": {
-      "Value": {
-        "Ref": "bigipSecurityGroupIngressManagementGuiPort"
-      }
-    },
-    "bigipSecurityGroupIngressConfigSync": {
-      "Value": {
-        "Ref": "bigipSecurityGroupIngressConfigSync"
-      }
-    },
     "s3Bucket": {
       "Value": {
         "Ref": "S3Bucket"

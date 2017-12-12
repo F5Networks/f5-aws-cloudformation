@@ -996,7 +996,7 @@
                         "--ssl-port ",
                         { "Ref": "managementGuiPort" },
                         "--module ltm:nominal",
-                        "--metrics \"cloudName:aws,region:${region},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-autoscale-bigip-ltm.template,templateVersion:2.7.2,licenseType:hourly\"",
+                        "--metrics \"cloudName:aws,region:${region},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-autoscale-bigip-ltm-1000-Mbps.template,templateVersion:2.7.2,licenseType:hourly\"",
                         "--ping",
                         "&>> /var/log/cloudlibs-install.log < /dev/null",
                         "&"
@@ -1303,16 +1303,6 @@
     "bigipSecurityGroup": {
       "Value": {
         "Ref": "bigipSecurityGroup"
-      }
-    },
-    "bigipSecurityGroupIngressManagementGuiPort": {
-      "Value": {
-        "Ref": "bigipSecurityGroupIngressManagementGuiPort"
-      }
-    },
-    "bigipSecurityGroupIngressConfigSync": {
-      "Value": {
-        "Ref": "bigipSecurityGroupIngressConfigSync"
       }
     },
     "s3Bucket": {

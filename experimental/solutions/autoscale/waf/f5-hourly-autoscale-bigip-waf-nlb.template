@@ -1255,7 +1255,7 @@
                         { "Ref": "managementGuiPort" },
                         "--module ltm:nominal",
                         "--module asm:nominal",
-                        "--metrics \"cloudName:aws,region:${region},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-hourly-autoscale-bigip-waf.template,templateVersion:2.8.0,licenseType:hourly\"",
+                        "--metrics \"cloudName:aws,region:${region},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-hourly-autoscale-bigip-waf-nlb.template,templateVersion:2.8.0,licenseType:hourly\"",
                         "--ping",
                         "&>> /var/log/cloudlibs-install.log < /dev/null",
                         "&"
@@ -1266,16 +1266,6 @@
                     "Fn::Join": [
                       " ",
                       [
-                        "version=$(ls /opt/aws/ | grep awscli);",
-                        "AWSCLI=/opt/aws/$version;",
-                        "export PATH=$PATH:$AWSCLI/bin;",
-                        "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib64/python2.6/site-packages;",
-                        "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib/python2.6/site-packages;",
-                        "aws s3 cp",
-                        {
-                        "Ref": "appCertificateS3Arn"
-                        },
-                        "/config/cloud/aws/.mycert;",
                         "NAME_SERVER=`/config/cloud/getNameServer.sh eth0`;",
                         "nohup /config/cloud/waitThenRun.sh",
                         "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
@@ -1629,21 +1619,6 @@
     "bigipSecurityGroup": {
       "Value": {
         "Ref": "bigipSecurityGroup"
-      }
-    },
-    "bigipSecurityGroupIngressAsmPolicySync": {
-      "Value": {
-        "Ref": "bigipSecurityGroupIngressAsmPolicySync"
-      }
-    },
-    "bigipSecurityGroupIngressManagementGuiPort": {
-      "Value": {
-        "Ref": "bigipSecurityGroupIngressManagementGuiPort"
-      }
-    },
-    "bigipSecurityGroupIngressConfigSync": {
-      "Value": {
-        "Ref": "bigipSecurityGroupIngressConfigSync"
       }
     },
     "s3Bucket": {

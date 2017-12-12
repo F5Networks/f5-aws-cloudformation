@@ -67,7 +67,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
 | Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
-| Target Group(s) of Network Load Balancer for BIG-IP VEs | bigipNetworkLoadBalancerTargetGroupsArns | ARN of target group(s) for AWS Network Load Balancer for the BIG-IP VEs |
+| Target Group(s) of Network Load Balancer for BIG-IP VEs | bigipNetworkLoadBalancerTargetGroupsArns | Yes | ARN of target group(s) for AWS Network Load Balancer for the BIG-IP VEs |
 | Elastic Load Balancer for BIG-IP VEs | bigipElasticLoadBalancer | Yes | Name of the AWS Elastic Load Balancer group for the BIG-IP VEs |
 | SSH Key Name | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | AWS Instance Size | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
@@ -84,7 +84,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | High CPU % Threshold | highCpuThreshold | Yes | High CPU % threshold to begin scaling up BIG-IP VE instances |
 | Notification Email | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
 | Virtual Service Port | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
-| S3 ARN of the SSL Certificate used for Application | appCertificateS3Arn | S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of pfx ssl certificate used for application - for example **arn:aws:s3:::my_corporate_bucket/website.pfx**. |
+| S3 ARN of the SSL Certificate used for Application | appCertificateS3Arn | Yes | S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of pfx ssl certificate used for application - for example **arn:aws:s3:::my_corporate_bucket/website.pfx**. |
 | Application Pool Member Port | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
 | Application Pool DNS | appInternalDnsName | Yes | DNS name poolapp.example.com for the application pool.  This is not required if you are using the [Service Discovery feature](#service-discovery). |
 | Application Pool Tag Key | applicationPoolTagKey | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next. |

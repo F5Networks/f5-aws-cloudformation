@@ -67,7 +67,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
 | Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
-| Target Group(s) of Network Load Balancer for BIG-IP VEs | bigipNetworkLoadBalancerTargetGroupsArns | ARN of target group(s) for AWS Network Load Balancer for the BIG-IP VEs |
+| Target Group(s) of Network Load Balancer for BIG-IP VEs | bigipNetworkLoadBalancerTargetGroupsArns | Yes | ARN of target group(s) for AWS Network Load Balancer for the BIG-IP VEs |
 | Elastic Load Balancer for BIG-IP VEs | bigipElasticLoadBalancer | Yes | Name of the AWS Elastic Load Balancer group for the BIG-IP VEs |
 | SSH Key Name | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | AWS Instance Size | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
@@ -85,7 +85,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | High CPU % Threshold | highCpuThreshold | Yes | High CPU % threshold to begin scaling up BIG-IP VE instances |
 | Notification Email | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
 | Virtual Service Port | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
-| S3 ARN of the SSL Certificate used for Application | appCertificateS3Arn | S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of pfx ssl certificate used for application - for example **arn:aws:s3:::my_corporate_bucket/website.pfx**. |
+| S3 ARN of the SSL Certificate used for Application | appCertificateS3Arn | Yes | S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of pfx ssl certificate used for application - for example **arn:aws:s3:::my_corporate_bucket/website.pfx**. |
 | Application Pool Member Port | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
 | Application Pool DNS | appInternalDnsName | Yes | DNS name poolapp.example.com for the application pool.  This is not required if you are using the [Service Discovery feature](#service-discovery). |
 | Application Pool Tag Key | applicationPoolTagKey | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next. |
@@ -199,7 +199,7 @@ The CloudFormation template uses the default **Good** image available in the AWS
 
 The following is a simple configuration diagram deployment. 
 
-![Configuration example](images/config-diagram-autoscale-ltm.png)
+![Configuration example](images/config-diagram-autoscale-ltm-nlb.png)
 
 
 
@@ -421,72 +421,7 @@ Note the hashes and script-signature may be different in your template. It is im
 
 ---
 
-## Example ELB configuration <a name="elb"></a>
-The following is an example ELB configuration that could be used in this implementation. For specific instructions on configuring an ELB, see http://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/load-balancer-getting-started.html.
 
-```json
-    "bigipElasticLoadBalancer": {
-      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-      "DependsOn": "internetGatewayAttachment",
-      "Properties": {
-        "LoadBalancerName": {
-          "Fn::Join": [
-            "",
-            [ 
-              { "Ref" : "deploymentName" },
-              "-BigipElb"
-            ]
-          ]
-        },
-        "HealthCheck": {
-          "HealthyThreshold": "2",
-          "Interval": "10",
-          "Target": "HTTP:80/",
-          "Timeout": "5",
-          "UnhealthyThreshold": "10"
-        },
-        "subnets" : [ 
-            { "Ref": "az1ExternalSubnet" },
-            { "Ref": "az2ExternalSubnet" }
-        ],
-        "CrossZone" : true,
-        "Listeners" : [ {
-            "LoadBalancerPort" : "443",
-            "InstancePort" : "80",
-            "Protocol" : "HTTPS",
-            "InstanceProtocol" : "HTTP",
-            "SSLCertificateId" : { "Ref" : "certificateId" },
-            "PolicyNames" : [
-                "ELBSecurityPolicy-2016-08",
-                "MyAppCookieStickinessPolicy"
-            ]
-        } ],
-        "Policies" : [
-            {
-                "PolicyName" : "MyAppCookieStickinessPolicy",
-                "PolicyType" : "AppCookieStickinessPolicyType",
-                "Attributes" : [
-                    { "Name" : "CookieName", "Value" : "MyCookie"}
-                ]
-            }
-        ],
-        "SecurityGroups": [
-          {
-            "Ref": "bigipSecurityGroup"
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          }
-        ]
-      }
-    },
-
-```
 
 ## Filing Issues
 If you find an issue, we would love to hear about it. 
@@ -494,7 +429,7 @@ You have a choice when it comes to filing issues:
   - Use the **Issues** link on the GitHub menu bar in this repository for items such as enhancement or feature requests and non-urgent bug fixes. Tell us as much as you can about what you found and how you found it.
   - Contact us at [solutionsfeedback@f5.com](mailto:solutionsfeedback@f5.com?subject=GitHub%20Feedback) for general feedback or enhancement requests. 
   - Use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 cloud templates.  There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance.
-  - Contact F5 Technical support via your typical method for more time sensitive changes and other issues requiring immediate support.
+  - For templates in the **supported** directory, contact F5 Technical support via your typical method for more time sensitive changes and other issues requiring immediate support.
 
 
 
@@ -507,8 +442,8 @@ Copyright 2014-2017 F5 Networks Inc.
 ## License
 
 
-Apache V2.0
-~~~~~~~~~~~
+### Apache V2.0
+
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
 License at
@@ -521,7 +456,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations
 under the License.
 
-Contributor License Agreement
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### Contributor License Agreement
+
 Individuals or business entities who contribute to this project must have
 completed and submitted the [F5 Contributor License Agreement](http://f5-openstack-docs.readthedocs.io/en/latest/cla_landing.html).

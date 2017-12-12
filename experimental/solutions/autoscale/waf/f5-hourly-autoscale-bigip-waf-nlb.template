@@ -351,7 +351,7 @@
       "MinValue": "0"
     },
     "lowCpuThreshold": {
-      "Description": "Low CPU % threshold to begin scaling up BIG-IP VE instances",
+      "Description": "Low CPU % threshold to begin scaling down BIG-IP VE instances",
       "Default": "0",
       "Type": "Number",
       "MaxValue": "100",
@@ -979,7 +979,7 @@
                           " --password-url file:///config/cloud/aws/.adminPassword",
                           " --device-group autoscale-group",
                           " --cluster-action update",
-                          " --log-level silly --output /var/log/aws-autoscale.log\n",
+                          " --log-level silly --output /var/log/aws-autoscale.log\n"
                       ]
                   ]
                 },
@@ -1624,6 +1624,26 @@
     "bigipAutoscaleGroup": {
       "Value": {
         "Ref": "BigipAutoscaleGroup"
+      }
+    },
+    "bigipSecurityGroup": {
+      "Value": {
+        "Ref": "bigipSecurityGroup"
+      }
+    },
+    "bigipSecurityGroupIngressAsmPolicySync": {
+      "Value": {
+        "Ref": "bigipSecurityGroupIngressAsmPolicySync"
+      }
+    },
+    "bigipSecurityGroupIngressManagementGuiPort": {
+      "Value": {
+        "Ref": "bigipSecurityGroupIngressManagementGuiPort"
+      }
+    },
+    "bigipSecurityGroupIngressConfigSync": {
+      "Value": {
+        "Ref": "bigipSecurityGroupIngressConfigSync"
       }
     },
     "s3Bucket": {

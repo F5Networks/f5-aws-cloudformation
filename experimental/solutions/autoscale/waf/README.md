@@ -23,8 +23,7 @@ You have the option of using a BIG-IQ device to license BIG-IP VEs using BYOL li
 ## Prerequisites
 The following are prerequisites and notes for this solution:
  - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdminstratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.  For details on permissions and all AWS configuration, see https://aws.amazon.com/documentation/.
- - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
-   - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP WAF auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
+ - An existing AWS VPC with a public subnet, a Network load balancer (NLB) with target groups in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
    - The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
  - Access to **Best** BIG-IP images in the Amazon region within which you are working.
  - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
@@ -68,6 +67,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
 | Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
+| Target Group(s) of Network Load Balancer for BIG-IP VEs | bigipNetworkLoadBalancerTargetGroupsArns | ARN of target group(s) for AWS Network Load Balancer for the BIG-IP VEs |
 | Elastic Load Balancer for BIG-IP VEs | bigipElasticLoadBalancer | Yes | Name of the AWS Elastic Load Balancer group for the BIG-IP VEs |
 | SSH Key Name | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | AWS Instance Size | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
@@ -84,6 +84,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | High CPU % Threshold | highCpuThreshold | Yes | High CPU % threshold to begin scaling up BIG-IP VE instances |
 | Notification Email | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
 | Virtual Service Port | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
+| S3 ARN of the SSL Certificate used for Application | appCertificateS3Arn | S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of pfx ssl certificate used for application - for example **arn:aws:s3:::my_corporate_bucket/website.pfx**. |
 | Application Pool Member Port | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
 | Application Pool DNS | appInternalDnsName | Yes | DNS name poolapp.example.com for the application pool.  This is not required if you are using the [Service Discovery feature](#service-discovery). |
 | Application Pool Tag Key | applicationPoolTagKey | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next. |
@@ -171,11 +172,11 @@ To use service discovery, in the **WAF Virtual Service Configuration** section o
 ---
 
 ### Getting Help
-**F5 Support**  
-Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565).
+**F5 Again, F5 does not offer support for templates in the experimental directory.Support**  
+While this template has been created by F5 Networks, it is in the **experimental** directory and therefore has not completed full testing and is subject to change.  F5 Networks does not offer technical support for templates in the experimental directory. For supported templates, see the templates in the **supported** directory..
 
 **Community Support**  
-We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates. There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance. This slack channel community support should **not** be considered a substitute for F5 Technical Support.
+We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates. There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance. This slack channel community support should **not** be considered a substitute for F5 Technical Support.  
 
 ---
 ---
@@ -436,79 +437,14 @@ Note the hashes and script-signature may be different in your template. It is im
 
 ---
 
-## Example ELB configuration <a name="elb"></a>
-The following is an example ELB configuration that could be used in this implementation. For specific instructions on configuring an ELB, see http://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/load-balancer-getting-started.html.
 
-```json
-    "bigipElasticLoadBalancer": {
-      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-      "DependsOn": "internetGatewayAttachment",
-      "Properties": {
-        "LoadBalancerName": {
-          "Fn::Join": [
-            "",
-            [ 
-              { "Ref" : "deploymentName" },
-              "-BigipElb"
-            ]
-          ]
-        },
-        "HealthCheck": {
-          "HealthyThreshold": "2",
-          "Interval": "10",
-          "Target": "HTTP:80/",
-          "Timeout": "5",
-          "UnhealthyThreshold": "10"
-        },
-        "subnets" : [ 
-            { "Ref": "az1ExternalSubnet" },
-            { "Ref": "az2ExternalSubnet" }
-        ],
-        "CrossZone" : true,
-        "Listeners" : [ {
-            "LoadBalancerPort" : "443",
-            "InstancePort" : "80",
-            "Protocol" : "HTTPS",
-            "InstanceProtocol" : "HTTP",
-            "SSLCertificateId" : { "Ref" : "certificateId" },
-            "PolicyNames" : [
-                "ELBSecurityPolicy-2016-08",
-                "MyAppCookieStickinessPolicy"
-            ]
-        } ],
-        "Policies" : [
-            {
-                "PolicyName" : "MyAppCookieStickinessPolicy",
-                "PolicyType" : "AppCookieStickinessPolicyType",
-                "Attributes" : [
-                    { "Name" : "CookieName", "Value" : "MyCookie"}
-                ]
-            }
-        ],
-        "SecurityGroups": [
-          {
-            "Ref": "bigipSecurityGroup"
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "application",
-            "Value": {
-              "Ref": "AWS::StackId"
-            }
-          }
-        ]
-      }
-    },
-
-```
 
 ## Filing Issues
 If you find an issue, we would love to hear about it. 
 You have a choice when it comes to filing issues:
   - Use the **Issues** link on the GitHub menu bar in this repository for items such as enhancement or feature requests and non-urgent bug fixes. Tell us as much as you can about what you found and how you found it.
   - Contact us at [solutionsfeedback@f5.com](mailto:solutionsfeedback@f5.com?subject=GitHub%20Feedback) for general feedback or enhancement requests. 
-  - Use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 cloud templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support.
+  - Use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 cloud templates.  There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance.
   - Contact F5 Technical support via your typical method for more time sensitive changes and other issues requiring immediate support.
 
 
@@ -522,8 +458,8 @@ Copyright 2014-2017 F5 Networks Inc.
 ## License
 
 
-Apache V2.0
-~~~~~~~~~~~
+### Apache V2.0
+
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
 License at
@@ -536,7 +472,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations
 under the License.
 
-Contributor License Agreement
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### Contributor License Agreement
+
 Individuals or business entities who contribute to this project must have
 completed and submitted the [F5 Contributor License Agreement](http://f5-openstack-docs.readthedocs.io/en/latest/cla_landing.html).

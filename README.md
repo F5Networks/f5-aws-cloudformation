@@ -20,6 +20,9 @@ For additional information, including how the templates are generated, and assis
 ### Matrix for tagged releases
 F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types, and throughput levels available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md.
 
+## CVE-2017-6168 information  
+If you have launched an F5 CFT template from a prior release, see the <a href="#important">important note</a> at the bottom of this page.
+
 
 ## List of Supported F5 CloudFormation templates for AWS deployments
 The following is a list of the current *supported* F5 CloudFormation templates. Click the links below to view the README files which include the Launch buttons and additional information, or click the **Launch Stack** buttons to immediately launch the stack. Because individual templates may have specific prerequisites, we strongly recommend you view the README file before attempting to launch a template. 
@@ -132,16 +135,16 @@ The following is a list of the current *supported* F5 CloudFormation templates. 
   
    
 ---
-
+<a name="important"></a>
 <table>
  <tr>
   <td align=center>:warning: <strong>IMPORTANT<strong> :warning:  </td>
  </tr>
  <tr>
-  <td>If you used a CFT template prior to [release 2.7.1](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.7.1), BIG-IP virtual servers configured with a Client SSL profile may be vulnerable to an Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack). For complete information on this vulnerability, see https://support.f5.com/csp/article/K21905460. <br>F5 has released hotfixes for all vulnerable releases. All of he templates in the current release in this repository use non-vulnerable BIG-IP VE images.  If you are using a BIG-IP image launched from a previous version of a template, use the following guidance:<br>  
+  <td>If you used an F5 CFT template prior to <a href="https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.7.1">release 2.7.1</a>, BIG-IP virtual servers configured with a Client SSL profile may be vulnerable to an Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack, CVE-2017-6168). For complete information on this vulnerability, see https://support.f5.com/csp/article/K21905460. <br>F5 has released hotfixes for all vulnerable releases. <strong><em>All of the templates in the current release in this repository use non-vulnerable BIG-IP VE images</em></strong>.  If you are using a BIG-IP image launched from a previous version of a template, use the following guidance:<br>  
    <ul>
     <li><em>If you have an existing BIG-IP VE deployment in AWS</em>  <br>See the <a href="https://support.f5.com/csp/article/K21905460">Security Advisory</a>, which contains information about upgrading your BIG-IP VE to a non-vulnerable version.</li>
-    <li><em>For <strong>new</strong> BIG-IP VE deployments in AWS</em><br> The F5 CFT templates in [release 2.7.1](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.7.1) and later use non-vulnerable images. We recommending using the templates in the [latest release](https://github.com/F5Networks/f5-aws-cloudformation/releases) for new deployments.</li>
+    <li><em>For <strong>new</strong> BIG-IP VE deployments in AWS</em><br> The F5 CFT templates in <a href="https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.7.1">release 2.7.1</a> and later use non-vulnerable images. We recommending using the templates in the <a href="https://github.com/F5Networks/f5-aws-cloudformation/releases">latest release</a> for new deployments.</li>
     <li><em>For <strong>new</strong> BIG-IP VE deployments using a template in an older tagged release on GitHub</em><br>  If you have a specific need for using an older F5 CFT template, see <a href="aws-update-bigip-image.md">Changing the BIG-IP VE image in an F5 CFT template</a> for instructions on updating the BIG-IP images referenced in the template.</li>
    </ul></td>
  </tr>
@@ -173,4 +176,4 @@ under the License.
 ## Contributor License Agreement
 
 Individuals or business entities who contribute to this project must have
-completed and submitted the `F5 Contributor License Agreement`
+completed and submitted the [F5 Contributor License Agreement](http://f5-openstack-docs.readthedocs.io/en/latest/cla_landing.html)

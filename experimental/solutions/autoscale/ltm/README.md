@@ -172,7 +172,6 @@ To use service discovery, in the **WAF Virtual Service Configuration** section o
 ---
 
 ### Getting Help
-**F5 Again, F5 does not offer support for templates in the experimental directory.Support**  
 While this template has been created by F5 Networks, it is in the **experimental** directory and therefore has not completed full testing and is subject to change.  F5 Networks does not offer technical support for templates in the experimental directory. For supported templates, see the templates in the **supported** directory..
 
 **Community Support**  

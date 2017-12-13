@@ -15,9 +15,11 @@
 
 
 ## Introduction
-This solution implements auto scaling of BIG-IP Virtual Edition (VE) Web Application Firewall (WAF) systems in Amazon Web Services. The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) and <a href="https://f5.com/products/big-ip/application-security-manager-asm">Application Security Manager</a> (ASM) modules enabled to provide advanced traffic management and web application security functionality.  As traffic or the BIG-IP CPU utilization increases or decreases, the number of BIG-IP VE WAF instances automatically increases or decreases accordingly (based on values you enter in the template). 
+This solution implements auto scaling of BIG-IP Virtual Edition (VE) Web Application Firewall (WAF) systems in Amazon Web Services.  Auto scaling means that as traffic through the BIG-IP VE or the BIG-IP CPU utilization increases or decreases, the number of BIG-IP VE WAF instances automatically increases or decreases accordingly (based on values you enter in the template). The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) and <a href="https://f5.com/products/big-ip/application-security-manager-asm">Application Security Manager</a> (ASM) modules enabled to provide advanced traffic management and web application security functionality. 
 
-You have the option of using a BIG-IQ device to license BIG-IP VEs using BYOL licenses in this auto scale WAF deployment. 
+See our [video on YouTube](https://www.youtube.com/watch?v=TGHi_KbZ0t4) to see this template in action.  For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
+
+You have the option of using a [BIG-IQ device](https://f5.com/products/big-iq-centralized-management) to license BIG-IP VEs using BYOL licenses in this auto scale WAF deployment. 
 
 
 ## Prerequisites
@@ -171,8 +173,7 @@ To use service discovery, in the **WAF Virtual Service Configuration** section o
 
 ---
 
-### Getting Help
-**F5 Again, F5 does not offer support for templates in the experimental directory.Support**  
+### Getting Help  
 While this template has been created by F5 Networks, it is in the **experimental** directory and therefore has not completed full testing and is subject to change.  F5 Networks does not offer technical support for templates in the experimental directory. For supported templates, see the templates in the **supported** directory..
 
 **Community Support**  

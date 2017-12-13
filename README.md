@@ -25,7 +25,7 @@ If you have launched an F5 CFT template from a prior release, see the <a href="#
 
 
 ## List of Supported F5 CloudFormation templates for AWS deployments
-The following is a list of the current *supported* F5 CloudFormation templates. Click the links below to view the README files which include the Launch buttons and additional information, or click the **Launch Stack** buttons to immediately launch the stack. Because individual templates may have specific prerequisites, we strongly recommend you view the README file before attempting to launch a template. 
+The following is a list of the current *supported* F5 CloudFormation templates. Click the links to view the README files which include the Launch buttons and additional information, or click the **Launch Stack** buttons to immediately launch the stack. Because individual templates may have specific prerequisites, we strongly recommend you view the README file before attempting to launch a template. 
 
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button
 <br><br>

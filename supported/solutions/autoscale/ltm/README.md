@@ -8,14 +8,18 @@
  - [Introduction](#introduction) 
  - [Prerequisites](#prerequisites)
  - [Important configuration notes](#important-configuration-notes)
- - [Launching the template](#launching-the-template) 
- - [Getting Help](#help)
+ - [Launching the template using the AWS Launch Stack Buttons](#launching-the-template-using-the-aws-launch-stack-buttons) 
+ - [Getting Help](#getting-help)
  - [Additional BIG-IP VE Deployment and Configuration Details](#additional-big-ip-ve-deployment-and-configuration-details)
  - [Security](#security)
 
 
 ## Introduction
-This solution implements auto scaling of BIG-IP Virtual Edition (VE) LTM systems in Amazon Web Services. The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality.  As traffic increases or decreases, the number of BIG-IP VE LTM instances automatically increases or decreases accordingly.
+This solution implements auto scaling of BIG-IP Virtual Edition (VE) LTM systems in Amazon Web Services.   Auto scaling means that as traffic through the BIG-IP VE or the BIG-IP CPU utilization increases or decreases, the number of BIG-IP VE LTM instances automatically increases or decreases accordingly (based on values you enter in the template). The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality.
+
+See our [video on YouTube](https://www.youtube.com/watch?v=VQ3IgGWsePs) to see this template in action.  For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
+
+You have the option of using a [BIG-IQ device](https://f5.com/products/big-iq-centralized-management) to license BIG-IP VEs using BYOL licenses in this auto scale LTM deployment. 
 
 
 ## Prerequisites
@@ -28,7 +32,7 @@ The following are prerequisites for this solution:
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image.
  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
  
- ## Important configuration notes
+## Important configuration notes
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. For a list of supported instances and regions, see https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
  - All of the BIG-IP VE members in the cluster are active and process traffic.  See [Detailed Clustering Information](#detailed-clustering-information).
  - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
@@ -38,87 +42,20 @@ The following are prerequisites for this solution:
  - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates.  See [Sending statistical information to F5](#sending-statistical-information-to-f5).
  - F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughputs available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md.
 
-## Launching the template
-You have three options for launching this solution:
-  - Using the [Launch Stack buttons](#using-the-aws-launch-stack-button)
-  - Using the [AWS Console](#using-the-aws-console)
-  - Using the [AWS CLI](#using-the-aws-cli) 
- 
-### Using the AWS Launch Stack button
-The easiest way to deploy one of the CloudFormation templates is to use the Launch Stack button.<br>
+## Launching the template using the AWS Launch Stack buttons
+The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch Stack button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
-
+ 
 See [Template Parameters](#template-parameters) for guidance on the parameters presented by the template.
- 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-BIGIP-LTM-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-autoscale-bigip-ltm.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
-### Using the AWS Console
-Download the CloudFormation template from this repository (https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/solutions/autoscale/ltm/f5-autoscale-bigip-ltm.template) and use it to create a stack in AWS CloudFormation using the AWS Console.<br> 
-Note that you **cannot** right-click the link and use "Save as".  You must click **Raw** and save the code with the file name **f5-autoscale-bigip-ltm.template**.
+ - Hourly, which uses pay-as-you-go hourly billing    
+   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-Hourly-BIGIP-LTM-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-hourly-autoscale-bigip-ltm.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>  
 
+ - BYOL using BIG-IQ for licensing, which allows you to launch the template using an existing BIG-IQ device with a pool of licenses to license the BIG-IP VE(s).   
+   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-BYOL-BIGIP-LTM-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-bigiq-autoscale-bigip-ltm.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
-AWS Console
-
- From the AWS Console main page: 
-   1. Under AWS Services, click **CloudFormation**.
-   2. Click the **Create Stack** button 
-   3. In the Choose a template area, click **Upload a template to Amazon S3**.
-   4. Click **Choose File** and then browse to the **autoscale-bigip-ltm.template** file.
- 
- <br>
-
- 
-### Using the AWS CLI
- 
- From the AWS CLI, use the following command syntax:
- ```
- aws cloudformation create-stack --stack-name Acme-autoscale-bigip --template-body file:///fullfilepath/f5-autoscale-bigip-ltm.template --parameters file:///fullfilepath/f5-autoscale-bigip-ltm-parameters.json --capabilities CAPABILITY_NAMED_IAM`
-```
-
-If you are using the CLI, you must create a JSON-formatted parameter file in same directory. The following example shows the minimum contents of the f5-autoscale-bigip-ltm-parameters.json file, using default values for unlisted parameters.
-```json
-[
-                {
-                                "ParameterKey":"deploymentName",
-                                "ParameterValue":"Acme"
-                },
-                {
-                                "ParameterKey":"vpc",
-                                "ParameterValue":"vpc-1ffef478"
-                },
-                {
-                                "ParameterKey":"availabilityZones",
-                                "ParameterValue":"us-east-1a,us-east-1b"
-                },
-                {
-                                "ParameterKey":"subnets",
-                                "ParameterValue":"subnet-88d30fa5,subnet-2dc44b64"
-                },
-                {
-                                "ParameterKey":"bigipElasticLoadBalancer",
-                                "ParameterValue":"Acme-BigipElb"
-                },
-                {
-                                "ParameterKey":"sshKey",
-                                "ParameterValue":"awskeypair"
-                },
-                {
-                                "ParameterKey":"adminUsername",
-                                "ParameterValue":"mybigipAdmin"
-                },
-                {
-                                "ParameterKey":"notificationEmail",
-                                "ParameterValue":"user@company.com"
-                },
-                {
-                                "ParameterKey":"appInternalElbDnsName",
-                                "ParameterValue":"internal-Acme-AppElb-911355308.us-east-1.elb.amazonaws.com"
-                }
-]
-```
 
 <br>
-
 
 
 ### Template Parameters ###
@@ -145,6 +82,8 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Maximum Instances | scalingMaxSize | Yes | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scale Group |
 | Scale Down Bytes Threshold | scaleDownBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
 | Scale Up Bytes Threshold | scaleUpBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
+| Low CPU % Threshold | lowCpuThreshold | Yes | Low CPU % threshold to begin scaling up BIG-IP VE instances |
+| High CPU % Threshold | highCpuThreshold | Yes | High CPU % threshold to begin scaling up BIG-IP VE instances |
 | Notification Email | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
 | Virtual Service Port | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
 | Application Pool Member Port | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
@@ -156,7 +95,12 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Group | group | No | Group Tag (the default is f5group) |
 | Owner | owner | No | Owner Tag (the default is f5owner) |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter) |
+| IP address of BIG-IQ | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: IP address of the BIG-IQ device that contains the pool of BIG-IP licenses |
+| BIG-IQ user with licensing privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: BIG-IQ user with privileges to license BIG-IQ. Must be 'Admin', 'Device Manager', or 'Licensing Manager' |
+| S3 ARN of the BIG-IQ Password File | bigiqPasswordS3Arn | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file |
+| BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses |
 | Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |
+
 <br>
 
 
@@ -228,10 +172,12 @@ To use service discovery, in the **WAF Virtual Service Configuration** section o
 
 ---
 
-### Help 
-Because this template has been created and fully tested by F5 Networks, it is supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565). You can modify the template itself if necessary, but if you modify any of the code outside of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
+### Getting Help
+**F5 Support**  
+Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565). You can modify the template itself if necessary, but if you modify any of the code ***outside*** of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
 
-We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
+**Community Support**  
+We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates. There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance. This slack channel community support should **not** be considered a substitute for F5 Technical Support. See the [Slack Channel Statement](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/slack-channel-statement.md) for guidelines on using this channel.
 
 
 ---
@@ -549,8 +495,8 @@ If you find an issue, we would love to hear about it.
 You have a choice when it comes to filing issues:
   - Use the **Issues** link on the GitHub menu bar in this repository for items such as enhancement or feature requests and non-urgent bug fixes. Tell us as much as you can about what you found and how you found it.
   - Contact us at [solutionsfeedback@f5.com](mailto:solutionsfeedback@f5.com?subject=GitHub%20Feedback) for general feedback or enhancement requests. 
-  - Use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 cloud templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support.
-  - Contact F5 Technical support via your typical method for more time sensitive changes and other issues requiring immediate support.
+  - Use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 cloud templates.  There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance.
+  - For templates in the **supported** directory, contact F5 Technical support via your typical method for more time sensitive changes and other issues requiring immediate support.
 
 
 
@@ -563,8 +509,8 @@ Copyright 2014-2017 F5 Networks Inc.
 ## License
 
 
-Apache V2.0
-~~~~~~~~~~~
+### Apache V2.0
+
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
 License at
@@ -577,7 +523,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations
 under the License.
 
-Contributor License Agreement
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### Contributor License Agreement
+
 Individuals or business entities who contribute to this project must have
 completed and submitted the [F5 Contributor License Agreement](http://f5-openstack-docs.readthedocs.io/en/latest/cla_landing.html).

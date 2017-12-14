@@ -22,7 +22,7 @@ def usage():
     print "     -s  stack  <network, security_groups, infra, full or existing>"
     print "     -a  <number of AvailabilityZones>"
     print "     -b  <number of BIG-IPs>"
-    print "     -n  <number of NICs>. <1, 2, or 3>"
+    print "     -n  <number of NICs>. <1, 2, 3 or 8>"
     print "     -l  license  <BYOL, hourly or BIG-IQ>"
     print "     -c  components <WAF, autoscale, etc.>"
     print "     -H  ha-type <standalone, same-az, across-az>"
@@ -50,7 +50,7 @@ def main():
     parser.add_option("-s", "--stack", action="store", type="string", dest="stack", help="Stack: network, security_groups, infra, full or existing" )
     parser.add_option("-a", "--num-azs", action="store", type="int", dest="num_azs", default=1, help="Number of Availability Zones" )
     parser.add_option("-b", "--num-bigips", action="store", type="int", dest="num_bigips", default=1, help="Number of BIG-IPs" )
-    parser.add_option("-n", "--nics", action="store", type="int", dest="num_nics", default=1, help="Number of NICs: 1,2 or 3")
+    parser.add_option("-n", "--nics", action="store", type="int", dest="num_nics", default=1, help="Number of NICs: 1, 2, 3 or 8")
     parser.add_option("-l", "--license", action="store", type="string", dest="license_type", default="hourly", help="Type of License: hourly, BYOL, or BIG-IQ" )
     parser.add_option("-c", "--components", action="store", type="string", dest="components", help="Comma seperated list of components: ex. WAF" )
     parser.add_option("-H", "--ha-type", action="store", type="string", dest="ha_type", default="standalone", help="HA Type: standalone, same-az, across-az" )
@@ -132,14 +132,14 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    version = "2.7.1"
+    version = "2.8.0"
     ### Big-IP mapped
     BIGIP_VERSION = "13.0.0.3.0.1679"
     ### Cloudlib Branch
-    branch_cloud = "v3.4.1"
-    branch_aws = "v1.5.0"
-    branch_cloud_iapps = "v1.1.1"
-    ### Build verifyHash file from published verifyHash github
+    branch_cloud = "v3.5.0"
+    branch_aws = "v1.6.0"
+    branch_cloud_iapps = "v1.2.0"
+    ### Build verifyHash file from published verifyHash on github
     urls = [ 'https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/' + str(branch_cloud) + '/dist/verifyHash' ]
     for url in urls:
         try:
@@ -224,7 +224,9 @@ def main():
                 "subnet1Az2",
                 "subnet2Az1",
                 "availabilityZone1",
-                "availabilityZone2"
+                "availabilityZone2",
+                "numberOfAdditionalNics",
+                "additionalNicLocation"
               ]
             },
             {
@@ -359,6 +361,12 @@ def main():
             },
             "allowUsageAnalytics": {
                 "default": "Send Anonymous Statistics to F5"
+            },
+            "numberOfAdditionalNics": {
+                "default": "Number Of Additional NICs"
+            },
+            "additionalNicLocation": {
+                "default": "Additional NIC Location"
             },
           }
         }
@@ -696,6 +704,22 @@ def main():
                     Type="AWS::EC2::Subnet::Id",
                     Description="Private or Internal subnet ID",
                 ))
+        if num_nics > 3:
+            for INDEX in range(num_azs):
+                PARAMETERS["numberOfAdditionalNics"] = t.add_parameter(Parameter(
+                    "numberOfAdditionalNics",
+                    Default="1",
+                    ConstraintDescription="Must be a number between 1-5.",
+                    Type="Number",
+                    MaxValue="5",
+                    MinValue="1",
+                    Description="By default this solution deploys the BIG-IP in a 3 NIC configuration, however it will also add a select number(1-5) of additional NICs to the BIG-IP using this parameter",
+                ))
+                PARAMETERS["additionalNicLocation"] = t.add_parameter(Parameter(
+                    "additionalNicLocation",
+                    Description="This parameter specifies where the additional NICs should go.  This value must be a comma delimited string of subnets, equal to the number of additional NICs being deployed.  For example (for 2 additional NICs): **subnet01,subnet02**. NOTE: Ensure that there are no spaces and that the correct number of subnets are provided based on the value chosen in **numberOfAdditionalNics**. IMPORTANT: The subnet you provide for each additional NIC MUST be unique.",
+                    Type="CommaDelimitedList"
+                ))
     # BEGIN REGION MAPPINGS FOR AMI IDS
     if bigip == True:
         if license_type == "hourly" and marketplace == "Good25Mbps":
@@ -765,6 +789,33 @@ def main():
         "optin",
         condition=Equals("Yes", Ref(allowUsageAnalytics) ),
     )
+    if num_nics > 3:
+        ### Build EQUAL conditions
+        for equalCondition in range(1,6):
+            #equalConditions[equalCondition]="Equals("+str(equalCondition)+", Ref(numberOfAdditionalNics) ), "
+            t.add_condition(equalCondition, condition=Equals(equalCondition, Ref("numberOfAdditionalNics")) )
+
+        for number in range(3, 7):
+            conditionName = "createNic"+str(number)
+            equalConditions={}
+            for nAdditionalNic in range(number-2, 6):
+                # Build inputs of EQUAL conditions for OR condition
+                #equalConditions[nAdditionalNic]="{\"Fn::Equals\" : [{Ref : \"numberOfAdditionalNics\"}, "+str(nAdditionalNic)+"]},"
+                # Save equal conditions in tuple
+                equalConditions[nAdditionalNic]=Condition(str(nAdditionalNic))
+            ### Build OR condition
+            #print equalConditions
+            #orCondition={ conditionName: Or({"Fn::Equals" : [{"Ref" : "numberOfAdditionalNics"}, "1"]},{"Fn::Equals" : [{"Ref" : "numberOfAdditionalNics"}, "2"]},)}
+            orCondition={ conditionName: Or(*equalConditions.values())}
+            t.add_condition(
+                conditionName,
+                orCondition[conditionName],
+                )    
+        t.add_condition(
+            "createNic7",
+            Condition("5"),
+            #condition=Equals("5", Ref("numberOfAdditionalNics") ),
+            )
     ### BEGIN RESOURCES
     if network == True:
         Vpc = t.add_resource(VPC(
@@ -1396,6 +1447,17 @@ def main():
                         GroupSet=[Ref(bigipInternalSecurityGroup)],
                         Description="Internal Interface for the BIG-IP",
                     ))
+                if num_nics > 3:
+                    nics = {}
+                    for number in range(3, 8):
+                        nics[number] = "Bigip" + str(BIGIP_INDEX + 1) + "Interface" + str(number)
+                        t.add_resource(NetworkInterface(
+                            nics[number],
+                            Condition="createNic"+str(number),
+                            SubnetId=Select(str(number-3), Ref("additionalNicLocation")),
+                            GroupSet=[Ref(bigipInternalSecurityGroup)],
+                            Description="Interface " + str(number) + " for the BIG-IP",
+                        ))             
             # build variables for metadata
             ## variable used to add byol license if flagged for byol
             license_byol =  [
@@ -1857,6 +1919,14 @@ def main():
                                     "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`; ",
                                     "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}; ",
                     ]
+                if num_nics > 3:
+                    for number in range(3, 8):
+                        network_config += [
+                            If("createNic"+str(number),
+                                "GATEWAY_MAC"+str(number)+"=`ifconfig eth"+str(number)+" | egrep HWaddr | awk '{print tolower($5)}'`;GATEWAY_CIDR_BLOCK"+str(number)+"=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC"+str(number)+"}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX"+str(number)+"=${GATEWAY_CIDR_BLOCK"+str(number)+"#*/};",
+                                ""
+                            )
+                        ]
                 network_config += [
                                     "nohup /config/waitThenRun.sh ",
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/network.js ",
@@ -1880,6 +1950,27 @@ def main():
                                                 "--vlan name:internal,nic:1.2 ",
                                                 "--self-ip name:internal-self,address:",GetAtt(InternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX2},vlan:internal "
                             ]
+                        if num_nics > 3:
+                            for number in range(3, 8):
+                                network_config += [
+                                    If("createNic"+str(number),
+                                        Join(
+                                            "",
+                                            [
+                                             "--vlan name:net"+str(number)+",nic:1."+str(number)+" ",
+                                             "--self-ip name:interface"+str(number)+"-self,address:",
+                                             {
+                                              "Fn::GetAtt": [
+                                               nics[number],
+                                               "PrimaryPrivateIpAddress"
+                                              ]
+                                             },
+                                             "/${GATEWAY_PREFIX"+str(number)+"},vlan:net"+str(number)+" ",
+                                            ]
+                                        ),
+                                        ""
+                                    )
+                                ]
                     if 'waf' in components:
                         network_config +=   [
                                                 "--self-ip name:external-self,address:",GetAtt(ExternalInterface,"PrimaryPrivateIpAddress"),"/${GATEWAY_PREFIX},vlan:external,[allow:tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128] ",
@@ -2172,7 +2263,7 @@ def main():
                         Description="Public or External Interface",
                     ),
                 ]
-            if num_nics == 2:
+            if num_nics > 1:
                 NetworkInterfaces = [
                     NetworkInterfaceProperty(
                         DeviceIndex="0",
@@ -2185,24 +2276,26 @@ def main():
                         Description="Public or External Interface",
                     ),
                 ]
-            if num_nics == 3:
-                NetworkInterfaces = [
-                    NetworkInterfaceProperty(
-                        DeviceIndex="0",
-                        NetworkInterfaceId=Ref(ManagementInterface),
-                        Description="Management Interface",
-                    ),
-                    NetworkInterfaceProperty(
-                        DeviceIndex="1",
-                        NetworkInterfaceId=Ref(ExternalInterface),
-                        Description="Public or External Interface",
-                    ),
+            if num_nics > 2:
+                NetworkInterfaces.append(
                     NetworkInterfaceProperty(
                         DeviceIndex="2",
                         NetworkInterfaceId=Ref(InternalInterface),
                         Description="Private or Internal Interface",
-                    ),
-                ]
+                    )
+                )
+            if num_nics > 3:
+                for number in range(3, 8):
+                    NetworkInterfaces.append(
+                        If("createNic"+str(number),
+                            NetworkInterfaceProperty(
+                                DeviceIndex=str(number),
+                                NetworkInterfaceId=Ref(nics[number]),
+                                Description="Interface " + str(number)
+                            ),
+                            Ref("AWS::NoValue")
+                        )
+                    )
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 RESOURCES[BigipInstance] = t.add_resource(Instance(
                     BigipInstance,
@@ -2488,6 +2581,24 @@ def main():
                     Description="Internally routable IP of internal interface on BIG-IP",
                     Value=GetAtt(InternalInterface, "PrimaryPrivateIpAddress"),
                 ))
+
+            if num_nics > 3:
+                for number in range(3, 8):
+                    InterfacePrivateIp = "Bigip" + str(BIGIP_INDEX + 1) + "Interface" + str(number) + "PrivateIp"
+                    OUTPUTS[nics[number]] = t.add_output(Output(
+                            nics[number],
+                            Description="Interface"+str(number)+" ID on BIG-IP",
+                            Value=Ref(nics[number]),
+                            Condition="createNic"+str(number)
+                    ))
+                    OUTPUTS[InterfacePrivateIp] = t.add_output(Output(
+                            InterfacePrivateIp,
+                            Description="Internally routable IP of interface"+str(number)+" on BIG-IP",
+                            Value=GetAtt(nics[number], "PrimaryPrivateIpAddress"),
+                            Condition="createNic"+str(number)
+                    ))
+
+
     if webserver == True:
         webserverPrivateIp = t.add_output(Output(
             "webserverPrivateIp",

@@ -10,7 +10,7 @@
    ]
   }
  },
- "Description": "Template Version 2.7.1: AWS CloudFormation Template for creating security groups for a 1NIC BIG-IP",
+ "Description": "Template Version 2.8.0: AWS CloudFormation Template for creating security groups for a 1NIC BIG-IP",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -26,7 +26,9 @@
       "subnet1Az2",
       "subnet2Az1",
       "availabilityZone1",
-      "availabilityZone2"
+      "availabilityZone2",
+      "numberOfAdditionalNics",
+      "additionalNicLocation"
      ]
     },
     {
@@ -77,6 +79,9 @@
    "ParameterLabels": {
     "Vpc": {
      "default": "VPC"
+    },
+    "additionalNicLocation": {
+     "default": "Additional NIC Location"
     },
     "allowUsageAnalytics": {
      "default": "Send Anonymous Statistics to F5"
@@ -138,6 +143,9 @@
     "ntpServer": {
      "default": "NTP Server"
     },
+    "numberOfAdditionalNics": {
+     "default": "Number Of Additional NICs"
+    },
     "owner": {
      "default": "Owner"
     },
@@ -164,7 +172,7 @@
     }
    }
   },
-  "Version": "2.7.1"
+  "Version": "2.8.0"
  },
  "Outputs": {
   "bigipExternalSecurityGroup": {

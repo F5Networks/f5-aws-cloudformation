@@ -10,7 +10,7 @@
    ]
   }
  },
- "Description": "Template Version 2.7.1: AWS CloudFormation Template for creating a 3NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.8.0: AWS CloudFormation Template for creating a 3NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -226,7 +226,9 @@
       "subnet1Az2",
       "subnet2Az1",
       "availabilityZone1",
-      "availabilityZone2"
+      "availabilityZone2",
+      "numberOfAdditionalNics",
+      "additionalNicLocation"
      ]
     },
     {
@@ -277,6 +279,9 @@
    "ParameterLabels": {
     "Vpc": {
      "default": "VPC"
+    },
+    "additionalNicLocation": {
+     "default": "Additional NIC Location"
     },
     "allowUsageAnalytics": {
      "default": "Send Anonymous Statistics to F5"
@@ -338,6 +343,9 @@
     "ntpServer": {
      "default": "NTP Server"
     },
+    "numberOfAdditionalNics": {
+     "default": "Number Of Additional NICs"
+    },
     "owner": {
      "default": "Owner"
     },
@@ -364,7 +372,7 @@
     }
    }
   },
-  "Version": "2.7.1"
+  "Version": "2.8.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -783,7 +791,7 @@
              },
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-hourly-3nic-bigip.template,templateVersion:2.7.1,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-hourly-3nic-bigip.template,templateVersion:2.8.0,licenseType:hourly\"",
              "--ping",
              "&>> /var/log/cloudlibs-install.log < /dev/null &"
             ]
@@ -906,7 +914,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v1.1.1/f5-service-discovery/f5.service_discovery.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v1.2.0/f5-service-discovery/f5.service_discovery.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
@@ -961,13 +969,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.5.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.6.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.4.1/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.5.0/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -1018,7 +1026,7 @@
         "owner": "root"
        },
        "/config/verifyHash": {
-        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 5b5035fe7e1d98260be409cc29d65da49bcaaa9becb4124b308023ce8790439356a2b85de4ce5a4433532967e1d5f13379e98eeadcf251b607032f47481d832f\n            set hashes(f5-cloud-libs-aws.tar.gz) 279254b05d175df4ba1155fa810b3ea66a38e69198d7a6840ac9443ce730a5997e12c3b76af76ebadf13550d8bb0d45a5b09badfff4aac89e75d121bc166358d\n            set hashes(f5-cloud-libs-azure.tar.gz) 3c52145334fe80da577f980cdfbb1ef71fa4284b2f7fb4fa6f241cf50528e9fdc8df088a8312c3f6b90d3db198c787f7c10739e4098efb071cc29bf0ed70437b\n            set hashes(f5-cloud-libs-gce.tar.gz) 6ef33cc94c806b1e4e9e25ebb96a20eb1fe5975a83b2cd82b0d6ccbc8374be113ac74121d697f3bfc26bf49a55e948200f731607ce9aa9d23cd2e81299a653c1\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 4c125f7cbc4d701cf50f03de479ebe99a08c2b2c3fa6aae3e229eb3f0bba98bb513d630368229c98e7c5c907e6a3168ece2f8f576267514bad4f6730ea14d454\n            set hashes(f5.policy_creator.tmpl) 54d265e0a573d3ae99864adf4e054b293644e48a54de1e19e8a6826aa32ab03bd04c7255fd9c980c3673e9cd326b0ced513665a91367add1866875e5ef3c4e3a\n            set hashes(f5.service_discovery.tmpl) d4008a2c5a7f26cc42eb5cbe2171e15e6e95afb1b34fb03d04f6c1b80f154d896e6faaa2e04fbb85fd8e0e51b479dbfcd286357ce0967b162233cc57e0138b96\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature QyT1FQtNajuJkkmgI6ypFnbFu+JJw2UDV673xVwdt8LbE/aQ6JNS0QINerma90YU/uzj8ppThge5jttl3zSVYFkGXmHrvyDujdq50+/HfRnXBtieR+eW0Ro+4Kqfw83NLdebhsyRxJvfrzeAcJ/3VSnfmcERo/PKytcjtL5GFJpvUoaphfPz6YebbBg9VImBjfMBFczaWdKosLwriqG45Goh918lJLa6xYlLVRG+r+FJ9EXYaGty8jt/w4B0gl9oA4iqwmGPaB/GLBYgvek1tYeTl71wRRn/C8e0hsECqI0BAF6Yc7K06uzZcSYhTYQmMKIuebB/ckSdERzA3Mao+Q==\n    signing-key /Common/f5-irule\n}",
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) a2ff53027542356b42d6431a395de94e8a350b9ba54f969f2d32d28c6875532b512af52077d124cc3d00837ff9ff66a0aebbf4219453e1a4681300151ec01e65\n            set hashes(f5-cloud-libs-aws.tar.gz) 1a4ba191e997b2cfaaee0104deccc0414a6c4cc221aedc65fbdec8e47a72f1d5258b047d6487a205fa043fdbd6c8fcb1b978cac36788e493e94a4542f90bd92b\n            set hashes(f5-cloud-libs-azure.tar.gz) f3b24e383b81090996f051279400679f26eb7c0ec1c1de3d712b446eea4a2cbd7d5edb4e1638033078339ba606451b35afaaa0a9e71fd04de3e3151434917b5d\n            set hashes(f5-cloud-libs-gce.tar.gz) 6ef33cc94c806b1e4e9e25ebb96a20eb1fe5975a83b2cd82b0d6ccbc8374be113ac74121d697f3bfc26bf49a55e948200f731607ce9aa9d23cd2e81299a653c1\n            set hashes(f5-cloud-libs-openstack.tar.gz) fb6d63771bf0c8d9cae9271553372f7fb50ce2e7a653bb3fb8b7d57330a18d72fa620e844b579fe79c8908a3873b2d33ee41803f23ea6c5dc9f7d7e943e68c3a\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 7ac8caac0f4e6f3907cd541a2d905931e97cd0220b443403dfbaaa30f3cad615fcd9420a3123327c2609441bd4a87d86a1a35b7567dbe78e3f97bd954a3cc5df\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) acc7c482a1eb8787a371091f969801b422cb92830b46460a3313b6a8e1cda0759f8013380e0c46d5214a351a248c029ec3ff04220aaef3e42a66badf9804041f\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature V+c2TLGWQJSG+bifkkeN+g++W0STcR4QN1ExkRooWU7qi3IzX/YlicrDSj3v7qx+MeZJm7Pw2OHGxh9RjEii7TBoHjPUWbVfnfpleVhazZruBGhAkhSLbSJ++D5KcuPPjHqMmXRLs7szpD/znJZmfsDFbBC8pD6+cmhZAXMi68BdZJwArF+tnnYjhnIljwSS6awpnWrFaXZ6YrDWIm4HDMDiHtN31BZFCoKsaDw45yrgp8DEsFjxfzSTPmbuDsMsdhy6s6koD+Xuh1ciol/QYnQ7GIIfoxSQcO13FdvzPNhho3Clu0dAhCPLLtYGiH9wqc8dEcMT2qPVs5mRyIlz+A==\n    signing-key /Common/f5-irule\n}",
         "group": "root",
         "mode": "000755",
         "owner": "root"

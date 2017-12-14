@@ -8,7 +8,7 @@
  - [Introduction](#introduction)
  - [Prerequisites](#prerequisites-and-configuration-notes)
  - [Security](#security)
- - [Getting Help](#help)
+ - [Getting Help](#getting-help)
  - [Deploying the solution](#deploying-the-solution)
  - [Service Discovery](#service-discovery)
  - [Configuration Example](#configuration-example)
@@ -59,10 +59,12 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
 
-### Help 
+### Getting Help
+**F5 Support**  
 Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565).
- 
-We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates.  This channel is typically monitored Monday-Friday 9-5 PST by F5 employees who will offer best-effort support. 
+
+**Community Support**  
+We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates. There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance. This slack channel community support should **not** be considered a substitute for F5 Technical Support. See the [Slack Channel Statement](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/slack-channel-statement.md) for guidelines on using this channel.
 
 
 ## Quick Start for launching the template

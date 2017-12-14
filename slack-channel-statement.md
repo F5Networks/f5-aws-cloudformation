@@ -13,7 +13,7 @@ On the Slack channel, you should **NEVER**:
 
 ### Getting F5 technical support
   - For templates in the **supported** directory only, you can contact [F5 Technical Support](https://support.f5.com/csp/article/K25327565) using your typical method.  
-  - Templates in the **experimental** directory directory have not completed full testing and are subject to change.  F5 Networks does not offer technical support for templates in the experimental directory.are *not* supported by F5.
+  - Templates in the **experimental** directory have not completed full testing and are subject to change.  F5 Networks does not offer technical support for templates in the experimental directory.
   
 ### Providing feedback on F5 cloud templates
   - Use the **Issues** link on the GitHub menu bar in this repository for items such as enhancement or feature requests and non-urgent bug fixes. Tell us as much as you can about what you found and how you found it.

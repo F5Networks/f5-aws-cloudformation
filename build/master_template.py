@@ -132,11 +132,11 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    version = "2.8.0"
+    version = "2.8.1"
     ### Big-IP mapped
     BIGIP_VERSION = "13.0.0.3.0.1679"
     ### Cloudlib Branch
-    branch_cloud = "v3.5.0"
+    branch_cloud = "v3.5.2"
     branch_aws = "v1.6.0"
     branch_cloud_iapps = "v1.2.0"
     ### Build verifyHash file from published verifyHash on gitswarm. Or github (public) if gitswarm (private) not available

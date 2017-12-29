@@ -659,7 +659,7 @@ def main():
             bigiqPasswordS3Arn = t.add_parameter(Parameter(
                 "bigiqPasswordS3Arn",
                 Type="String",
-                Description="S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file",
+                Description="S3 ARN of the BIG-IQ Password file. e.g. arn:aws:s3:::bucket_name/full_path_to_file for public regions or  arn:aws-us-gov:s3:::bucket_name/full_path_to_file) for GovCloud (US)",
                 MinLength="1",
                 MaxLength="255",
                 ConstraintDescription="Verify the S3 ARN of BIG-IQ Password file",
@@ -1294,8 +1294,8 @@ def main():
         if license_type == "bigiq":
             discovery_policy.append({"Effect": "Allow", "Action": ["s3:GetObject"], "Resource": {"Ref": "bigiqPasswordS3Arn"}, })
         if ha_type != "standalone":
-            discovery_policy.append({"Effect": "Allow", "Action": ["s3:ListBucket"], "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" } ] ] },},)
-            discovery_policy.append({"Effect": "Allow", "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"], "Resource": { "Fn::Join": [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" }, "/*" ] ]}},)
+            discovery_policy.append({"Effect": "Allow", "Action": ["s3:ListBucket"], "Resource": { "Fn::Join": [ "", ["arn:*:s3:::", { "Ref": "S3Bucket" } ] ] },},)
+            discovery_policy.append({"Effect": "Allow", "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"], "Resource": { "Fn::Join": [ "", ["arn:*:s3:::", { "Ref": "S3Bucket" }, "/*" ] ]}},)
             s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,))
         bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(
             "bigipServiceDiscoveryAccessRole",

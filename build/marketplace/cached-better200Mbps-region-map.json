@@ -26,9 +26,6 @@
   "eu-west-2": {
     "Better200Mbps": "ami-f0293694"
   }, 
-  "eu-west-3": {
-    "Better200Mbps": ""
-  }, 
   "sa-east-1": {
     "Better200Mbps": "ami-fe4d0892"
   }, 
@@ -39,7 +36,7 @@
     "Better200Mbps": "ami-76193713"
   }, 
   "us-gov-west-1": {
-    "Better200Mbps": ""
+    "Better200Mbps": "ami-df61edbe"
   }, 
   "us-west-1": {
     "Better200Mbps": "ami-35417955"

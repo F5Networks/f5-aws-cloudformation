@@ -237,22 +237,14 @@
     "instanceType": {
       "Description": "AWS Instance Size",
       "Type": "String",
-      "Default": "m4.xlarge",
+      "Default": "c4.8xlarge",
       "AllowedValues": [
-        "t2.medium",
-        "t2.large",
-        "m3.xlarge",
-        "m3.2xlarge",
-        "m4.xlarge",
-        "m4.2xlarge",
-        "m4.4xlarge",
-        "m4.10xlarge",
-        "c3.4xlarge",
         "c3.8xlarge",
-        "c4.4xlarge",
-        "c4.8xlarge"
+        "c4.8xlarge",
+        "m4.10xlarge",
+        "m4.16xlarge"
       ],
-      "ConstraintDescription": "Must be a valid BIG-IP BEST virtual EC2 instance type."
+      "ConstraintDescription": "Must be a valid BIG-IP GOOD virtual EC2 instance type."
     },
     "adminUsername": {
       "ConstraintDescription": "Verify your BIG-IP admin username. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). The user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa.",

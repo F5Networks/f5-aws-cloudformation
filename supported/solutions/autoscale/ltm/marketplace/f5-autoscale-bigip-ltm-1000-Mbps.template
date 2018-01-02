@@ -584,7 +584,7 @@
                     "Fn::Join": [
                       "",
                       [
-                        "arn:aws:s3:::",
+                        "arn:*:s3:::",
                         {
                           "Ref": "S3Bucket"
                         }
@@ -603,7 +603,7 @@
                     "Fn::Join": [
                       "",
                       [
-                        "arn:aws:s3:::",
+                        "arn:*:s3:::",
                         {
                           "Ref": "S3Bucket"
                         },

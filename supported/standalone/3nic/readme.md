@@ -30,6 +30,7 @@ The following are prerequisites for the F5 3-NIC CFT:
     - Management subnet (the subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library)
     - External subnet
     - Internal subnet
+  - For **Production Stack CFTs only**: You need an additional subnet for a NAT instance and associated network interface for network translation, for the initial configuration to download the BIG-IP cloud library (and for some licensing options).
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS)
   
   

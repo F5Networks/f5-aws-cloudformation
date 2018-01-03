@@ -17,17 +17,18 @@
 
 This solution uses a CloudFormation Template to launch and configure two BIG-IP 2-NIC VEs in a clustered, highly available configuration across Amazon Availability Zones. The BIG-IP VE can detect Availability Zone failure and automatically shift public traffic to the BIG-IP in the Availability Zone that is unaffected. In a 2-NIC implementation, each BIG-IP VE has one interface used for management and data-plane traffic from the Internet, and the second interface connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.  
 
+The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality. This means you can also configure the BIG-IP VE to enable F5's L4/L7 security features, access control, and intelligent traffic management.
+
+For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
+
 When deploying this solution from the AWS Marketplace, you can launch the BIG-IP VE image (Good, Better, or Best) with the following throughput levels: 5Gbps, 1Gbps, 200Mbps, or 25Mbps. Each has a separate page, meaning there are 12 separate Marketplace pages for this solution.
 
 
-See the [Configuration Example](#configuration-example) section for a configuration diagram and description for this solution.
-
 ## Prerequisites and configuration notes
 The following are prerequisites for the F5 2-NIC CFT:
-  - An existing AWS VPC with two separate Availability Zones, each with three subnets: 
+  - An existing AWS VPC with two separate Availability Zones, each with two subnets: 
     - Management subnet (called Public in the AWS UI). The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
     - External subnet (called Private in the AWS UI). 
-    - NAT instance and associated network interface for network translation. 
   - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = <region>.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
   - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for information.
   - An AWS Security Group in each Availability Zone with the following inbound rules:
@@ -93,10 +94,10 @@ Once you have launched the CFT from the marketplace, you need to complete the te
 | Management Security Group | bigipManagementSecurityGroup | Yes | BIG-IP Management Security Group ID |
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID for Availability Zone 1. |
 | Subnet1 AZ1 | subnet1Az2 | Yes | Public or External subnet ID for Availability Zone 2. |
-| External Security Group | bigipExternalSecurityGroup | Yes | Public or External Security Group ID. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
-| Source Address(es) for SSH Access | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances. |
+| Source Address(es) for Management Access | restrictedSrcAddress | Yes | The IP address range used for SSH and access the management GUI on the EC2 instances. |
+| Source Address(es) for Web Application Access (80/443) | restrictedSrcAddressApp | Yes | The IP address range that can be used to Web traffic (80/443) on the EC2 instances. |
 | NTP Server | ntpServer | Yes | NTP server you want to use for this implementation (the default is 0.pool.ntp.org). | 
 | Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC). |
 | Application | application | No | Application Tag (the default is f5app). |
@@ -104,6 +105,7 @@ Once you have launched the CFT from the marketplace, you need to complete the te
 | Group | group | No | Group Tag (the default is f5group). |
 | Owner | owner | No | Owner Tag (the default is f5owner). |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
+| Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |
 
 
 
@@ -252,8 +254,8 @@ Copyright 2014-2017 F5 Networks Inc.
 ## License
 
 
-Apache V2.0
-~~~~~~~~~~~
+### Apache V2.0
+
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
 License at http://www.apache.org/licenses/LICENSE-2.0
@@ -264,7 +266,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations
 under the License.
 
-Contributor License Agreement
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### Contributor License Agreement
+
 Individuals or business entities who contribute to this project must have
 completed and submitted the [F5 Contributor License Agreement](http://f5-openstack-docs.readthedocs.io/en/latest/cla_landing.html).

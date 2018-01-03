@@ -26,6 +26,7 @@ For each licensing option (hourly billing, bring your own license, licensing via
 ## Prerequisites
 The following are prerequisites and notes for the F5 single NIC CFT:
   - An AWS VPC with one subnet. This subnet requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library.
+  - For **Production Stack CFTs only**: You need an additional subnet for a NAT instance and associated network interface for network translation, for the initial configuration to download the BIG-IP cloud library (and for some licensing options).
   - Key pair for SSH access to BIG-IP VE (you can create or import in AWS).
   
 ## Important configuration notes

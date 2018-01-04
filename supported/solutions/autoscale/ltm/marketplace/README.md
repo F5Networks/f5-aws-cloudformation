@@ -12,7 +12,9 @@
 
 
 ## Introduction
-This solution implements auto scaling of BIG-IP Virtual Edition (VE) LTM systems in Amazon Web Services. The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality.  As traffic increases or decreases, the number of BIG-IP VE LTM instances automatically increases or decreases accordingly.
+This solution implements auto scaling of BIG-IP Virtual Edition (VE) LTM systems in Amazon Web Services. Auto scaling means that as traffic through the BIG-IP VE or the BIG-IP CPU utilization increases or decreases, the number of BIG-IP VE LTM instances automatically increases or decreases accordingly (based on values you enter in the template). The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality.
+
+See our [video on YouTube](https://www.youtube.com/watch?v=VQ3IgGWsePs) to see this template in action.  For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
 
 
 ## Prerequisites and configuration notes
@@ -62,10 +64,14 @@ Once you have launched the CFT from the marketplace, you need to complete the te
 | scalingMaxSize | Yes | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scaling Group (the default is 3) |
 | scaleDownBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling down BIG-IP Instances (the default is 10000)<sup>1</sup> |
 | scaleUpBytesThreshold | Yes | Incoming Bytes Threshold to begin scaling up BIG-IP Instances (the default is 35000)<sup>1</sup> |
+| Low CPU % Threshold | lowCpuThreshold | Yes | Low CPU % threshold to begin scaling up BIG-IP VE instances |
+| High CPU % Threshold | highCpuThreshold | Yes | High CPU % threshold to begin scaling up BIG-IP VE instances |
 | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
 | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
 | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
-| appInternalDnsName | Yes | DNS name for the application pool |
+| appInternalDnsName | Yes | DNS name (such as poolapp.example.com) for the application pool.  This is not required if you are using the [Service Discovery feature](#service-discovery). |
+| Application Pool Tag Key | applicationPoolTagKey | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next. |
+| Application Pool Tag Value | applicationPoolTagValue | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with the key you specified and this value. |
 | application | No | Application Tag (the default is f5app) |
 | environment | No | Environment Name Tag (the default is f5env) |
 | group | No | Group Tag (the default is f5group) |
@@ -115,6 +121,25 @@ Once you have completed the template and the BIG-IP system instantiates *(estima
 
 You can now configure the BIG-IP VE as applicable for your configuration.  See the BIG-IP documentation for details (https://support.f5.com/csp/tech-documents)
 
+
+---
+
+## Service Discovery
+This CloudFormation template now includes service discovery, which means the BIG-IP VE automatically updates pool members based on auto-scaled cloud application hosts. In the template, you enter information about your cloud environment, specifically the tag key and tag value for the pool members you want to include in service discovery, and then the BIG-IP VE programmatically discovers (or removes) members using those tags.
+
+### Tagging
+In AWS, you have two options for tagging objects that the service discovery feature uses. 
+  - *Tag a VM resource*<br>
+The BIG-IP VE will discover the primary public or private IP addresses for the primary NIC configured for the tagged VM.
+  - *Tag a NIC resource*<br>
+The BIG-IP VE will discover the primary public or private IP addresses for the tagged NIC.  Use this option if you want to use the secondary NIC of a VM in the pool.
+
+
+The template first looks for NIC resources with the tags you specify. If it finds NICs with the proper tags, it does not look for VM resources. If it does not find NIC resources, it looks for VM resources with the proper tags.
+
+**Important**: Make sure the tags and IP addresses you use are unique. You should not tag multiple AWS nodes with the same key/tag combination if those nodes use the same IP address.
+
+To use service discovery, in the **WAF Virtual Service Configuration** section of the template, in the **Application Pool Tag Key** and **Application Pool Tag Value** fields, enter your Key and Value information. If you leave these fields at the default, the template does not use service discovery, and uses the value you include for the Application Pool DNS.  Note that if you enter both the Application Pool DNS value and the Key/Value information, the template only uses the Key/Value fields, which enables service discovery. 
 
 ---
 
@@ -425,8 +450,8 @@ Copyright 2014-2017 F5 Networks Inc.
 ## License
 
 
-Apache V2.0
-~~~~~~~~~~~
+### Apache V2.0
+
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
 License at
@@ -439,7 +464,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations
 under the License.
 
-Contributor License Agreement
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### Contributor License Agreement
+
 Individuals or business entities who contribute to this project must have
 completed and submitted the [F5 Contributor License Agreement](http://f5-openstack-docs.readthedocs.io/en/latest/cla_landing.html).

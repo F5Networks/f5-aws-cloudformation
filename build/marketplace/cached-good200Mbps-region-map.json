@@ -26,9 +26,6 @@
   "eu-west-2": {
     "Good200Mbps": "ami-7a2a351e"
   }, 
-  "eu-west-3": {
-    "Good200Mbps": ""
-  }, 
   "sa-east-1": {
     "Good200Mbps": "ami-e24d088e"
   }, 
@@ -39,7 +36,7 @@
     "Good200Mbps": "ami-f0193795"
   }, 
   "us-gov-west-1": {
-    "Good200Mbps": ""
+    "Good200Mbps": "ami-9662eef7"
   }, 
   "us-west-1": {
     "Good200Mbps": "ami-3d427a5d"

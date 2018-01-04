@@ -87,7 +87,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Notification Email | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
 | Virtual Service Port | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
 | Application Pool Member Port | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
-| Application Pool DNS | appInternalDnsName | Yes | DNS name poolapp.example.com for the application pool.  This is not required if you are using the [Service Discovery feature](#service-discovery). |
+| Application Pool DNS | appInternalDnsName | Yes | DNS name (such as poolapp.example.com) for the application pool.  This is not required if you are using the [Service Discovery feature](#service-discovery). |
 | Application Pool Tag Key | applicationPoolTagKey | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next. |
 | Application Pool Tag Value | applicationPoolTagValue | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with the key you specified and this value. |
 | Application | application | No | Application Tag (the default is f5app) |

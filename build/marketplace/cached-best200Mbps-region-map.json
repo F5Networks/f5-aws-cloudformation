@@ -26,9 +26,6 @@
   "eu-west-2": {
     "Best200Mbps": "ami-4f29362b"
   }, 
-  "eu-west-3": {
-    "Best200Mbps": ""
-  }, 
   "sa-east-1": {
     "Best200Mbps": "ami-d84c09b4"
   }, 
@@ -39,7 +36,7 @@
     "Best200Mbps": "ami-27173942"
   }, 
   "us-gov-west-1": {
-    "Best200Mbps": ""
+    "Best200Mbps": "ami-a163efc0"
   }, 
   "us-west-1": {
     "Best200Mbps": "ami-31417951"

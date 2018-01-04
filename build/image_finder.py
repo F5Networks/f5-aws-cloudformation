@@ -1,6 +1,8 @@
 # /usr/bin/python env
 
+import time
 import re
+import boto3
 import boto
 import boto.ec2
 import collections
@@ -29,21 +31,32 @@ class BigIpImageFinder(object):
         """
 
         # get all the images
-        arg_s = ['aws', 'ec2', 'describe-images',
-                 '--region', region, '--filter',
-                 'Name=name,Values=\'F5*\'', '--output=json']
+        # Following 3 lines commented out on 12/23/2017, old Chris stuff
+        #arg_s = ['aws', 'ec2', 'describe-images',
+                 #'--region', region, '--filter',
+                 #'Name=name,Values=\'F5*\'', '--output=json']
 
-        conn = boto.ec2.connect_to_region(region)
-        images = conn.get_all_images(filters={'name': 'F5*'})
+        # When using boto
+        #conn = boto.ec2.connect_to_region(region)
+        #images = conn.get_all_images(filters={'name': 'F5*'})
+
+        # When using boto3 with describe_images
+        #client = boto3.client('ec2', region_name='eu-west-3')
+        #images = client.describe_images(Filters=[{'Name':'name','Values':['F5*']}])
+        #print images
+
+        # When using boto3 with list
+        ec2 = boto3.resource('ec2', region_name=region)
+        images = list(ec2.images.filter(Filters=[{'Name':'name', 'Values':['F5*']}]).all())
 
         #print images
-        f5_init_images = {}
-        for i in images:
-            start_position = i.name.find("ami-")
-            if start_position > 0:
-                #print (i.name[start_position:])[0:12]
-                f5_init_images[(i.name[start_position:])[0:12]]=True
-                #print f5_init_images
+        #f5_init_images = {}
+        #for i in images:
+        #    start_position = i.name.find("ami-")
+        #    if start_position > 0:
+        #        #print (i.name[start_position:])[0:12]
+        #        f5_init_images[(i.name[start_position:])[0:12]]=True
+        #        #print f5_init_images
 
         # dimensions
         packages = ['good', 'better', 'best']
@@ -57,16 +70,25 @@ class BigIpImageFinder(object):
         ]
 
         structured = []
+        c = 0
         for i in images:
+            c = c + 1
+            #print "%d %s %s %s" (c, region, i.name , i.id)
+            print str(c) + " " + region + " " + i.name + " " + i.id
             if region == "us-east-1":
                 if re.search(r'BIGIP', i.name):
                     if (i.name.lower())[-1] != "4":
+                        print "Skipping invalid BIG-IP AMI......"
                         continue
             #if f5_init_images.get(i.id.lower(),None):
             #    continue
             try:
                 image_name = i.name.lower()
+                #image_name = i['Images'][0]['Name'].lower()
+                #print image_name
                 image_id = i.id.lower()
+                #image_id = i['Images'][0]['ImageId'].lower()
+                #print image_id
 
                 license = self.searchitem(licenses, image_name)
                 version = self.searchitem(versions, image_name)
@@ -250,6 +272,7 @@ class WebImageFinder(object):
 
 
 def main():
+    print "Script started "  + time.strftime("%H:%M:%S")
     parser = OptionParser()
     (options, args) = parser.parse_args()
 
@@ -260,7 +283,6 @@ def main():
         'ap-southeast-2',
         'ap-northeast-1',
         'ap-northeast-2',
-        'ap-southeast-2',
         'ca-central-1',
         'eu-west-1',
         'eu-west-2',
@@ -269,7 +291,7 @@ def main():
         'us-west-1',
         'us-west-2',
         'us-east-1',
-        'us-east-2',
+        'us-east-2'
     ]
 
     image_finder_obj = BigIpImageFinder()
@@ -277,49 +299,60 @@ def main():
 
     # Hourly Region Map Marketplace ( Need to wait for v12/v13 to be released before can use Cloudinit )
     mp = {} # Marketplace Dict
-    mp["HourlyMG25"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="25", license="hourly", version=marketplace_version, regions=regions,)
-    mp["HourlyMG200"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="200", license="hourly", version=marketplace_version, regions=regions, )
-    mp["HourlyMG1000"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="1000", license="hourly", version=marketplace_version, regions=regions, )
-    mp["HourlyMG5000"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="5000", license="hourly", version=marketplace_version, regions=regions, )
-    mp["HourlyMBR25"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="25", license="hourly", version=marketplace_version, regions=regions,)
-    mp["HourlyMBR200"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="200", license="hourly", version=marketplace_version, regions=regions, )
-    mp["HourlyMBR1000"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="1000", license="hourly", version=marketplace_version, regions=regions, )
-    mp["HourlyMBR5000"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="5000", license="hourly", version=marketplace_version, regions=regions, )
-    mp["HourlyMBT25"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="25", license="hourly", version=marketplace_version, regions=regions,)
-    mp["HourlyMBT200"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="200", license="hourly", version=marketplace_version, regions=regions, )
-    mp["HourlyMBT1000"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="1000", license="hourly", version=marketplace_version, regions=regions, )
-    mp["HourlyMBT5000"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="5000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["Good25Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="25", license="hourly", version=marketplace_version, regions=regions,)
+    mp["Good200Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="200", license="hourly", version=marketplace_version, regions=regions, )
+    mp["Good1000Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="1000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["Good5000Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="good", bandwidth="5000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["Better25Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="25", license="hourly", version=marketplace_version, regions=regions,)
+    mp["Better200Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="200", license="hourly", version=marketplace_version, regions=regions, )
+    mp["Better1000Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="1000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["Better5000Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="better", bandwidth="5000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["Best25Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="25", license="hourly", version=marketplace_version, regions=regions,)
+    mp["Best200Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="200", license="hourly", version=marketplace_version, regions=regions, )
+    mp["Best1000Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="1000", license="hourly", version=marketplace_version, regions=regions, )
+    mp["Best5000Mbps"] = image_finder_obj.getBigipRegionMap(marketplace="best", bandwidth="5000", license="hourly", version=marketplace_version, regions=regions, )
     
-    # For marketplace templates only, add two regions for CAR support in the Gov Cloud and CDG regions (us-gov-west-1 and eu-west-3)
+    # For marketplace templates only, add two regions for CAR support in the Gov Cloud and CDG regions (us-gov-west-1 and eu-west-3), old request from AWS Michelle
+    #for key, value in mp.items(): # returns the dictionary as a list of value pairs
+    #    car_regions = ['us-gov-west-1', 'eu-west-3']
+    #    for car_region in car_regions:
+    #        value[car_region] = {value['us-east-1'].keys()[0]:""}
+
+    gov_region = 'us-gov-west-1'
+    with open('../AMI Maps/13.0.0.3.0.1679/cached-hourly-region-map-us-gov-west-1.json') as json_file:
+        data = json.load(json_file)
+        gov_cloud_amis = data[gov_region]
+        #for k,v in gov_cloud_amis.items():
+             #print k + " = " + v
+
     for key, value in mp.items(): # returns the dictionary as a list of value pairs
-        car_regions = ['us-gov-west-1', 'eu-west-3']
-        for car_region in car_regions:
-            value[car_region] = {value['us-east-1'].keys()[0]:""}
+        value[gov_region] = {key:gov_cloud_amis[key]}
+
     # Dump to files
     with open('../build/marketplace/cached-good25Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMG25"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Good25Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build//marketplace/cached-good200Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMG200"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Good200Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-good1000Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMG1000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Good1000Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-good5000Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMG5000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Good5000Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-better25Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMBR25"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Better25Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build//marketplace/cached-better200Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMBR200"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Better200Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-better1000Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMBR1000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Better1000Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-better5000Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMBR5000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Better5000Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-best25Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMBT25"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Best25Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build//marketplace/cached-best200Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMBT200"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Best200Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-best1000Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMBT1000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Best1000Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
     with open('../build/marketplace/cached-best5000Mbps-region-map.json', 'w') as outfile:
-        json.dump(mp["HourlyMBT5000"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
+        json.dump(mp["Best5000Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
 
     # Hourly Region Map Non-Marketplace
     HourlyRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="hourly", version="13.0.0.3.0.1679", regions=regions, )
@@ -337,12 +370,30 @@ def main():
         # Webserver Region Map:
     # bitnami-lampstack-5.5.13-0-dev-linux-ubuntu-12.04.4-x86_64-ebs-ami-a9f58699-3-ami-9dcd82ad
     # aws ec2 describe-images --region us-west-2 --filter 'Name=name,Values="bitnami-lampstack-5.5.13-0-dev-linux-ubuntu-12.04.4-x86_64-ebs*"' --query 'Images[*].[CreationDate,ImageId,Name,Description]' --output=text | awk '{print $2}'
+    regions = [
+        'ap-south-1',
+        'ap-southeast-1',
+        'ap-southeast-2',
+        'ap-northeast-1',
+        'ap-northeast-2',
+        'ca-central-1',
+        'eu-west-1',
+        'eu-west-2',
+        'eu-central-1',
+        'sa-east-1',
+        'us-west-1',
+        'us-west-2',
+        'us-east-1',
+        'us-east-2'
+    ]
     name_string = "F5 Demo App v0.0.1"
     image_finder_obj = WebImageFinder()
     WebserverRegionMap = image_finder_obj.getWebRegionMap(name_string=name_string, regions=regions)
 
     with open('cached-webserver-region-map.json', 'w') as outfile:
         json.dump(WebserverRegionMap, outfile, sort_keys=True, indent=2, ensure_ascii=False)
+
+    print "Script ended "  + time.strftime("%H:%M:%S")
 
 if __name__ == "__main__":
     main()

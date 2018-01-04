@@ -26,9 +26,6 @@
   "eu-west-2": {
     "Good25Mbps": "ami-f5293691"
   }, 
-  "eu-west-3": {
-    "Good25Mbps": ""
-  }, 
   "sa-east-1": {
     "Good25Mbps": "ami-0a420766"
   }, 
@@ -39,7 +36,7 @@
     "Good25Mbps": "ami-7919371c"
   }, 
   "us-gov-west-1": {
-    "Good25Mbps": ""
+    "Good25Mbps": "ami-cb61edaa"
   }, 
   "us-west-1": {
     "Good25Mbps": "ami-d64078b6"

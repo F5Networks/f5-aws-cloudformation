@@ -102,7 +102,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Management Subnet AZ1 | managementSubnetAz1 | Yes | Management subnet ID for Availability Zone 1. |
 | Management Subnet AZ2 | managementSubnetAz2 | Yes | Management subnet ID for Availability Zone 2. |
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID for Availability Zone 1. |
-| Subnet1 AZ1 | subnet1Az2 | Yes | Public or External subnet ID for Availability Zone 2. |
+| Subnet1 AZ2 | subnet1Az2 | Yes | Public or External subnet ID for Availability Zone 2. |
 | BIG-IP Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | License Key1 | licenseKey1 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey. |

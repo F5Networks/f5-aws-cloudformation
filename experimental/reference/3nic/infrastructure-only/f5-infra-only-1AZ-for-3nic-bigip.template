@@ -10,7 +10,7 @@
    ]
   }
  },
- "Description": "Template Version 2.8.0: AWS CloudFormation Template for creating a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.9.0: AWS CloudFormation Template for creating a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "WebserverRegionMap": {
    "ap-northeast-1": {
@@ -145,7 +145,7 @@
      "default": "Availability Zone 2"
     },
     "bigiqAddress": {
-     "default": "BIG-IQ address"
+     "default": "BIG-IQ address (private)"
     },
     "bigiqLicensePoolName": {
      "default": "BIG-IQ License Pool Name"
@@ -218,7 +218,7 @@
     }
    }
   },
-  "Version": "2.8.0"
+  "Version": "2.9.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {

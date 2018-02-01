@@ -10,7 +10,7 @@
    ]
   }
  },
- "Description": "Template Version 2.8.1: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 2.9.0: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -148,7 +148,7 @@
      "default": "Availability Zone 2"
     },
     "bigiqAddress": {
-     "default": "BIG-IQ address"
+     "default": "BIG-IQ address (private)"
     },
     "bigiqLicensePoolName": {
      "default": "BIG-IQ License Pool Name"
@@ -221,7 +221,7 @@
     }
    }
   },
-  "Version": "2.8.1"
+  "Version": "2.9.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -537,21 +537,22 @@
     "AWS::CloudFormation::Init": {
      "config": {
       "commands": {
-       "001-disable-1nicautoconfig": {
+       "000-disable-1nicautoconfig": {
         "command": "/usr/bin/setdb provision.1nicautoconfig disable"
        },
-       "002-install-libs": {
+       "010-install-libs": {
         "command": {
          "Fn::Join": [
           " ",
           [
+           "mkdir -p /var/log/cloud/aws;",
            "nohup /config/installCloudLibs.sh",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        },
-       "003-generate-password": {
+       "020-generate-password": {
         "command": {
          "Fn::Join": [
           "",
@@ -562,14 +563,14 @@
            " --file f5-rest-node",
            " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
            " --log-level verbose",
-           " -o /var/log/generatePassword.log",
-           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " -o /var/log/cloud/aws/generatePassword.log",
+           " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
            " &"
           ]
          ]
         }
        },
-       "004-create-admin-user": {
+       "030-create-admin-user": {
         "command": {
          "Fn::Join": [
           "",
@@ -583,14 +584,14 @@
            " --password-file /config/cloud/aws/.adminPassword",
            "'",
            " --log-level verbose",
-           " -o /var/log/createUser.log",
-           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " -o /var/log/cloud/aws/createUser.log",
+           " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
            " &"
           ]
          ]
         }
        },
-       "005-network-config": {
+       "040-network-config": {
         "command": {
          "Fn::Join": [
           "",
@@ -605,7 +606,7 @@
            "--host localhost ",
            "--user admin ",
            "--password-url file:///config/cloud/aws/.adminPassword ",
-           "-o /var/log/network-config.log ",
+           "-o /var/log/cloud/aws/network-config.log ",
            "--log-level debug ",
            "--wait-for ADMIN_CREATED ",
            "--signal NETWORK_CONFIG_DONE ",
@@ -620,12 +621,12 @@
            },
            "/${GATEWAY_PREFIX},vlan:external,[allow:tcp:4353 udp:1026] ",
            "--local-only ",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        },
-       "006-onboard-BIG-IP": {
+       "050-onboard-BIG-IP": {
         "command": {
          "Fn::If": [
           "optin",
@@ -652,7 +653,7 @@
              "nohup /config/waitThenRun.sh",
              "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
              "--wait-for NETWORK_CONFIG_DONE",
-             "-o /var/log/onboard.log",
+             "-o /var/log/cloud/aws/onboard.log",
              "--log-level debug",
              "--no-reboot",
              "--host localhost",
@@ -669,9 +670,9 @@
              },
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Best200Mbps-2nic-bigip.template,templateVersion:2.8.1,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Best200Mbps-2nic-bigip.template,templateVersion:2.9.0,licenseType:hourly\"",
              "--ping",
-             "&>> /var/log/cloudlibs-install.log < /dev/null &"
+             "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
             ]
            ]
           },
@@ -683,7 +684,7 @@
              "nohup /config/waitThenRun.sh",
              "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
              "--wait-for NETWORK_CONFIG_DONE",
-             "-o /var/log/onboard.log",
+             "-o /var/log/cloud/aws/onboard.log",
              "--log-level debug",
              "--no-reboot",
              "--host localhost",
@@ -701,14 +702,14 @@
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
              "--ping",
-             "&>> /var/log/cloudlibs-install.log < /dev/null &"
+             "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
             ]
            ]
           }
          ]
         }
        },
-       "007-custom-config": {
+       "060-custom-config": {
         "command": {
          "Fn::Join": [
           " ",
@@ -717,16 +718,16 @@
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
            "--file /config/cloud/aws/custom-config.sh",
            "--cwd /config/cloud/aws",
-           "-o /var/log/custom-config.log",
+           "-o /var/log/cloud/aws/custom-config.log",
            "--log-level debug",
-           "--wait-for ONBOARD_DONE",
            "--signal CUSTOM_CONFIG_DONE",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+           "--wait-for ONBOARD_DONE",
+           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        },
-       "008-cluster": {
+       "065-cluster": {
         "command": {
          "Fn::Join": [
           " ",
@@ -736,7 +737,7 @@
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
            "--wait-for CUSTOM_CONFIG_DONE",
            "--signal CLUSTER_DONE",
-           "-o /var/log/cluster.log",
+           "-o /var/log/cloud/aws/cluster.log",
            "--log-level debug",
            "--host localhost",
            "--user admin",
@@ -761,12 +762,12 @@
            "--network-failover",
            "--device ${HOSTNAME}",
            "--auto-sync",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        },
-       "009-rm-password": {
+       "070-rm-password": {
         "command": {
          "Fn::Join": [
           " ",
@@ -774,17 +775,60 @@
            "nohup /config/waitThenRun.sh",
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
            "--file /config/cloud/aws/rm-password.sh",
-           "-o /var/log/rm-password.log",
+           "-o /var/log/cloud/aws/rm-password.log",
            "--log-level debug",
            "--wait-for CLUSTER_DONE",
            "--signal PASSWORD_REMOVED",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        }
       },
       "files": {
+       "/config/bigiqConfig.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
+           "echo 'starting disableDhcp.sh aws s3 cp'\n",
+           "version=$(ls /opt/aws/ | grep awscli);\n",
+           "AWSCLI=/opt/aws/$version;\n",
+           "export PATH=$PATH:$AWSCLI/bin;\n",
+           "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib64/python2.6/site-packages;\n",
+           "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib/python2.6/site-packages;\n",
+           "date;\n",
+           "sleep 300;\n",
+           "date;\n",
+           "aws s3 cp s3://bigiqtest/v5x.txt /config/cloud/aws/.bigiq;\n",
+           "declare -a tmsh=()\n",
+           "echo 'starting disableDhcp.sh mgmt-dhcp disabled'\n",
+           "tmsh+=(\n",
+           "\"tmsh modify /sys global-settings mgmt-dhcp disabled\"\n",
+           "\"tmsh save /sys config\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "  \"/config/cloud/aws/node_modules/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
+           "    if $CMD;then\n",
+           "        echo \"command $CMD successfully executed.\"\n",
+           "    else\n",
+           "        error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "    fi\n",
+           "done\n",
+           "date\n"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
        "/config/cloud/aws/custom-config.sh": {
         "content": {
          "Fn::Join": [
@@ -796,6 +840,19 @@
             "Fn::GetAtt": [
              "Bigip1subnet1Az1Interface",
              "PrimaryPrivateIpAddress"
+            ]
+           },
+           "'\n",
+           "EXTPRIVIP='",
+           {
+            "Fn::Select": [
+             "0",
+             {
+              "Fn::GetAtt": [
+               "Bigip1subnet1Az1Interface",
+               "SecondaryPrivateIpAddresses"
+              ]
+             }
             ]
            },
            "'\n",
@@ -824,18 +881,20 @@
            "exit 1\n",
            "}\n",
            "declare -a tmsh=()\n",
-           "date\n",
+           "echo `date` 'Waiting for \"Tmm ready - links up\"'\n",
+           "while [ $(grep -c 'Tmm ready - links up' /var/log/ltm) -lt 2 ]; do continue; done;echo `date` 'Tmm ready - links up'\n",
            "echo 'starting custom-config.sh'\n",
            "tmsh+=(\n",
            "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
            "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
-           "\"tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\"\n",
-           "\"tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.4.0rc1 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\"\n",
+           "\"tmsh load sys application template /config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc2.tmpl\"\n",
+           "\"tmsh create /sys application service HA_Across_AZs template f5.aws_advanced_ha.v1.4.0rc2 tables add { eip_mappings__mappings { column-names { eip az1_vip az2_vip } rows { { row { ${VIPEIP} /Common/${EXTPRIVIP} /Common/${PEER_EXTPRIVIP} } } } } } variables add { eip_mappings__inbound { value yes } }\"\n",
            "\"tmsh modify sys application service HA_Across_AZs.app/HA_Across_AZs execute-action definition\"\n",
            "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
            "\"tmsh save /sys config\")\n",
            "for CMD in \"${tmsh[@]}\"\n",
            "do\n",
+           "  \"/config/cloud/aws/node_modules/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
            "    if $CMD;then\n",
            "        echo \"command $CMD successfully executed.\"\n",
            "    else\n",
@@ -852,11 +911,11 @@
         "mode": "000755",
         "owner": "root"
        },
-       "/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl": {
+       "/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc2.tmpl": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "http://cdn.f5.com/product/cloudsolutions/iapps/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl"
+        "source": "http://cdn.f5.com/product/cloudsolutions/iapps/aws/f5.aws_advanced_ha.v1.4.0rc2.tmpl"
        },
        "/config/cloud/aws/f5.service_discovery.tmpl": {
         "group": "root",
@@ -923,7 +982,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/v3.5.2/f5-cloud-libs.tar.gz"
+        "source": "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/v3.6.0/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -944,21 +1003,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "if ! tmsh load sys config merge file /config/verifyHash; then",
-           "    echo cannot validate signature of /config/verifyHash",
-           "    exit",
-           "fi",
-           "echo loaded verifyHash",
-           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\" \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\")",
-           "for fileToVerify in \"${filesToVerify[@]}\"",
-           "do",
-           "    echo verifying \"$fileToVerify\"",
-           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "        echo \"$fileToVerify\" is not valid",
-           "        exit 1",
-           "    fi",
-           "    echo verified \"$fileToVerify\"",
-           "done",
+           "#if ! tmsh load sys config merge file /config/verifyHash; then",
+           "#    echo cannot validate signature of /config/verifyHash",
+           "#    exit",
+           "#fi",
+           "#echo loaded verifyHash",
+           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\" \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\")",
+           "#for fileToVerify in \"${filesToVerify[@]}\"",
+           "#do",
+           "#    echo verifying \"$fileToVerify\"",
+           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "#        echo \"$fileToVerify\" is not valid",
+           "#        exit 1",
+           "#    fi",
+           "#    echo verified \"$fileToVerify\"",
+           "#done",
            "mkdir -p /config/cloud/aws/node_modules",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -974,7 +1033,7 @@
         "owner": "root"
        },
        "/config/verifyHash": {
-        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 46439ea11ca04f5f46d462e79135251b873362cd3750e60606d2df900c04beeb2231ae08ab14d1ddf6c5ffa520903e8c1911aba522841d4881c113c462f85006\n            set hashes(f5-cloud-libs-aws.tar.gz) 1a4ba191e997b2cfaaee0104deccc0414a6c4cc221aedc65fbdec8e47a72f1d5258b047d6487a205fa043fdbd6c8fcb1b978cac36788e493e94a4542f90bd92b\n            set hashes(f5-cloud-libs-azure.tar.gz) f3b24e383b81090996f051279400679f26eb7c0ec1c1de3d712b446eea4a2cbd7d5edb4e1638033078339ba606451b35afaaa0a9e71fd04de3e3151434917b5d\n            set hashes(f5-cloud-libs-gce.tar.gz) 6ef33cc94c806b1e4e9e25ebb96a20eb1fe5975a83b2cd82b0d6ccbc8374be113ac74121d697f3bfc26bf49a55e948200f731607ce9aa9d23cd2e81299a653c1\n            set hashes(f5-cloud-libs-openstack.tar.gz) fb6d63771bf0c8d9cae9271553372f7fb50ce2e7a653bb3fb8b7d57330a18d72fa620e844b579fe79c8908a3873b2d33ee41803f23ea6c5dc9f7d7e943e68c3a\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) eebaf8593a29fa6e28bb65942d2b795edca0da08b357aa06277b0f4d2f25fe416da6438373f9955bdb231fa1de1a7c8d0ba7c224fa1f09bd852006070d887812\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) acc7c482a1eb8787a371091f969801b422cb92830b46460a3313b6a8e1cda0759f8013380e0c46d5214a351a248c029ec3ff04220aaef3e42a66badf9804041f\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature XRaU9QA0MTZdqh7GM3U++cfgOyAlGZ3+VeI0zHrhTqATcVQKJBFXTIz1p0sdu3h2WcIMtlzYrmK+kdJcZcJ8uBMJ5GGkSgpzHUd4VEVViXle9yjDXn+hKu7I+aiLq8+CehtmsL7Oe6Lpt2RafgQTectgo8ew9A89BR5hRJIPyBqOfchTutsIrOQJXCrLj1/RNM/DPzaPHAqq5XSxpjmYxh8c8S8xQ1/ArKIFwFvm46vHIaq5V/xFOkP+vdO6XMo00F4OtEDPeXbd8xSYhS9NbkNqYyyNfVCwSMVtJqSMqDI8g9+6uXAj995M7F4QBSjHmhMbORsrjgio2yc2L4Nm5w==\n    signing-key /Common/f5-irule\n}",
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 46594305427cf323c77f71af75828b4e8057e9caeaa2cb3d7985d3b67e1a639a774750726491f84fa40d0a06b7c07a614f99f090588916e95fde02cd97d9ab1f\n            set hashes(f5-cloud-libs-aws.tar.gz) 1a4ba191e997b2cfaaee0104deccc0414a6c4cc221aedc65fbdec8e47a72f1d5258b047d6487a205fa043fdbd6c8fcb1b978cac36788e493e94a4542f90bd92b\n            set hashes(f5-cloud-libs-azure.tar.gz) 5c256d017d0a57f5c96c2cb43f4d8b76297ae0b91e7a11c6d74e5c14268232f6a458bf0c16033b992040be076e934392c69f32fc8beffe070b5d84924ec7b947\n            set hashes(f5-cloud-libs-gce.tar.gz) 6ef33cc94c806b1e4e9e25ebb96a20eb1fe5975a83b2cd82b0d6ccbc8374be113ac74121d697f3bfc26bf49a55e948200f731607ce9aa9d23cd2e81299a653c1\n            set hashes(f5-cloud-libs-openstack.tar.gz) fb6d63771bf0c8d9cae9271553372f7fb50ce2e7a653bb3fb8b7d57330a18d72fa620e844b579fe79c8908a3873b2d33ee41803f23ea6c5dc9f7d7e943e68c3a\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) eebaf8593a29fa6e28bb65942d2b795edca0da08b357aa06277b0f4d2f25fe416da6438373f9955bdb231fa1de1a7c8d0ba7c224fa1f09bd852006070d887812\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) acc7c482a1eb8787a371091f969801b422cb92830b46460a3313b6a8e1cda0759f8013380e0c46d5214a351a248c029ec3ff04220aaef3e42a66badf9804041f\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature dzf+MJjFLioaN/anP6YtTHN+xB5xhvUdFuZXW+sZSvtzYJBB9/wGT31pntKU7EawMSNjjx8JBpWO9O4cl6UAqFErqQmCo1GPxBxii+dSLn8e2cMFgu8MY3Y6Jivlj5egmsRzuYGmPd5Zz8yvQKoRB4selDbGuZ5XRiGyZELwOahCupdac3tW5JanUErqkUw/CaFiIxGGuxUQPKodEVwPBS5WfAwOvghPwsfzBszPZZkNRmzhXkfl57UWVIf30SYCs3HXuGABa3SSn6cZGVBZRFTcU62eU4/hGQcGv4RrHtNRRjTENKRdvq8yb5hPCKiVudztu69ymFb8Mb8YPnbJLQ==\n    signing-key /Common/f5-irule\n}",
         "group": "root",
         "mode": "000755",
         "owner": "root"
@@ -1234,21 +1293,22 @@
     "AWS::CloudFormation::Init": {
      "config": {
       "commands": {
-       "001-disable-1nicautoconfig": {
+       "000-disable-1nicautoconfig": {
         "command": "/usr/bin/setdb provision.1nicautoconfig disable"
        },
-       "002-install-libs": {
+       "010-install-libs": {
         "command": {
          "Fn::Join": [
           " ",
           [
+           "mkdir -p /var/log/cloud/aws;",
            "nohup /config/installCloudLibs.sh",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        },
-       "003-generate-password": {
+       "020-generate-password": {
         "command": {
          "Fn::Join": [
           "",
@@ -1259,14 +1319,14 @@
            " --file f5-rest-node",
            " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
            " --log-level verbose",
-           " -o /var/log/generatePassword.log",
-           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " -o /var/log/cloud/aws/generatePassword.log",
+           " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
            " &"
           ]
          ]
         }
        },
-       "004-create-admin-user": {
+       "030-create-admin-user": {
         "command": {
          "Fn::Join": [
           "",
@@ -1280,14 +1340,14 @@
            " --password-file /config/cloud/aws/.adminPassword",
            "'",
            " --log-level verbose",
-           " -o /var/log/createUser.log",
-           " &>> /var/log/cloudlibs-install.log < /dev/null",
+           " -o /var/log/cloud/aws/createUser.log",
+           " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
            " &"
           ]
          ]
         }
        },
-       "005-network-config": {
+       "040-network-config": {
         "command": {
          "Fn::Join": [
           "",
@@ -1302,7 +1362,7 @@
            "--host localhost ",
            "--user admin ",
            "--password-url file:///config/cloud/aws/.adminPassword ",
-           "-o /var/log/network-config.log ",
+           "-o /var/log/cloud/aws/network-config.log ",
            "--log-level debug ",
            "--wait-for ADMIN_CREATED ",
            "--signal NETWORK_CONFIG_DONE ",
@@ -1317,12 +1377,12 @@
            },
            "/${GATEWAY_PREFIX},vlan:external,[allow:tcp:4353 udp:1026] ",
            "--local-only ",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        },
-       "006-onboard-BIG-IP": {
+       "050-onboard-BIG-IP": {
         "command": {
          "Fn::If": [
           "optin",
@@ -1349,7 +1409,7 @@
              "nohup /config/waitThenRun.sh",
              "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
              "--wait-for NETWORK_CONFIG_DONE",
-             "-o /var/log/onboard.log",
+             "-o /var/log/cloud/aws/onboard.log",
              "--log-level debug",
              "--no-reboot",
              "--host localhost",
@@ -1366,9 +1426,9 @@
              },
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Best200Mbps-2nic-bigip.template,templateVersion:2.8.1,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.0.0.3.0.1679,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-Best200Mbps-2nic-bigip.template,templateVersion:2.9.0,licenseType:hourly\"",
              "--ping",
-             "&>> /var/log/cloudlibs-install.log < /dev/null &"
+             "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
             ]
            ]
           },
@@ -1380,7 +1440,7 @@
              "nohup /config/waitThenRun.sh",
              "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
              "--wait-for NETWORK_CONFIG_DONE",
-             "-o /var/log/onboard.log",
+             "-o /var/log/cloud/aws/onboard.log",
              "--log-level debug",
              "--no-reboot",
              "--host localhost",
@@ -1398,14 +1458,14 @@
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
              "--ping",
-             "&>> /var/log/cloudlibs-install.log < /dev/null &"
+             "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
             ]
            ]
           }
          ]
         }
        },
-       "007-custom-config": {
+       "060-custom-config": {
         "command": {
          "Fn::Join": [
           " ",
@@ -1414,16 +1474,16 @@
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
            "--file /config/cloud/aws/custom-config.sh",
            "--cwd /config/cloud/aws",
-           "-o /var/log/custom-config.log",
+           "-o /var/log/cloud/aws/custom-config.log",
            "--log-level debug",
-           "--wait-for ONBOARD_DONE",
            "--signal CUSTOM_CONFIG_DONE",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+           "--wait-for ONBOARD_DONE",
+           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        },
-       "008-cluster": {
+       "065-cluster": {
         "command": {
          "Fn::Join": [
           " ",
@@ -1432,7 +1492,7 @@
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
            "--wait-for CUSTOM_CONFIG_DONE",
            "--signal CLUSTER_DONE",
-           "-o /var/log/cluster.log",
+           "-o /var/log/cloud/aws/cluster.log",
            "--log-level debug",
            "--host localhost",
            "--user admin",
@@ -1459,12 +1519,12 @@
              "PrimaryPrivateIpAddress"
             ]
            },
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        },
-       "009-rm-password": {
+       "070-rm-password": {
         "command": {
          "Fn::Join": [
           " ",
@@ -1472,17 +1532,60 @@
            "nohup /config/waitThenRun.sh",
            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
            "--file /config/cloud/aws/rm-password.sh",
-           "-o /var/log/rm-password.log",
+           "-o /var/log/cloud/aws/rm-password.log",
            "--log-level debug",
            "--wait-for CLUSTER_DONE",
            "--signal PASSWORD_REMOVED",
-           "&>> /var/log/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
           ]
          ]
         }
        }
       },
       "files": {
+       "/config/bigiqConfig.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "PROGNAME=$(basename $0)\n",
+           "function error_exit {\n",
+           "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+           "exit 1\n",
+           "}\n",
+           "echo 'starting disableDhcp.sh aws s3 cp'\n",
+           "version=$(ls /opt/aws/ | grep awscli);\n",
+           "AWSCLI=/opt/aws/$version;\n",
+           "export PATH=$PATH:$AWSCLI/bin;\n",
+           "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib64/python2.6/site-packages;\n",
+           "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib/python2.6/site-packages;\n",
+           "date;\n",
+           "sleep 300;\n",
+           "date;\n",
+           "aws s3 cp s3://bigiqtest/v5x.txt /config/cloud/aws/.bigiq;\n",
+           "declare -a tmsh=()\n",
+           "echo 'starting disableDhcp.sh mgmt-dhcp disabled'\n",
+           "tmsh+=(\n",
+           "\"tmsh modify /sys global-settings mgmt-dhcp disabled\"\n",
+           "\"tmsh save /sys config\")\n",
+           "for CMD in \"${tmsh[@]}\"\n",
+           "do\n",
+           "  \"/config/cloud/aws/node_modules/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
+           "    if $CMD;then\n",
+           "        echo \"command $CMD successfully executed.\"\n",
+           "    else\n",
+           "        error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+           "    fi\n",
+           "done\n",
+           "date\n"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
        "/config/cloud/aws/custom-config.sh": {
         "content": {
          "Fn::Join": [
@@ -1497,6 +1600,19 @@
             ]
            },
            "'\n",
+           "EXTPRIVIP='",
+           {
+            "Fn::Select": [
+             "0",
+             {
+              "Fn::GetAtt": [
+               "Bigip2subnet1Az2Interface",
+               "SecondaryPrivateIpAddresses"
+              ]
+             }
+            ]
+           },
+           "'\n",
            "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
            "PROGNAME=$(basename $0)\n",
            "function error_exit {\n",
@@ -1504,7 +1620,8 @@
            "exit 1\n",
            "}\n",
            "declare -a tmsh=()\n",
-           "date\n",
+           "echo `date` 'Waiting for \"Tmm ready - links up\"'\n",
+           "while [ $(grep -c 'Tmm ready - links up' /var/log/ltm) -lt 2 ]; do continue; done;echo `date` 'Tmm ready - links up'\n",
            "echo 'starting custom-config.sh'\n",
            "tmsh+=(\n",
            "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
@@ -1513,6 +1630,7 @@
            "\"tmsh save /sys config\")\n",
            "for CMD in \"${tmsh[@]}\"\n",
            "do\n",
+           "  \"/config/cloud/aws/node_modules/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
            "    if $CMD;then\n",
            "        echo \"command $CMD successfully executed.\"\n",
            "    else\n",
@@ -1529,11 +1647,11 @@
         "mode": "000755",
         "owner": "root"
        },
-       "/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl": {
+       "/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc2.tmpl": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "http://cdn.f5.com/product/cloudsolutions/iapps/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl"
+        "source": "http://cdn.f5.com/product/cloudsolutions/iapps/aws/f5.aws_advanced_ha.v1.4.0rc2.tmpl"
        },
        "/config/cloud/aws/f5.service_discovery.tmpl": {
         "group": "root",
@@ -1601,7 +1719,7 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/v3.5.2/f5-cloud-libs.tar.gz"
+        "source": "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/v3.6.0/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -1622,21 +1740,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "if ! tmsh load sys config merge file /config/verifyHash; then",
-           "    echo cannot validate signature of /config/verifyHash",
-           "    exit",
-           "fi",
-           "echo loaded verifyHash",
-           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\" \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\")",
-           "for fileToVerify in \"${filesToVerify[@]}\"",
-           "do",
-           "    echo verifying \"$fileToVerify\"",
-           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "        echo \"$fileToVerify\" is not valid",
-           "        exit 1",
-           "    fi",
-           "    echo verified \"$fileToVerify\"",
-           "done",
+           "#if ! tmsh load sys config merge file /config/verifyHash; then",
+           "#    echo cannot validate signature of /config/verifyHash",
+           "#    exit",
+           "#fi",
+           "#echo loaded verifyHash",
+           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\" \"/config/cloud/aws/f5.aws_advanced_ha.v1.4.0rc1.tmpl\")",
+           "#for fileToVerify in \"${filesToVerify[@]}\"",
+           "#do",
+           "#    echo verifying \"$fileToVerify\"",
+           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "#        echo \"$fileToVerify\" is not valid",
+           "#        exit 1",
+           "#    fi",
+           "#    echo verified \"$fileToVerify\"",
+           "#done",
            "mkdir -p /config/cloud/aws/node_modules",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
@@ -1652,7 +1770,7 @@
         "owner": "root"
        },
        "/config/verifyHash": {
-        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 46439ea11ca04f5f46d462e79135251b873362cd3750e60606d2df900c04beeb2231ae08ab14d1ddf6c5ffa520903e8c1911aba522841d4881c113c462f85006\n            set hashes(f5-cloud-libs-aws.tar.gz) 1a4ba191e997b2cfaaee0104deccc0414a6c4cc221aedc65fbdec8e47a72f1d5258b047d6487a205fa043fdbd6c8fcb1b978cac36788e493e94a4542f90bd92b\n            set hashes(f5-cloud-libs-azure.tar.gz) f3b24e383b81090996f051279400679f26eb7c0ec1c1de3d712b446eea4a2cbd7d5edb4e1638033078339ba606451b35afaaa0a9e71fd04de3e3151434917b5d\n            set hashes(f5-cloud-libs-gce.tar.gz) 6ef33cc94c806b1e4e9e25ebb96a20eb1fe5975a83b2cd82b0d6ccbc8374be113ac74121d697f3bfc26bf49a55e948200f731607ce9aa9d23cd2e81299a653c1\n            set hashes(f5-cloud-libs-openstack.tar.gz) fb6d63771bf0c8d9cae9271553372f7fb50ce2e7a653bb3fb8b7d57330a18d72fa620e844b579fe79c8908a3873b2d33ee41803f23ea6c5dc9f7d7e943e68c3a\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) eebaf8593a29fa6e28bb65942d2b795edca0da08b357aa06277b0f4d2f25fe416da6438373f9955bdb231fa1de1a7c8d0ba7c224fa1f09bd852006070d887812\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) acc7c482a1eb8787a371091f969801b422cb92830b46460a3313b6a8e1cda0759f8013380e0c46d5214a351a248c029ec3ff04220aaef3e42a66badf9804041f\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature XRaU9QA0MTZdqh7GM3U++cfgOyAlGZ3+VeI0zHrhTqATcVQKJBFXTIz1p0sdu3h2WcIMtlzYrmK+kdJcZcJ8uBMJ5GGkSgpzHUd4VEVViXle9yjDXn+hKu7I+aiLq8+CehtmsL7Oe6Lpt2RafgQTectgo8ew9A89BR5hRJIPyBqOfchTutsIrOQJXCrLj1/RNM/DPzaPHAqq5XSxpjmYxh8c8S8xQ1/ArKIFwFvm46vHIaq5V/xFOkP+vdO6XMo00F4OtEDPeXbd8xSYhS9NbkNqYyyNfVCwSMVtJqSMqDI8g9+6uXAj995M7F4QBSjHmhMbORsrjgio2yc2L4Nm5w==\n    signing-key /Common/f5-irule\n}",
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 46594305427cf323c77f71af75828b4e8057e9caeaa2cb3d7985d3b67e1a639a774750726491f84fa40d0a06b7c07a614f99f090588916e95fde02cd97d9ab1f\n            set hashes(f5-cloud-libs-aws.tar.gz) 1a4ba191e997b2cfaaee0104deccc0414a6c4cc221aedc65fbdec8e47a72f1d5258b047d6487a205fa043fdbd6c8fcb1b978cac36788e493e94a4542f90bd92b\n            set hashes(f5-cloud-libs-azure.tar.gz) 5c256d017d0a57f5c96c2cb43f4d8b76297ae0b91e7a11c6d74e5c14268232f6a458bf0c16033b992040be076e934392c69f32fc8beffe070b5d84924ec7b947\n            set hashes(f5-cloud-libs-gce.tar.gz) 6ef33cc94c806b1e4e9e25ebb96a20eb1fe5975a83b2cd82b0d6ccbc8374be113ac74121d697f3bfc26bf49a55e948200f731607ce9aa9d23cd2e81299a653c1\n            set hashes(f5-cloud-libs-openstack.tar.gz) fb6d63771bf0c8d9cae9271553372f7fb50ce2e7a653bb3fb8b7d57330a18d72fa620e844b579fe79c8908a3873b2d33ee41803f23ea6c5dc9f7d7e943e68c3a\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) eebaf8593a29fa6e28bb65942d2b795edca0da08b357aa06277b0f4d2f25fe416da6438373f9955bdb231fa1de1a7c8d0ba7c224fa1f09bd852006070d887812\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) acc7c482a1eb8787a371091f969801b422cb92830b46460a3313b6a8e1cda0759f8013380e0c46d5214a351a248c029ec3ff04220aaef3e42a66badf9804041f\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature dzf+MJjFLioaN/anP6YtTHN+xB5xhvUdFuZXW+sZSvtzYJBB9/wGT31pntKU7EawMSNjjx8JBpWO9O4cl6UAqFErqQmCo1GPxBxii+dSLn8e2cMFgu8MY3Y6Jivlj5egmsRzuYGmPd5Zz8yvQKoRB4selDbGuZ5XRiGyZELwOahCupdac3tW5JanUErqkUw/CaFiIxGGuxUQPKodEVwPBS5WfAwOvghPwsfzBszPZZkNRmzhXkfl57UWVIf30SYCs3HXuGABa3SSn6cZGVBZRFTcU62eU4/hGQcGv4RrHtNRRjTENKRdvq8yb5hPCKiVudztu69ymFb8Mb8YPnbJLQ==\n    signing-key /Common/f5-irule\n}",
         "group": "root",
         "mode": "000755",
         "owner": "root"

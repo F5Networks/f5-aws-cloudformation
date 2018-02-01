@@ -272,14 +272,20 @@
       "AllowedValues": [
         "t2.medium",
         "t2.large",
+        "m3.large",
         "m3.xlarge",
         "m3.2xlarge",
+        "m4.large",
         "m4.xlarge",
         "m4.2xlarge",
         "m4.4xlarge",
         "m4.10xlarge",
+        "c3.xlarge",
+        "c3.2xlarge",
         "c3.4xlarge",
         "c3.8xlarge",
+        "c4.xlarge",
+        "c4.2xlarge",
         "c4.4xlarge",
         "c4.8xlarge"
       ],
@@ -505,9 +511,9 @@
         "Good": "ami-4b4c0927"
       }, 
       "us-east-1": {
-        "Best": "ami-12a92668", 
-        "Better": "ami-7fad2205", 
-        "Good": "ami-f6af208c"
+        "Best": "ami-2e89db54",
+        "Better": "ami-858ad8ff",
+        "Good": "ami-6c500316"
       }, 
       "us-east-2": {
         "Best": "ami-74193711", 

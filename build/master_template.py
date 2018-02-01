@@ -132,11 +132,11 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    version = "2.8.1"
+    version = "2.9.0"
     ### Big-IP mapped
     BIGIP_VERSION = "13.0.0.3.0.1679"
     ### Cloudlib Branch
-    branch_cloud = "v3.5.2"
+    branch_cloud = "v3.6.0"
     branch_aws = "v1.6.0"
     branch_cloud_iapps = "v1.2.0"
     ### Build verifyHash file from published verifyHash on github
@@ -155,7 +155,7 @@ def main():
         except URLError, error:
              err = str(error) + ": Attempting to connect to next url"
 ### Cloudlib and iApp URL
-    iApp_version = "v1.4.0rc1"
+    iApp_version = "v1.4.0rc2"
     iapp_branch = "v2.2.0"
     iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
     if marketplace == "no":
@@ -167,7 +167,7 @@ def main():
         cloudlib_aws_url = "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs-aws/" + str(branch_aws) + "/f5-cloud-libs-aws.tar.gz"
         discovery_url =  "http://cdn.f5.com/product/cloudsolutions/iapps/common/f5-service-discovery/" + str(branch_cloud_iapps) + "/f5.service_discovery.tmpl"
     ### add hashmark to skip cloudlib verification script.
-    comment_out = ""
+    comment_out = "#"
     # Begin Template
     t = Template()
     ## add template version
@@ -348,7 +348,7 @@ def main():
                 "default": "Timezone (Olson)"
             },
             "bigiqAddress": {
-                "default": "BIG-IQ address"
+                "default": "BIG-IQ address (private)"
             },
             "bigiqLicensePoolName": {
                 "default": "BIG-IQ License Pool Name"
@@ -504,13 +504,7 @@ def main():
             allowedvalues.extend([
                     "t2.medium",
                     "t2.large",
-                    "c3.2xlarge",
-                    "c3.4xlarge",
-                    "c3.8xlarge",
-                    "c4.xlarge",
-                    "c4.2xlarge",
-                    "c4.4xlarge",
-                    "c4.8xlarge",
+                    "m3.large",
                     "m3.xlarge",
                     "m3.2xlarge",
                     "m4.large",
@@ -518,7 +512,14 @@ def main():
                     "m4.2xlarge",
                     "m4.4xlarge",
                     "m4.10xlarge",
-                    "m4.16xlarge",
+                    "c3.xlarge",
+                    "c3.2xlarge",
+                    "c3.4xlarge",
+                    "c3.8xlarge",
+                    "c4.xlarge",
+                    "c4.2xlarge",
+                    "c4.4xlarge",
+                    "c4.8xlarge"
             ])
             if '5000' in marketplace:
                 defaultinstance="m4.10xlarge"
@@ -642,9 +643,9 @@ def main():
             bigiqAddress = t.add_parameter(Parameter(
                 "bigiqAddress",
                 MinLength="1",
-                ConstraintDescription="Verify the IP address of the BIG-IQ device that contains the pool of licenses",
+                ConstraintDescription="Verify the private IP address of the BIG-IQ device that contains the pool of licenses",
                 Type="String",
-                Description="IP address of the BIG-IQ device that contains the pool of BIG-IP licenses",
+                Description="Private IP address of the BIG-IQ device that contains the pool of BIG-IP licenses",
                 MaxLength="255",
             ))
             bigiqUsername = t.add_parameter(Parameter(
@@ -1471,11 +1472,19 @@ def main():
                                 Ref(bigiqAddress),
                                 "--big-iq-user ",
                                 Ref(bigiqUsername),
-                                "--big-iq-password-uri ",
-                                Ref(bigiqPasswordS3Arn),
                                 "--license-pool-name ",
                                 Ref(bigiqLicensePoolName),
                                 ]
+                if num_nics == 1:
+                    license_bigiq += [
+                                    "--big-iq-password-uri file:///config/cloud/aws/.bigiq ",
+                                    ]
+                else:
+                    license_bigiq += [
+                                    "--big-iq-password-uri ",
+                                    Ref(bigiqPasswordS3Arn),
+                                    ]
+
 
             ## variable used to provision asm
             provision_asm = [
@@ -1619,6 +1628,39 @@ def main():
                                     "done",
                                     "\"$@\""
                                 ]
+            bigiq_config_sh =  [
+                                "#!/bin/bash\n",
+                                "PROGNAME=$(basename $0)\n",
+                                "function error_exit {\n",
+                                "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
+                                "exit 1\n",
+                                "}\n",
+                                "echo 'starting disableDhcp.sh aws s3 cp'\n",
+                                "version=$(ls /opt/aws/ | grep awscli);\n",
+                                "AWSCLI=/opt/aws/$version;\n",
+                                "export PATH=$PATH:$AWSCLI/bin;\n",
+                                "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib64/python2.6/site-packages;\n",
+                                "export PYTHONPATH=$PYTHONPATH:$AWSCLI/lib/python2.6/site-packages;\n",
+                                "date;\n",
+                                "sleep 300;\n",
+                                "date;\n",
+                                "aws s3 cp s3://bigiqtest/v5x.txt /config/cloud/aws/.bigiq;\n",
+                                "declare -a tmsh=()\n",
+                                "echo 'starting disableDhcp.sh mgmt-dhcp disabled'\n",
+                                "tmsh+=(\n",
+                                "\"tmsh modify /sys global-settings mgmt-dhcp disabled\"\n",
+                                "\"tmsh save /sys config\")\n",
+                                "for CMD in \"${tmsh[@]}\"\n",
+                                "do\n",
+                                "  \"/config/cloud/aws/node_modules/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
+                                "    if $CMD;then\n",
+                                "        echo \"command $CMD successfully executed.\"\n",
+                                "    else\n",
+                                "        error_exit \"$LINENO: An error has occurred while executing $CMD. Aborting!\"\n",
+                                "    fi\n",
+                                "done\n",
+                                "date\n",
+                            ]
             get_nameserver =    [
                                     "INTERFACE=$1",
                                     "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
@@ -1644,8 +1686,8 @@ def main():
                                 " --file f5-rest-node",
                                 " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword'",
                                 " --log-level verbose",
-                                " -o /var/log/generatePassword.log",
-                                " &>> /var/log/cloudlibs-install.log < /dev/null",
+                                " -o /var/log/cloud/aws/generatePassword.log",
+                                " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
                                 " &"
                                 ]
             admin_user  =   [
@@ -1660,13 +1702,14 @@ def main():
                               " --password-file /config/cloud/aws/.adminPassword",
                               "'",
                               " --log-level verbose",
-                              " -o /var/log/createUser.log",
-                              " &>> /var/log/cloudlibs-install.log < /dev/null",
+                              " -o /var/log/cloud/aws/createUser.log",
+                              " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
                               " &"
                             ]
             unpack_libs =       [
+                                    "mkdir -p /var/log/cloud/aws;",
                                     "nohup /config/installCloudLibs.sh",
-                                    "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                                    "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
                                 ]
 
             onboard_BIG_IP =    [
@@ -1680,11 +1723,21 @@ def main():
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
                                     "--file /config/cloud/aws/custom-config.sh",
                                     "--cwd /config/cloud/aws",
-                                    "-o /var/log/custom-config.log",
+                                    "-o /var/log/cloud/aws/custom-config.log",
                                     "--log-level debug",
-                                    "--wait-for ONBOARD_DONE",
                                     "--signal CUSTOM_CONFIG_DONE",
                                 ]
+            if num_nics == 1 and license_type == "bigiq":
+                custom_command +=   [
+                                    "--wait-for RERUN_NETWORK_CONFIG_DONE",
+                                ]
+            else:
+                custom_command +=   [
+                                    "--wait-for ONBOARD_DONE",
+                                ]
+            custom_command +=   [
+                                "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+                            ]
             cluster_command = []
             rm_password_sh =    [
                                         "#!/bin/bash\n",
@@ -1717,27 +1770,27 @@ def main():
                                     "nohup /config/waitThenRun.sh",
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
                                     "--file /config/cloud/aws/rm-password.sh",
-                                    "-o /var/log/rm-password.log",
+                                    "-o /var/log/cloud/aws/rm-password.log",
                                     "--log-level debug",
                                     ]
             if ha_type == "standalone":
                 rm_password_command +=  [
                                         "--wait-for CUSTOM_CONFIG_DONE",
                                         "--signal PASSWORD_REMOVED",
-                                        "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                                        "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
                                         ]
             if ha_type != "standalone" and (BIGIP_INDEX) == CLUSTER_SEED:
                 rm_password_command +=   [
                                     "--wait-for CLUSTER_DONE",
                                     "--signal PASSWORD_REMOVED",
-                                    "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                                    "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
                                         ]
                 cluster_command +=   [
                                         "nohup /config/waitThenRun.sh",
                                         "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
                                         "--wait-for CUSTOM_CONFIG_DONE",
                                         "--signal CLUSTER_DONE",
-                                        "-o /var/log/cluster.log",
+                                        "-o /var/log/cloud/aws/cluster.log",
                                         "--log-level debug",
                                         "--host localhost",
                                         "--user admin",
@@ -1757,13 +1810,13 @@ def main():
                                         "--join-group",
                                         "--device-group across_az_failover_group",
                                         "--remote-host ",GetAtt("Bigip1ManagementInterface", "PrimaryPrivateIpAddress"),
-                                        "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                                        "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
                                     ]
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
                 rm_password_command +=   [
                                             "--wait-for CLUSTER_DONE",
                                             "--signal PASSWORD_REMOVED",
-                                            "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                                            "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
                                          ]
                 cluster_command +=   [
                                         "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`;",
@@ -1771,7 +1824,7 @@ def main():
                                         "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
                                         "--wait-for CUSTOM_CONFIG_DONE",
                                         "--signal CLUSTER_DONE",
-                                        "-o /var/log/cluster.log",
+                                        "-o /var/log/cloud/aws/cluster.log",
                                         "--log-level debug",
                                         "--host localhost",
                                         "--user admin",
@@ -1786,11 +1839,9 @@ def main():
                                         "--network-failover",
                                         "--device ${HOSTNAME}",
                                         "--auto-sync",
-                                        "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                                        "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
                                      ]
-            custom_command +=   [
-                                    "&>> /var/log/cloudlibs-install.log < /dev/null &"
-                                ]
+
             onboard_BIG_IP_metrics = [
                 "REGION=\"",
                 {
@@ -1817,10 +1868,10 @@ def main():
                                     "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh ",
                                     "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws ",
                                     "--log-level debug ",
-                                    "-o /var/log/1nicSetup.log ",
+                                    "-o /var/log/cloud/aws/1nicSetup.log ",
                                     "--wait-for ADMIN_CREATED ",
                                     "--signal NETWORK_CONFIG_DONE ",
-                                    "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                                    "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
                 ]
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/config/cloud/aws/getNameServer.sh mgmt`;",
@@ -1829,15 +1880,35 @@ def main():
                                     "--port 8443",
                                     "--ssl-port ", Ref(managementGuiPort),
                 ]
+                if license_type == "bigiq":
+                    onboard_BIG_IP += [
+                                    "--wait-for BIGIQ_CONFIG_DONE",
+                    ]
+                    bigiq_config = [
+                                    "nohup /config/waitThenRun.sh ",
+                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js ",
+                                    "--file /config/bigiqConfig.sh ",
+                                    "--cwd /config/ ",
+                                    "--log-level debug ",
+                                    "-o /var/log/cloud/aws/bigiqConfig.log ",
+                                    "--wait-for NETWORK_CONFIG_DONE ",
+                                    "--signal BIGIQ_CONFIG_DONE ",
+                                    "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                    ]
+                else:
+                    onboard_BIG_IP += [
+                                    "--wait-for NETWORK_CONFIG_DONE",
+                    ]
+
             if num_nics > 1:
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
                                     "nohup /config/waitThenRun.sh",
                                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+                                    "--wait-for NETWORK_CONFIG_DONE",
                                   ]
             onboard_BIG_IP += [
-                                "--wait-for NETWORK_CONFIG_DONE",
-                                "-o /var/log/onboard.log",
+                                "-o /var/log/cloud/aws/onboard.log",
                                 "--log-level debug",
                                 "--no-reboot",
                                 "--host localhost",
@@ -1860,11 +1931,12 @@ def main():
                                     "POOLMEMPORT=80\n",
                                     "APPNAME='demo-app-1'\n",
                                     "VIRTUALSERVERPORT=80\n",
-                                    "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",
+                                    #"EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",
                               ]
             if ha_type != "standalone":
                 custom_sh += [
                                 "EXTIP='", GetAtt(ExternalInterface, "PrimaryPrivateIpAddress"), "'\n",
+                                "EXTPRIVIP='", Select("0", GetAtt(ExternalInterface, "SecondaryPrivateIpAddresses")), "'\n",
                                 "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`\n",
                              ]
             if ha_type != "standalone" and (BIGIP_INDEX + 1) == CLUSTER_SEED:
@@ -1892,7 +1964,8 @@ def main():
                             "exit 1\n",
                             "}\n",
                             "declare -a tmsh=()\n",
-                            "date\n",
+                            "echo `date` 'Waiting for \"Tmm ready - links up\"'\n",
+                            "while [ $(grep -c 'Tmm ready - links up' /var/log/ltm) -lt 2 ]; do continue; done;echo `date` 'Tmm ready - links up'\n",
                             "echo 'starting custom-config.sh'\n",
                             "tmsh+=(\n"
                         ]
@@ -1933,7 +2006,7 @@ def main():
                                     "--host localhost ",
                                     "--user admin ",
                                     "--password-url file:///config/cloud/aws/.adminPassword ",
-                                    "-o /var/log/network-config.log ",
+                                    "-o /var/log/cloud/aws/network-config.log ",
                                     "--log-level debug ",
                                     "--wait-for ADMIN_CREATED ",
                                     "--signal NETWORK_CONFIG_DONE ",
@@ -1997,7 +2070,7 @@ def main():
 
             if num_nics > 1:
                 network_config += [
-                                    "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                                    "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
                                   ]
             # Disable DHCP if clustering.
             if ha_type != "standalone":
@@ -2031,11 +2104,11 @@ def main():
             onboard_BIG_IP_metrics += [
                 "--metrics \"cloudName:aws,region:${REGION},bigipVersion:" + BIGIP_VERSION + ",customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:" + template_name + ",templateVersion:" + version + ",licenseType:" + license_type + "\"",
                 "--ping",
-                "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
             ]
             onboard_BIG_IP += [
                 "--ping",
-                "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
             ]
             # Cluster Devices if Cluster Seed
             if ha_type == "standalone" or (BIGIP_INDEX + 1) == CLUSTER_SEED:
@@ -2115,6 +2188,7 @@ def main():
                                 "\"tmsh save /sys config\")\n",
                                 "for CMD in \"${tmsh[@]}\"\n",
                                 "do\n",
+                                "  \"/config/cloud/aws/node_modules/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
                                 "    if $CMD;then\n",
                                 "        echo \"command $CMD successfully executed.\"\n",
                                 "    else\n",
@@ -2125,6 +2199,104 @@ def main():
                                 "### START CUSTOM CONFIGURTION\n",
                                 "### END CUSTOM CONFIGURATION"
                          ]
+
+            # Set commands dictionary
+            d = {}
+            d["000-disable-1nicautoconfig"] = {
+                "command": "/usr/bin/setdb provision.1nicautoconfig disable"
+            }
+            d["010-install-libs"] = {
+                "command": { 
+                    "Fn::Join" : [ " ", unpack_libs
+                                          ]
+                }
+            }
+            d["020-generate-password"] = {
+                "command": {
+                    "Fn::Join" : [ "", generate_password
+                                 ]
+                }
+            }
+            d["030-create-admin-user"] = {
+                "command": {
+                    "Fn::Join" : [ "", admin_user
+                                 ]
+                }
+            }
+            d["040-network-config"] = {
+                "command": {
+                    "Fn::Join": ["", network_config
+                                ]
+                }
+            }
+            d["050-onboard-BIG-IP"] = {
+                "command": {
+                    "Fn::If" :   [
+                                "optin",
+
+                        {"Fn::Join" : [ " ", onboard_BIG_IP_metrics
+                        ]},
+                        {"Fn::Join" : [ " ", onboard_BIG_IP
+                        ]},
+                    ]
+                }
+            }
+            d["060-custom-config"] = {
+                "command": {
+                    "Fn::Join" : [ " ", custom_command
+                                 ]
+                }
+            }
+            d["065-cluster"] = {
+                "command": {
+                    "Fn::Join" : [ " ", cluster_command
+                                 ]
+                }
+            }
+            d["070-rm-password"] = {
+                "command": {
+                    "Fn::Join" : [ " ", rm_password_command
+                                 ]
+                }
+            }
+            if num_nics == 1 and license_type == "bigiq":
+                d["045-bigiq-config"] = {
+                    "command": {
+                     "Fn::Join": [
+                      "",
+                      [
+                       "nohup /config/waitThenRun.sh ",
+                       "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js ",
+                       "--file /config/bigiqConfig.sh ",
+                       "--cwd /config/ ",
+                       "--log-level debug ",
+                       "-o /var/log/cloud/aws/bigiqConfig.log ",
+                       "--wait-for NETWORK_CONFIG_DONE ",
+                       "--signal BIGIQ_CONFIG_DONE ",
+                       "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                      ]
+                     ]
+                    }
+                   }
+                d["055-rerun-network-config"] = {
+                    "command": {
+                     "Fn::Join": [
+                      "",
+                      [
+                       "nohup /config/waitThenRun.sh ",
+                       "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js ",
+                       "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh ",
+                       "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws ",
+                       "--log-level debug ",
+                       "-o /var/log/rerun1nicSetup.log ",
+                       "--wait-for ONBOARD_DONE ",
+                       "--signal RERUN_NETWORK_CONFIG_DONE ",
+                       "&>> /var/log/cloudlibs-install.log < /dev/null &"
+                      ]
+                     ]
+                    }
+                   }
+
             metadata = Metadata(
                     Init({
                         'config': InitConfig(
@@ -2184,6 +2356,12 @@ def main():
                                         owner='root',
                                         group='root'
                                     ),
+                                    '/config/bigiqConfig.sh': InitFile(
+                                        content=Join('', bigiq_config_sh ),
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),
                                     '/config/cloud/aws/f5.service_discovery.tmpl': InitFile(
                                         source=discovery_url,
                                         mode='000755',
@@ -2192,65 +2370,7 @@ def main():
                                     )
                                 }
                             ),
-                            commands={
-
-                                        "001-disable-1nicautoconfig": {
-                                            "command": "/usr/bin/setdb provision.1nicautoconfig disable"
-                                        },
-                                        "002-install-libs": {
-                                            "command": { "Fn::Join" : [ " ", unpack_libs
-                                                                      ]
-                                            }
-                                        },
-                                        "003-generate-password": {
-                                            "command": {
-                                                "Fn::Join" : [ "", generate_password
-                                                             ]
-                                            }
-                                        },
-                                        "004-create-admin-user": {
-                                            "command": {
-                                                "Fn::Join" : [ "", admin_user
-                                                             ]
-                                            }
-                                        },
-                                        "005-network-config": {
-                                            "command": {
-                                                "Fn::Join": ["", network_config
-                                                            ]
-                                            }
-                                        },
-                                        "006-onboard-BIG-IP": {
-                                            "command": {
-                                                "Fn::If" :   [
-                                                            "optin",
-
-                                                    {"Fn::Join" : [ " ", onboard_BIG_IP_metrics
-                                                    ]},
-                                                    {"Fn::Join" : [ " ", onboard_BIG_IP
-                                                    ]},
-                                                ]
-                                            }
-                                        },
-                                        "007-custom-config": {
-                                            "command": {
-                                                "Fn::Join" : [ " ", custom_command
-                                                             ]
-                                            }
-                                        },
-                                        "008-cluster": {
-                                            "command": {
-                                                "Fn::Join" : [ " ", cluster_command
-                                                             ]
-                                            }
-                                        },
-                                        "009-rm-password": {
-                                            "command": {
-                                                "Fn::Join" : [ " ", rm_password_command
-                                                             ]
-                                            }
-                                        },
-                            }
+                            commands=d
                         )
                     })
                 )

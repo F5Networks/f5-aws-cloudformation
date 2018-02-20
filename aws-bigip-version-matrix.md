@@ -1,8 +1,12 @@
 ## BIG-IP Version Matrix for AWS CFT Templates
-The following table contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughputs available for a specific tagged release.  To view a Tag, from the f5-aws-cloudformation repo (https://github.com/F5Networks/f5-aws-cloudformation/ or a sub directory), click the Branch < current branch > button, and then click the *Tags* tab.  You see a list of all of the F5 tagged releases.
+The following table contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughput levels available for a specific tagged release.  To view a Tag, from the f5-aws-cloudformation repo (https://github.com/F5Networks/f5-aws-cloudformation/ or a sub directory), click the Branch < current branch > button, and then click the *Tags* tab.  You see a list of all of the F5 tagged releases.
 
 | Release Tag | Template Family | BIG-IP Versions | License Bundles and Throughput Rates |
 | --- | --- | --- | --- |
+| [v2.9.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.9.0) | Standalone | BIG-IP v13.1.0.2 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
+|  | Cluster | BIG-IP v13.1.0.2 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
+|  | Auto Scale WAF | BIG-IP v13.1.0.2 | Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
+|  | Auto Scale LTM | BIG-IP v13.1.0.2 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 | [v2.8.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v2.8.0) | Standalone | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps
 |  | Cluster | BIG-IP v13.0 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale WAF | BIG-IP v13.0 | Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |

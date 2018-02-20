@@ -40,9 +40,11 @@ The following are prerequisites and notes for this solution:
  - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
  - This template includes a master election feature, which ensures that if the existing master BIG-IP VE is unavailable, a new master is selected from the BIG-IP VEs in the cluster. As a part of this process, the template creates an IAM role-protected SQS queue (https://aws.amazon.com/sqs/) for communication between the BIG-IP VEs, and encrypted credentials are sent on this queue. Additionally, the template creates public keys for the BIG-IP VEs and puts them in an S3 bucket in the public_keys folder. See [How this solution works](#how-this-solution-works) for more details.
  - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates.  See [Sending statistical information to F5](#sending-statistical-information-to-f5).
+ - F5 AWS CFT templates now capture all deployment logs to the BIG-IP VE in **/var/log/cloud/aws**. Depending on which template you are using, this includes deployment logs (stdout/stderr), Cloud Libs execution logs, recurring solution logs (metrics, failover, and so on), and more.
  - F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughput levels available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md.
  -	If you are using the *Licensing using BIG-IQ* template only:
     - This solution only supports only BIG-IQ versions 5.0 - 5.3.
+    -	Your BIG-IQ system must have at least [2 NICs](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/big-iq-central-mgmt-amazon-web-services-setup-5-2-0/1.html#guid-bd42a26b-9fa6-4127-88ab-fe5ab06bd3c2).
     - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
     - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only.  Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
  
@@ -97,7 +99,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Group | group | No | Group Tag (the default is f5group) |
 | Owner | owner | No | Owner Tag (the default is f5owner) |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter) |
-| IP address of BIG-IQ | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: IP address of the BIG-IQ device that contains the pool of BIG-IP licenses |
+| IP address of BIG-IQ | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: Private IP address of the BIG-IQ device that contains the pool of BIG-IP licenses |
 | BIG-IQ user with licensing privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: BIG-IQ user with privileges to license BIG-IQ. Must be 'Admin', 'Device Manager', or 'Licensing Manager' |
 | S3 ARN of the BIG-IQ Password File | bigiqPasswordS3Arn | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file |
 | BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses |
@@ -522,7 +524,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright 2014-2017 F5 Networks Inc.
+Copyright 2014-2018 F5 Networks Inc.
 
 
 ## License

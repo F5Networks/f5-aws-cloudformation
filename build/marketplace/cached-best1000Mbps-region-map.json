@@ -1,47 +1,47 @@
 {
   "ap-northeast-1": {
-    "Best1000Mbps": "ami-55982b33"
+    "Best1000Mbps": "ami-2e4d3048"
   }, 
   "ap-northeast-2": {
-    "Best1000Mbps": "ami-ebbb1c85"
+    "Best1000Mbps": "ami-1955f777"
   }, 
   "ap-south-1": {
-    "Best1000Mbps": "ami-24a5ea4b"
+    "Best1000Mbps": "ami-871e43e8"
   }, 
   "ap-southeast-1": {
-    "Best1000Mbps": "ami-ff91c59c"
+    "Best1000Mbps": "ami-d5bffda9"
   }, 
   "ap-southeast-2": {
-    "Best1000Mbps": "ami-9502e9f7"
+    "Best1000Mbps": "ami-1eb2777c"
   }, 
   "ca-central-1": {
-    "Best1000Mbps": "ami-a6a41fc2"
+    "Best1000Mbps": "ami-9278fcf6"
   }, 
   "eu-central-1": {
-    "Best1000Mbps": "ami-9a4ac9f5"
+    "Best1000Mbps": "ami-39214056"
   }, 
   "eu-west-1": {
-    "Best1000Mbps": "ami-4a63d633"
+    "Best1000Mbps": "ami-fc2f5f85"
   }, 
   "eu-west-2": {
-    "Best1000Mbps": "ami-662c3302"
+    "Best1000Mbps": "ami-da0ce9bd"
   }, 
   "sa-east-1": {
-    "Best1000Mbps": "ami-a34c09cf"
+    "Best1000Mbps": "ami-a02960cc"
   }, 
   "us-east-1": {
-    "Best1000Mbps": "ami-f2ab2488"
+    "Best1000Mbps": "ami-781e0302"
   }, 
   "us-east-2": {
-    "Best1000Mbps": "ami-da1b35bf"
+    "Best1000Mbps": "ami-9cffcbf9"
   }, 
   "us-gov-west-1": {
-    "Best1000Mbps": "ami-9c61edfd"
+    "Best1000Mbps": "ami-651d9504"
   }, 
   "us-west-1": {
-    "Best1000Mbps": "ami-70417910"
+    "Best1000Mbps": "ami-6a747d0a"
   }, 
   "us-west-2": {
-    "Best1000Mbps": "ami-8cd80af4"
+    "Best1000Mbps": "ami-4225a53a"
   }
 }

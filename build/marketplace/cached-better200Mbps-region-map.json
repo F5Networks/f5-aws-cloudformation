@@ -1,47 +1,47 @@
 {
   "ap-northeast-1": {
-    "Better200Mbps": "ami-53902335"
+    "Better200Mbps": "ami-11522f77"
   }, 
   "ap-northeast-2": {
-    "Better200Mbps": "ami-93bb1cfd"
+    "Better200Mbps": "ami-0d57f563"
   }, 
   "ap-south-1": {
-    "Better200Mbps": "ami-9ca4ebf3"
+    "Better200Mbps": "ami-961b46f9"
   }, 
   "ap-southeast-1": {
-    "Better200Mbps": "ami-eb96c288"
+    "Better200Mbps": "ami-3db9fb41"
   }, 
   "ap-southeast-2": {
-    "Better200Mbps": "ami-0b00eb69"
+    "Better200Mbps": "ami-99b075fb"
   }, 
   "ca-central-1": {
-    "Better200Mbps": "ami-0ca51e68"
+    "Better200Mbps": "ami-b773f7d3"
   }, 
   "eu-central-1": {
-    "Better200Mbps": "ami-aa49cac5"
+    "Better200Mbps": "ami-58dcba37"
   }, 
   "eu-west-1": {
-    "Better200Mbps": "ami-a366d3da"
+    "Better200Mbps": "ami-862858ff"
   }, 
   "eu-west-2": {
-    "Better200Mbps": "ami-f0293694"
+    "Better200Mbps": "ami-570fea30"
   }, 
   "sa-east-1": {
-    "Better200Mbps": "ami-fe4d0892"
+    "Better200Mbps": "ami-25175e49"
   }, 
   "us-east-1": {
-    "Better200Mbps": "ami-b4ac23ce"
+    "Better200Mbps": "ami-77617c0d"
   }, 
   "us-east-2": {
-    "Better200Mbps": "ami-76193713"
+    "Better200Mbps": "ami-3afdc95f"
   }, 
   "us-gov-west-1": {
-    "Better200Mbps": "ami-df61edbe"
+    "Better200Mbps": "ami-cd1890ac"
   }, 
   "us-west-1": {
-    "Better200Mbps": "ami-35417955"
+    "Better200Mbps": "ami-13727b73"
   }, 
   "us-west-2": {
-    "Better200Mbps": "ami-fcd40684"
+    "Better200Mbps": "ami-f721a18f"
   }
 }

@@ -295,7 +295,7 @@ def main():
     ]
 
     image_finder_obj = BigIpImageFinder()
-    marketplace_version = "13.0.0.3.0.1679"
+    marketplace_version = "13.1.0.2.0.0.6"
 
     # Hourly Region Map Marketplace ( Need to wait for v12/v13 to be released before can use Cloudinit )
     mp = {} # Marketplace Dict
@@ -319,7 +319,7 @@ def main():
     #        value[car_region] = {value['us-east-1'].keys()[0]:""}
 
     gov_region = 'us-gov-west-1'
-    with open('../AMI Maps/13.0.0.3.0.1679/cached-hourly-region-map-us-gov-west-1.json') as json_file:
+    with open('../AMI Maps/13.1.0.2-0.0.6/cached-hourly-region-map-us-gov-west-1.json') as json_file:
         data = json.load(json_file)
         gov_cloud_amis = data[gov_region]
         #for k,v in gov_cloud_amis.items():
@@ -355,11 +355,11 @@ def main():
         json.dump(mp["Best5000Mbps"], outfile, sort_keys=True, indent=2, ensure_ascii=False)
 
     # Hourly Region Map Non-Marketplace
-    HourlyRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="hourly", version="13.0.0.3.0.1679", regions=regions, )
+    HourlyRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="hourly", version="13.1.0.2.0.0.6", regions=regions, )
     with open('cached-hourly-region-map.json', 'w') as outfile:
         json.dump(HourlyRegionMap, outfile, sort_keys=True, indent=2, ensure_ascii=False)
     # BYOL Region Map:
-    ByolRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="byol", version="13.0.0.3.0.1679", regions=regions, )
+    ByolRegionMap = image_finder_obj.getBigipRegionMap(marketplace="no", bandwidth="all", license="byol", version="13.1.0.2.0.0.6", regions=regions, )
     with open('cached-byol-region-map.json', 'w') as outfile:
         json.dump(ByolRegionMap, outfile, sort_keys=True, indent=2, ensure_ascii=False)
     # BIG-IQ Region Map:

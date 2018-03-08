@@ -1,47 +1,47 @@
 {
   "ap-northeast-1": {
-    "Good5000Mbps": "ami-899320ef"
+    "Good5000Mbps": "ami-5e4d3038"
   }, 
   "ap-northeast-2": {
-    "Good5000Mbps": "ami-b8b91ed6"
+    "Good5000Mbps": "ami-9151f3ff"
   }, 
   "ap-south-1": {
-    "Good5000Mbps": "ami-81a6e9ee"
+    "Good5000Mbps": "ami-a81c41c7"
   }, 
   "ap-southeast-1": {
-    "Good5000Mbps": "ami-4496c227"
+    "Good5000Mbps": "ami-72bbf90e"
   }, 
   "ap-southeast-2": {
-    "Good5000Mbps": "ami-0807ec6a"
+    "Good5000Mbps": "ami-cab075a8"
   }, 
   "ca-central-1": {
-    "Good5000Mbps": "ami-789a211c"
+    "Good5000Mbps": "ami-c40783a0"
   }, 
   "eu-central-1": {
-    "Good5000Mbps": "ami-da44c7b5"
+    "Good5000Mbps": "ami-fadabc95"
   }, 
   "eu-west-1": {
-    "Good5000Mbps": "ami-4866d331"
+    "Good5000Mbps": "ami-cc2757b5"
   }, 
   "eu-west-2": {
-    "Good5000Mbps": "ami-882936ec"
+    "Good5000Mbps": "ami-520eeb35"
   }, 
   "sa-east-1": {
-    "Good5000Mbps": "ami-09420765"
+    "Good5000Mbps": "ami-49296025"
   }, 
   "us-east-1": {
-    "Good5000Mbps": "ami-64901f1e"
+    "Good5000Mbps": "ami-6c627f16"
   }, 
   "us-east-2": {
-    "Good5000Mbps": "ami-981937fd"
+    "Good5000Mbps": "ami-e8fcc88d"
   }, 
   "us-gov-west-1": {
-    "Good5000Mbps": "ami-7e62ee1f"
+    "Good5000Mbps": "ami-9f068efe"
   }, 
   "us-west-1": {
-    "Good5000Mbps": "ami-55407835"
+    "Good5000Mbps": "ami-40747d20"
   }, 
   "us-west-2": {
-    "Good5000Mbps": "ami-61db0919"
+    "Good5000Mbps": "ami-0c24a474"
   }
 }

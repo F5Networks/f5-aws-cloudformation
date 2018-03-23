@@ -132,7 +132,7 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    version = '2.9.2'
+    version = '2.9.3'
     ### Big-IP mapped
     BIGIP_VERSION = '13.1.0.2-0.0.6'
     ### Cloudlib Branch
@@ -156,7 +156,7 @@ def main():
              err = str(error) + ": Attempting to connect to next url"
 ### Cloudlib and iApp URL
     iApp_version = "v1.4.0rc2"
-    iapp_branch = "v2.9.0"
+    iapp_branch = "v2.9.2"
     iapp_name = "f5.aws_advanced_ha." + str(iApp_version) + ".tmpl"
     if marketplace == "no":
         cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
@@ -198,8 +198,8 @@ def main():
     t.add_description(description)
     ## Build Labels and add to metadata
     bigiq_label = ""
-    bigiq_parms = [
-                    ]
+    bigiq_parms = []
+    bigiq_label_params = {}
     if license_type == "bigiq":
         bigiq_label = "BIG-IQ LICENSING CONFIGURATION"
         bigiq_parms = [
@@ -208,170 +208,321 @@ def main():
                         "bigiqPasswordS3Arn",
                         "bigiqLicensePoolName",
                     ]
-    t.add_metadata({
-        "Version": str(version),
-        "AWS::CloudFormation::Interface": {
-          "ParameterGroups": [
-            {
-              "Label": {
-                  "default": "NETWORKING CONFIGURATION"
-              },
-              "Parameters": [
-                "Vpc",
-                "managementSubnetAz1",
-                "managementSubnetAz2",
-                "subnet1Az1",
-                "subnet1Az2",
-                "subnet2Az1",
-                "availabilityZone1",
-                "availabilityZone2",
-                "numberOfAdditionalNics",
-                "additionalNicLocation"
-              ]
-            },
-            {
-              "Label": {
-                  "default": "INSTANCE CONFIGURATION"
-                },
-              "Parameters": [
-                "imageName",
-                "instanceType",
-                "applicationInstanceType",
-                "licenseKey1",
-                "licenseKey2",
-                "managementGuiPort",
-                "sshKey",
-                "restrictedSrcAddress",
-                "restrictedSrcAddressApp",
-                "ntpServer",
-                "timezone"
-              ]
-            },
-            {
-              "Label": {
-                "default": "TAGS"
-              },
-              "Parameters": [
-                    "application",
-                    "environment",
-                    "group",
-                    "owner",
-                    "costcenter"
-              ]
-            },
-            {
+
+        bigiq_label_params = {
               "Label": {
                 "default": bigiq_label
               },
               "Parameters": bigiq_parms
-            },
-            {
-              "Label": {
-                "default": "TEMPLATE ANALYTICS"
-              },
-              "Parameters": [
-                  "allowUsageAnalytics",
-              ]
-            },
-          ],
-          "ParameterLabels": {
-           "Vpc": {
-                "default": "VPC"
-            },
-            "managementSubnetAz1": {
-                "default": "Management Subnet AZ1"
-            },
-            "managementSubnetAz2": {
-                "default": "Management Subnet AZ2"
-            },
-            "subnet1Az1": {
-                "default": "Subnet1 in AZ1"
-            },
-            "subnet1Az2": {
-                "default": "Subnet1 in AZ2"
-            },
-            "subnet2Az1": {
-                "default": "Subnet2 in AZ1"
-            },
-            "availabilityZone1": {
-                "default": "Availability Zone 1"
-            },
-            "availabilityZone2": {
-                "default": "Availability Zone 2"
-            },
-            "imageName": {
-                "default": "BIG-IP Image Name"
-            },
-            "instanceType": {
-                "default": "AWS Instance Size"
-            },
-            "applicationInstanceType": {
-                "default": "Application Instance Type"
-            },
-            "licenseKey1": {
-                "default": "License Key 1"
-            },
-            "licenseKey2": {
-                "default": "License Key 2"
-            },
-            "restrictedSrcAddress": {
-                "default": "Source Address(es) for Management Access"
-            },
-            "restrictedSrcAddressApp": {
-                "default": "Source Address(es) for Web Application Access (80/443)"
-            },
-            "managementGuiPort": {
-                "default": "BIG-IP Management Port"
-            },
-            "sshKey": {
-                "default": "SSH Key"
-            },
-            "application": {
-                "default": "Application"
-            },
-            "environment": {
-                "default": "Environment"
-            },
-            "group": {
-                "default": "Group"
-            },
-            "owner": {
-                "default": "Owner"
-            },
-            "costcenter": {
-                "default": "Cost Center"
-            },
-            "ntpServer":{
-                "default": "NTP Server"
-            },
-            "timezone":{
-                "default": "Timezone (Olson)"
-            },
-            "bigiqAddress": {
-                "default": "BIG-IQ address (private)"
-            },
-            "bigiqLicensePoolName": {
-                "default": "BIG-IQ License Pool Name"
-            },
-            "bigiqUsername": {
-                "default": "BIG-IQ user with Licensing Privileges"
-            },
-            "bigiqPasswordS3Arn": {
-                "default": "S3 ARN of the BIG-IQ Password File"
-            },
-            "allowUsageAnalytics": {
-                "default": "Send Anonymous Statistics to F5"
-            },
-            "numberOfAdditionalNics": {
-                "default": "Number Of Additional NICs"
-            },
-            "additionalNicLocation": {
-                "default": "Additional NIC Location"
-            },
-          }
+            }
+
+        t.add_metadata({
+            "Version": str(version),
+            "AWS::CloudFormation::Interface": {
+              "ParameterGroups": [
+                {
+                  "Label": {
+                      "default": "NETWORKING CONFIGURATION"
+                  },
+                  "Parameters": [
+                    "Vpc",
+                    "managementSubnetAz1",
+                    "managementSubnetAz2",
+                    "subnet1Az1",
+                    "subnet1Az2",
+                    "subnet2Az1",
+                    "availabilityZone1",
+                    "availabilityZone2",
+                    "numberOfAdditionalNics",
+                    "additionalNicLocation"
+                  ]
+                },
+                {
+                  "Label": {
+                      "default": "INSTANCE CONFIGURATION"
+                    },
+                  "Parameters": [
+                    "imageName",
+                    "instanceType",
+                    "applicationInstanceType",
+                    "licenseKey1",
+                    "licenseKey2",
+                    "managementGuiPort",
+                    "sshKey",
+                    "restrictedSrcAddress",
+                    "restrictedSrcAddressApp",
+                    "ntpServer",
+                    "timezone"
+                  ]
+                },
+                {
+                  "Label": {
+                    "default": "TAGS"
+                  },
+                  "Parameters": [
+                        "application",
+                        "environment",
+                        "group",
+                        "owner",
+                        "costcenter"
+                  ]
+                },
+                bigiq_label_params,
+                {
+                  "Label": {
+                    "default": "TEMPLATE ANALYTICS"
+                  },
+                  "Parameters": [
+                      "allowUsageAnalytics",
+                  ]
+                },
+              ],
+              "ParameterLabels": {
+               "Vpc": {
+                    "default": "VPC"
+                },
+                "managementSubnetAz1": {
+                    "default": "Management Subnet AZ1"
+                },
+                "managementSubnetAz2": {
+                    "default": "Management Subnet AZ2"
+                },
+                "subnet1Az1": {
+                    "default": "Subnet1 in AZ1"
+                },
+                "subnet1Az2": {
+                    "default": "Subnet1 in AZ2"
+                },
+                "subnet2Az1": {
+                    "default": "Subnet2 in AZ1"
+                },
+                "availabilityZone1": {
+                    "default": "Availability Zone 1"
+                },
+                "availabilityZone2": {
+                    "default": "Availability Zone 2"
+                },
+                "imageName": {
+                    "default": "BIG-IP Image Name"
+                },
+                "instanceType": {
+                    "default": "AWS Instance Size"
+                },
+                "applicationInstanceType": {
+                    "default": "Application Instance Type"
+                },
+                "licenseKey1": {
+                    "default": "License Key 1"
+                },
+                "licenseKey2": {
+                    "default": "License Key 2"
+                },
+                "restrictedSrcAddress": {
+                    "default": "Source Address(es) for Management Access"
+                },
+                "restrictedSrcAddressApp": {
+                    "default": "Source Address(es) for Web Application Access (80/443)"
+                },
+                "managementGuiPort": {
+                    "default": "BIG-IP Management Port"
+                },
+                "sshKey": {
+                    "default": "SSH Key"
+                },
+                "application": {
+                    "default": "Application"
+                },
+                "environment": {
+                    "default": "Environment"
+                },
+                "group": {
+                    "default": "Group"
+                },
+                "owner": {
+                    "default": "Owner"
+                },
+                "costcenter": {
+                    "default": "Cost Center"
+                },
+                "ntpServer":{
+                    "default": "NTP Server"
+                },
+                "timezone":{
+                    "default": "Timezone (Olson)"
+                },
+                "bigiqAddress": {
+                    "default": "BIG-IQ address (private)"
+                },
+                "bigiqLicensePoolName": {
+                    "default": "BIG-IQ License Pool Name"
+                },
+                "bigiqUsername": {
+                    "default": "BIG-IQ user with Licensing Privileges"
+                },
+                "bigiqPasswordS3Arn": {
+                    "default": "S3 ARN of the BIG-IQ Password File"
+                },
+                "allowUsageAnalytics": {
+                    "default": "Send Anonymous Statistics to F5"
+                },
+                "numberOfAdditionalNics": {
+                    "default": "Number Of Additional NICs"
+                },
+                "additionalNicLocation": {
+                    "default": "Additional NIC Location"
+                },
+              }
+            }
         }
-    }
-    )
+        )
+    else:
+        t.add_metadata({
+            "Version": str(version),
+            "AWS::CloudFormation::Interface": {
+              "ParameterGroups": [
+                {
+                  "Label": {
+                      "default": "NETWORKING CONFIGURATION"
+                  },
+                  "Parameters": [
+                    "Vpc",
+                    "managementSubnetAz1",
+                    "managementSubnetAz2",
+                    "subnet1Az1",
+                    "subnet1Az2",
+                    "subnet2Az1",
+                    "availabilityZone1",
+                    "availabilityZone2",
+                    "numberOfAdditionalNics",
+                    "additionalNicLocation"
+                  ]
+                },
+                {
+                  "Label": {
+                      "default": "INSTANCE CONFIGURATION"
+                    },
+                  "Parameters": [
+                    "imageName",
+                    "instanceType",
+                    "applicationInstanceType",
+                    "licenseKey1",
+                    "licenseKey2",
+                    "managementGuiPort",
+                    "sshKey",
+                    "restrictedSrcAddress",
+                    "restrictedSrcAddressApp",
+                    "ntpServer",
+                    "timezone"
+                  ]
+                },
+                {
+                  "Label": {
+                    "default": "TAGS"
+                  },
+                  "Parameters": [
+                        "application",
+                        "environment",
+                        "group",
+                        "owner",
+                        "costcenter"
+                  ]
+                },
+                {
+                  "Label": {
+                    "default": "TEMPLATE ANALYTICS"
+                  },
+                  "Parameters": [
+                      "allowUsageAnalytics",
+                  ]
+                },
+              ],
+              "ParameterLabels": {
+               "Vpc": {
+                    "default": "VPC"
+                },
+                "managementSubnetAz1": {
+                    "default": "Management Subnet AZ1"
+                },
+                "managementSubnetAz2": {
+                    "default": "Management Subnet AZ2"
+                },
+                "subnet1Az1": {
+                    "default": "Subnet1 in AZ1"
+                },
+                "subnet1Az2": {
+                    "default": "Subnet1 in AZ2"
+                },
+                "subnet2Az1": {
+                    "default": "Subnet2 in AZ1"
+                },
+                "availabilityZone1": {
+                    "default": "Availability Zone 1"
+                },
+                "availabilityZone2": {
+                    "default": "Availability Zone 2"
+                },
+                "imageName": {
+                    "default": "BIG-IP Image Name"
+                },
+                "instanceType": {
+                    "default": "AWS Instance Size"
+                },
+                "applicationInstanceType": {
+                    "default": "Application Instance Type"
+                },
+                "licenseKey1": {
+                    "default": "License Key 1"
+                },
+                "licenseKey2": {
+                    "default": "License Key 2"
+                },
+                "restrictedSrcAddress": {
+                    "default": "Source Address(es) for Management Access"
+                },
+                "restrictedSrcAddressApp": {
+                    "default": "Source Address(es) for Web Application Access (80/443)"
+                },
+                "managementGuiPort": {
+                    "default": "BIG-IP Management Port"
+                },
+                "sshKey": {
+                    "default": "SSH Key"
+                },
+                "application": {
+                    "default": "Application"
+                },
+                "environment": {
+                    "default": "Environment"
+                },
+                "group": {
+                    "default": "Group"
+                },
+                "owner": {
+                    "default": "Owner"
+                },
+                "costcenter": {
+                    "default": "Cost Center"
+                },
+                "ntpServer":{
+                    "default": "NTP Server"
+                },
+                "timezone":{
+                    "default": "Timezone (Olson)"
+                },
+                "allowUsageAnalytics": {
+                    "default": "Send Anonymous Statistics to F5"
+                },
+                "numberOfAdditionalNics": {
+                    "default": "Number Of Additional NICs"
+                },
+                "additionalNicLocation": {
+                    "default": "Additional NIC Location"
+                },
+              }
+            }
+        }
+        )
+
     ### BEGIN PARAMETERS
     allowUsageAnalytics = t.add_parameter (Parameter(
         "allowUsageAnalytics",

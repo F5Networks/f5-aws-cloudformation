@@ -10,83 +10,12 @@
    ]
   }
  },
- "Description": "Template Version 2.9.0: AWS CloudFormation Template for creating a full stack with a 3NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 3.0.0: AWS CloudFormation Template for creating a full stack with a 3NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
-  "BigipRegionMap": {
-   "ap-northeast-1": {
-    "Best": "ami-bdb4d9db",
-    "Better": "ami-58b7da3e",
-    "Good": "ami-04bad762"
-   },
-   "ap-northeast-2": {
-    "Best": "ami-26882b48",
-    "Better": "ami-49892a27",
-    "Good": "ami-d38b28bd"
-   },
-   "ap-south-1": {
-    "Best": "ami-0684d569",
-    "Better": "ami-e186d78e",
-    "Good": "ami-7e85d411"
-   },
-   "ap-southeast-1": {
-    "Best": "ami-d381f9af",
-    "Better": "ami-0d8ff771",
-    "Good": "ami-948ff7e8"
-   },
-   "ap-southeast-2": {
-    "Best": "ami-4a19e728",
-    "Better": "ami-2518e647",
-    "Good": "ami-5019e732"
-   },
-   "ca-central-1": {
-    "Best": "ami-0c2ca968",
-    "Better": "ami-082da86c",
-    "Good": "ami-df199cbb"
-   },
-   "eu-central-1": {
-    "Best": "ami-a51e87ca",
-    "Better": "ami-7511881a",
-    "Good": "ami-6d108902"
-   },
-   "eu-west-1": {
-    "Best": "ami-aca5c2d5",
-    "Better": "ami-1c593e65",
-    "Good": "ami-2aa7c053"
-   },
-   "eu-west-2": {
-    "Best": "ami-c7405aa3",
-    "Better": "ami-c54d57a1",
-    "Good": "ami-1b475d7f"
-   },
-   "sa-east-1": {
-    "Best": "ami-9a5f13f6",
-    "Better": "ami-4a5f1326",
-    "Good": "ami-105e127c"
-   },
-   "us-east-1": {
-    "Best": "ami-4af5c530",
-    "Better": "ami-f2f7c788",
-    "Good": "ami-d1f4c4ab"
-   },
-   "us-east-2": {
-    "Best": "ami-6794be02",
-    "Better": "ami-fc97bd99",
-    "Good": "ami-6094be05"
-   },
-   "us-gov-west-1": {
-    "Best": "ami-bc7af3dd",
-    "Better": "ami-d97bf2b8",
-    "Good": "ami-b266efd3"
-   },
-   "us-west-1": {
-    "Best": "ami-f2f5f892",
-    "Better": "ami-a0f5f8c0",
-    "Good": "ami-22faf742"
-   },
-   "us-west-2": {
-    "Best": "ami-ebbd0293",
-    "Better": "ami-3bbd0243",
-    "Good": "ami-e6bf009e"
+  "Fn::Transform": {
+   "Name": "AWS::Include",
+   "Parameters": {
+    "Location": "s3://f5-cft/ami-maps/bigip/v13.x/13.1.0.2-byol-bigip.json"
    }
   },
   "WebserverRegionMap": {
@@ -186,12 +115,6 @@
     },
     {
      "Label": {
-      "default": ""
-     },
-     "Parameters": []
-    },
-    {
-     "Label": {
       "default": "TEMPLATE ANALYTICS"
      },
      "Parameters": [
@@ -220,18 +143,6 @@
     },
     "availabilityZone2": {
      "default": "Availability Zone 2"
-    },
-    "bigiqAddress": {
-     "default": "BIG-IQ address (private)"
-    },
-    "bigiqLicensePoolName": {
-     "default": "BIG-IQ License Pool Name"
-    },
-    "bigiqPasswordS3Arn": {
-     "default": "S3 ARN of the BIG-IQ Password File"
-    },
-    "bigiqUsername": {
-     "default": "BIG-IQ user with Licensing Privileges"
     },
     "costcenter": {
      "default": "Cost Center"
@@ -295,7 +206,7 @@
     }
    }
   },
-  "Version": "2.9.0"
+  "Version": "3.0.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -847,10 +758,10 @@
           "",
           [
            "nohup /config/waitThenRun.sh",
-           " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
            " --signal PASSWORD_CREATED",
            " --file f5-rest-node",
-           " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
+           " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
            " --log-level verbose",
            " -o /var/log/cloud/aws/generatePassword.log",
            " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
@@ -865,10 +776,10 @@
           "",
           [
            "nohup /config/waitThenRun.sh",
-           " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
            " --wait-for PASSWORD_CREATED",
            " --signal ADMIN_CREATED",
-           " --file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/createUser.sh",
+           " --file /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/createUser.sh",
            " --cl-args '--user admin",
            " --password-file /config/cloud/aws/.adminPassword",
            " --password-encrypted",
@@ -895,7 +806,7 @@
            "GATEWAY_CIDR_BLOCK2=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`; ",
            "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}; ",
            "nohup /config/waitThenRun.sh ",
-           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/network.js ",
+           "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/network.js ",
            "--host localhost ",
            "--user admin ",
            "--password-url file:///config/cloud/aws/.adminPassword ",
@@ -953,7 +864,7 @@
              "\"|sha512sum|cut -d \" \" -f 1`;",
              "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
              "nohup /config/waitThenRun.sh",
-             "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+             "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
              "--wait-for NETWORK_CONFIG_DONE",
              "-o /var/log/cloud/aws/onboard.log",
              "--log-level debug",
@@ -977,7 +888,7 @@
              {
               "Ref": "licenseKey1"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.0.2-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-byol-3nic-bigip.template,templateVersion:2.9.0,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.0.2-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-byol-3nic-bigip.template,templateVersion:3.0.0,licenseType:byol\"",
              "--ping",
              "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
             ]
@@ -989,7 +900,7 @@
             [
              "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
              "nohup /config/waitThenRun.sh",
-             "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+             "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
              "--wait-for NETWORK_CONFIG_DONE",
              "-o /var/log/cloud/aws/onboard.log",
              "--log-level debug",
@@ -1027,7 +938,7 @@
           " ",
           [
            "nohup /config/waitThenRun.sh",
-           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
            "--file /config/cloud/aws/custom-config.sh",
            "--cwd /config/cloud/aws",
            "-o /var/log/cloud/aws/custom-config.log",
@@ -1053,7 +964,7 @@
           " ",
           [
            "nohup /config/waitThenRun.sh",
-           "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+           "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
            "--file /config/cloud/aws/rm-password.sh",
            "-o /var/log/cloud/aws/rm-password.log",
            "--log-level debug",
@@ -1098,10 +1009,11 @@
            "\"tmsh modify ltm policy uri-routing-policy rules add { apiv2 { conditions add { 0 { http-uri path starts-with values { /apiv2 } } } actions add { 0 { forward select pool ${APPNAME}-pool } } ordinal 3 } }\"\n",
            "\"tmsh create ltm virtual /Common/${APPNAME}-${VIRTUALSERVERPORT} { destination ${EXTPRIVIP}:${VIRTUALSERVERPORT} mask 255.255.255.255 ip-protocol tcp pool /Common/${APPNAME}-pool policies replace-all-with { uri-routing-policy { } } profiles replace-all-with { tcp { } http { } }  source 0.0.0.0/0 source-address-translation { type automap } translate-address enabled translate-port enabled }\"\n",
            "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
+           "\"tmsh load sys application template /config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl\"\n",
            "\"tmsh save /sys config\")\n",
            "for CMD in \"${tmsh[@]}\"\n",
            "do\n",
-           "  \"/config/cloud/aws/node_modules/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
+           "  \"/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
            "    if $CMD;then\n",
            "        echo \"command $CMD successfully executed.\"\n",
            "    else\n",
@@ -1118,11 +1030,17 @@
         "mode": "000755",
         "owner": "root"
        },
+       "/config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.0.3/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
+       },
        "/config/cloud/aws/f5.service_discovery.tmpl": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v1.2.0/f5-service-discovery/f5.service_discovery.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.0.3/f5-service-discovery/f5.service_discovery.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
@@ -1177,13 +1095,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v1.6.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v2.0.2/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v3.6.2/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v4.0.3/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -1209,7 +1127,7 @@
            "    exit",
            "fi",
            "echo loaded verifyHash",
-           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\")",
+           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\" \"/config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl\")",
            "for fileToVerify in \"${filesToVerify[@]}\"",
            "do",
            "    echo verifying \"$fileToVerify\"",
@@ -1219,11 +1137,11 @@
            "    fi",
            "    echo verified \"$fileToVerify\"",
            "done",
-           "mkdir -p /config/cloud/aws/node_modules",
+           "mkdir -p /config/cloud/aws/node_modules/@f5devcentral",
            "echo expanding f5-cloud-libs.tar.gz",
-           "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
+           "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules/@f5devcentral",
            "echo installing dependencies",
-           "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/f5-cloud-libs/node_modules",
+           "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/@f5devcentral",
            "echo cloud libs install complete",
            "touch /config/cloud/cloudLibsReady"
           ]
@@ -1234,7 +1152,7 @@
         "owner": "root"
        },
        "/config/verifyHash": {
-        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 4cf5edb76d2e8dd0493f4892ff3679a58c8c79b1c02e550b55150d9002228c24c6d841095f1edd33fb49c5aaea518771252b4fb6d423a8a4ba8d94a0baf0f77a\n            set hashes(f5-cloud-libs-aws.tar.gz) 1a4ba191e997b2cfaaee0104deccc0414a6c4cc221aedc65fbdec8e47a72f1d5258b047d6487a205fa043fdbd6c8fcb1b978cac36788e493e94a4542f90bd92b\n            set hashes(f5-cloud-libs-azure.tar.gz) 5c256d017d0a57f5c96c2cb43f4d8b76297ae0b91e7a11c6d74e5c14268232f6a458bf0c16033b992040be076e934392c69f32fc8beffe070b5d84924ec7b947\n            set hashes(f5-cloud-libs-gce.tar.gz) 6ef33cc94c806b1e4e9e25ebb96a20eb1fe5975a83b2cd82b0d6ccbc8374be113ac74121d697f3bfc26bf49a55e948200f731607ce9aa9d23cd2e81299a653c1\n            set hashes(f5-cloud-libs-openstack.tar.gz) fb6d63771bf0c8d9cae9271553372f7fb50ce2e7a653bb3fb8b7d57330a18d72fa620e844b579fe79c8908a3873b2d33ee41803f23ea6c5dc9f7d7e943e68c3a\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) eebaf8593a29fa6e28bb65942d2b795edca0da08b357aa06277b0f4d2f25fe416da6438373f9955bdb231fa1de1a7c8d0ba7c224fa1f09bd852006070d887812\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) acc7c482a1eb8787a371091f969801b422cb92830b46460a3313b6a8e1cda0759f8013380e0c46d5214a351a248c029ec3ff04220aaef3e42a66badf9804041f\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature Kir5DhV/uRo0SwVRgPGrnNnAJBgHZ3XYraih5T90VbRZii5vPt0q3codJUdgoWiByQGpFREsa5Gy+v0+yYDAdYBzyZlThwRe+6RjWYfxP2+cKAC28wByJ0x6En1UD9kscj7ILUON5yv771izvIrxJ7x4Fd4RHcqB5++hWLvOLxXMiyJAYh2aUSOgdc+kx4lCHS6IU0aXtUxAQYpq510k4eS4UZJrfE7GPmpYkpRDJivR8UUyUWtuj0CAt3pWQEijKnC5zHhH6q5ikvQFn05PugcZO7RzOaA/a2gZw609wYAkXODMA6L49l+IKB31Y+/5ROB1w9/wf/H5RiP/kXC5/A==\n    signing-key /Common/f5-irule\n}",
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 8ddb28557f0b33ceff5b9a0ee1f30ec27a5fdd1d25f4d08682fd0e82f1a1637429949ddf5458eafd0f384d0f139d1852d91b6cdd4af081511e05de12bc95bec5\n            set hashes(f5-cloud-libs-aws.tar.gz) d99a776cd7d184d98161c0846fd2c4ff6876a344a4491e6b12a592efc99d5bcd9df4ba32d3f5c800fa93f5417cf6986e64fb3b51e038014fd829261ce295f3bb\n            set hashes(f5-cloud-libs-azure.tar.gz) 342fa4ccca856ca1829ac4d1364731983707fbfbe6d81f74078053ca328ec233b273edc40816263a8d3299ed67f6de4d631fc19aac5da74fd1842a544dd74863\n            set hashes(f5-cloud-libs-gce.tar.gz) 66072a397912a2f64ef74f2bb3fcc51c2ca90002d7df67534cf1ace031251d0a2d08f5efb492fa3c46718c65fb24234d2c863dd457e1d300b41dd6f82aca9849\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 7a4660468dffdc4f6d9aec4c1f9d22abfb3e484e7d6fe6a12fc9ab3eec3819dc34d133aea3cce4fdd87a0f4045069270061f2ea1ee7735922e4371592e498a0b\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) a26d5c470e70b821621476bcfd0579dbc0964f6a54158bc6314fa1e2f63b23bf3f3eb43ade5081131c24e08579db2e1e574beb3f8d9789d28acb4f312fad8c3e\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature nJiyfuy+jIMb0W4aFXE5i2o2ujx3DWkiX47b2hz9wCXDoVv+4mT/LXPeY0i5IuGqHwm572VWXKu4mni7ib/orB2+kS7BLg6pAgEj0JKeoNNkHkP7BX91kxt75M0oDh1S6gbzh2+RXY+/kPNvZLVjLzx4946h4TlTnaaKWRrWafl94Cn7Xqv/TZoilaVQEqMMKKR7WABuGfe3V0duyO0vC6vnDg7nKGk5uJkC6nkPJd2YFkZ8kIE56zbgX/RshsE0isXqh4mpIxOb2aoa1PsDraOd1Sssl4FG4tDOeag+Xxc/GVp+HGJe441uIphGo3gd4973cAkD4K1WwsXmZLAw+A==\n    signing-key /Common/f5-irule\n}",
         "group": "root",
         "mode": "000755",
         "owner": "root"
@@ -1283,7 +1201,7 @@
     },
     "ImageId": {
      "Fn::FindInMap": [
-      "BigipRegionMap",
+      "ByolBigipRegionMap",
       {
        "Ref": "AWS::Region"
       },

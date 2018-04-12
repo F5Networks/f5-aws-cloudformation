@@ -10,7 +10,7 @@
    ]
   }
  },
- "Description": "Template Version 2.9.0: AWS CloudFormation Template for creating security groups for a 2NIC BIG-IP",
+ "Description": "Template Version 3.0.0: AWS CloudFormation Template for creating security groups for a 2NIC BIG-IP",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -63,12 +63,6 @@
     },
     {
      "Label": {
-      "default": ""
-     },
-     "Parameters": []
-    },
-    {
-     "Label": {
       "default": "TEMPLATE ANALYTICS"
      },
      "Parameters": [
@@ -97,18 +91,6 @@
     },
     "availabilityZone2": {
      "default": "Availability Zone 2"
-    },
-    "bigiqAddress": {
-     "default": "BIG-IQ address (private)"
-    },
-    "bigiqLicensePoolName": {
-     "default": "BIG-IQ License Pool Name"
-    },
-    "bigiqPasswordS3Arn": {
-     "default": "S3 ARN of the BIG-IQ Password File"
-    },
-    "bigiqUsername": {
-     "default": "BIG-IQ user with Licensing Privileges"
     },
     "costcenter": {
      "default": "Cost Center"
@@ -172,7 +154,7 @@
     }
    }
   },
-  "Version": "2.9.0"
+  "Version": "3.0.0"
  },
  "Outputs": {
   "bigipExternalSecurityGroup": {

@@ -1,0 +1,7 @@
+{
+  "us-gov-west-1": {
+    "Best": "ami-b5068cd4", 
+    "Better": "ami-800389e1", 
+    "Good": "ami-b70f85d6"
+  }
+}

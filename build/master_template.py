@@ -51,7 +51,7 @@ def main():
     parser.add_option("-a", "--num-azs", action="store", type="int", dest="num_azs", default=1, help="Number of Availability Zones" )
     parser.add_option("-b", "--num-bigips", action="store", type="int", dest="num_bigips", default=1, help="Number of BIG-IPs" )
     parser.add_option("-n", "--nics", action="store", type="int", dest="num_nics", default=1, help="Number of NICs: 1, 2, 3 or 8")
-    parser.add_option("-l", "--license", action="store", type="string", dest="license_type", default="hourly", help="Type of License: hourly, BYOL, or BIG-IQ" )
+    parser.add_option("-l", "--license", action="store", type="string", dest="license_type", default="hourly", help="Type of License: hourly, byol, or bigiq" )
     parser.add_option("-c", "--components", action="store", type="string", dest="components", help="Comma seperated list of components: ex. WAF" )
     parser.add_option("-H", "--ha-type", action="store", type="string", dest="ha_type", default="standalone", help="HA Type: standalone, same-az, across-az" )
     parser.add_option("-M", "--marketplace", action="store", type="string", dest="marketplace", default="no", help="Marketplace: no, Good25Mbps, Good200Mbps, Good1000Mbps, Good5000Mbps, Better25Mbps, Better200Mbps, Better1000Mbps, Better5000Mbps, Best25Mbps, Best200Mbps, Best1000Mbps, Best5000Mbps" )
@@ -67,6 +67,11 @@ def main():
     num_azs = options.num_azs
     marketplace = options.marketplace
     template_name = options.template_name
+
+    if license_type == "hourly":
+        BigipRegionMapDesc = "HourlyBigipRegionMap"
+    else:
+        BigipRegionMapDesc = "ByolBigipRegionMap"
 
     # 1st BIG-IP will always be cluster seed
     CLUSTER_SEED = 1
@@ -132,13 +137,13 @@ def main():
     # Build variables used for QA
 
     ### Template Version
-    version = '2.9.3'
+    version = '3.0.0'
     ### Big-IP mapped
     BIGIP_VERSION = '13.1.0.2-0.0.6'
     ### Cloudlib Branch
-    branch_cloud = 'v3.6.2'
-    branch_aws = 'v1.6.0'
-    branch_cloud_iapps = 'v1.2.0'
+    branch_cloud = 'v4.0.3'
+    branch_aws = 'v2.0.2'
+    branch_cloud_iapps = 'v2.0.3'
     ### Build verifyHash file from published verifyHash github
     urls = [ 'https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/' + str(branch_cloud) + '/dist/verifyHash' ]
     for url in urls:
@@ -162,10 +167,12 @@ def main():
         cloudlib_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/" + str(branch_cloud) + "/dist/f5-cloud-libs.tar.gz"
         cloudlib_aws_url = "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/" + str(branch_aws) + "/dist/f5-cloud-libs-aws.tar.gz"
         discovery_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-service-discovery/f5.service_discovery.tmpl"
+        cloud_logger_url =  "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/" + str(branch_cloud_iapps) + "/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
     else:
         cloudlib_url = "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/" + str(branch_cloud) + "/f5-cloud-libs.tar.gz"
         cloudlib_aws_url = "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs-aws/" + str(branch_aws) + "/f5-cloud-libs-aws.tar.gz"
         discovery_url =  "http://cdn.f5.com/product/cloudsolutions/iapps/common/f5-service-discovery/" + str(branch_cloud_iapps) + "/f5.service_discovery.tmpl"
+        cloud_logger_url =  "http://cdn.f5.com/product/cloudsolutions/iapps/common/f5-cloud-logger/" + str(branch_cloud_iapps) + "/f5.cloud_logger.v1.0.0.tmpl"
     ### add hashmark to skip cloudlib verification script.
     comment_out = ""
     # Begin Template
@@ -865,11 +872,11 @@ def main():
                     Type="Number",
                     MaxValue="5",
                     MinValue="1",
-                    Description="By default this solution deploys the BIG-IP in a 3 NIC configuration, however it will also add a select number(1-5) of additional NICs to the BIG-IP using this parameter",
+                    Description="By default this solution deploys the BIG-IP in a 3 NIC configuration, however it can also add a select number (1-5) of additional NICs to the BIG-IP using this parameter",
                 ))
                 PARAMETERS["additionalNicLocation"] = t.add_parameter(Parameter(
                     "additionalNicLocation",
-                    Description="This parameter specifies where the additional NICs should go.  This value must be a comma delimited string of subnets, equal to the number of additional NICs being deployed.  For example (for 2 additional NICs): **subnet01,subnet02**. NOTE: Ensure that there are no spaces and that the correct number of subnets are provided based on the value chosen in **numberOfAdditionalNics**. IMPORTANT: The subnet you provide for each additional NIC MUST be unique.",
+                    Description="This parameter specifies where the additional NICs should go.  This value must be a comma delimited string of subnets, equal to the number of additional NICs you are deploying.  For example, for 2 additional NICs: **subnet01,subnet02**. NOTE: Ensure that there are no spaces and that the correct number of subnets are provided based on the value you specify in the **Number of Additional NICs** field. IMPORTANT: The subnet you provide for each additional NIC MUST be unique.",
                     Type="CommaDelimitedList"
                 ))
     # BEGIN REGION MAPPINGS FOR AMI IDS
@@ -923,14 +930,18 @@ def main():
                 RegionMap = json.load(json_file)
             imageidref="Best5000Mbps"
         if license_type == "hourly" and marketplace == "no":
-            with open("cached-hourly-region-map.json") as json_file:
-                RegionMap = json.load(json_file)
+            #with open("cached-hourly-region-map.json") as json_file:
+                #RegionMap = json.load(json_file)
+            RegionMap = {"Name" : "AWS::Include", "Parameters" : {"Location" : "s3://f5-cft/ami-maps/bigip/v13.x/13.1.0.2-hourly-bigip.json"}}
             imageidref=Ref(imageName)
         if license_type != "hourly":
-            with open("cached-byol-region-map.json") as json_file:
-                RegionMap = json.load(json_file)
+            #with open("cached-byol-region-map.json") as json_file:
+                #RegionMap = json.load(json_file)
+            RegionMap = {"Name" : "AWS::Include", "Parameters" : {"Location" : "s3://f5-cft/ami-maps/bigip/v13.x/13.1.0.2-byol-bigip.json"}}
             imageidref=Ref(imageName)
-        t.add_mapping("BigipRegionMap", RegionMap )
+        #t.add_transform({"Name" : "AWS::Include", "Parameters" : {"Location" : "s3://f5-cft/includes/hourly.json"}})
+        #t.add_mapping("BigipRegionMap", RegionMap )
+        t.add_mapping("Fn::Transform", RegionMap )
     # WEB SERVER MAPPING
     if webserver == True:
         with open("cached-webserver-region-map.json") as json_file:
@@ -1746,7 +1757,7 @@ def main():
                       str(comment_out) + "    exit",
                       str(comment_out) + "fi",
                       str(comment_out) + "echo loaded verifyHash",
-                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\"" + str(iApp_verify) + ")",
+                      str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\" \"/config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl\"" + str(iApp_verify) + ")",
                       str(comment_out) + "for fileToVerify in \"${filesToVerify[@]}\"",
                       str(comment_out) + "do",
                       str(comment_out) + "    echo verifying \"$fileToVerify\"",
@@ -1756,14 +1767,14 @@ def main():
                       str(comment_out) + "    fi",
                       str(comment_out) + "    echo verified \"$fileToVerify\"",
                       str(comment_out) + "done",
-                      "mkdir -p /config/cloud/aws/node_modules",
+                      "mkdir -p /config/cloud/aws/node_modules/@f5devcentral",
                       "echo expanding f5-cloud-libs.tar.gz",
-                      "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules",
+                      "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules/@f5devcentral",
                             ]
 
             cloudlibs_sh +=  [
                                 "echo installing dependencies",
-                                "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/f5-cloud-libs/node_modules",
+                                "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/@f5devcentral",
                                 "echo cloud libs install complete",
                                  ]
             cloudlibs_sh +=  [
@@ -1804,7 +1815,7 @@ def main():
             #                     "\"tmsh save /sys config\")\n",
             #                     "for CMD in \"${tmsh[@]}\"\n",
             #                     "do\n",
-            #                     "  \"/config/cloud/aws/node_modules/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
+            #                     "  \"/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
             #                     "    if $CMD;then\n",
             #                     "        echo \"command $CMD successfully executed.\"\n",
             #                     "    else\n",
@@ -1823,7 +1834,7 @@ def main():
                                 ]
             create_user =   [
                                 "#!/bin/bash",
-                                "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
+                                "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
                                 "PASSWORD=$(/bin/sed -e $'s:[\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                                 "if [ \"$1\" = admin ]; then",
                                 "    tmsh modify auth user \"$1\" password ${PASSWORD}",
@@ -1833,10 +1844,10 @@ def main():
                             ]
             generate_password = [
                                 "nohup /config/waitThenRun.sh",
-                                " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                                " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
                                 " --signal PASSWORD_CREATED",
                                 " --file f5-rest-node",
-                                " --cl-args '/config/cloud/aws/node_modules/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
+                                " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
                                 " --log-level verbose",
                                 " -o /var/log/cloud/aws/generatePassword.log",
                                 " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
@@ -1844,12 +1855,12 @@ def main():
                                 ]
             admin_user  =   [
                                     "nohup /config/waitThenRun.sh",
-                                    " f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                                    " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
                             ]
             admin_user +=   [
                               " --wait-for PASSWORD_CREATED",
                               " --signal ADMIN_CREATED",
-                              " --file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/createUser.sh",
+                              " --file /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/createUser.sh",
                               " --cl-args '--user admin",
                               " --password-file /config/cloud/aws/.adminPassword",
                               " --password-encrypted",
@@ -1873,7 +1884,7 @@ def main():
                                 ]
             custom_command =   [
                                     "nohup /config/waitThenRun.sh",
-                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                                    "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
                                     "--file /config/cloud/aws/custom-config.sh",
                                     "--cwd /config/cloud/aws",
                                     "-o /var/log/cloud/aws/custom-config.log",
@@ -1923,7 +1934,7 @@ def main():
                                 ]
             rm_password_command =   [
                                     "nohup /config/waitThenRun.sh",
-                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js",
+                                    "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
                                     "--file /config/cloud/aws/rm-password.sh",
                                     "-o /var/log/cloud/aws/rm-password.log",
                                     "--log-level debug",
@@ -1942,7 +1953,7 @@ def main():
                                         ]
                 cluster_command +=   [
                                         "nohup /config/waitThenRun.sh",
-                                        "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
+                                        "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/cluster.js",
                                         "--wait-for CUSTOM_CONFIG_DONE",
                                         "--signal CLUSTER_DONE",
                                         "-o /var/log/cloud/aws/cluster.log",
@@ -1977,7 +1988,7 @@ def main():
                 cluster_command +=   [
                                         "HOSTNAME=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`;",
                                         "nohup /config/waitThenRun.sh",
-                                        "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/cluster.js",
+                                        "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/cluster.js",
                                         "--wait-for CUSTOM_CONFIG_DONE",
                                         "--signal CLUSTER_DONE",
                                         "-o /var/log/cloud/aws/cluster.log",
@@ -2021,9 +2032,9 @@ def main():
             if num_nics == 1:
                 network_config = [
                                     "nohup /config/waitThenRun.sh ",
-                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js ",
-                                    "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh ",
-                                    "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws ",
+                                    "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js ",
+                                    "--file /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/aws/1nicSetup.sh ",
+                                    "--cwd /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/aws ",
                                     "--log-level debug ",
                                     "-o /var/log/cloud/aws/1nicSetup.log ",
                                     "--wait-for ADMIN_CREATED ",
@@ -2033,7 +2044,7 @@ def main():
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/config/cloud/aws/getNameServer.sh mgmt`;",
                                     "nohup /config/waitThenRun.sh",
-                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+                                    "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
                                     "--port 8443",
                                     "--ssl-port ", Ref(managementGuiPort),
                                     "--wait-for NETWORK_CONFIG_DONE",
@@ -2044,7 +2055,7 @@ def main():
                 #     ]
                 #     bigiq_config = [
                 #                     "nohup /config/waitThenRun.sh ",
-                #                     "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js ",
+                #                     "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js ",
                 #                     "--file /config/bigiqConfig.sh ",
                 #                     "--cwd /config/ ",
                 #                     "--log-level debug ",
@@ -2062,7 +2073,7 @@ def main():
                 onboard_BIG_IP += [
                                     "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
                                     "nohup /config/waitThenRun.sh",
-                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/onboard.js",
+                                    "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
                                     "--wait-for NETWORK_CONFIG_DONE",
                                   ]
             onboard_BIG_IP += [
@@ -2172,7 +2183,7 @@ def main():
                         ]
                 network_config += [
                                     "nohup /config/waitThenRun.sh ",
-                                    "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/network.js ",
+                                    "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/network.js ",
                                     "--host localhost ",
                                     "--user admin ",
                                     "--password-url file:///config/cloud/aws/.adminPassword ",
@@ -2356,10 +2367,11 @@ def main():
 
             custom_sh += [
                                 "\"tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\"\n",
+                                "\"tmsh load sys application template /config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl\"\n",
                                 "\"tmsh save /sys config\")\n",
                                 "for CMD in \"${tmsh[@]}\"\n",
                                 "do\n",
-                                "  \"/config/cloud/aws/node_modules/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
+                                "  \"/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/waitForMcp.sh\"\n",
                                 "    if $CMD;then\n",
                                 "        echo \"command $CMD successfully executed.\"\n",
                                 "    else\n",
@@ -2437,7 +2449,7 @@ def main():
             #           "",
             #           [
             #            "nohup /config/waitThenRun.sh ",
-            #            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js ",
+            #            "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js ",
             #            "--file /config/bigiqConfig.sh ",
             #            "--cwd /config/ ",
             #            "--log-level debug ",
@@ -2455,9 +2467,9 @@ def main():
             #           "",
             #           [
             #            "nohup /config/waitThenRun.sh ",
-            #            "f5-rest-node /config/cloud/aws/node_modules/f5-cloud-libs/scripts/runScript.js ",
-            #            "--file /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws/1nicSetup.sh ",
-            #            "--cwd /config/cloud/aws/node_modules/f5-cloud-libs/scripts/aws ",
+            #            "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js ",
+            #            "--file /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/aws/1nicSetup.sh ",
+            #            "--cwd /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/aws ",
             #            "--log-level debug ",
             #            "-o /var/log/rerun1nicSetup.log ",
             #            "--wait-for ONBOARD_DONE ",
@@ -2533,6 +2545,12 @@ def main():
                                     #     owner='root',
                                     #     group='root'
                                     # ),
+                                    '/config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl': InitFile(
+                                        source=cloud_logger_url,
+                                        mode='000755',
+                                        owner='root',
+                                        group='root'
+                                    ),
                                     '/config/cloud/aws/f5.service_discovery.tmpl': InitFile(
                                         source=discovery_url,
                                         mode='000755',
@@ -2600,7 +2618,7 @@ def main():
                         Owner=Ref(owner),
                         Costcenter=Ref(costcenter),
                     ),
-                    ImageId=FindInMap('BigipRegionMap', Ref('AWS::Region'), imageidref),
+                    ImageId=FindInMap(BigipRegionMapDesc, Ref('AWS::Region'), imageidref),
                     BlockDeviceMappings=[
                         ec2.BlockDeviceMapping(
                             DeviceName="/dev/xvda",
@@ -2633,7 +2651,7 @@ def main():
                         Owner=Ref(owner),
                         Costcenter=Ref(costcenter),
                     ),
-                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), imageidref),
+                    ImageId=FindInMap(BigipRegionMapDesc, Ref("AWS::Region"), imageidref),
                     BlockDeviceMappings=[
                         ec2.BlockDeviceMapping(
                             DeviceName="/dev/xvda",
@@ -2665,7 +2683,7 @@ def main():
                         Owner=Ref(owner),
                         Costcenter=Ref(costcenter),
                     ),
-                    ImageId=FindInMap("BigipRegionMap", Ref("AWS::Region"), imageidref),
+                    ImageId=FindInMap(BigipRegionMapDesc, Ref("AWS::Region"), imageidref),
                     BlockDeviceMappings=[
                         ec2.BlockDeviceMapping(
                             DeviceName="/dev/xvda",

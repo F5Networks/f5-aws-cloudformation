@@ -2460,6 +2460,9 @@ def getSelfIPFromVLAN(interfaceVLAN) :
             selfIP = ''
             foundVLAN = False
         elif len(tokens) == 2 and tokens[0] == 'address' :
+            if ":" in tokens[1] :
+                logLTM.log(logging.DEBUG, "Skipping IPv6 Self IP: " + tokens[1])
+                continue
             selfIP = tokens[1]
             if foundVLAN :
                 break

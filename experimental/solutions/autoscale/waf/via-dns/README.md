@@ -90,6 +90,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | SSH Key Name | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | AWS Instance Size | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
 | Maximum Throughput | throughput | Yes | The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
+| Custom Image Id | customImageId | No | This parameter allows you to deploy using a custom BIG-IP image if necessary. If applicable, type the AMI Id in this field. **Note**: Unless specifically required, leave the default of **OPTIONAL**. |
 | BIG-IP Admin User for clustering | adminUsername | Yes | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
 | Management Port | managementGuiPort | Yes | Port of BIG-IP management Configuration utility (the default is 8443) |
 | Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |

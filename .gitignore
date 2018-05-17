@@ -68,3 +68,7 @@ target/
 build/sbuild.sh
 checksum.sh
 build/verifyHash
+subset_build.sh
+
+# ignore ignore files
+.gitignore

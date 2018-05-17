@@ -1,4 +1,4 @@
-# Deploying the BIG-IP VE in AWS - N NIC (variable number of additional NICs)
+  # Deploying the BIG-IP VE in AWS - N NIC (variable number of additional NICs)
 
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 [![Releases](https://img.shields.io/github/release/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/releases)
@@ -46,12 +46,12 @@ The following are prerequisites for this CFT:
   - F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughput levels available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md.
   - These CloudFormation templates incorporate an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the *learning-stacks* folder in the **experimental** directory.
   -	If you are using the *Licensing using BIG-IQ* template only:
-    - This solution only supports BIG-IQ versions 5.0 - 5.3.
-      -	For 5.0 and 5.1, only Purchased Pool license pools are supported.  
-      - For 5.2. and 5.3, only Registration Key Pools are supported.  See the [BIG-IQ documentation](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/bigiq-central-mgmt-device-5-3-0/3.html) for more detailed information on License pool types.
-      
+    - This solution supports the two most recent versions of BIG-IQ (see the [Version Matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md) for specific versions).
+    -	Only Registration Key Pools are supported.  See the [BIG-IQ documentation](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/bigiq-central-mgmt-device-5-3-0/3.html) for more detailed information on License pool types.
+    -	Your BIG-IQ system must have at least [2 NICs](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/big-iq-central-mgmt-amazon-web-services-setup-5-2-0/1.html#guid-bd42a26b-9fa6-4127-88ab-fe5ab06bd3c2).
     - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
     - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only.  Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
+    - The templates now support BIG-IQ licensing using an [ELA](https://www.f5.com/pdf/licensing/big-ip-virtual-edition-enterprise-licensing-agreement-overview.pdf)/[CLPv2]( https://f5.com/partners/cloud-provider) pool, which enables self-licensing of BIG-IP virtual editions (VEs).
 
 
 ## Security
@@ -112,6 +112,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Number of Additional NICs | numberOfAdditionalNics| Yes | By default this solution deploys the BIG-IP in a 3 NIC configuration, however it will also add a 1-5 additional NICs to the BIG-IP using this parameter. |
 | Additional NIC Location | additionalNicLocation | Yes | This parameter specifies where the additional NICs should go.  This value must be a comma delimited string of subnets, equal to the number of additional NICs being deployed.  For example (for 2 additional NICs): **subnet01,subnet02**. NOTE: Ensure that there are no spaces and that the correct number of subnets are provided based on the value you chose in **Number of Additional NICs**. IMPORTANT: The subnet you provide for each additional NIC MUST be unique.
 | BIG-IP Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
+| Custom Image Id | customImageId | No | This parameter allows you to deploy using a custom BIG-IP image if necessary. If applicable, type the AMI Id in this field. **Note**: Unless specifically required, leave the default of **OPTIONAL**. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | License Key1 | licenseKey1 | Yes (BYOL) | BYOL only: Type or paste your F5 BYOL regkey. |
 | SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
@@ -125,6 +126,8 @@ After clicking the Launch button, you must specify the following parameters.
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
 | BIG-IQ Address | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ licensing only: IP address or DNS hostname of the BIG-IQ device that contains the pool of licenses |
 | BIG-IQ user with Licensing Privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IP. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
+| BIG-IQ Unit of Measure | bigIqLicenseUnitOfMeasure | No | BIG-IQ licensing only: The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example **yearly**, **monthly**, **daily** or **hourly**. Note: This is only required when licensing with an ELA/CLPv2 (utility) pool on the BIG-IQ, if not using this pool type leave the default of **OPTIONAL**. |
+| BIG-IQ SKU Keyword 1 | bigIqLicenseSkuKeyword1 | No | BIG-IQ licensing only: The BIG-IQ license filter (based on SKU keyword) you want to use for licensing the BIG-IPs from the BIG-IQ. For example **F5-BIG-MSP-LTM-25M**, **F5-BIG-MSP-BR-200M**, **F5-BIG-MSP-BT-1G** or **F5-BIG-MSP-ASM-1G** |
 | S3 ARN of the BIG-IQ Password File | bigiqPasswordS3ARN | Yes <br>(BIG-IQ) | BIG-IQ licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE |
 | BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses. |
 | Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |

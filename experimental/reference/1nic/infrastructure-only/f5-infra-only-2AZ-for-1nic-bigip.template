@@ -1,6 +1,14 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
  "Conditions": {
+  "noCustomImageId": {
+   "Fn::Equals": [
+    "OPTIONAL",
+    {
+     "Ref": "customImageId"
+    }
+   ]
+  },
   "optin": {
    "Fn::Equals": [
     "Yes",
@@ -10,7 +18,7 @@
    ]
   }
  },
- "Description": "Template Version 3.0.0: AWS CloudFormation Template for creating a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template Version 3.1.0: AWS CloudFormation Template for creating a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "WebserverRegionMap": {
    "ap-northeast-1": {
@@ -83,6 +91,7 @@
      },
      "Parameters": [
       "imageName",
+      "customImageId",
       "instanceType",
       "applicationInstanceType",
       "licenseKey1",
@@ -140,6 +149,9 @@
     },
     "costcenter": {
      "default": "Cost Center"
+    },
+    "customImageId": {
+     "default": "Custom Image Id"
     },
     "environment": {
      "default": "Environment"
@@ -200,7 +212,7 @@
     }
    }
   },
-  "Version": "3.0.0"
+  "Version": "3.1.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -320,6 +332,14 @@
   "costcenter": {
    "Default": "f5costcenter",
    "Description": "Name of the Cost Center Tag",
+   "Type": "String"
+  },
+  "customImageId": {
+   "ConstraintDescription": "Must be a valid AMI Id",
+   "Default": "OPTIONAL",
+   "Description": "If you would like to deploy using a custom BIG-IP image, provide the AMI Id.  **Note**: Unless specifically required, leave the default of **OPTIONAL**",
+   "MaxLength": 255,
+   "MinLength": 1,
    "Type": "String"
   },
   "environment": {

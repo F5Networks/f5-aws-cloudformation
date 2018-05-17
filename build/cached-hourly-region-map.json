@@ -180,7 +180,7 @@
     "Good200Mbps": "ami-5a18903b", 
     "Good25Mbps": "ami-ca068eab", 
     "Good5000Mbps": "ami-9f068efe"
-  }, 
+  },
   "us-west-1": {
     "Best1000Mbps": "ami-6a747d0a", 
     "Best200Mbps": "ami-24777e44", 

@@ -34,9 +34,8 @@ The following are prerequisites for this solution:
  - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image.
  - Key pair for SSH access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
  - You must have an existing BIG-IQ device with a pool of BIG-IP licenses.  Additionally, for BIG-IQ:
-    - This solution only supports BIG-IQ versions 5.0 - 5.3.
-      -	For 5.0 and 5.1, only Purchased Pool license pools are supported.  
-      - For 5.2. and 5.3, only Registration Key Pools are supported.  See the [BIG-IQ documentation](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/bigiq-central-mgmt-device-5-3-0/3.html) for more detailed information on License pool types.
+    - This solution supports the two most recent versions of BIG-IQ (see the [Version Matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md) for specific versions).
+    -	Only Registration Key Pools are supported.  See the [BIG-IQ documentation](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/bigiq-central-mgmt-device-5-3-0/3.html) for more detailed information on License pool types.
     -	Your BIG-IQ system must have at least [2 NICs](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/big-iq-central-mgmt-amazon-web-services-setup-5-2-0/1.html#guid-bd42a26b-9fa6-4127-88ab-fe5ab06bd3c2).
     - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
     - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only.  Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
@@ -107,7 +106,9 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Owner | owner | No | Owner Tag (the default is f5owner) |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter) |
 | IP address of BIG-IQ | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: Private IP address of the BIG-IQ device that contains the pool of BIG-IP licenses |
-| BIG-IQ user with licensing privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: BIG-IQ user with privileges to license BIG-IQ. Must be 'Admin', 'Device Manager', or 'Licensing Manager' |
+| BIG-IQ user with Licensing Privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IP. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
+| BIG-IQ Unit of Measure | bigIqLicenseUnitOfMeasure | No | BIG-IQ licensing only: The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example **yearly**, **monthly**, **daily** or **hourly**. Note: This is only required when licensing with an ELA/CLPv2 (utility) pool on the BIG-IQ, if not using this pool type leave the default of **OPTIONAL**. |
+| BIG-IQ SKU Keyword 1 | bigIqLicenseSkuKeyword1 | No | BIG-IQ licensing only: The BIG-IQ license filter (based on SKU keyword) you want to use for licensing the BIG-IPs from the BIG-IQ. For example **F5-BIG-MSP-LTM-25M**, **F5-BIG-MSP-BR-200M**, **F5-BIG-MSP-BT-1G** or **F5-BIG-MSP-ASM-1G** |
 | S3 ARN of the BIG-IQ Password File | bigiqPasswordS3Arn | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file |
 | BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses |
 | Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |

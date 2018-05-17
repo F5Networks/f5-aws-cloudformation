@@ -1,6 +1,14 @@
 {
  "AWSTemplateFormatVersion": "2010-09-09",
  "Conditions": {
+  "noCustomImageId": {
+   "Fn::Equals": [
+    "OPTIONAL",
+    {
+     "Ref": "customImageId"
+    }
+   ]
+  },
   "optin": {
    "Fn::Equals": [
     "Yes",
@@ -10,7 +18,7 @@
    ]
   }
  },
- "Description": "Template Version 3.0.0: AWS CloudFormation Template for creating network components for a 1 Availability Zone VPC",
+ "Description": "Template Version 3.1.0: AWS CloudFormation Template for creating network components for a 1 Availability Zone VPC",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -37,6 +45,7 @@
      },
      "Parameters": [
       "imageName",
+      "customImageId",
       "instanceType",
       "applicationInstanceType",
       "licenseKey1",
@@ -94,6 +103,9 @@
     },
     "costcenter": {
      "default": "Cost Center"
+    },
+    "customImageId": {
+     "default": "Custom Image Id"
     },
     "environment": {
      "default": "Environment"
@@ -154,7 +166,7 @@
     }
    }
   },
-  "Version": "3.0.0"
+  "Version": "3.1.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -202,6 +214,14 @@
   "costcenter": {
    "Default": "f5costcenter",
    "Description": "Name of the Cost Center Tag",
+   "Type": "String"
+  },
+  "customImageId": {
+   "ConstraintDescription": "Must be a valid AMI Id",
+   "Default": "OPTIONAL",
+   "Description": "If you would like to deploy using a custom BIG-IP image, provide the AMI Id.  **Note**: Unless specifically required, leave the default of **OPTIONAL**",
+   "MaxLength": 255,
+   "MinLength": 1,
    "Type": "String"
   },
   "environment": {

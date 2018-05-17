@@ -129,6 +129,25 @@ The following is a list of the current *supported* F5 CloudFormation templates. 
     - Using BIG-IQ for Licensing<br><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=AcrossAZClusterBigIp-2nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-across-az-cluster-bigiq-2nic-bigip.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
+**Clustered BIG-IP VE - 3 NICs**
+  - <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/cluster/3nic/same-az-ha">Same Availability Zone</a>
+    - **Hourly**, which uses pay-as-you-go hourly billing  
+      - Launch the *existing stack* template which includes an external IP address (typical):  <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Same-Az-Cluster-3nic-Hourly&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-hourly-3nic-bigip.template">  
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+      - Launch the *production stack* template, which does not include a public IP address (as described in the [README](https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/cluster/3nic/same-az-ha#introduction)):  <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Same-Az-Cluster-3nic-Hourly-Prod&templateURL=https://s3.amazonaws.com/f5-cft/f5-prod-stack-same-az-cluster-hourly-3nic-bigip.template">  
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>  
+    - **BYOL** (bring your own license), which allows you to use an existing BIG-IP license.   
+      - Launch the *existing stack* template which includes an external IP address (typical):  
+         <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Same-Az-Cluster-3nic-byol&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-byol-3nic-bigip.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+      - Launch the *production stack* template, which does not include a public IP address (as described in the [README](https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/cluster/3nic/same-az-ha#introduction)):  <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BIGIP-Same-Az-Cluster-3nic-byol-Prod&templateURL=https://s3.amazonaws.com/f5-cft/f5-prod-stack-same-az-cluster-byol-3nic-bigip.template">    
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>  
+    - **BIG-IQ for licensing**, which allows you to launch the template using an existing BIG-IQ device with a pool of licenses to license the BIG-IP VE(s).  
+      - Launch the *existing stack* template which includes an external IP address (typical):  <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=SameAZClusterBigIp-3nic-BIGIQ&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template">  
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+      - Launch the *production stack* template, which does not include a public IP address (as described in the [README](https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/cluster/3nic/same-az-ha#introduction)):  <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=SameAZClusterBigIp-3nic-BIGIQ-Prod&templateURL=https://s3.amazonaws.com/f5-cft/f5-prod-stack-same-az-cluster-bigiq-3nic-bigip.template">  
+   <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+
 <a href="https://github.com/F5Networks/f5-aws-cloudformation/tree/master/supported/solutions/autoscale/waf/">**Auto Scaling the BIG-IP Web Application Firewall in AWS**</a>
 
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-BIGIP-WAF-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-autoscale-bigip.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>

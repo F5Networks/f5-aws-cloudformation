@@ -47,13 +47,13 @@ python master_template.py -s prod -n 1 -l bigiq -T f5-prod-stack-bigiq-1nic-bigi
 python master_template.py -s prod -n 2 -l bigiq -T f5-prod-stack-bigiq-2nic-bigip.template > ../supported/standalone/2nic/f5-prod-stack-bigiq-2nic-bigip.template
 python master_template.py -s prod -n 3 -l bigiq -T f5-prod-stack-bigiq-3nic-bigip.template > ../supported/standalone/3nic/f5-prod-stack-bigiq-3nic-bigip.template
 
-## Experimental n-nic
-python master_template.py -s existing -n 8 -l hourly -T f5-existing-stack-hourly-n-nic-bigip.template > ../experimental/standalone/n-nic/f5-existing-stack-hourly-n-nic-bigip.template
-python master_template.py -s existing -n 8 -l byol -T f5-existing-stack-byol-n-nic-bigip.template > ../experimental/standalone/n-nic/f5-existing-stack-byol-n-nic-bigip.template
-python master_template.py -s existing -n 8 -l bigiq -T f5-existing-stack-bigiq-n-nic-bigip.template > ../experimental/standalone/n-nic/f5-existing-stack-bigiq-n-nic-bigip.template
-python master_template.py -s prod -n 8 -l hourly -T f5-prod-stack-hourly-n-nic-bigip.template > ../experimental/standalone/n-nic/f5-prod-stack-hourly-n-nic-bigip.template
-python master_template.py -s prod -n 8 -l byol -T f5-prod-stack-byol-n-nic-bigip.template > ../experimental/standalone/n-nic/f5-prod-stack-byol-n-nic-bigip.template
-python master_template.py -s prod -n 8 -l bigiq -T f5-prod-stack-bigiq-n-nic-bigip.template > ../experimental/standalone/n-nic/f5-prod-stack-bigiq-n-nic-bigip.template
+## Supported n-nic
+python master_template.py -s existing -n 8 -l hourly -T f5-existing-stack-hourly-n-nic-bigip.template > ../supported/standalone/n-nic/f5-existing-stack-hourly-n-nic-bigip.template
+python master_template.py -s existing -n 8 -l byol -T f5-existing-stack-byol-n-nic-bigip.template > ../supported/standalone/n-nic/f5-existing-stack-byol-n-nic-bigip.template
+python master_template.py -s existing -n 8 -l bigiq -T f5-existing-stack-bigiq-n-nic-bigip.template > ../supported/standalone/n-nic/f5-existing-stack-bigiq-n-nic-bigip.template
+python master_template.py -s prod -n 8 -l hourly -T f5-prod-stack-hourly-n-nic-bigip.template > ../supported/standalone/n-nic/f5-prod-stack-hourly-n-nic-bigip.template
+python master_template.py -s prod -n 8 -l byol -T f5-prod-stack-byol-n-nic-bigip.template > ../supported/standalone/n-nic/f5-prod-stack-byol-n-nic-bigip.template
+python master_template.py -s prod -n 8 -l bigiq -T f5-prod-stack-bigiq-n-nic-bigip.template > ../supported/standalone/n-nic/f5-prod-stack-bigiq-n-nic-bigip.template
 
 ## Experimental
 python master_template.py -s existing -n 1 -l hourly -c waf -T f5-existing-stack-hourly-1nic-bigip-w-waf.template > ../experimental/reference/1nic/waf/f5-existing-stack-hourly-1nic-bigip-w-waf.template
@@ -76,17 +76,26 @@ python master_template.py -s full -n 1 -l bigiq -c waf -T f5-full-stack-bigiq-1n
 
 # Clusters
 ## Supported -existing stacks
+### 2nic
 python master_template.py -s existing -n 2 -l hourly -H same-az -T f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template > ../supported/cluster/2nic/same-az-ha/f5-existing-stack-same-az-cluster-hourly-2nic-bigip.template
 python master_template.py -s existing -n 2 -l byol -H same-az -T f5-existing-stack-same-az-cluster-byol-2nic-bigip.template > ../supported/cluster/2nic/same-az-ha/f5-existing-stack-same-az-cluster-byol-2nic-bigip.template
 python master_template.py -s existing -n 2 -l bigiq -H same-az -T f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template > ../supported/cluster/2nic/same-az-ha/f5-existing-stack-same-az-cluster-bigiq-2nic-bigip.template
 python master_template.py -s existing -n 2 -l hourly -H across-az -T f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template > ../supported/cluster/2nic/across-az-ha/f5-existing-stack-across-az-cluster-hourly-2nic-bigip.template
 python master_template.py -s existing -n 2 -l byol -H across-az -T f5-existing-stack-across-az-cluster-byol-2nic-bigip.template > ../supported/cluster/2nic/across-az-ha/f5-existing-stack-across-az-cluster-byol-2nic-bigip.template
 python master_template.py -s existing -n 2 -l bigiq -H across-az -T f5-existing-stack-across-az-cluster-bigiq-2nic-bigip.template > ../supported/cluster/2nic/across-az-ha/f5-existing-stack-across-az-cluster-bigiq-2nic-bigip.template
+### 3nic
+python master_template.py -s existing -n 3 -l hourly -H same-az -T f5-existing-stack-same-az-cluster-hourly-3nic-bigip.template > ../supported/cluster/3nic/same-az-ha/f5-existing-stack-same-az-cluster-hourly-3nic-bigip.template
+python master_template.py -s existing -n 3 -l byol -H same-az -T f5-existing-stack-same-az-cluster-byol-3nic-bigip.template > ../supported/cluster/3nic/same-az-ha/f5-existing-stack-same-az-cluster-byol-3nic-bigip.template
+python master_template.py -s existing -n 3 -l bigiq -H same-az -T f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template > ../supported/cluster/3nic/same-az-ha/f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template
 ## Supported - prod stacks
+### 2nic
 python master_template.py -s prod -n 2 -l hourly -H same-az -T f5-prod-stack-same-az-cluster-hourly-2nic-bigip.template > ../supported/cluster/2nic/same-az-ha/f5-prod-stack-same-az-cluster-hourly-2nic-bigip.template
 python master_template.py -s prod -n 2 -l byol -H same-az -T f5-prod-stack-same-az-cluster-byol-2nic-bigip.template > ../supported/cluster/2nic/same-az-ha/f5-prod-stack-same-az-cluster-byol-2nic-bigip.template
 python master_template.py -s prod -n 2 -l bigiq -H same-az -T f5-prod-stack-same-az-cluster-bigiq-2nic-bigip.template > ../supported/cluster/2nic/same-az-ha/f5-prod-stack-same-az-cluster-bigiq-2nic-bigip.template
-
+### 3nic
+python master_template.py -s prod -n 3 -l hourly -H same-az -T f5-prod-stack-same-az-cluster-hourly-3nic-bigip.template > ../supported/cluster/3nic/same-az-ha/f5-prod-stack-same-az-cluster-hourly-3nic-bigip.template
+python master_template.py -s prod -n 3 -l byol -H same-az -T f5-prod-stack-same-az-cluster-byol-3nic-bigip.template > ../supported/cluster/3nic/same-az-ha/f5-prod-stack-same-az-cluster-byol-3nic-bigip.template
+python master_template.py -s prod -n 3 -l bigiq -H same-az -T f5-prod-stack-same-az-cluster-bigiq-3nic-bigip.template > ../supported/cluster/3nic/same-az-ha/f5-prod-stack-same-az-cluster-bigiq-3nic-bigip.template
 ## Marketplace
 python master_template.py -s existing -n 2 -l hourly -H across-az -M Good25Mbps -T f5-existing-stack-across-az-cluster-Good25Mbps-2nic-bigip.template > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Good25Mbps-2nic-bigip.template
 python master_template.py -s existing -n 2 -l hourly -H across-az -M Good200Mbps -T f5-existing-stack-across-az-cluster-Good200Mbps-2nic-bigip.template > ../supported/cluster/2nic/across-az-ha/marketplace/f5-existing-stack-across-az-cluster-Good200Mbps-2nic-bigip.template

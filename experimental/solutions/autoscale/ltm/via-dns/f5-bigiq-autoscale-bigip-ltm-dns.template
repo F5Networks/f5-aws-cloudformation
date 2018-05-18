@@ -625,7 +625,7 @@
     "bigIqLicenseSkuKeyword1": {
      "ConstraintDescription": "Verify the BIG-IQ license filter to use for sku keyword 1",
      "Default": "OPTIONAL",
-     "Description": "The BIG-IQ license filter to use for sku keyword 1 during BIG-IP licensing via BIG-IQ, for example LTM, BR, BT, ASM or LTMASM. Note: This is only required when licensing with an ELA/CLPv2 (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
+     "Description": "The BIG-IQ license filter to use for sku keyword 1 during BIG-IP licensing via BIG-IQ, for example LTM, BR, BT, ASM or LTMASM. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
      "MaxLength": "255",
      "MinLength": "1",
      "Type": "String"
@@ -633,7 +633,7 @@
     "bigIqLicenseUnitOfMeasure": {
      "ConstraintDescription": "Verify the BIG-IQ License Unit Of Measure",
      "Default": "OPTIONAL",
-     "Description": "The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example yearly, monthly, daily or hourly. Note: This is only required when licensing with an ELA/CLPv2 (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
+     "Description": "The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example yearly, monthly, daily or hourly. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
      "MaxLength": "255",
      "MinLength": "1",
      "Type": "String"

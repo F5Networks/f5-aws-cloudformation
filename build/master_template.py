@@ -856,7 +856,7 @@ def main():
                 MinLength="1",
                 ConstraintDescription="Verify the BIG-IQ License Unit Of Measure",
                 Type="String",
-                Description="The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example yearly, monthly, daily or hourly. Note: This is only required when licensing with an ELA/CLPv2 (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
+                Description="The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example yearly, monthly, daily or hourly. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
                 MaxLength="255",
             ))
             bigIqLicenseSkuKeyword1 = t.add_parameter(Parameter(
@@ -865,7 +865,7 @@ def main():
                 MinLength="1",
                 ConstraintDescription="Verify the BIG-IQ license filter to use for sku keyword 1",
                 Type="String",
-                Description="The BIG-IQ license filter (based on SKU keyword) you want to use for licensing the BIG-IPs from the BIG-IQ, for example LTM, BR, BT, ASM or LTMASM. Note: This is only required when licensing with an ELA/CLPv2 (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
+                Description="The BIG-IQ license filter (based on SKU keyword) you want to use for licensing the BIG-IPs from the BIG-IQ, for example LTM, BR, BT, ASM or LTMASM. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
                 MaxLength="255",
             ))
     if stack in not_full_stacks or stack == "security_groups":

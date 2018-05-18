@@ -51,7 +51,7 @@ The following are prerequisites for this solution:
     -	Your BIG-IQ system must have at least [2 NICs](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/big-iq-central-mgmt-amazon-web-services-setup-5-2-0/1.html#guid-bd42a26b-9fa6-4127-88ab-fe5ab06bd3c2).
     - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
     - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only.  Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
-    - The templates now support BIG-IQ licensing using an [ELA](https://www.f5.com/pdf/licensing/big-ip-virtual-edition-enterprise-licensing-agreement-overview.pdf)/[CLPv2]( https://f5.com/partners/cloud-provider) pool, which enables self-licensing of BIG-IP virtual editions (VEs).
+    - The templates now support BIG-IQ licensing using an [ELA](https://www.f5.com/pdf/licensing/big-ip-virtual-edition-enterprise-licensing-agreement-overview.pdf)/[subscription]( https://f5.com/partners/cloud-provider) pool, which enables self-licensing of BIG-IP virtual editions (VEs).
 
 ## Launching the template using the AWS Launch Stack buttons
 The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch Stack button.<br>
@@ -116,7 +116,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter) |
 | IP address of BIG-IQ | bigiqAddress | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: Private IP address of the BIG-IQ device that contains the pool of BIG-IP licenses |
 | BIG-IQ user with Licensing Privileges | bigiqUsername | Yes <br>(BIG-IQ) | BIG-IQ licensing only: BIG-IQ user with privileges to license BIG-IP. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
-| BIG-IQ Unit of Measure | bigIqLicenseUnitOfMeasure | No | BIG-IQ licensing only: The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example **yearly**, **monthly**, **daily** or **hourly**. Note: This is only required when licensing with an ELA/CLPv2 (utility) pool on the BIG-IQ, if not using this pool type leave the default of **OPTIONAL**. |
+| BIG-IQ Unit of Measure | bigIqLicenseUnitOfMeasure | No | BIG-IQ licensing only: The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example **yearly**, **monthly**, **daily** or **hourly**. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of **OPTIONAL**. |
 | BIG-IQ SKU Keyword 1 | bigIqLicenseSkuKeyword1 | No | BIG-IQ licensing only: The BIG-IQ license filter (based on SKU keyword) you want to use for licensing the BIG-IPs from the BIG-IQ. For example **F5-BIG-MSP-LTM-25M**, **F5-BIG-MSP-BR-200M**, **F5-BIG-MSP-BT-1G** or **F5-BIG-MSP-ASM-1G** |
 | S3 ARN of the BIG-IQ Password File | bigiqPasswordS3Arn | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file |
 | BIG-IQ License Pool Name | bigiqLicensePoolName | Yes <br>(BIG-IQ) | BIG-IQ Licensing only: Name of the pool on BIG-IQ that contains the BIG-IP licenses |

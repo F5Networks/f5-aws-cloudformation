@@ -1,0 +1,16 @@
+{
+  "us-gov-west-1": {
+    "Best1000Mbps": "ami-922fbaf3", 
+    "Best200Mbps": "ami-e02cb981", 
+    "Best25Mbps": "ami-1e29bc7f", 
+    "Best5000Mbps": "ami-8a2ebbeb", 
+    "Better1000Mbps": "ami-2e2ebb4f", 
+    "Better200Mbps": "ami-8e2cb9ef", 
+    "Better25Mbps": "ami-942fbaf5", 
+    "Better5000Mbps": "ami-1d2fba7c", 
+    "Good1000Mbps": "ami-c923b6a8", 
+    "Good200Mbps": "ami-062fba67", 
+    "Good25Mbps": "ami-fa22b79b", 
+    "Good5000Mbps": "ami-3f2db85e"
+  }
+}

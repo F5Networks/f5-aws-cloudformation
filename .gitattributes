@@ -1,0 +1,17 @@
+# Autodetect text files
+* text=auto
+
+# ...Unless the name matches the following
+# overriding patterns
+
+# Definitively text files 
+*.txt text
+*.c text
+*.h text
+*.sh text eol=lf
+*.template eol=lf
+# Ensure those won't be messed up with
+*.jpg binary
+*.data binary
+*   -crlf
+* -lf

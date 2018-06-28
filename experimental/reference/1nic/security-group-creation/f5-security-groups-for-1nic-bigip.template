@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template Version 3.1.0: AWS CloudFormation Template for creating security groups for a 1NIC BIG-IP",
+ "Description": "Template Version 3.2.0: AWS CloudFormation Template for creating security groups for a 1NIC BIG-IP",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -33,6 +33,7 @@
       "subnet1Az1",
       "subnet1Az2",
       "subnet2Az1",
+      "subnet2Az2",
       "availabilityZone1",
       "availabilityZone2",
       "numberOfAdditionalNics",
@@ -161,12 +162,15 @@
     "subnet2Az1": {
      "default": "Subnet2 in AZ1"
     },
+    "subnet2Az2": {
+     "default": "Subnet2 in AZ2"
+    },
     "timezone": {
      "default": "Timezone (Olson)"
     }
    }
   },
-  "Version": "3.1.0"
+  "Version": "3.2.0"
  },
  "Outputs": {
   "bigipExternalSecurityGroup": {

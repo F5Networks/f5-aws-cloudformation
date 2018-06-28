@@ -3,6 +3,10 @@ The following table contains all of the tagged releases of the F5 Cloud Formatio
 
 | Release Tag | Template Family | BIG-IP Versions | BIG-IQ version | License Bundles and Throughput Rates |
 | --- | --- | --- | --- | --- |
+| [v3.2.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v3.2.0) | Standalone | BIG-IP v13.1.0.2 | BIG-IQ v5.3, 5.4 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
+|  | Cluster | BIG-IP v13.1.0.2 |  BIG-IQ v5.3, 5.4 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
+|  | Auto Scale WAF | BIG-IP v13.1.0.2 |  BIG-IQ v5.3, 5.4 | Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
+|  | Auto Scale LTM | BIG-IP v13.1.0.2 |  BIG-IQ v5.3, 5.4 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 | [v3.1.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v3.1.0) | Standalone | BIG-IP v13.1.0.2 | BIG-IQ v5.3, 5.4 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 |  | Cluster | BIG-IP v13.1.0.2 |  BIG-IQ v5.3, 5.4 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |
 |  | Auto Scale WAF | BIG-IP v13.1.0.2 |  BIG-IQ v5.3, 5.4 | Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps |

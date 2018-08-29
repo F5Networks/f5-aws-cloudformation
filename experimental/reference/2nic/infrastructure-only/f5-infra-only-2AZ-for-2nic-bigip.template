@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template Version 3.2.0: AWS CloudFormation Template for creating a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v3.3.0: AWS CloudFormation Template for creating a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "WebserverRegionMap": {
    "ap-northeast-1": {
@@ -117,6 +117,7 @@
       "costcenter"
      ]
     },
+    {},
     {
      "Label": {
       "default": "TEMPLATE ANALYTICS"
@@ -216,7 +217,7 @@
     }
    }
   },
-  "Version": "3.2.0"
+  "Version": "3.3.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -396,7 +397,7 @@
    "Type": "String"
   },
   "sshKey": {
-   "Description": "Key pair for accessing the instance",
+   "Description": "EC2 KeyPair to enable SSH access to the BIG-IP instance",
    "Type": "AWS::EC2::KeyPair::KeyName"
   }
  },

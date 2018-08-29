@@ -137,7 +137,7 @@ If you want to verify the integrity of the template, from the BIG-IP VE Configur
 
 ## Creating virtual servers on the BIG-IP VE
 
-In order to pass traffic from your clients to the servers through the BIG-IP system, you must create at least two virtual servers on the BIG-IP VE using Traffic Group **None** using the following guidance. To create a BIG-IP virtual server you need to know the AWS secondary private IP addresses for each BIG-IP VE created by the template. If you need additional virtual servers for your applications/servers, you can add more secondary private IP addresses in AWS, and corresponding virtual servers on the BIG-IP system. See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html for information on multiple IP addresses.
+In order to pass traffic from your clients to the servers through the BIG-IP system, you must create virtual servers on the BIG-IP VE. To create a BIG-IP virtual server you need to know the AWS secondary private IP addresses for each BIG-IP VE created by the template. If you need additional virtual servers for your applications/servers, you can add more secondary private IP addresses in AWS, and corresponding virtual servers on the BIG-IP system. See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html for information on multiple IP addresses.
 
 **To create virtual servers on the BIG-IP system**
 
@@ -149,14 +149,7 @@ In order to pass traffic from your clients to the servers through the BIG-IP sys
 6. Configure the rest of the virtual server as appropriate.
 7. If you used the Service Discovery iApp template: <br>In the Resources section, from the **Default Pool** list, select the name of the pool created by the iApp.
 8. Click the **Finished** button.
-9. Repeat as necessary.  <br>
-When you have completed the virtual server configuration, you must modify the virtual addresses to use Traffic Group None using the following guidance.
-10. On the Main tab, click **Local Traffic > Virtual Servers**.
-11. On the Menu bar, click the **Virtual Address List** tab.
-12. Click the address of one of the virtual servers you just created.
-13. From the **Traffic Group** list, select **None**.
-14. Click **Update**.
-15. Repeat for each virtual server.
+9. Repeat as necessary.
 
 ### Logging iApp
 

@@ -25,12 +25,13 @@ For information on getting started using F5's CFT templates on GitHub, see [Amaz
  
 ## Prerequisites
 The following are prerequisites and notes for the F5 single NIC CFT:
-  - An AWS VPC with one subnet. This subnet requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library.
-  - Production stack CFTs launch without a public IP address, but the ***BIG-IP VE requires access to the Internet*** for the initial configuration to download the BIG-IP Cloud Libraries (and for some licensing options).  AWS provides [several options for connecting to an Amazon VPC](https://aws.amazon.com/premiumsupport/knowledge-center/connect-vpc/) which you can use to provide Internet access to the BIG-IP VE, such as an [AWS NAT](https://docs.aws.amazon/AmasonVPC/latest/UserGuide/vpc-nat.html) ([instance](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_NAT_Instance.html) or [gateway](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-nat-gateway.html)).  
-  - Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
-  - Because you are deploying the BYOL template, you must have a valid BIG-IP license token.
+- An AWS VPC with one subnet. This subnet requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library.
+- Production stack CFTs launch without a public IP address, but the ***BIG-IP VE requires access to the Internet*** for the initial configuration to download the BIG-IP Cloud Libraries (and for some licensing options).  AWS provides [several options for connecting to an Amazon VPC](https://aws.amazon.com/premiumsupport/knowledge-center/connect-vpc/) which you can use to provide Internet access to the BIG-IP VE, such as an [AWS NAT](https://docs.aws.amazon/AmasonVPC/latest/UserGuide/vpc-nat.html) ([instance](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_NAT_Instance.html) or [gateway](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-nat-gateway.html)).  
+- Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
+- Because you are deploying the BYOL template, you must have a valid BIG-IP license token.
   
 ## Important configuration notes
+- Beginning with release 3.3.0, the BIG-IP image names have changed (previous options were Good, Better, and Best).  Now you choose a BIG-IP VE image based on whether you need [LTM](https://www.f5.com/products/big-ip-services/local-traffic-manager) only or All modules available (including [WAF](https://www.f5.com/products/security/advanced-waf), [AFM](https://www.f5.com/products/security/advanced-firewall-manager), etc.), and if you need 1 or 2 boot locations.  Use 2 boot locations if you expect to upgrade the BIG-IP VE in the future. If you do not need room to upgrade (if you intend to create a new instance when a new version of BIG-IP VE is released), use an image with 1 boot location.  See this [Matrix](https://clouddocs.f5.com/cloud/public/v1/matrix.html#amazon-web-services) for recommended AWS instance types.
 - This template creates an AWS Security Group as a part of the deployment. This includes a port for accessing your applications on port 80/443.  If your applications need additional ports, you must add those to the external Security Group created by the template.  For instructions on adding ports, see the AWS documentation.
 - This solution uses the SSH key to enable access to the BIG-IP system. If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
 - This solution uses an AMI image with BIG-IP v13 or later.
@@ -88,7 +89,7 @@ After clicking the Launch button, you must specify the following parameters.
 | --- | --- | --- | --- |
 | VPC | Vpc | Yes | Common VPC for the deployment |
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID |
-| BIG-IP Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
+| BIG-IP Image Name | imageName | Yes | Image names starting with **All** have all BIG-IP modules available. Image names starting with **LTM** have only the LTM module available.  Use Two Boot Locations if you expect to upgrade the BIG-IP VE in the future. If you do not need room to upgrade (if you intend to create a new instance when a new version of BIG-IP VE is released), use one Boot Location. |
 | Custom Image Id | customImageId | No | This parameter allows you to deploy using a custom BIG-IP image if necessary. If applicable, type the AMI Id in this field. **Note**: Unless specifically required, leave the default of **OPTIONAL**. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | License Key1 | licenseKey1 | Yes| Type or paste your F5 BYOL regkey. |

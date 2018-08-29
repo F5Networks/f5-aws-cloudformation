@@ -18,218 +18,232 @@
    ]
   }
  },
- "Description": "Template Version 3.2.0: AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of 2NIC BIG-IPs, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v3.3.0: AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of 2NIC BIG-IPs, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
-    "Best1000Mbps": "ami-2e4d3048",
-    "Best200Mbps": "ami-05522f63",
-    "Best25Mbps": "ami-d34c31b5",
-    "Best5000Mbps": "ami-fc4f329a",
-    "Better1000Mbps": "ami-8f532ee9",
-    "Better200Mbps": "ami-11522f77",
-    "Better25Mbps": "ami-73522f15",
-    "Better5000Mbps": "ami-75532e13",
-    "Good1000Mbps": "ami-c6522fa0",
-    "Good200Mbps": "ami-ba532edc",
-    "Good25Mbps": "ami-9e522ff8",
-    "Good5000Mbps": "ami-5e4d3038"
+    "Best1000Mbps": "ami-65285588",
+    "Best200Mbps": "ami-80334e6d",
+    "Best25Mbps": "ami-7128559c",
+    "Best5000Mbps": "ami-92334e7f",
+    "Better1000Mbps": "ami-072f52ea",
+    "Better200Mbps": "ami-062f52eb",
+    "Better25Mbps": "ami-e62c510b",
+    "Better5000Mbps": "ami-8e295463",
+    "Good1000Mbps": "ami-63334e8e",
+    "Good200Mbps": "ami-062d50eb",
+    "Good25Mbps": "ami-b02f525d",
+    "Good5000Mbps": "ami-0a2d50e7"
    },
    "ap-northeast-2": {
-    "Best1000Mbps": "ami-1955f777",
-    "Best200Mbps": "ami-a654f6c8",
-    "Best25Mbps": "ami-0f57f561",
-    "Best5000Mbps": "ami-4954f627",
-    "Better1000Mbps": "ami-7554f61b",
-    "Better200Mbps": "ami-0d57f563",
-    "Better25Mbps": "ami-7e54f610",
-    "Better5000Mbps": "ami-0155f76f",
-    "Good1000Mbps": "ami-9e51f3f0",
-    "Good200Mbps": "ami-a757f5c9",
-    "Good25Mbps": "ami-a354f6cd",
-    "Good5000Mbps": "ami-9151f3ff"
+    "Best1000Mbps": "ami-0cd6298b21d16fbd6",
+    "Best200Mbps": "ami-07308157c1fe8d9b1",
+    "Best25Mbps": "ami-06a395bec87e3ba14",
+    "Best5000Mbps": "ami-00d923b96a0132617",
+    "Better1000Mbps": "ami-031a290010f3945f9",
+    "Better200Mbps": "ami-08e8dae42e82f9b8f",
+    "Better25Mbps": "ami-0a85f432114a48d9d",
+    "Better5000Mbps": "ami-0f24805e4bea33baf",
+    "Good1000Mbps": "ami-015e42a248ec0c0f9",
+    "Good200Mbps": "ami-0a8a83f7178dc0a93",
+    "Good25Mbps": "ami-00382824a02a205d3",
+    "Good5000Mbps": "ami-0448dda2f2b89f9dc"
    },
    "ap-south-1": {
-    "Best1000Mbps": "ami-871e43e8",
-    "Best200Mbps": "ami-fc194493",
-    "Best25Mbps": "ami-851944ea",
-    "Best5000Mbps": "ami-941845fb",
-    "Better1000Mbps": "ami-011f426e",
-    "Better200Mbps": "ami-961b46f9",
-    "Better25Mbps": "ami-6b1f4204",
-    "Better5000Mbps": "ami-ed1a4782",
-    "Good1000Mbps": "ami-201c414f",
-    "Good200Mbps": "ami-6419440b",
-    "Good25Mbps": "ami-6f1f4200",
-    "Good5000Mbps": "ami-a81c41c7"
+    "Best1000Mbps": "ami-096b15790facf0add",
+    "Best200Mbps": "ami-07666bfa159779467",
+    "Best25Mbps": "ami-0bac511daeb7c70fd",
+    "Best5000Mbps": "ami-085aa8769a17eae3b",
+    "Better1000Mbps": "ami-0b998cecaad826504",
+    "Better200Mbps": "ami-0f454efb34e3385db",
+    "Better25Mbps": "ami-0a035d0b15fe39dfb",
+    "Better5000Mbps": "ami-0c3a5094211ada1bb",
+    "Good1000Mbps": "ami-068e23dbce66eebe8",
+    "Good200Mbps": "ami-061b7bbf591698c50",
+    "Good25Mbps": "ami-0120dc9347de0af96",
+    "Good5000Mbps": "ami-0a939828ccd330b33"
    },
    "ap-southeast-1": {
-    "Best1000Mbps": "ami-d5bffda9",
-    "Best200Mbps": "ami-2ab8fa56",
-    "Best25Mbps": "ami-a3b9fbdf",
-    "Best5000Mbps": "ami-3bbefc47",
-    "Better1000Mbps": "ami-56bffd2a",
-    "Better200Mbps": "ami-3db9fb41",
-    "Better25Mbps": "ami-9eb9fbe2",
-    "Better5000Mbps": "ami-eeb9fb92",
-    "Good1000Mbps": "ami-45b8fa39",
-    "Good200Mbps": "ami-73bbf90f",
-    "Good25Mbps": "ami-3cbbf940",
-    "Good5000Mbps": "ami-72bbf90e"
+    "Best1000Mbps": "ami-c4e8ab2e",
+    "Best200Mbps": "ami-ddedae37",
+    "Best25Mbps": "ami-40eeadaa",
+    "Best5000Mbps": "ami-63ecaf89",
+    "Better1000Mbps": "ami-fde9aa17",
+    "Better200Mbps": "ami-3aefacd0",
+    "Better25Mbps": "ami-0beface1",
+    "Better5000Mbps": "ami-e1e8ab0b",
+    "Good1000Mbps": "ami-0aeface0",
+    "Good200Mbps": "ami-05efacef",
+    "Good25Mbps": "ami-96e9aa7c",
+    "Good5000Mbps": "ami-09eface3"
    },
    "ap-southeast-2": {
-    "Best1000Mbps": "ami-1eb2777c",
-    "Best200Mbps": "ami-dab376b8",
-    "Best25Mbps": "ami-38b3765a",
-    "Best5000Mbps": "ami-0db2776f",
-    "Better1000Mbps": "ami-07b37665",
-    "Better200Mbps": "ami-99b075fb",
-    "Better25Mbps": "ami-f2b07590",
-    "Better5000Mbps": "ami-12b37670",
-    "Good1000Mbps": "ami-e7b07585",
-    "Good200Mbps": "ami-d5b075b7",
-    "Good25Mbps": "ami-fbb07599",
-    "Good5000Mbps": "ami-cab075a8"
+    "Best1000Mbps": "ami-e95ffe8b",
+    "Best200Mbps": "ami-f357f691",
+    "Best25Mbps": "ami-f257f690",
+    "Best5000Mbps": "ami-455eff27",
+    "Better1000Mbps": "ami-e75cfd85",
+    "Better200Mbps": "ami-e15ffe83",
+    "Better25Mbps": "ami-195cfd7b",
+    "Better5000Mbps": "ami-47208125",
+    "Good1000Mbps": "ami-2c5cfd4e",
+    "Good200Mbps": "ami-0a228368",
+    "Good25Mbps": "ami-185cfd7a",
+    "Good5000Mbps": "ami-e05ffe82"
    },
    "ca-central-1": {
-    "Best1000Mbps": "ami-9278fcf6",
-    "Best200Mbps": "ami-a27efac6",
-    "Best25Mbps": "ami-62078306",
-    "Best5000Mbps": "ami-527afe36",
-    "Better1000Mbps": "ami-840480e0",
-    "Better200Mbps": "ami-b773f7d3",
-    "Better25Mbps": "ami-d37bffb7",
-    "Better5000Mbps": "ami-937cf8f7",
-    "Good1000Mbps": "ami-e277f386",
-    "Good200Mbps": "ami-c70783a3",
-    "Good25Mbps": "ami-63078307",
-    "Good5000Mbps": "ami-c40783a0"
+    "Best1000Mbps": "ami-8e50ddea",
+    "Best200Mbps": "ami-1c53de78",
+    "Best25Mbps": "ami-0353de67",
+    "Best5000Mbps": "ami-8d50dde9",
+    "Better1000Mbps": "ami-0753de63",
+    "Better200Mbps": "ami-0053de64",
+    "Better25Mbps": "ami-3c51dc58",
+    "Better5000Mbps": "ami-0253de66",
+    "Good1000Mbps": "ami-0653de62",
+    "Good200Mbps": "ami-2351dc47",
+    "Good25Mbps": "ami-0553de61",
+    "Good5000Mbps": "ami-7353de17"
    },
    "eu-central-1": {
-    "Best1000Mbps": "ami-39214056",
-    "Best200Mbps": "ami-06dcba69",
-    "Best25Mbps": "ami-a8ddbbc7",
-    "Best5000Mbps": "ami-6f214000",
-    "Better1000Mbps": "ami-0fdcba60",
-    "Better200Mbps": "ami-58dcba37",
-    "Better25Mbps": "ami-c4ddbbab",
-    "Better5000Mbps": "ami-d1ddbbbe",
-    "Good1000Mbps": "ami-7edcba11",
-    "Good200Mbps": "ami-fcddbb93",
-    "Good25Mbps": "ami-33dfb95c",
-    "Good5000Mbps": "ami-fadabc95"
+    "Best1000Mbps": "ami-7e979b95",
+    "Best200Mbps": "ami-9e9a9675",
+    "Best25Mbps": "ami-089599e3",
+    "Best5000Mbps": "ami-989a9673",
+    "Better1000Mbps": "ami-71969a9a",
+    "Better200Mbps": "ami-8e9a9665",
+    "Better25Mbps": "ami-d0979b3b",
+    "Better5000Mbps": "ami-50979bbb",
+    "Good1000Mbps": "ami-7e9a9695",
+    "Good200Mbps": "ami-d1979b3a",
+    "Good25Mbps": "ami-749a969f",
+    "Good5000Mbps": "ami-f8949813"
    },
    "eu-west-1": {
-    "Best1000Mbps": "ami-fc2f5f85",
-    "Best200Mbps": "ami-71275708",
-    "Best25Mbps": "ami-0227577b",
-    "Best5000Mbps": "ami-e711619e",
-    "Better1000Mbps": "ami-ec2b5b95",
-    "Better200Mbps": "ami-862858ff",
-    "Better25Mbps": "ami-c92757b0",
-    "Better5000Mbps": "ami-5728582e",
-    "Good1000Mbps": "ami-4526563c",
-    "Good200Mbps": "ami-4229593b",
-    "Good25Mbps": "ami-fc285885",
-    "Good5000Mbps": "ami-cc2757b5"
+    "Best1000Mbps": "ami-ce658423",
+    "Best200Mbps": "ami-2718f9ca",
+    "Best25Mbps": "ami-de17f633",
+    "Best5000Mbps": "ami-2418f9c9",
+    "Better1000Mbps": "ami-7c1ffe91",
+    "Better200Mbps": "ami-3e1effd3",
+    "Better25Mbps": "ami-396081d4",
+    "Better5000Mbps": "ami-f765841a",
+    "Good1000Mbps": "ami-236081ce",
+    "Good200Mbps": "ami-f061801d",
+    "Good25Mbps": "ami-ef608102",
+    "Good5000Mbps": "ami-4d6180a0"
    },
    "eu-west-2": {
-    "Best1000Mbps": "ami-da0ce9bd",
-    "Best200Mbps": "ami-530fea34",
-    "Best25Mbps": "ami-030fea64",
-    "Best5000Mbps": "ami-590eeb3e",
-    "Better1000Mbps": "ami-2a0ce94d",
-    "Better200Mbps": "ami-570fea30",
-    "Better25Mbps": "ami-1a0de87d",
-    "Better5000Mbps": "ami-560fea31",
-    "Good1000Mbps": "ami-390fea5e",
-    "Good200Mbps": "ami-d20ce9b5",
-    "Good25Mbps": "ami-380fea5f",
-    "Good5000Mbps": "ami-520eeb35"
+    "Best1000Mbps": "ami-cfb441a8",
+    "Best200Mbps": "ami-dfb045b8",
+    "Best25Mbps": "ami-c0b441a7",
+    "Best5000Mbps": "ami-c1b441a6",
+    "Better1000Mbps": "ami-d3b441b4",
+    "Better200Mbps": "ami-1db1447a",
+    "Better25Mbps": "ami-d2b045b5",
+    "Better5000Mbps": "ami-d0b045b7",
+    "Good1000Mbps": "ami-d4b045b3",
+    "Good200Mbps": "ami-d3b045b4",
+    "Good25Mbps": "ami-e8b4418f",
+    "Good5000Mbps": "ami-d7b441b0"
+   },
+   "eu-west-3": {
+    "Best1000Mbps": "ami-0a3aaf8e9a9fd72aa",
+    "Best200Mbps": "ami-090f472a40b6170d7",
+    "Best25Mbps": "ami-05524703a65eacf04",
+    "Best5000Mbps": "ami-04bdccb3fa209eb92",
+    "Better1000Mbps": "ami-015776a89599ac3cd",
+    "Better200Mbps": "ami-0e52644e9f343bb93",
+    "Better25Mbps": "ami-09ebfe9bc3d5eca70",
+    "Better5000Mbps": "ami-0935a64813cb872b8",
+    "Good1000Mbps": "ami-061773f051588a66a",
+    "Good200Mbps": "ami-0324e55511aac6409",
+    "Good25Mbps": "ami-07c9a31728f4e7e9f",
+    "Good5000Mbps": "ami-04bafe20c9cb68cbc"
    },
    "sa-east-1": {
-    "Best1000Mbps": "ami-a02960cc",
-    "Best200Mbps": "ami-6029600c",
-    "Best25Mbps": "ami-d62960ba",
-    "Best5000Mbps": "ami-9f2960f3",
-    "Better1000Mbps": "ami-5a165f36",
-    "Better200Mbps": "ami-25175e49",
-    "Better25Mbps": "ami-8c175ee0",
-    "Better5000Mbps": "ami-dd165fb1",
-    "Good1000Mbps": "ami-cd165fa1",
-    "Good200Mbps": "ami-e0175e8c",
-    "Good25Mbps": "ami-04175e68",
-    "Good5000Mbps": "ami-49296025"
+    "Best1000Mbps": "ami-019c02254c5f31159",
+    "Best200Mbps": "ami-035ee0ea4d9c34e63",
+    "Best25Mbps": "ami-036f313139861da5b",
+    "Best5000Mbps": "ami-029294634c208d25c",
+    "Better1000Mbps": "ami-07095455820886dd2",
+    "Better200Mbps": "ami-03d5909e6fede1ddb",
+    "Better25Mbps": "ami-09dd865de7145aea5",
+    "Better5000Mbps": "ami-03fbc8d3280ffe9dd",
+    "Good1000Mbps": "ami-09a3d15d7720849ea",
+    "Good200Mbps": "ami-0897f17364db537b4",
+    "Good25Mbps": "ami-060a44240f04f6832",
+    "Good5000Mbps": "ami-0d42e60bcfe4cc4eb"
    },
    "us-east-1": {
-    "Best1000Mbps": "ami-781e0302",
-    "Best200Mbps": "ami-0f1b0675",
-    "Best25Mbps": "ami-0e170a74",
-    "Best5000Mbps": "ami-33190449",
-    "Better1000Mbps": "ami-f31c0189",
-    "Better200Mbps": "ami-77617c0d",
-    "Better25Mbps": "ami-b31805c9",
-    "Better5000Mbps": "ami-78617c02",
-    "Good1000Mbps": "ami-dd607da7",
-    "Good200Mbps": "ami-fd1f0287",
-    "Good25Mbps": "ami-161c016c",
-    "Good5000Mbps": "ami-6c627f16"
+    "Best1000Mbps": "ami-7cf5e503",
+    "Best200Mbps": "ami-28feee57",
+    "Best25Mbps": "ami-cff9e9b0",
+    "Best5000Mbps": "ami-a9faead6",
+    "Better1000Mbps": "ami-57f7e728",
+    "Better200Mbps": "ami-d4f4e4ab",
+    "Better25Mbps": "ami-3ffaea40",
+    "Better5000Mbps": "ami-b7f8e8c8",
+    "Good1000Mbps": "ami-19f4e466",
+    "Good200Mbps": "ami-3efaea41",
+    "Good25Mbps": "ami-39faea46",
+    "Good5000Mbps": "ami-a1f6e6de"
    },
    "us-east-2": {
-    "Best1000Mbps": "ami-9cffcbf9",
-    "Best200Mbps": "ami-06feca63",
-    "Best25Mbps": "ami-defcc8bb",
-    "Best5000Mbps": "ami-e0feca85",
-    "Better1000Mbps": "ami-39fdc95c",
-    "Better200Mbps": "ami-3afdc95f",
-    "Better25Mbps": "ami-83fecae6",
-    "Better5000Mbps": "ami-3bfdc95e",
-    "Good1000Mbps": "ami-6dfdc908",
-    "Good200Mbps": "ami-32fdc957",
-    "Good25Mbps": "ami-8efdc9eb",
-    "Good5000Mbps": "ami-e8fcc88d"
+    "Best1000Mbps": "ami-3e4d485b",
+    "Best200Mbps": "ami-36434653",
+    "Best25Mbps": "ami-75474210",
+    "Best5000Mbps": "ami-d94d48bc",
+    "Better1000Mbps": "ami-f2474297",
+    "Better200Mbps": "ami-f54f4a90",
+    "Better25Mbps": "ami-d14d48b4",
+    "Better5000Mbps": "ami-ff47429a",
+    "Good1000Mbps": "ami-f1474294",
+    "Good200Mbps": "ami-2943464c",
+    "Good25Mbps": "ami-2843464d",
+    "Good5000Mbps": "ami-ca4c49af"
    },
    "us-gov-west-1": {
-    "Best1000Mbps": "ami-651d9504",
-    "Best200Mbps": "ami-72199113",
-    "Best25Mbps": "ami-a51991c4",
-    "Best5000Mbps": "ami-501c9431",
-    "Better1000Mbps": "ami-12189073",
-    "Better200Mbps": "ami-cd1890ac",
-    "Better25Mbps": "ami-f9058d98",
-    "Better5000Mbps": "ami-7b18901a",
-    "Good1000Mbps": "ami-dc058dbd",
-    "Good200Mbps": "ami-5a18903b",
-    "Good25Mbps": "ami-ca068eab",
-    "Good5000Mbps": "ami-9f068efe"
+    "Best1000Mbps": "ami-603ea301",
+    "Best200Mbps": "ami-4d3da02c",
+    "Best25Mbps": "ami-f1039e90",
+    "Best5000Mbps": "ami-e23ca183",
+    "Better1000Mbps": "ami-b6009dd7",
+    "Better200Mbps": "ami-66039e07",
+    "Better25Mbps": "ami-454ad724",
+    "Better5000Mbps": "ami-06148967",
+    "Good1000Mbps": "ami-76059817",
+    "Good200Mbps": "ami-434ad722",
+    "Good25Mbps": "ami-0a09946b",
+    "Good5000Mbps": "ami-424ad723"
    },
    "us-west-1": {
-    "Best1000Mbps": "ami-6a747d0a",
-    "Best200Mbps": "ami-24777e44",
-    "Best25Mbps": "ami-57747d37",
-    "Best5000Mbps": "ami-09747d69",
-    "Better1000Mbps": "ami-2e777e4e",
-    "Better200Mbps": "ami-13727b73",
-    "Better25Mbps": "ami-cf757caf",
-    "Better5000Mbps": "ami-4a757c2a",
-    "Good1000Mbps": "ami-63757c03",
-    "Good200Mbps": "ami-41747d21",
-    "Good25Mbps": "ami-cc757cac",
-    "Good5000Mbps": "ami-40747d20"
+    "Best1000Mbps": "ami-2b4ea248",
+    "Best200Mbps": "ami-974ea2f4",
+    "Best25Mbps": "ami-ba4da1d9",
+    "Best5000Mbps": "ami-964ea2f5",
+    "Better1000Mbps": "ami-064da165",
+    "Better200Mbps": "ami-9f4ea2fc",
+    "Better25Mbps": "ami-f04ea293",
+    "Better5000Mbps": "ami-934ea2f0",
+    "Good1000Mbps": "ami-f34ea290",
+    "Good200Mbps": "ami-ad4da1ce",
+    "Good25Mbps": "ami-814ea2e2",
+    "Good5000Mbps": "ami-864ea2e5"
    },
    "us-west-2": {
-    "Best1000Mbps": "ami-4225a53a",
-    "Best200Mbps": "ami-a01f9fd8",
-    "Best25Mbps": "ami-1325a56b",
-    "Best5000Mbps": "ami-2d25a555",
-    "Better1000Mbps": "ami-9e24a4e6",
-    "Better200Mbps": "ami-f721a18f",
-    "Better25Mbps": "ami-8e21a1f6",
-    "Better5000Mbps": "ami-2924a451",
-    "Good1000Mbps": "ami-751f9f0d",
-    "Good200Mbps": "ami-4923a331",
-    "Good25Mbps": "ami-d11e9ea9",
-    "Good5000Mbps": "ami-0c24a474"
+    "Best1000Mbps": "ami-992306e1",
+    "Best200Mbps": "ami-33587d4b",
+    "Best25Mbps": "ami-f1210489",
+    "Best5000Mbps": "ami-115d7869",
+    "Better1000Mbps": "ami-a12702d9",
+    "Better200Mbps": "ami-ab2603d3",
+    "Better25Mbps": "ami-79230601",
+    "Better5000Mbps": "ami-3e587d46",
+    "Good1000Mbps": "ami-275d785f",
+    "Good200Mbps": "ami-b92603c1",
+    "Good25Mbps": "ami-ae2702d6",
+    "Good5000Mbps": "ami-79557001"
    }
   },
   "WebserverRegionMap": {
@@ -329,6 +343,7 @@
       "costcenter"
      ]
     },
+    {},
     {
      "Label": {
       "default": "TEMPLATE ANALYTICS"
@@ -428,7 +443,7 @@
     }
    }
   },
-  "Version": "3.2.0"
+  "Version": "3.3.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -756,13 +771,22 @@
   "instanceType": {
    "AllowedValues": [
     "m3.2xlarge",
+    "m4.xlarge",
     "m4.2xlarge",
     "m4.4xlarge",
     "m4.10xlarge",
+    "m5.large",
+    "m5.xlarge",
+    "m5.2xlarge",
+    "m5.4xlarge",
     "c3.4xlarge",
     "c3.8xlarge",
     "c4.4xlarge",
     "c4.8xlarge",
+    "c5.large",
+    "c5.xlarge",
+    "c5.2xlarge",
+    "c5.4xlarge",
     "cc2.8xlarge"
    ],
    "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
@@ -797,7 +821,7 @@
    "Type": "String"
   },
   "sshKey": {
-   "Description": "Key pair for accessing the instance",
+   "Description": "EC2 KeyPair to enable SSH access to the BIG-IP instance",
    "Type": "AWS::EC2::KeyPair::KeyName"
   },
   "timezone": {
@@ -997,7 +1021,7 @@
           [
            "mkdir -p /var/log/cloud/aws;",
            "nohup /config/installCloudLibs.sh",
-           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
           ]
          ]
         }
@@ -1012,9 +1036,9 @@
            " --signal PASSWORD_CREATED",
            " --file f5-rest-node",
            " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
-           " --log-level info",
+           " --log-level silly",
            " -o /var/log/cloud/aws/generatePassword.log",
-           " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
+           " &>> /var/log/cloud/aws/install.log < /dev/null",
            " &"
           ]
          ]
@@ -1034,9 +1058,9 @@
            " --password-file /config/cloud/aws/.adminPassword",
            " --password-encrypted",
            "'",
-           " --log-level info",
+           " --log-level silly",
            " -o /var/log/cloud/aws/createUser.log",
-           " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
+           " &>> /var/log/cloud/aws/install.log < /dev/null",
            " &"
           ]
          ]
@@ -1058,8 +1082,8 @@
            "--user admin ",
            "--password-url file:///config/cloud/aws/.adminPassword ",
            "--password-encrypted ",
-           "-o /var/log/cloud/aws/network-config.log ",
-           "--log-level info ",
+           "-o /var/log/cloud/aws/network.log ",
+           "--log-level silly ",
            "--wait-for ADMIN_CREATED ",
            "--signal NETWORK_CONFIG_DONE ",
            "--vlan name:external,nic:1.1 ",
@@ -1072,7 +1096,7 @@
             ]
            },
            "/'${GATEWAY_PREFIX}',vlan:external,allow:tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128' ",
-           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
           ]
          ]
         }
@@ -1105,7 +1129,7 @@
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
              "--wait-for NETWORK_CONFIG_DONE",
              "-o /var/log/cloud/aws/onboard.log",
-             "--log-level info",
+             "--log-level silly",
              "--no-reboot",
              "--host localhost",
              "--user admin",
@@ -1123,9 +1147,9 @@
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
              "--module asm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.0.2-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-payg-2nic-bigip-w-waf.template,templateVersion:3.2.0,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-payg-2nic-bigip-w-waf.template,templateVersion:3.3.0,licenseType:hourly\"",
              "--ping",
-             "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+             "&>> /var/log/cloud/aws/install.log < /dev/null &"
             ]
            ]
           },
@@ -1138,7 +1162,7 @@
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
              "--wait-for NETWORK_CONFIG_DONE",
              "-o /var/log/cloud/aws/onboard.log",
-             "--log-level info",
+             "--log-level silly",
              "--no-reboot",
              "--host localhost",
              "--user admin",
@@ -1157,7 +1181,7 @@
              "--module ltm:nominal",
              "--module asm:nominal",
              "--ping",
-             "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+             "&>> /var/log/cloud/aws/install.log < /dev/null &"
             ]
            ]
           }
@@ -1174,10 +1198,10 @@
            "--file /config/cloud/aws/custom-config.sh",
            "--cwd /config/cloud/aws",
            "-o /var/log/cloud/aws/custom-config.log",
-           "--log-level info",
+           "--log-level silly",
            "--signal CUSTOM_CONFIG_DONE",
            "--wait-for ONBOARD_DONE",
-           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
           ]
          ]
         }
@@ -1193,7 +1217,7 @@
            "--wait-for CUSTOM_CONFIG_DONE",
            "--signal CLUSTER_DONE",
            "-o /var/log/cloud/aws/cluster.log",
-           "--log-level info",
+           "--log-level silly",
            "--host localhost",
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
@@ -1218,7 +1242,7 @@
            "--network-failover",
            "--device ${HOSTNAME}",
            "--auto-sync",
-           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
           ]
          ]
         }
@@ -1232,10 +1256,10 @@
            "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
            "--file /config/cloud/aws/rm-password.sh",
            "-o /var/log/cloud/aws/rm-password.log",
-           "--log-level info",
+           "--log-level silly",
            "--wait-for CLUSTER_DONE",
            "--signal PASSWORD_REMOVED",
-           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
           ]
          ]
         }
@@ -1345,13 +1369,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.0.3/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.1.1/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
        },
        "/config/cloud/aws/f5.service_discovery.tmpl": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.0.3/f5-service-discovery/f5.service_discovery.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.1.1/f5-service-discovery/f5.service_discovery.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
@@ -1406,13 +1430,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v2.1.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v2.2.1/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v4.2.0/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v4.3.1/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -1463,7 +1487,7 @@
         "owner": "root"
        },
        "/config/verifyHash": {
-        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) a1de46685e31463e6c103078797b90e5f29a4b94702b0522eef2364c3792414067a0bea50c4ed49784c14277a578d8b41f9ac7ba058d9ff72ef687034e5119c6\n            set hashes(f5-cloud-libs-aws.tar.gz) d0803e306c01bdf82895c8f30f3b3c2df5f76edbe1875c0ffbfea6864436ece54a73ffd02ccd1b889c324b093897702087b722f10cc7f87994f518f81d7260ea\n            set hashes(f5-cloud-libs-azure.tar.gz) a1f264a165b88c03f55d49afb4fdb5f63d80755f1afe947a02e4a36755c7fcec432495417d8084329c6c14e4c426c2e63bab92862afb760d63f584a570b119e6\n            set hashes(f5-cloud-libs-gce.tar.gz) c01b25f4d6f48d9ac21b1a6ba3553c978e4fb8ce8655947a307f27e67833c4bebf8b72fef108ea02e11b5e9aa35d33e39db8624b3db34de509d0d79959c754c7\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(f5.aws_advanced_ha.v1.4.0rc3.tmpl) 2f2339b4bc3a23c9cfd42aae2a6de39ba0658366f25985de2ea53410a745f0f18eedc491b20f4a8dba8db48970096e2efdca7b8efffa1a83a78e5aadf218b134\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 7a4660468dffdc4f6d9aec4c1f9d22abfb3e484e7d6fe6a12fc9ab3eec3819dc34d133aea3cce4fdd87a0f4045069270061f2ea1ee7735922e4371592e498a0b\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) a26d5c470e70b821621476bcfd0579dbc0964f6a54158bc6314fa1e2f63b23bf3f3eb43ade5081131c24e08579db2e1e574beb3f8d9789d28acb4f312fad8c3e\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature jJpTQ0bcHm9SypZSOPeKaHoUKRdTyLbz80xHYXy39dWx76geCGT5otZi4SdqGBiiwKFydQTqSVu+Uzj8TQZGg2fbxKg/Ks28Ht+nvLoTiNwZGY5o+iPse45QvltBvE+aCOIaw8a5ZBd5ZMF7A8JQpTwttUFRjFgXFu9CncAWOTypov46ve9dzRW8dRPbAImaJSby38jUIVWjv2iB3qZHz//bXjdZ5qUpFvpPH5dGzYN5SoQmUVI3kbiOpZlRJcSj8cKzQ7EsQozile5JkzPrzUeeMgOHihAZcOzgvYWl2LYe9iedixzF7ci6d4YNUuUhFfyrlrUOZSMUPtRzM3+rYQ==\n    signing-key /Common/f5-irule\n}",
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) ce4f117ee84dc5e05be0bb29d2536f6e8dbb8ce3d899c1c380bdab56c9584983ddc64213ef7b1dfd305ca6ad9c830d73d4c3343256822fb500c5b77f48cf1c4e\n            set hashes(f5-cloud-libs-aws.tar.gz) 01ad00f2210375e3b770151a55a28198187e74cf57aedb83da7579de821933828e7fe129a05adcb27b0d036bc185393adda5619a4c1a30a7b5d9c79d21b1f6d2\n            set hashes(f5-cloud-libs-azure.tar.gz) d5e2e26f92f61f3917d8212b71fee55e9f58811ee488137e9c28ac54e5eb2434725696af286839e8b5ea68e05078188e0ada6e215c6c233d2585fd2acca0532d\n            set hashes(f5-cloud-libs-gce.tar.gz) 67e9fef439851ad4f9fbaf3f3574dadb2fceea0b13a77ccde41bcf31c42f87d6c37c64d50d685fc9a90acedc8c80abee9114b9a232809f36746bdc8e1de1b22a\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(f5.aws_advanced_ha.v1.4.0rc3.tmpl) 2f2339b4bc3a23c9cfd42aae2a6de39ba0658366f25985de2ea53410a745f0f18eedc491b20f4a8dba8db48970096e2efdca7b8efffa1a83a78e5aadf218b134\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 592f94c6bfcf543f97632b8ac42b773e30390db77f150291815c45d7f62c30b5ade515ae7257f3bedc0329084499fdf18a6d9a93c90cade23542116edefd6849\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) a26d5c470e70b821621476bcfd0579dbc0964f6a54158bc6314fa1e2f63b23bf3f3eb43ade5081131c24e08579db2e1e574beb3f8d9789d28acb4f312fad8c3e\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature L3b5hKxLwPj6VsVBGly/pd2sMA1N+gCZfLVv0MZ071f5HM5krchDDhHrJupT4rN30OkMo0rThjV5iRGhCsx2kNqKnUtIJYGX8LrONUV9Iwb+XzfUhhTh3djK4R/NHn6RV+J8x+nrppk5D0vuVsBNim7D2/M8IdAT4QIbEW+uTZQ8EDubm6+4fC71cQoS98ebs69PhBb8u4cFWerIkBgT/ChWKahQ8GQpXgcFtI2DsjxWY9fMePf4c//EMGIeDA0ur1QZovPgWwotleAS238LPfO6brESgDm4NawKDnlKMZ9fDgUStK4jEdy/9sK870B0y8SprXonx8fhoBQE0zlsGw==\n    signing-key /Common/f5-irule\n}",
         "group": "root",
         "mode": "000755",
         "owner": "root"
@@ -1749,7 +1773,7 @@
           [
            "mkdir -p /var/log/cloud/aws;",
            "nohup /config/installCloudLibs.sh",
-           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
           ]
          ]
         }
@@ -1764,9 +1788,9 @@
            " --signal PASSWORD_CREATED",
            " --file f5-rest-node",
            " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
-           " --log-level info",
+           " --log-level silly",
            " -o /var/log/cloud/aws/generatePassword.log",
-           " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
+           " &>> /var/log/cloud/aws/install.log < /dev/null",
            " &"
           ]
          ]
@@ -1786,9 +1810,9 @@
            " --password-file /config/cloud/aws/.adminPassword",
            " --password-encrypted",
            "'",
-           " --log-level info",
+           " --log-level silly",
            " -o /var/log/cloud/aws/createUser.log",
-           " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
+           " &>> /var/log/cloud/aws/install.log < /dev/null",
            " &"
           ]
          ]
@@ -1810,8 +1834,8 @@
            "--user admin ",
            "--password-url file:///config/cloud/aws/.adminPassword ",
            "--password-encrypted ",
-           "-o /var/log/cloud/aws/network-config.log ",
-           "--log-level info ",
+           "-o /var/log/cloud/aws/network.log ",
+           "--log-level silly ",
            "--wait-for ADMIN_CREATED ",
            "--signal NETWORK_CONFIG_DONE ",
            "--vlan name:external,nic:1.1 ",
@@ -1824,7 +1848,7 @@
             ]
            },
            "/'${GATEWAY_PREFIX}',vlan:external,allow:tcp:4353 udp:1026 tcp:6123 tcp:6124 tcp:6125 tcp:6126 tcp:6127 tcp:6128' ",
-           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
           ]
          ]
         }
@@ -1857,7 +1881,7 @@
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
              "--wait-for NETWORK_CONFIG_DONE",
              "-o /var/log/cloud/aws/onboard.log",
-             "--log-level info",
+             "--log-level silly",
              "--no-reboot",
              "--host localhost",
              "--user admin",
@@ -1875,9 +1899,9 @@
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
              "--module asm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.0.2-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-payg-2nic-bigip-w-waf.template,templateVersion:3.2.0,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-payg-2nic-bigip-w-waf.template,templateVersion:3.3.0,licenseType:hourly\"",
              "--ping",
-             "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+             "&>> /var/log/cloud/aws/install.log < /dev/null &"
             ]
            ]
           },
@@ -1890,7 +1914,7 @@
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
              "--wait-for NETWORK_CONFIG_DONE",
              "-o /var/log/cloud/aws/onboard.log",
-             "--log-level info",
+             "--log-level silly",
              "--no-reboot",
              "--host localhost",
              "--user admin",
@@ -1909,7 +1933,7 @@
              "--module ltm:nominal",
              "--module asm:nominal",
              "--ping",
-             "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+             "&>> /var/log/cloud/aws/install.log < /dev/null &"
             ]
            ]
           }
@@ -1926,10 +1950,10 @@
            "--file /config/cloud/aws/custom-config.sh",
            "--cwd /config/cloud/aws",
            "-o /var/log/cloud/aws/custom-config.log",
-           "--log-level info",
+           "--log-level silly",
            "--signal CUSTOM_CONFIG_DONE",
            "--wait-for ONBOARD_DONE",
-           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
           ]
          ]
         }
@@ -1944,7 +1968,7 @@
            "--wait-for CUSTOM_CONFIG_DONE",
            "--signal CLUSTER_DONE",
            "-o /var/log/cloud/aws/cluster.log",
-           "--log-level info",
+           "--log-level silly",
            "--host localhost",
            "--user admin",
            "--password-url file:///config/cloud/aws/.adminPassword",
@@ -1971,7 +1995,7 @@
              "PrimaryPrivateIpAddress"
             ]
            },
-           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
           ]
          ]
         }
@@ -1985,10 +2009,10 @@
            "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
            "--file /config/cloud/aws/rm-password.sh",
            "-o /var/log/cloud/aws/rm-password.log",
-           "--log-level info",
+           "--log-level silly",
            "--wait-for CLUSTER_DONE",
            "--signal PASSWORD_REMOVED",
-           "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
           ]
          ]
         }
@@ -2070,13 +2094,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.0.3/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.1.1/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
        },
        "/config/cloud/aws/f5.service_discovery.tmpl": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.0.3/f5-service-discovery/f5.service_discovery.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.1.1/f5-service-discovery/f5.service_discovery.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
@@ -2131,13 +2155,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v2.1.0/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v2.2.1/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v4.2.0/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v4.3.1/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -2188,7 +2212,7 @@
         "owner": "root"
        },
        "/config/verifyHash": {
-        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) a1de46685e31463e6c103078797b90e5f29a4b94702b0522eef2364c3792414067a0bea50c4ed49784c14277a578d8b41f9ac7ba058d9ff72ef687034e5119c6\n            set hashes(f5-cloud-libs-aws.tar.gz) d0803e306c01bdf82895c8f30f3b3c2df5f76edbe1875c0ffbfea6864436ece54a73ffd02ccd1b889c324b093897702087b722f10cc7f87994f518f81d7260ea\n            set hashes(f5-cloud-libs-azure.tar.gz) a1f264a165b88c03f55d49afb4fdb5f63d80755f1afe947a02e4a36755c7fcec432495417d8084329c6c14e4c426c2e63bab92862afb760d63f584a570b119e6\n            set hashes(f5-cloud-libs-gce.tar.gz) c01b25f4d6f48d9ac21b1a6ba3553c978e4fb8ce8655947a307f27e67833c4bebf8b72fef108ea02e11b5e9aa35d33e39db8624b3db34de509d0d79959c754c7\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(f5.aws_advanced_ha.v1.4.0rc3.tmpl) 2f2339b4bc3a23c9cfd42aae2a6de39ba0658366f25985de2ea53410a745f0f18eedc491b20f4a8dba8db48970096e2efdca7b8efffa1a83a78e5aadf218b134\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 7a4660468dffdc4f6d9aec4c1f9d22abfb3e484e7d6fe6a12fc9ab3eec3819dc34d133aea3cce4fdd87a0f4045069270061f2ea1ee7735922e4371592e498a0b\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) a26d5c470e70b821621476bcfd0579dbc0964f6a54158bc6314fa1e2f63b23bf3f3eb43ade5081131c24e08579db2e1e574beb3f8d9789d28acb4f312fad8c3e\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature jJpTQ0bcHm9SypZSOPeKaHoUKRdTyLbz80xHYXy39dWx76geCGT5otZi4SdqGBiiwKFydQTqSVu+Uzj8TQZGg2fbxKg/Ks28Ht+nvLoTiNwZGY5o+iPse45QvltBvE+aCOIaw8a5ZBd5ZMF7A8JQpTwttUFRjFgXFu9CncAWOTypov46ve9dzRW8dRPbAImaJSby38jUIVWjv2iB3qZHz//bXjdZ5qUpFvpPH5dGzYN5SoQmUVI3kbiOpZlRJcSj8cKzQ7EsQozile5JkzPrzUeeMgOHihAZcOzgvYWl2LYe9iedixzF7ci6d4YNUuUhFfyrlrUOZSMUPtRzM3+rYQ==\n    signing-key /Common/f5-irule\n}",
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) ce4f117ee84dc5e05be0bb29d2536f6e8dbb8ce3d899c1c380bdab56c9584983ddc64213ef7b1dfd305ca6ad9c830d73d4c3343256822fb500c5b77f48cf1c4e\n            set hashes(f5-cloud-libs-aws.tar.gz) 01ad00f2210375e3b770151a55a28198187e74cf57aedb83da7579de821933828e7fe129a05adcb27b0d036bc185393adda5619a4c1a30a7b5d9c79d21b1f6d2\n            set hashes(f5-cloud-libs-azure.tar.gz) d5e2e26f92f61f3917d8212b71fee55e9f58811ee488137e9c28ac54e5eb2434725696af286839e8b5ea68e05078188e0ada6e215c6c233d2585fd2acca0532d\n            set hashes(f5-cloud-libs-gce.tar.gz) 67e9fef439851ad4f9fbaf3f3574dadb2fceea0b13a77ccde41bcf31c42f87d6c37c64d50d685fc9a90acedc8c80abee9114b9a232809f36746bdc8e1de1b22a\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(f5.aws_advanced_ha.v1.4.0rc3.tmpl) 2f2339b4bc3a23c9cfd42aae2a6de39ba0658366f25985de2ea53410a745f0f18eedc491b20f4a8dba8db48970096e2efdca7b8efffa1a83a78e5aadf218b134\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 592f94c6bfcf543f97632b8ac42b773e30390db77f150291815c45d7f62c30b5ade515ae7257f3bedc0329084499fdf18a6d9a93c90cade23542116edefd6849\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) a26d5c470e70b821621476bcfd0579dbc0964f6a54158bc6314fa1e2f63b23bf3f3eb43ade5081131c24e08579db2e1e574beb3f8d9789d28acb4f312fad8c3e\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature L3b5hKxLwPj6VsVBGly/pd2sMA1N+gCZfLVv0MZ071f5HM5krchDDhHrJupT4rN30OkMo0rThjV5iRGhCsx2kNqKnUtIJYGX8LrONUV9Iwb+XzfUhhTh3djK4R/NHn6RV+J8x+nrppk5D0vuVsBNim7D2/M8IdAT4QIbEW+uTZQ8EDubm6+4fC71cQoS98ebs69PhBb8u4cFWerIkBgT/ChWKahQ8GQpXgcFtI2DsjxWY9fMePf4c//EMGIeDA0ur1QZovPgWwotleAS238LPfO6brESgDm4NawKDnlKMZ9fDgUStK4jEdy/9sK870B0y8SprXonx8fhoBQE0zlsGw==\n    signing-key /Common/f5-irule\n}",
         "group": "root",
         "mode": "000755",
         "owner": "root"

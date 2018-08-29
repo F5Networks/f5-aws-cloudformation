@@ -1,1835 +1,2091 @@
 {
-  "AWSTemplateFormatVersion": "2010-09-09",
-  "Conditions": {
-    "noCustomImageId": {
-     "Fn::Equals": [
-      "OPTIONAL",
+ "AWSTemplateFormatVersion": "2010-09-09",
+ "Conditions": {
+  "noCustomImageId": {
+   "Fn::Equals": [
+    "OPTIONAL",
+    {
+     "Ref": "customImageId"
+    }
+   ]
+  },
+  "noSkuKeyword1": {
+   "Fn::Equals": [
+    "OPTIONAL",
+    {
+     "Ref": "bigIqLicenseSkuKeyword1"
+    }
+   ]
+  },
+  "noTargetGroup": {
+   "Fn::Equals": [
+    "none",
+    {
+     "Ref": "bigipNetworkLoadBalancerTargetGroupsArns"
+    }
+   ]
+  },
+  "noUnitOfMeasure": {
+   "Fn::Equals": [
+    "OPTIONAL",
+    {
+     "Ref": "bigIqLicenseUnitOfMeasure"
+    }
+   ]
+  },
+  "optin": {
+   "Fn::Equals": [
+    "Yes",
+    {
+     "Ref": "allowUsageAnalytics"
+    }
+   ]
+  },
+  "useDefaultCert": {
+   "Fn::Equals": [
+    "default",
+    {
+     "Ref": "appCertificateS3Arn"
+    }
+   ]
+  }
+ },
+ "Description": "Template v3.3.0: Deploys an AWS Auto Scaling group of F5 LTM BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
+ "Mappings": {
+  "BigipRegionMap": {
+   "ap-northeast-1": {
+    "AllOneBootLocation": "ami-113f42fc",
+    "AllTwoBootLocations": "ami-dc3f4231",
+    "LTMOneBootLocation": "ami-893d4064",
+    "LTMTwoBootLocations": "ami-15cdbff8"
+   },
+   "ap-northeast-2": {
+    "AllOneBootLocation": "ami-04eb9812dfb6c904a",
+    "AllTwoBootLocations": "ami-0951d036eadafbbf8",
+    "LTMOneBootLocation": "ami-095ed980984e47567",
+    "LTMTwoBootLocations": "ami-08e74bef43b50496f"
+   },
+   "ap-south-1": {
+    "AllOneBootLocation": "ami-08fc42da3ff3a2d67",
+    "AllTwoBootLocations": "ami-0ff0591a2d8bae0fe",
+    "LTMOneBootLocation": "ami-06a5e9d07a87628e2",
+    "LTMTwoBootLocations": "ami-04cedf27cf408c6fd"
+   },
+   "ap-southeast-1": {
+    "AllOneBootLocation": "ami-36e5a6dc",
+    "AllTwoBootLocations": "ami-28e6a5c2",
+    "LTMOneBootLocation": "ami-5ae6a5b0",
+    "LTMTwoBootLocations": "ami-23e5a6c9"
+   },
+   "ap-southeast-2": {
+    "AllOneBootLocation": "ami-e15bfa83",
+    "AllTwoBootLocations": "ami-64208106",
+    "LTMOneBootLocation": "ami-7e23821c",
+    "LTMTwoBootLocations": "ami-47238225"
+   },
+   "ca-central-1": {
+    "AllOneBootLocation": "ami-2151dc45",
+    "AllTwoBootLocations": "ami-7153de15",
+    "LTMOneBootLocation": "ami-0953de6d",
+    "LTMTwoBootLocations": "ami-0b53de6f"
+   },
+   "eu-central-1": {
+    "AllOneBootLocation": "ami-a2989449",
+    "AllTwoBootLocations": "ami-6d999586",
+    "LTMOneBootLocation": "ami-4c9995a7",
+    "LTMTwoBootLocations": "ami-a098944b"
+   },
+   "eu-west-1": {
+    "AllOneBootLocation": "ami-5317f6be",
+    "AllTwoBootLocations": "ami-e919f804",
+    "LTMOneBootLocation": "ami-f20dec1f",
+    "LTMTwoBootLocations": "ami-ff16f712"
+   },
+   "eu-west-2": {
+    "AllOneBootLocation": "ami-10b14477",
+    "AllTwoBootLocations": "ami-07b14460",
+    "LTMOneBootLocation": "ami-f4b44193",
+    "LTMTwoBootLocations": "ami-f1b44196"
+   },
+   "eu-west-3": {
+    "AllOneBootLocation": "ami-0146d8cbed1025718",
+    "AllTwoBootLocations": "ami-059c37dcf60b81393",
+    "LTMOneBootLocation": "ami-0fa9facfb67630f1f",
+    "LTMTwoBootLocations": "ami-02202cb0faa252f9e"
+   },
+   "sa-east-1": {
+    "AllOneBootLocation": "ami-00b63cf358955934b",
+    "AllTwoBootLocations": "ami-0fd5a3951f725ef2e",
+    "LTMOneBootLocation": "ami-03ef0413d10698b8f",
+    "LTMTwoBootLocations": "ami-07fd80ef7f2003570"
+   },
+   "us-east-1": {
+    "AllOneBootLocation": "ami-58c3d327",
+    "AllTwoBootLocations": "ami-39c8d846",
+    "LTMOneBootLocation": "ami-8acedef5",
+    "LTMTwoBootLocations": "ami-8ecfdff1"
+   },
+   "us-east-2": {
+    "AllOneBootLocation": "ami-2b4e4b4e",
+    "AllTwoBootLocations": "ami-334d4856",
+    "LTMOneBootLocation": "ami-a84d48cd",
+    "LTMTwoBootLocations": "ami-294e4b4c"
+   },
+   "us-gov-west-1": {
+    "AllOneBootLocation": "ami-72059813",
+    "AllTwoBootLocations": "ami-557ce134",
+    "LTMOneBootLocation": "ami-0d14896c",
+    "LTMTwoBootLocations": "ami-04059865"
+   },
+   "us-west-1": {
+    "AllOneBootLocation": "ami-a24ea2c1",
+    "AllTwoBootLocations": "ami-a04ea2c3",
+    "LTMOneBootLocation": "ami-aa4ea2c9",
+    "LTMTwoBootLocations": "ami-144ea277"
+   },
+   "us-west-2": {
+    "AllOneBootLocation": "ami-414e6b39",
+    "AllTwoBootLocations": "ami-8f5f7af7",
+    "LTMOneBootLocation": "ami-2355705b",
+    "LTMTwoBootLocations": "ami-245a7f5c"
+   }
+  }
+ },
+ "Metadata": {
+  "AWS::CloudFormation::Interface": {
+   "ParameterGroups": [
+    {
+     "Label": {
+      "default": "DEPLOYMENT"
+     },
+     "Parameters": [
+      "deploymentName"
+     ]
+    },
+    {
+     "Label": {
+      "default": "NETWORKING CONFIGURATION"
+     },
+     "Parameters": [
+      "Vpc",
+      "availabilityZones",
+      "subnets",
+      "restrictedSrcAddress",
+      "restrictedSrcAddressApp",
+      "bigipNetworkLoadBalancerTargetGroupsArns"
+     ]
+    },
+    {
+     "Label": {
+      "default": "INSTANCE CONFIGURATION"
+     },
+     "Parameters": [
+      "sshKey",
+      "instanceType",
+      "throughput",
+      "imageName",
+      "customImageId",
+      "adminUsername",
+      "managementGuiPort",
+      "timezone",
+      "ntpServer"
+     ]
+    },
+    {
+     "Label": {
+      "default": "AUTO SCALING CONFIGURATION"
+     },
+     "Parameters": [
+      "scalingMinSize",
+      "scalingMaxSize",
+      "scaleDownBytesThreshold",
+      "scaleUpBytesThreshold",
+      "lowCpuThreshold",
+      "highCpuThreshold",
+      "notificationEmail"
+     ]
+    },
+    {
+     "Label": {
+      "default": "VIRTUAL SERVICE CONFIGURATION"
+     },
+     "Parameters": [
+      "virtualServicePort",
+      "appCertificateS3Arn",
+      "applicationPort",
+      "appInternalDnsName",
+      "applicationPoolTagKey",
+      "applicationPoolTagValue"
+     ]
+    },
+    {
+     "Label": {
+      "default": "TAGS"
+     },
+     "Parameters": [
+      "application",
+      "environment",
+      "group",
+      "owner",
+      "costcenter"
+     ]
+    },
+    {
+     "Label": {
+      "default": "BIG-IQ LICENSING CONFIGURATION"
+     },
+     "Parameters": [
+      "bigIqAddress",
+      "bigIqUsername",
+      "bigIqPasswordS3Arn",
+      "bigIqLicensePoolName",
+      "bigIqLicenseUnitOfMeasure",
+      "bigIqLicenseSkuKeyword1"
+     ]
+    },
+    {
+     "Label": {
+      "default": "TEMPLATE ANALYTICS"
+     },
+     "Parameters": [
+      "allowUsageAnalytics"
+     ]
+    }
+   ],
+   "ParameterLabels": {
+    "Vpc": {
+     "default": "VPC ID"
+    },
+    "adminUsername": {
+     "default": "BIG-IP Admin User for clustering"
+    },
+    "allowUsageAnalytics": {
+     "default": "Send Anonymous Statistics to F5"
+    },
+    "appCertificateS3Arn": {
+     "default": "S3 ARN of the SSL Certificate used for Application"
+    },
+    "appInternalDnsName": {
+     "default": "Application Pool DNS"
+    },
+    "application": {
+     "default": "Application"
+    },
+    "applicationPoolTagKey": {
+     "default": "Application Pool Tag Key"
+    },
+    "applicationPoolTagValue": {
+     "default": "Application Pool Tag Value"
+    },
+    "applicationPort": {
+     "default": "Application Pool Member Port"
+    },
+    "availabilityZones": {
+     "default": "Availability Zone(s)"
+    },
+    "bigIqAddress": {
+     "default": "BIG-IQ address (private)"
+    },
+    "bigIqLicensePoolName": {
+     "default": "BIG-IQ License Pool Name"
+    },
+    "bigIqLicenseSkuKeyword1": {
+     "default": "BIG-IQ SKU Keyword 1"
+    },
+    "bigIqLicenseUnitOfMeasure": {
+     "default": "BIG-IQ Unit Of Measure"
+    },
+    "bigIqPasswordS3Arn": {
+     "default": "S3 ARN of the BIG-IQ Password File"
+    },
+    "bigIqUsername": {
+     "default": "BIG-IQ user with Licensing Privileges"
+    },
+    "bigipNetworkLoadBalancerTargetGroupsArns": {
+     "default": "Target Group(s) of Network Load Balancer for BIG-IP VEs"
+    },
+    "costcenter": {
+     "default": "Cost Center"
+    },
+    "customImageId": {
+     "default": "Custom Image Id"
+    },
+    "deploymentName": {
+     "default": "Deployment Name"
+    },
+    "environment": {
+     "default": "Environment"
+    },
+    "group": {
+     "default": "Group"
+    },
+    "highCpuThreshold": {
+     "default": "High CPU Percentage Threshold"
+    },
+    "imageName": {
+     "default": "F5 Image Name"
+    },
+    "instanceType": {
+     "default": "AWS Instance Size"
+    },
+    "lowCpuThreshold": {
+     "default": "Low CPU Percentage Threshold"
+    },
+    "managementGuiPort": {
+     "default": "Management Port"
+    },
+    "notificationEmail": {
+     "default": "Notification Email"
+    },
+    "ntpServer": {
+     "default": "NTP Server"
+    },
+    "owner": {
+     "default": "Owner"
+    },
+    "policyLevel": "",
+    "restrictedSrcAddress": {
+     "default": "Restricted Source Address to BIG-IP"
+    },
+    "restrictedSrcAddressApp": {
+     "default": "Restricted Source Address to Application"
+    },
+    "scaleDownBytesThreshold": {
+     "default": "Scale Down Bytes Threshold"
+    },
+    "scaleUpBytesThreshold": {
+     "default": "Scale Up Bytes Threshold"
+    },
+    "scalingMaxSize": {
+     "default": "Maximum Instances"
+    },
+    "scalingMinSize": {
+     "default": "Minimum Instances"
+    },
+    "sshKey": {
+     "default": "SSH Key Name"
+    },
+    "subnets": {
+     "default": "Subnet ID(s)"
+    },
+    "throughput": {
+     "default": "Maximum Throughput"
+    },
+    "timezone": {
+     "default": "Timezone (Olson)"
+    },
+    "virtualServicePort": {
+     "default": "Virtual Service Port"
+    }
+   }
+  },
+  "Version": "3.3.0"
+ },
+ "Outputs": {
+  "bigipAutoscaleGroup": {
+   "Description": "BIG-IP Autoscale Group",
+   "Value": {
+    "Ref": "BigipAutoscaleGroup"
+   }
+  },
+  "bigipExternalSecurityGroup": {
+   "Description": "BIG-IP Security Group (External or Public)",
+   "Value": {
+    "Ref": "bigipExternalSecurityGroup"
+   }
+  },
+  "s3Bucket": {
+   "Description": "BIG-IP S3 Bucket",
+   "Value": {
+    "Ref": "S3Bucket"
+   }
+  }
+ },
+ "Parameters": {
+  "Vpc": {
+   "ConstraintDescription": "This must be an existing VPC within the working region.",
+   "Type": "AWS::EC2::VPC::Id"
+  },
+  "adminUsername": {
+   "AllowedPattern": "[a-zA-Z0-9._-]+",
+   "ConstraintDescription": "Verify your BIG-IP admin username. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). The user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa.",
+   "Default": "cluster-admin",
+   "Description": "BIG-IP Admin User for clustering",
+   "MaxLength": 255,
+   "MinLength": 1,
+   "Type": "String"
+  },
+  "allowUsageAnalytics": {
+   "AllowedValues": [
+    "Yes",
+    "No"
+   ],
+   "Default": "Yes",
+   "Description": "This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent.",
+   "Type": "String"
+  },
+  "appCertificateS3Arn": {
+   "ConstraintDescription": "Verify S3 ARN of pfx ssl certificate used for application",
+   "Default": "default",
+   "Description": "S3 ARN of pfx ssl certificate used for application - ex. arn:aws:s3:::my_corporate_bucket/website.pfx for public regions. For GovCloud (US) region, start with arn:aws-us-gov:s3. For China region, start with arn:aws-cn:s3.",
+   "MaxLength": 255,
+   "MinLength": 1,
+   "Type": "String"
+  },
+  "appInternalDnsName": {
+   "Default": "www.example.com",
+   "Description": "DNS name poolapp.example.com for the application pool.  This is not required if you are using the Service Discovery feature.",
+   "Type": "String"
+  },
+  "application": {
+   "Default": "f5app",
+   "Description": "Name of the Application Tag",
+   "Type": "String"
+  },
+  "applicationPoolTagKey": {
+   "Default": "default",
+   "Description": "This is used for the Service Discovery feature. If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next.",
+   "Type": "String"
+  },
+  "applicationPoolTagValue": {
+   "Default": "default",
+   "Description": "This is used for the Service Discovery feature. If you specify a non-default value here, the template automatically discovers the pool members you have tagged with the key you specified and this value.",
+   "Type": "String"
+  },
+  "applicationPort": {
+   "ConstraintDescription": "Must be a valid port number (1-65535).",
+   "Default": 80,
+   "Description": "Port for the application pool member on BIG-IP VE",
+   "MaxValue": 65535,
+   "MinValue": 1,
+   "Type": "Number"
+  },
+  "availabilityZones": {
+   "Description": "Availability Zones where you want to deploy BIG-IP VEs (we recommend at least 2)",
+   "Type": "List<AWS::EC2::AvailabilityZone::Name>"
+  },
+  "bigIqAddress": {
+   "ConstraintDescription": "Verify the private IP address of the BIG-IQ device that contains the pool of licenses",
+   "Description": "Private IP address of the BIG-IQ device that contains the pool of BIG-IP licenses",
+   "MaxLength": "255",
+   "MinLength": "1",
+   "Type": "String"
+  },
+  "bigIqLicensePoolName": {
+   "ConstraintDescription": "Verify the Name of BIG-IQ License Pool",
+   "Description": "Name of the pool on BIG-IQ that contains the BIG-IP licenses",
+   "MaxLength": "255",
+   "MinLength": "1",
+   "Type": "String"
+  },
+  "bigIqLicenseSkuKeyword1": {
+   "ConstraintDescription": "Verify the BIG-IQ license filter to use for sku keyword 1",
+   "Default": "OPTIONAL",
+   "Description": "The BIG-IQ license filter (based on SKU keyword) you want to use for licensing the BIG-IPs from the BIG-IQ, for example LTM, BR, BT, ASM or LTMASM. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
+   "MaxLength": "255",
+   "MinLength": "1",
+   "Type": "String"
+  },
+  "bigIqLicenseUnitOfMeasure": {
+   "ConstraintDescription": "Verify the BIG-IQ License Unit Of Measure",
+   "Default": "OPTIONAL",
+   "Description": "The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example yearly, monthly, daily or hourly. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
+   "MaxLength": "255",
+   "MinLength": "1",
+   "Type": "String"
+  },
+  "bigIqPasswordS3Arn": {
+   "ConstraintDescription": "Verify the S3 ARN of BIG-IQ Password file",
+   "Description": "S3 ARN of the BIG-IQ Password file. e.g. arn:aws:s3:::bucket_name/full_path_to_file for public regions. For GovCloud (US) region, start with arn:aws-us-gov:s3. For China region, start with arn:aws-cn:s3.",
+   "MaxLength": "255",
+   "MinLength": "1",
+   "Type": "String"
+  },
+  "bigIqUsername": {
+   "ConstraintDescription": "Verify the BIG-IQ user with privileges to license BIG-IP. Can be Admin, Device Manager, or Licensing Manager",
+   "Description": "BIG-IQ user with privileges to license BIG-IP. Must be 'Admin', 'Device Manager', or 'Licensing Manager'",
+   "MaxLength": "255",
+   "MinLength": "1",
+   "Type": "String"
+  },
+  "bigipNetworkLoadBalancerTargetGroupsArns": {
+   "Default": "none",
+   "Description": "ARN of target group(s) for AWS Network Load Balancer for the BIG-IP VEs",
+   "Type": "String"
+  },
+  "costcenter": {
+   "Default": "f5costcenter",
+   "Description": "Name of the Cost Center Tag",
+   "Type": "String"
+  },
+  "customImageId": {
+   "ConstraintDescription": "Must be a valid AMI Id",
+   "Default": "OPTIONAL",
+   "Description": "If you would like to deploy using a custom BIG-IP image, provide the AMI Id.  **Note**: Unless specifically required, leave the default of **OPTIONAL**",
+   "MaxLength": 255,
+   "MinLength": 1,
+   "Type": "String"
+  },
+  "deploymentName": {
+   "Default": "example",
+   "Description": "Name the template uses to create object names",
+   "MaxLength": 25,
+   "Type": "String"
+  },
+  "environment": {
+   "Default": "f5env",
+   "Description": "Name of the Environment Tag",
+   "Type": "String"
+  },
+  "group": {
+   "Default": "f5group",
+   "Description": "Name of the Group Tag",
+   "Type": "String"
+  },
+  "highCpuThreshold": {
+   "ConstraintDescription": "Select a value between 0 to 100",
+   "Default": 80,
+   "Description": "High CPU Percentage threshold to begin scaling up BIG-IP VE instances",
+   "MaxValue": 100,
+   "MinValue": 0,
+   "Type": "Number"
+  },
+  "imageName": {
+   "AllowedValues": [
+    "LTMOneBootLocation",
+    "LTMTwoBootLocations"
+   ],
+   "ConstraintDescription": "Must be a valid F5 BIG-IP VE image type",
+   "Default": "LTMTwoBootLocations",
+   "Description": "Image names starting with All have all BIG-IP modules available. Image names starting with LTM have only the LTM module available.  Use Two Boot Locations if you expect to upgrade the BIG-IP VE in the future (the Two Boot Location options are only applicable to BIG-IP v13.1.1 or later). If you do not need room to upgrade (if you intend to create a new instance when a new version of BIG-IP VE is released), use one Boot Location.",
+   "Type": "String"
+  },
+  "instanceType": {
+   "AllowedValues": [
+    "t2.medium",
+    "t2.large",
+    "m3.large",
+    "m3.xlarge",
+    "m3.2xlarge",
+    "m4.large",
+    "m4.xlarge",
+    "m4.2xlarge",
+    "m4.4xlarge",
+    "m4.10xlarge",
+    "m5.large",
+    "m5.xlarge",
+    "m5.2xlarge",
+    "m5.4xlarge",
+    "c3.xlarge",
+    "c3.2xlarge",
+    "c3.4xlarge",
+    "c3.8xlarge",
+    "c4.xlarge",
+    "c4.2xlarge",
+    "c4.4xlarge",
+    "c4.8xlarge",
+    "c5.large",
+    "c5.xlarge",
+    "c5.2xlarge",
+    "c5.4xlarge"
+   ],
+   "ConstraintDescription": "Must be a valid EC2 instance type for BIG-IP",
+   "Default": "m5.xlarge",
+   "Description": "Size of the F5 BIG-IP Virtual Instance",
+   "Type": "String"
+  },
+  "lowCpuThreshold": {
+   "ConstraintDescription": "Select a value between 0 to 100",
+   "Default": 0,
+   "Description": "Low CPU Percentage threshold to begin scaling down BIG-IP VE instances",
+   "MaxValue": 100,
+   "MinValue": 0,
+   "Type": "Number"
+  },
+  "managementGuiPort": {
+   "ConstraintDescription": "Must be a valid, unused port on the BIG-IP.",
+   "Default": "8443",
+   "Description": "Port for the BIG-IP management Configuration utility",
+   "Type": "Number"
+  },
+  "notificationEmail": {
+   "AllowedPattern": ".+@.+",
+   "ConstraintDescription": "Must be a valid email address.",
+   "Description": "Valid email address to send Auto Scaling event notifications",
+   "Type": "String"
+  },
+  "ntpServer": {
+   "Default": "0.pool.ntp.org",
+   "Description": "NTP server for this implementation",
+   "Type": "String"
+  },
+  "owner": {
+   "Default": "f5owner",
+   "Description": "Name of the Owner Tag",
+   "Type": "String"
+  },
+  "restrictedSrcAddress": {
+   "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+   "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+   "Description": " The IP address range used to SSH and access managment GUI on the EC2 instances",
+   "MaxLength": "18",
+   "MinLength": "9",
+   "Type": "String"
+  },
+  "restrictedSrcAddressApp": {
+   "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+   "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+   "Description": " The IP address range that can be used to access web traffic (80/443) to the EC2 instances",
+   "MaxLength": "18",
+   "MinLength": "9",
+   "Type": "String"
+  },
+  "scaleDownBytesThreshold": {
+   "Default": 10000,
+   "Description": "Incoming bytes threshold to begin scaling down BIG-IP VE instances",
+   "Type": "Number"
+  },
+  "scaleUpBytesThreshold": {
+   "Default": 35000,
+   "Description": "Incoming bytes threshold to begin scaling up BIG-IP VE instances",
+   "Type": "Number"
+  },
+  "scalingMaxSize": {
+   "ConstraintDescription": "Must be a number between 2-8",
+   "Default": 3,
+   "Description": "Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scale Group",
+   "MaxValue": 8,
+   "MinValue": 2,
+   "Type": "Number"
+  },
+  "scalingMinSize": {
+   "ConstraintDescription": "Must be a number between 1-8",
+   "Default": 1,
+   "Description": "Minimum number of BIG-IP instances (1-8) you want available in the Auto Scale Group",
+   "MaxValue": 8,
+   "MinValue": 1,
+   "Type": "Number"
+  },
+  "sshKey": {
+   "Description": "EC2 KeyPair to enable SSH access to the BIG-IP instance",
+   "Type": "AWS::EC2::KeyPair::KeyName"
+  },
+  "subnets": {
+   "ConstraintDescription": "The subnet IDs must be within an existing VPC",
+   "Description": "Public or external subnets for the availability zones",
+   "Type": "List<AWS::EC2::Subnet::Id>"
+  },
+  "throughput": {
+   "AllowedValues": [
+    "25Mbps",
+    "200Mbps",
+    "1000Mbps",
+    "5000Mbps"
+   ],
+   "ConstraintDescription": "Select the BIG-IP throughput you want to use",
+   "Default": "1000Mbps",
+   "Description": "Maximum amount of throughput for BIG-IP VE",
+   "Type": "String"
+  },
+  "timezone": {
+   "Default": "UTC",
+   "Description": "Olson timezone string from /usr/share/zoneinfo",
+   "Type": "String"
+  },
+  "virtualServicePort": {
+   "ConstraintDescription": "Must be a valid port number (1-65535) except port 80.",
+   "Default": 443,
+   "Description": "Port for the virtual service on BIG-IP VE. Must be a valid port number (1-65535) except port 80.",
+   "MaxValue": 65535,
+   "MinValue": 1,
+   "Type": "Number"
+  }
+ },
+ "Resources": {
+  "BigipAutoScalingAccessRole": {
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sts:AssumeRole"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "ec2.amazonaws.com"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Path": "/",
+    "Policies": [
+     {
+      "Fn::If": [
+       "useDefaultCert",
+       {
+        "PolicyDocument": {
+         "Statement": [
+          {
+           "Action": [
+            "s3:ListBucket"
+           ],
+           "Effect": "Allow",
+           "Resource": {
+            "Fn::Join": [
+             "",
+             [
+              "arn:*:s3:::",
+              {
+               "Ref": "S3Bucket"
+              }
+             ]
+            ]
+           }
+          },
+          {
+           "Action": [
+            "s3:PutObject",
+            "s3:GetObject",
+            "s3:DeleteObject"
+           ],
+           "Effect": "Allow",
+           "Resource": {
+            "Fn::Join": [
+             "",
+             [
+              "arn:*:s3:::",
+              {
+               "Ref": "S3Bucket"
+              },
+              "/*"
+             ]
+            ]
+           }
+          },
+          {
+           "Action": [
+            "sqs:SendMessage",
+            "sqs:ReceiveMessage",
+            "sqs:DeleteMessage"
+           ],
+           "Effect": "Allow",
+           "Resource": {
+            "Fn::GetAtt": [
+             "SQSQueue",
+             "Arn"
+            ]
+           }
+          },
+          {
+           "Action": [
+            "autoscaling:DescribeAutoScalingGroups",
+            "autoscaling:DescribeAutoScalingInstances",
+            "autoscaling:SetInstanceProtection",
+            "ec2:DescribeInstances",
+            "ec2:DescribeInstanceStatus",
+            "ec2:DescribeAddresses",
+            "ec2:AssociateAddress",
+            "ec2:DisassociateAddress",
+            "ec2:DescribeNetworkInterfaces",
+            "ec2:DescribeNetworkInterfaceAttributes",
+            "ec2:DescribeRouteTables",
+            "ec2:ReplaceRoute",
+            "ec2:assignprivateipaddresses",
+            "sts:AssumeRole",
+            "cloudwatch:PutMetricData"
+           ],
+           "Effect": "Allow",
+           "Resource": [
+            "*"
+           ]
+          },
+          {
+           "Action": [
+            "s3:GetObject"
+           ],
+           "Effect": "Allow",
+           "Resource": {
+            "Ref": "bigIqPasswordS3Arn"
+           }
+          }
+         ],
+         "Version": "2012-10-17"
+        },
+        "PolicyName": "BigipAutoScalingAcccessPolicy"
+       },
+       {
+        "PolicyDocument": {
+         "Statement": [
+          {
+           "Action": [
+            "s3:ListBucket"
+           ],
+           "Effect": "Allow",
+           "Resource": {
+            "Fn::Join": [
+             "",
+             [
+              "arn:*:s3:::",
+              {
+               "Ref": "S3Bucket"
+              }
+             ]
+            ]
+           }
+          },
+          {
+           "Action": [
+            "s3:PutObject",
+            "s3:GetObject",
+            "s3:DeleteObject"
+           ],
+           "Effect": "Allow",
+           "Resource": {
+            "Fn::Join": [
+             "",
+             [
+              "arn:*:s3:::",
+              {
+               "Ref": "S3Bucket"
+              },
+              "/*"
+             ]
+            ]
+           }
+          },
+          {
+           "Action": [
+            "sqs:SendMessage",
+            "sqs:ReceiveMessage",
+            "sqs:DeleteMessage"
+           ],
+           "Effect": "Allow",
+           "Resource": {
+            "Fn::GetAtt": [
+             "SQSQueue",
+             "Arn"
+            ]
+           }
+          },
+          {
+           "Action": [
+            "autoscaling:DescribeAutoScalingGroups",
+            "autoscaling:DescribeAutoScalingInstances",
+            "autoscaling:SetInstanceProtection",
+            "ec2:DescribeInstances",
+            "ec2:DescribeInstanceStatus",
+            "ec2:DescribeAddresses",
+            "ec2:AssociateAddress",
+            "ec2:DisassociateAddress",
+            "ec2:DescribeNetworkInterfaces",
+            "ec2:DescribeNetworkInterfaceAttributes",
+            "ec2:DescribeRouteTables",
+            "ec2:ReplaceRoute",
+            "ec2:assignprivateipaddresses",
+            "sts:AssumeRole",
+            "cloudwatch:PutMetricData"
+           ],
+           "Effect": "Allow",
+           "Resource": [
+            "*"
+           ]
+          },
+          {
+           "Action": [
+            "s3:GetObject"
+           ],
+           "Effect": "Allow",
+           "Resource": {
+            "Ref": "bigIqPasswordS3Arn"
+           }
+          },
+          {
+           "Action": [
+            "s3:GetObject"
+           ],
+           "Effect": "Allow",
+           "Resource": {
+            "Ref": "appCertificateS3Arn"
+           }
+          }
+         ],
+         "Version": "2012-10-17"
+        },
+        "PolicyName": "BigipAutoScalingAcccessPolicy"
+       }
+      ]
+     }
+    ]
+   },
+   "Type": "AWS::IAM::Role"
+  },
+  "BigipAutoScalingInstanceProfile": {
+   "Properties": {
+    "Path": "/",
+    "Roles": [
+     {
+      "Ref": "BigipAutoScalingAccessRole"
+     }
+    ]
+   },
+   "Type": "AWS::IAM::InstanceProfile"
+  },
+  "BigipAutoscaleGroup": {
+   "Properties": {
+    "Cooldown": 1500,
+    "DesiredCapacity": {
+     "Ref": "scalingMinSize"
+    },
+    "HealthCheckGracePeriod": 1500,
+    "HealthCheckType": "EC2",
+    "LaunchConfigurationName": {
+     "Ref": "BigipLaunchConfig"
+    },
+    "MaxSize": {
+     "Ref": "scalingMaxSize"
+    },
+    "MetricsCollection": [
+     {
+      "Granularity": "1Minute"
+     }
+    ],
+    "MinSize": {
+     "Ref": "scalingMinSize"
+    },
+    "NotificationConfigurations": [
+     {
+      "NotificationTypes": [
+       "autoscaling:EC2_INSTANCE_LAUNCH",
+       "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+       "autoscaling:EC2_INSTANCE_TERMINATE",
+       "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+      ],
+      "TopicARN": {
+       "Ref": "SNSTopic"
+      }
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "PropagateAtLaunch": "true",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "PropagateAtLaunch": "true",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "PropagateAtLaunch": "true",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "PropagateAtLaunch": "true",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "PropagateAtLaunch": "true",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "BIG-IP Autoscale Instance: ",
+         {
+          "Ref": "deploymentName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "PropagateAtLaunch": "true",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "TargetGroupARNs": [
+     {
+      "Fn::If": [
+       "noTargetGroup",
+       {
+        "Ref": "AWS::NoValue"
+       },
+       {
+        "Ref": "bigipNetworkLoadBalancerTargetGroupsArns"
+       }
+      ]
+     }
+    ],
+    "VPCZoneIdentifier": {
+     "Ref": "subnets"
+    }
+   },
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "UpdatePolicy": {
+    "AutoScalingRollingUpdate": {
+     "MaxBatchSize": "1",
+     "MinInstancesInService": "1",
+     "PauseTime": "PT30M"
+    }
+   }
+  },
+  "BigipHighCpuAlarm": {
+   "DependsOn": "BigipAutoscaleGroup",
+   "Properties": {
+    "ActionsEnabled": "true",
+    "AlarmActions": [
+     {
+      "Ref": "BigipScaleUpPolicy"
+     }
+    ],
+    "AlarmDescription": "CPU usage percentage exceeds average threshold after 1 successive interval of 1 minute",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "EvaluationPeriods": "1",
+    "MetricName": "tmm-stat",
+    "Namespace": {
+     "Ref": "BigipAutoscaleGroup"
+    },
+    "Period": "60",
+    "Statistic": "Average",
+    "Threshold": {
+     "Ref": "highCpuThreshold"
+    }
+   },
+   "Type": "AWS::CloudWatch::Alarm"
+  },
+  "BigipHighbytesAlarm": {
+   "DependsOn": "BigipAutoscaleGroup",
+   "Properties": {
+    "ActionsEnabled": "true",
+    "AlarmActions": [
+     {
+      "Ref": "BigipScaleUpPolicy"
+     }
+    ],
+    "AlarmDescription": "Throughput exceeds average threshold after 1 successive interval of 1 minute",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "EvaluationPeriods": "1",
+    "MetricName": "throughput-per-sec",
+    "Namespace": {
+     "Ref": "BigipAutoscaleGroup"
+    },
+    "Period": "60",
+    "Statistic": "Average",
+    "Threshold": {
+     "Ref": "scaleUpBytesThreshold"
+    }
+   },
+   "Type": "AWS::CloudWatch::Alarm"
+  },
+  "BigipLaunchConfig": {
+   "Metadata": {
+    "AWS::CloudFormation::Init": {
+     "config": {
+      "commands": {
+       "000-disable-1nicautoconfig": {
+        "command": "/usr/bin/setdb provision.1nicautoconfig disable"
+       },
+       "010-install-libs": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "mkdir -p /var/log/cloud/aws;",
+           "nohup /config/installCloudLibs.sh",
+           "&>> /var/log/cloud/aws/install.log < /dev/null &"
+          ]
+         ]
+        }
+       },
+       "020-generate-password": {
+        "command": {
+         "Fn::Join": [
+          "",
+          [
+           "nohup /config/waitThenRun.sh",
+           " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
+           " --signal PASSWORD_CREATED",
+           " --file f5-rest-node",
+           " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
+           " --log-level silly",
+           " -o /var/log/cloud/aws/generatePassword.log",
+           " &>> /var/log/cloud/aws/install.log < /dev/null",
+           " &"
+          ]
+         ]
+        }
+       },
+       "030-create-admin-user": {
+        "command": {
+         "Fn::Join": [
+          "",
+          [
+           "nohup /config/waitThenRun.sh",
+           " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
+           " --wait-for PASSWORD_CREATED",
+           " --signal ADMIN_CREATED",
+           " --file /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/createUser.sh",
+           " --cl-args '--user ",
+           {
+            "Ref": "adminUsername"
+           },
+           " --password-file /config/cloud/aws/.adminPassword",
+           " --password-encrypted",
+           "'",
+           " --log-level silly",
+           " -o /var/log/cloud/aws/createUser.log",
+           " &>> /var/log/cloud/aws/install.log < /dev/null",
+           " &"
+          ]
+         ]
+        }
+       },
+       "040-network-config": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
+           "--file /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/aws/1nicSetup.sh",
+           "--cwd /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/aws",
+           "--log-level silly",
+           "-o /var/log/cloud/aws/1nicSetup.log",
+           "--wait-for ADMIN_CREATED",
+           "--signal NETWORK_CONFIG_DONE",
+           "&>> /var/log/cloud/aws/install.log < /dev/null",
+           "&"
+          ]
+         ]
+        }
+       },
+       "050-onboard-BIG-IP": {
+        "command": {
+         "Fn::If": [
+          "optin",
+          {
+           "Fn::Join": [
+            " ",
+            [
+             "DEPLOYMENTID=`echo \"",
+             {
+              "Ref": "AWS::StackId"
+             },
+             "\"|sha512sum|cut -d \" \" -f 1`;",
+             "CUSTOMERID=`echo \"",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             "\"|sha512sum|cut -d \" \" -f 1`;",
+             "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth0`;",
+             "nohup /config/waitThenRun.sh",
+             "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
+             "--log-level silly",
+             "--wait-for NETWORK_CONFIG_DONE",
+             "-o /var/log/cloud/aws/onboard.log",
+             "--host localhost",
+             "--user",
+             {
+              "Ref": "adminUsername"
+             },
+             "--password-url file:///config/cloud/aws/.adminPassword",
+             "--password-encrypted",
+             "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+             "--ntp ",
+             {
+              "Ref": "ntpServer"
+             },
+             "--tz ",
+             {
+              "Ref": "timezone"
+             },
+             "--dns ${NAME_SERVER}",
+             "--port 8443",
+             "--ssl-port ",
+             {
+              "Ref": "managementGuiPort"
+             },
+             "--module ltm:nominal",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-ltm-nlb.template,templateVersion:3.3.0,licenseType:bigiq\"",
+             "--license-pool --cloud aws",
+             "--big-iq-host",
+             {
+              "Ref": "bigIqAddress"
+             },
+             "--big-iq-user ",
+             {
+              "Ref": "bigIqUsername"
+             },
+             "--big-iq-password-uri ",
+             {
+              "Ref": "bigIqPasswordS3Arn"
+             },
+             "--license-pool-name ",
+             {
+              "Ref": "bigIqLicensePoolName"
+             },
+             "--unit-of-measure ",
+             {
+              "Fn::If": [
+               "noUnitOfMeasure",
+               {
+                "Ref": "AWS::NoValue"
+               },
+               {
+                "Ref": "bigIqLicenseUnitOfMeasure"
+               }
+              ]
+             },
+             "--sku-keyword-1 ",
+             {
+              "Fn::If": [
+               "noSkuKeyword1",
+               {
+                "Ref": "AWS::NoValue"
+               },
+               {
+                "Ref": "bigIqLicenseSkuKeyword1"
+               }
+              ]
+             },
+             "--ping",
+             "&>> /var/log/cloud/aws/install.log < /dev/null",
+             "&"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            " ",
+            [
+             "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth0`;",
+             "nohup /config/waitThenRun.sh",
+             "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
+             "--log-level silly",
+             "--wait-for NETWORK_CONFIG_DONE",
+             "-o /var/log/cloud/aws/onboard.log",
+             "--host localhost",
+             "--port 8443",
+             "--user",
+             {
+              "Ref": "adminUsername"
+             },
+             "--password-url file:///config/cloud/aws/.adminPassword",
+             "--password-encrypted",
+             "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
+             "--ntp ",
+             {
+              "Ref": "ntpServer"
+             },
+             "--tz ",
+             {
+              "Ref": "timezone"
+             },
+             "--dns ${NAME_SERVER}",
+             "--ssl-port ",
+             {
+              "Ref": "managementGuiPort"
+             },
+             "--module ltm:nominal",
+             "--license-pool --cloud aws",
+             "--big-iq-host",
+             {
+              "Ref": "bigIqAddress"
+             },
+             "--big-iq-user ",
+             {
+              "Ref": "bigIqUsername"
+             },
+             "--big-iq-password-uri ",
+             {
+              "Ref": "bigIqPasswordS3Arn"
+             },
+             "--license-pool-name ",
+             {
+              "Ref": "bigIqLicensePoolName"
+             },
+             "--unit-of-measure ",
+             {
+              "Fn::If": [
+               "noUnitOfMeasure",
+               {
+                "Ref": "AWS::NoValue"
+               },
+               {
+                "Ref": "bigIqLicenseUnitOfMeasure"
+               }
+              ]
+             },
+             "--sku-keyword-1 ",
+             {
+              "Fn::If": [
+               "noSkuKeyword1",
+               {
+                "Ref": "AWS::NoValue"
+               },
+               {
+                "Ref": "bigIqLicenseSkuKeyword1"
+               }
+              ]
+             },
+             "--ping",
+             "&>> /var/log/cloud/aws/install.log < /dev/null",
+             "&"
+            ]
+           ]
+          }
+         ]
+        }
+       },
+       "060-custom-config": {
+        "command": {
+         "Fn::Join": [
+          " ",
+          [
+           "nohup /config/waitThenRun.sh",
+           "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
+           "--log-level silly",
+           "--file /config/cloud/aws/custom-config.sh",
+           "--cwd /config/cloud/aws",
+           "-o /var/log/cloud/aws/custom-config.log",
+           "--wait-for ONBOARD_DONE",
+           "&>> /var/log/cloud/aws/install.log < /dev/null",
+           "&"
+          ]
+         ]
+        }
+       }
+      },
+      "files": {
+       "/config/cloud/aws/custom-config.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "# Generated from 3.3.0\n",
+           "date\n",
+           ". /config/cloud/aws/onboard_config_vars\n",
+           "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
+           "tmsh create sys icall handler periodic /Common/metricUploadHandler { first-occurrence now interval 60 script /Common/uploadMetrics }\n",
+           "tmsh save /sys config\n",
+           "echo 'Attempting to Join or Initiate Autoscale Cluster' \n",
+           "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},sqsUrl:${sqsUrl},mgmtPort:${managementGuiPort} --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --password-encrypted --device-group autoscale-group --block-sync -c join --log-level silly --output /var/log/cloud/aws/autoscale.log --license-pool --big-iq-host ${bigIqAddress} --big-iq-user ${bigIqUsername} --big-iq-password-uri ${bigIqPasswordS3Arn} --license-pool-name ${bigIqLicensePoolName} \n",
+           "if [ -f /config/cloud/master ]; then \n",
+           "  if `jq '.ucsLoaded' < /config/cloud/master`; then \n",
+           "    echo \"UCS backup loaded from backup folder in S3 bucket ${s3Bucket}.\"\n",
+           "  else\n",
+           "    echo 'SELF-SELECTED as Master ... Initiated Autoscale Cluster ... Loading default config'\n",
+           "    tmsh load sys application template /config/cloud/f5.http.v1.2.0rc7.tmpl\n",
+           "    tmsh load sys application template /config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl\n",
+           "    tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\n",
+           "    ### START CUSTOM CONFIGURTION\n",
+           "    if [[ \"${appCertificateS3Arn}\" != \"default\" ]]; then\n",
+           "        f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs-aws/scripts/getCertFromS3.js ${appCertificateS3Arn}\n",
+           "        tmsh install sys crypto pkcs12 site.example.com from-local-file /config/ssl/ssl.key/${appCertificateS3Arn##*/}\n",
+           "        tmsh create ltm profile client-ssl example-clientssl-profile cert site.example.com.crt key site.example.com.key\n",
+           "    else\n",
+           "        tmsh create ltm profile client-ssl example-clientssl-profile cert default.crt key default.key\n",
+           "    fi\n",
+           "    if [ \"${applicationPoolTagKey}\" != \"default\" ]\n",
+           "    then\n",
+           "        tmsh create ltm pool ${deploymentName} { monitor http }\n",
+           "        tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc7 tables add { pool__hosts { column-names { name } rows { { row { ${deploymentName} } } } } pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { pool__pool_to_use { value /Common/${deploymentName} } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http11 }  net__vlan_mode { value all } ssl__client_ssl_profile { value /Common/example-clientssl-profile } ssl__mode { value client_ssl } ssl_encryption_questions__advanced { value yes } pool__port_secure { value ${virtualServicePort} } pool__redirect_to_https { value yes } pool__redirect_port { value 80 } }}  }}\n",
+           "        tmsh create sys application service ${deploymentName}_sd { template f5.service_discovery variables add { cloud__aws_use_role { value no } cloud__cloud_provider { value aws } cloud__aws_region { value ${region} } pool__interval { value 15 } pool__lb_method_choice { value least-connections-member } pool__member_conn_limit { value 0 } pool__pool_to_use { value /Common/${deploymentName} } pool__member_port { value ${applicationPort} } pool__public_private { value private } pool__tag_key { value ${applicationPoolTagKey} } pool__tag_value { value ${applicationPoolTagValue} } }}\n",
+           "   else\n",
+           "        tmsh create ltm node ${deploymentName} fqdn { name ${appInternalDnsName} }\n",
+           "        tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc7 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http11 }  net__vlan_mode { value all } ssl__client_ssl_profile { value /Common/example-clientssl-profile } ssl__mode { value client_ssl } ssl_encryption_questions__advanced { value yes } pool__port_secure { value ${virtualServicePort} } pool__redirect_to_https { value yes } pool__redirect_port { value 80 } }}  }}\n",
+           "    fi\n",
+           "    ### END CUSTOM CONFIGURATION\n",
+           "    tmsh save /sys config\n",
+           "    f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},sqsUrl:${sqsUrl},mgmtPort:${managementGuiPort}",
+           "      --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --password-encrypted -c unblock-sync --log-level silly --output /var/log/cloud/aws/autoscale.log --license-pool --big-iq-host ${bigIqAddress} --big-iq-user ${bigIqUsername} --big-iq-password-uri ${bigIqPasswordS3Arn} --license-pool-name ${bigIqLicensePoolName} \n",
+           "  fi\n",
+           "fi\n",
+           "(crontab -l 2>/dev/null; echo '*/1 * * * * /config/cloud/aws/run_autoscale_update.sh') | crontab -\n",
+           "(crontab -l 2>/dev/null; echo '59 23 * * * /config/cloud/aws/run_autoscale_backup.sh') | crontab -\n",
+           "tmsh save /sys config\n",
+           "date\n",
+           "echo 'custom-config.sh complete'\n"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.1.1/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
+       },
+       "/config/cloud/aws/f5.service_discovery.tmpl": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.1.1/f5-service-discovery/f5.service_discovery.tmpl"
+       },
+       "/config/cloud/aws/getNameServer.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "INTERFACE=$1",
+           "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
+           "VPC_CIDR_BLOCK=`curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+           "VPC_NET=${VPC_CIDR_BLOCK%/*}",
+           "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
+           "echo $NAME_SERVER"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/onboard_config_vars": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "# Generated from 3.3.0\n",
+           "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
+           "region='",
+           {
+            "Ref": "AWS::Region"
+           },
+           "'\n",
+           "deploymentName='",
+           {
+            "Ref": "deploymentName"
+           },
+           "'\n",
+           "adminUsername='",
+           {
+            "Ref": "adminUsername"
+           },
+           "'\n",
+           "managementGuiPort='",
+           {
+            "Ref": "managementGuiPort"
+           },
+           "'\n",
+           "timezone='",
+           {
+            "Ref": "timezone"
+           },
+           "'\n",
+           "ntpServer='",
+           {
+            "Ref": "ntpServer"
+           },
+           "'\n",
+           "virtualServicePort='",
+           {
+            "Ref": "virtualServicePort"
+           },
+           "'\n",
+           "applicationPort='",
+           {
+            "Ref": "applicationPort"
+           },
+           "'\n",
+           "appInternalDnsName='",
+           {
+            "Ref": "appInternalDnsName"
+           },
+           "'\n",
+           "applicationPoolTagKey='",
+           {
+            "Ref": "applicationPoolTagKey"
+           },
+           "'\n",
+           "applicationPoolTagValue='",
+           {
+            "Ref": "applicationPoolTagValue"
+           },
+           "'\n",
+           "s3Bucket='",
+           {
+            "Ref": "S3Bucket"
+           },
+           "'\n",
+           "sqsUrl='",
+           {
+            "Ref": "SQSQueue"
+           },
+           "'\n",
+           "bigIqAddress='",
+           {
+            "Ref": "bigIqAddress"
+           },
+           "'\n",
+           "bigIqUsername='",
+           {
+            "Ref": "bigIqUsername"
+           },
+           "'\n",
+           "bigIqPasswordS3Arn='",
+           {
+            "Ref": "bigIqPasswordS3Arn"
+           },
+           "'\n",
+           "bigIqLicensePoolName='",
+           {
+            "Ref": "bigIqLicensePoolName"
+           },
+           "'\n",
+           "bigIqLicenseUnitOfMeasure='",
+           {
+            "Ref": "bigIqLicenseUnitOfMeasure"
+           },
+           "'\n",
+           "bigIqLicenseSkuKeyword1='",
+           {
+            "Ref": "bigIqLicenseSkuKeyword1"
+           },
+           "'\n",
+           "appCertificateS3Arn='",
+           {
+            "Ref": "appCertificateS3Arn"
+           },
+           "'\n"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/run_autoscale_backup.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/autoscale.js",
+           " --cloud aws --provider-options '",
+           "s3Bucket:",
+           {
+            "Ref": "S3Bucket"
+           },
+           ",sqsUrl:",
+           {
+            "Ref": "SQSQueue"
+           },
+           ",mgmtPort:",
+           {
+            "Ref": "managementGuiPort"
+           },
+           "'",
+           " --host localhost",
+           " --port ",
+           {
+            "Ref": "managementGuiPort"
+           },
+           " --user ",
+           {
+            "Ref": "adminUsername"
+           },
+           " --password-url file:///config/cloud/aws/.adminPassword",
+           " --password-encrypted",
+           " --device-group autoscale-group",
+           " --cluster-action backup-ucs",
+           "--log-level silly --output /var/log/cloud/aws/autoscale.log --license-pool --big-iq-host ${bigIqAddress} --big-iq-user ${bigIqUsername} --big-iq-password-uri ${bigIqPasswordS3Arn} --license-pool-name ${bigIqLicensePoolName} \n"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/aws/run_autoscale_update.sh": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "#!/bin/bash\n",
+           "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/autoscale.js",
+           " --cloud aws --provider-options '",
+           "s3Bucket:",
+           {
+            "Ref": "S3Bucket"
+           },
+           ",sqsUrl:",
+           {
+            "Ref": "SQSQueue"
+           },
+           ",mgmtPort:",
+           {
+            "Ref": "managementGuiPort"
+           },
+           "'",
+           " --host localhost",
+           " --port ",
+           {
+            "Ref": "managementGuiPort"
+           },
+           " --user ",
+           {
+            "Ref": "adminUsername"
+           },
+           " --password-url file:///config/cloud/aws/.adminPassword",
+           " --password-encrypted",
+           " --device-group autoscale-group",
+           " --cluster-action update",
+           " --log-level silly --output /var/log/cloud/aws/autoscale.log ",
+           " --license-pool --big-iq-host ",
+           {
+            "Ref": "bigIqAddress"
+           },
+           " --big-iq-user ",
+           {
+            "Ref": "bigIqUsername"
+           },
+           " --big-iq-password-uri ",
+           {
+            "Ref": "bigIqPasswordS3Arn"
+           },
+           " --license-pool-name ",
+           {
+            "Ref": "bigIqLicensePoolName"
+           }
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/cloud/f5-cloud-libs-aws.tar.gz": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v2.2.1/dist/f5-cloud-libs-aws.tar.gz"
+       },
+       "/config/cloud/f5-cloud-libs.tar.gz": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v4.3.1/dist/f5-cloud-libs.tar.gz"
+       },
+       "/config/cloud/f5.http.v1.2.0rc7.tmpl": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "http://cdn.f5.com/product/blackbox/aws/f5.http.v1.2.0rc7.tmpl"
+       },
+       "/config/installCloudLibs.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "#!/bin/bash",
+           "echo about to execute",
+           "checks=0",
+           "while [ $checks -lt 120 ]; do echo checking mcpd",
+           "    tmsh -a show sys mcp-state field-fmt | grep -q running",
+           "    if [ $? == 0 ]; then",
+           "        echo mcpd ready",
+           "        break",
+           "    fi",
+           "    echo mcpd not ready yet",
+           "    let checks=checks+1",
+           "    sleep 10",
+           "done",
+           "echo loading verifyHash script",
+           "if ! tmsh load sys config merge file /config/verifyHash; then",
+           "    echo cannot validate signature of /config/verifyHash",
+           "    exit",
+           "fi",
+           "echo loaded verifyHash",
+           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\" \"/config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl\")",
+           "for fileToVerify in \"${filesToVerify[@]}\"",
+           "do",
+           "    echo verifying \"$fileToVerify\"",
+           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "        echo \"$fileToVerify\" is not valid",
+           "        exit 1",
+           "    fi",
+           "    echo verified \"$fileToVerify\"",
+           "done",
+           "mkdir -p /config/cloud/aws/node_modules/@f5devcentral",
+           "echo expanding f5-cloud-libs.tar.gz",
+           "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules/@f5devcentral",
+           "echo installing dependencies",
+           "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/@f5devcentral",
+           "tar xvfz /config/cloud/asm-policy-linux.tar.gz -C /config/cloud",
+           "echo cloud libs install complete",
+           "touch /config/cloud/cloudLibsReady"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/verifyHash": {
+        "content": {
+         "Fn::Join": [
+          "",
+          [
+           "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) ce4f117ee84dc5e05be0bb29d2536f6e8dbb8ce3d899c1c380bdab56c9584983ddc64213ef7b1dfd305ca6ad9c830d73d4c3343256822fb500c5b77f48cf1c4e\n            set hashes(f5-cloud-libs-aws.tar.gz) 01ad00f2210375e3b770151a55a28198187e74cf57aedb83da7579de821933828e7fe129a05adcb27b0d036bc185393adda5619a4c1a30a7b5d9c79d21b1f6d2\n            set hashes(f5-cloud-libs-azure.tar.gz) d5e2e26f92f61f3917d8212b71fee55e9f58811ee488137e9c28ac54e5eb2434725696af286839e8b5ea68e05078188e0ada6e215c6c233d2585fd2acca0532d\n            set hashes(f5-cloud-libs-gce.tar.gz) 67e9fef439851ad4f9fbaf3f3574dadb2fceea0b13a77ccde41bcf31c42f87d6c37c64d50d685fc9a90acedc8c80abee9114b9a232809f36746bdc8e1de1b22a\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(f5.aws_advanced_ha.v1.4.0rc3.tmpl) 2f2339b4bc3a23c9cfd42aae2a6de39ba0658366f25985de2ea53410a745f0f18eedc491b20f4a8dba8db48970096e2efdca7b8efffa1a83a78e5aadf218b134\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 592f94c6bfcf543f97632b8ac42b773e30390db77f150291815c45d7f62c30b5ade515ae7257f3bedc0329084499fdf18a6d9a93c90cade23542116edefd6849\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) a26d5c470e70b821621476bcfd0579dbc0964f6a54158bc6314fa1e2f63b23bf3f3eb43ade5081131c24e08579db2e1e574beb3f8d9789d28acb4f312fad8c3e\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature L3b5hKxLwPj6VsVBGly/pd2sMA1N+gCZfLVv0MZ071f5HM5krchDDhHrJupT4rN30OkMo0rThjV5iRGhCsx2kNqKnUtIJYGX8LrONUV9Iwb+XzfUhhTh3djK4R/NHn6RV+J8x+nrppk5D0vuVsBNim7D2/M8IdAT4QIbEW+uTZQ8EDubm6+4fC71cQoS98ebs69PhBb8u4cFWerIkBgT/ChWKahQ8GQpXgcFtI2DsjxWY9fMePf4c//EMGIeDA0ur1QZovPgWwotleAS238LPfO6brESgDm4NawKDnlKMZ9fDgUStK4jEdy/9sK870B0y8SprXonx8fhoBQE0zlsGw==\n    signing-key /Common/f5-irule\n}"
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       },
+       "/config/waitThenRun.sh": {
+        "content": {
+         "Fn::Join": [
+          "\n",
+          [
+           "#!/bin/bash",
+           "while true; do echo \"waiting for cloud libs install to complete\"",
+           "    if [ -f /config/cloud/cloudLibsReady ]; then",
+           "        break",
+           "    else",
+           "        sleep 10",
+           "    fi",
+           "done",
+           "\"$@\""
+          ]
+         ]
+        },
+        "group": "root",
+        "mode": "000755",
+        "owner": "root"
+       }
+      }
+     }
+    }
+   },
+   "Properties": {
+    "AssociatePublicIpAddress": "true",
+    "BlockDeviceMappings": [
+     {
+      "DeviceName": "/dev/xvda",
+      "Ebs": {
+       "DeleteOnTermination": "true",
+       "VolumeType": "gp2"
+      }
+     },
+     {
+      "DeviceName": "/dev/xvdb",
+      "NoDevice": "true"
+     }
+    ],
+    "IamInstanceProfile": {
+     "Ref": "BigipAutoScalingInstanceProfile"
+    },
+    "ImageId": {
+     "Fn::If": [
+      "noCustomImageId",
+      {
+       "Fn::FindInMap": [
+        "BigipRegionMap",
+        {
+         "Ref": "AWS::Region"
+        },
+        {
+         "Ref": "imageName"
+        }
+       ]
+      },
       {
        "Ref": "customImageId"
       }
      ]
     },
-    "noSkuKeyword1": {
-     "Fn::Equals": [
-      "OPTIONAL",
-      {
-       "Ref": "bigIqLicenseSkuKeyword1"
-      }
-     ]
+    "InstanceMonitoring": "false",
+    "InstanceType": {
+     "Ref": "instanceType"
     },
-    "noUnitOfMeasure": {
-     "Fn::Equals": [
-      "OPTIONAL",
-      {
-       "Ref": "bigIqLicenseUnitOfMeasure"
-      }
-     ]
+    "KeyName": {
+     "Ref": "sshKey"
     },
-    "optin": {
-     "Fn::Equals": [
-      "Yes",
-      {
-       "Ref": "allowUsageAnalytics"
-      }
-     ]
-    },
-    "noTargetGroup": {
-     "Fn::Equals": [
-      "none",
-      {
-       "Ref": "bigipNetworkLoadBalancerTargetGroupsArns"
-      }
-     ]
-    },
-    "useDefaultCert": {
-     "Fn::Equals": [
-      "default",
-      {
-       "Ref": "appCertificateS3Arn"
-      }
-     ]
-    }
-  },
-  "Description": "LTM v3.2.0: This template deploys an auto scaling group for BYOL instances BIG-IP licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the auto scaling group.",
-  "Mappings": {
-    "ByolBigipRegionMap": {
-     "ap-northeast-1": {
-      "Best": "ami-bdb4d9db",
-      "Better": "ami-58b7da3e",
-      "Good": "ami-04bad762"
-     },
-     "ap-northeast-2": {
-      "Best": "ami-26882b48",
-      "Better": "ami-49892a27",
-      "Good": "ami-d38b28bd"
-     },
-     "ap-south-1": {
-      "Best": "ami-0684d569",
-      "Better": "ami-e186d78e",
-      "Good": "ami-7e85d411"
-     },
-     "ap-southeast-1": {
-      "Best": "ami-d381f9af",
-      "Better": "ami-0d8ff771",
-      "Good": "ami-948ff7e8"
-     },
-     "ap-southeast-2": {
-      "Best": "ami-4a19e728",
-      "Better": "ami-2518e647",
-      "Good": "ami-5019e732"
-     },
-     "ca-central-1": {
-      "Best": "ami-0c2ca968",
-      "Better": "ami-082da86c",
-      "Good": "ami-df199cbb"
-     },
-     "eu-central-1": {
-      "Best": "ami-a51e87ca",
-      "Better": "ami-7511881a",
-      "Good": "ami-6d108902"
-     },
-     "eu-west-1": {
-      "Best": "ami-aca5c2d5",
-      "Better": "ami-1c593e65",
-      "Good": "ami-2aa7c053"
-     },
-     "eu-west-2": {
-      "Best": "ami-c7405aa3",
-      "Better": "ami-c54d57a1",
-      "Good": "ami-1b475d7f"
-     },
-     "sa-east-1": {
-      "Best": "ami-9a5f13f6",
-      "Better": "ami-4a5f1326",
-      "Good": "ami-105e127c"
-     },
-     "us-east-1": {
-      "Best": "ami-4af5c530",
-      "Better": "ami-f2f7c788",
-      "Good": "ami-d1f4c4ab"
-     },
-     "us-east-2": {
-      "Best": "ami-6794be02",
-      "Better": "ami-fc97bd99",
-      "Good": "ami-6094be05"
-     },
-     "us-gov-west-1": {
-      "Best": "ami-bc7af3dd",
-      "Better": "ami-d97bf2b8",
-      "Good": "ami-b266efd3"
-     },
-     "us-west-1": {
-      "Best": "ami-f2f5f892",
-      "Better": "ami-a0f5f8c0",
-      "Good": "ami-22faf742"
-     },
-     "us-west-2": {
-      "Best": "ami-ebbd0293",
-      "Better": "ami-3bbd0243",
-      "Good": "ami-e6bf009e"
+    "SecurityGroups": [
+     {
+      "Ref": "bigipExternalSecurityGroup"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": {
+      "Fn::Join": [
+       "",
+       [
+        "#!/bin/bash -x\n",
+        "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
+        {
+         "Ref": "AWS::StackId"
+        },
+        " -r BigipLaunchConfig",
+        " --region ",
+        {
+         "Ref": "AWS::Region"
+        },
+        "\n"
+       ]
+      ]
      }
     }
+   },
+   "Type": "AWS::AutoScaling::LaunchConfiguration"
   },
-  "Metadata": {
-    "AWS::CloudFormation::Interface": {
-      "ParameterGroups": [
-        {
-          "Label": {
-            "default": "DEPLOYMENT"
-          },
-          "Parameters": [
-            "deploymentName"
-          ]
-        },
-        {
-          "Label": {
-            "default": "NETWORKING CONFIGURATION"
-          },
-          "Parameters": [
-            "vpc",
-            "availabilityZones",
-            "subnets",
-            "restrictedSrcAddress",
-            "bigipNetworkLoadBalancerTargetGroupsArns"
-          ]
-        },
-        {
-          "Label": {
-              "default": "INSTANCE CONFIGURATION"
-            },
-          "Parameters": [
-            "sshKey",
-            "instanceType",
-            "throughput",
-            "imageName",
-            "customImageId",
-            "adminUsername",
-            "managementGuiPort",
-            "timezone",
-            "ntpServer"
-          ]
-        },
-        {
-          "Label": {
-            "default": "AUTO SCALING CONFIGURATION"
-          },
-          "Parameters": [
-            "scalingMinSize",
-            "scalingMaxSize",
-            "scaleDownBytesThreshold",
-            "scaleUpBytesThreshold",
-            "lowCpuThreshold",
-            "highCpuThreshold",
-            "notificationEmail"
-          ]
-        },
-        {
-          "Label": {
-            "default": "LTM VIRTUAL SERVICE CONFIGURATION"
-          },
-          "Parameters": [
-            "virtualServicePort",
-            "appCertificateS3Arn",
-            "applicationPort",
-            "appInternalDnsName",
-            "applicationPoolTagKey",
-            "applicationPoolTagValue"
-          ]
-        },
-        {
-          "Label": {
-            "default": "TAGS"
-          },
-          "Parameters": [
-            "application",
-            "environment",
-            "group",
-            "owner",
-            "costcenter"
-          ]
-        },
-        {
-         "Label": {
-          "default": "BIG-IQ LICENSING CONFIGURATION"
-         },
-         "Parameters": [
-          "bigIqAddress",
-          "bigIqUsername",
-          "bigIqPasswordS3Arn",
-          "bigIqLicensePoolName",
-          "bigIqLicenseUnitOfMeasure",
-          "bigIqLicenseSkuKeyword1"
-         ]
-        },
-        {
-         "Label": {
-          "default": "TEMPLATE ANALYTICS"
-         },
-         "Parameters": [
-          "allowUsageAnalytics"
-         ]
-        }
-      ],
-      "ParameterLabels": {
-        "deploymentName" : {
-          "default": "Deployment Name"
-        },
-        "vpc": {
-          "default": "VPC ID"
-        },
-        "allowUsageAnalytics": {
-         "default": "Send Anonymous Statistics to F5"
-        },
-        "availabilityZones": {
-          "default": "Availability Zone(s)"
-        },
-        "subnets": {
-          "default": "Subnet ID(s)"
-        },
-        "restrictedSrcAddress": {
-          "default": "Restricted Source Address"
-        },
-        "bigipNetworkLoadBalancerTargetGroupsArns": {
-          "default": "Target Group(s) of Network Load Balancer for BIG-IP VEs"
-        },
-        "sshKey": {
-          "default": "SSH Key Name"
-        },
-        "instanceType": {
-          "default": "AWS Instance Size"
-        },
-        "throughput": {
-          "default": "Maximum Throughput"
-        },
-        "customImageId": {
-          "default": "Custom Image Id"
-        },
-        "imageName": {
-          "default": "F5 Image Name"
-        },
-        "adminUsername": {
-          "default": "BIG-IP Admin User for clustering"
-        },
-        "managementGuiPort": {
-          "default": "Management Port"
-        },
-        "timezone":{
-          "default": "Timezone (Olson)"
-        },
-        "ntpServer":{
-          "default": "NTP Server"
-        },
-        "scalingMinSize": {
-          "default": "Minimum Instances"
-        },
-        "scalingMaxSize": {
-          "default": "Maximum Instances"
-        },
-        "scaleDownBytesThreshold": {
-          "default": "Scale Down Bytes Threshold"
-        },
-        "scaleUpBytesThreshold": {
-          "default": "Scale Up Bytes Threshold"
-        },
-        "highCpuThreshold": {
-          "default": "High CPU % Threshold"
-        },
-        "lowCpuThreshold": {
-          "default": "Low CPU % Threshold"
-        },
-        "notificationEmail": {
-          "default": "Notification Email"
-        },
-        "virtualServicePort": {
-          "default": "Virtual Service Port"
-        },
-        "appCertificateS3Arn": {
-          "default": "S3 ARN of the SSL Certificate used for Application"
-        },
-        "applicationPort": {
-          "default": "Application Pool Member Port"
-        },
-        "appInternalDnsName": {
-          "default": "Application Pool DNS"
-        },
-        "applicationPoolTagKey": {
-          "default": "Application Pool Tag Key"
-        },
-        "applicationPoolTagValue": {
-          "default": "Application Pool Tag Value"
-        },
-        "application": {
-          "default": "Application"
-        },
-        "environment": {
-          "default": "Environment"
-        },
-        "group": {
-          "default": "Group"
-        },
-        "owner": {
-          "default": "Owner"
-        },
-        "costcenter": {
-          "default": "Cost Center"
-        },
-        "bigIqAddress": {
-         "default": "BIG-IQ address"
-        },
-        "bigIqLicensePoolName": {
-         "default": "BIG-IQ License Pool Name"
-        },
-        "bigIqLicenseUnitOfMeasure": {
-         "default": "Unit Of Measure"
-        },
-        "bigIqLicenseSkuKeyword1": {
-         "default": "SKU Keyword 1"
-        },
-        "bigIqPasswordS3Arn": {
-         "default": "S3 ARN of the BIG-IQ Password File"
-        },
-        "bigIqUsername": {
-         "default": "BIG-IQ user with licensing priviledges"
-        }
-      }
+  "BigipLowCpuAlarm": {
+   "DependsOn": "BigipAutoscaleGroup",
+   "Properties": {
+    "ActionsEnabled": "true",
+    "AlarmActions": [
+     {
+      "Ref": "BigipScaleDownPolicy"
+     }
+    ],
+    "AlarmDescription": "CPU usage percentage below average threshold after 10 successive interval of 5 minutes",
+    "ComparisonOperator": "LessThanThreshold",
+    "EvaluationPeriods": "10",
+    "MetricName": "tmm-stat",
+    "Namespace": {
+     "Ref": "BigipAutoscaleGroup"
     },
-  "Version": "3.2.0"
-  },
-  "Parameters": {
-    "deploymentName" : {
-      "Description" : "Name the template uses to create object names",
-      "Type" : "String",
-      "MaxLength": 25,
-      "Default": "example"
-    },
-    "vpc": {
-      "Description": "VPC where you want to deploy the BIG-IP VEs",
-      "Type": "AWS::EC2::VPC::Id"
-    },
-    "allowUsageAnalytics": {
-     "AllowedValues": [
-      "Yes",
-      "No"
-     ],
-     "Default": "Yes",
-     "Description": "This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent.",
-     "Type": "String"
-    },
-    "availabilityZones": {
-      "Description": "Availability Zones where you want to deploy BIG-IP VEs (we recommend at least 2)",
-      "Type": "List<AWS::EC2::AvailabilityZone::Name>"
-    },
-    "subnets": {
-      "Description": "Public or external subnet for the availability zones",
-      "Type": "List<AWS::EC2::Subnet::Id>"
-    },
-    "restrictedSrcAddress" : {
-      "Description" : " The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances",
-      "Type": "String",
-      "MinLength": "9",
-      "MaxLength": "18",
-      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
-    },
-    "bigipNetworkLoadBalancerTargetGroupsArns": {
-      "Description": "ARN of target group(s) for AWS Network Load Balancer for the BIG-IP VEs",
-      "Type": "String",
-      "Default": "none"
-    },
-    "sshKey": {
-      "Description": "EC2 KeyPair to enable SSH access to the BIG-IP instance",
-      "Type": "AWS::EC2::KeyPair::KeyName"
-    },
-    "instanceType": {
-      "Description": "AWS Instance Size",
-      "Type": "String",
-      "Default": "m4.xlarge",
-      "AllowedValues": [
-        "t2.medium",
-        "t2.large",
-        "m3.large",
-        "m3.xlarge",
-        "m3.2xlarge",
-        "m4.large",
-        "m4.xlarge",
-        "m4.2xlarge",
-        "m4.4xlarge",
-        "m4.10xlarge",
-        "c3.xlarge",
-        "c3.2xlarge",
-        "c3.4xlarge",
-        "c3.8xlarge",
-        "c4.xlarge",
-        "c4.2xlarge",
-        "c4.4xlarge",
-        "c4.8xlarge"
-      ],
-      "ConstraintDescription": "Must be a valid BIG-IP BEST virtual EC2 instance type."
-    },
-    "customImageId": {
-     "ConstraintDescription": "Must be a valid AMI Id",
-     "Default": "OPTIONAL",
-     "Description": "If you would like to deploy using a custom BIG-IP image, provide the AMI Id.  **Note**: Unless specifically required, leave the default of **OPTIONAL**",
-     "MaxLength": 255,
-     "MinLength": 1,
-     "Type": "String"
-    },
-    "imageName": {
-      "Description": "F5 Image Name for the BIG-IP VE",
-      "Type": "String",
-      "Default": "Good",
-      "AllowedValues": [
-        "Good",
-        "Better",
-        "Best"
-      ],
-      "ConstraintDescription": "Select the F5 Image Name for the BIG-IP VE"
-    },
-    "adminUsername": {
-      "ConstraintDescription": "Verify your BIG-IP admin username. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). The user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa.",
-      "Description": "BIG-IP Admin User for clustering",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "AllowedPattern": "[a-zA-Z0-9._-]+",
-      "Default": "cluster-admin",
-      "Type": "String"
-    },
-    "managementGuiPort": {
-      "Description": "Port for the BIG-IP management Configuration utility",
-      "Type": "Number",
-      "Default": 8443,
-      "ConstraintDescription": "Must be a valid, unused port on the BIG-IP."
-    },
-    "timezone": {
-      "Description": "Olson timezone string from /usr/share/zoneinfo",
-      "Default": "UTC",
-      "Type": "String"
-    },
-    "ntpServer": {
-      "Description": "NTP server for this implementation",
-      "Default": "0.pool.ntp.org",
-      "Type": "String"
-    },
-    "scalingMinSize": {
-      "Description": "Minimum number of BIG-IP instances (1-8) you want available in the Auto Scale Group",
-      "Default": "1",
-      "ConstraintDescription": "Must be a number between 1-8",
-      "Type": "Number",
-      "MaxValue": "8",
-      "MinValue": "1"
-    },
-    "scalingMaxSize": {
-      "Description": "Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scale Group",
-      "Default": "3",
-      "ConstraintDescription": "Must be a number between 2-8.",
-      "Type": "Number",
-      "MaxValue": "8",
-      "MinValue": "2"
-    },
-    "scaleDownBytesThreshold": {
-      "Description": "Incoming bytes threshold to begin scaling down BIG-IP VE instances",
-      "Default": "10000",
-      "Type": "Number"
-    },
-    "scaleUpBytesThreshold": {
-      "Description": "Incoming bytes threshold to begin scaling up BIG-IP VE instances",
-      "Default": "35000",
-      "Type": "Number"
-    },
-    "highCpuThreshold": {
-      "Description": "High CPU % threshold to begin scaling up BIG-IP VE instances",
-      "Default": "80",
-      "Type": "Number",
-      "MaxValue": "100",
-      "MinValue": "0"
-    },
-    "lowCpuThreshold": {
-      "Description": "Low CPU % threshold to begin scaling down BIG-IP VE instances",
-      "Default": "0",
-      "Type": "Number",
-      "MaxValue": "100",
-      "MinValue": "0"
-    },
-    "notificationEmail": {
-      "Description": "Valid email address to send Auto Scaling event notifications",
-      "ConstraintDescription": "Must be a valid email address.",
-      "AllowedPattern": ".+@.+",
-      "Type": "String"
-    },
-    "virtualServicePort": {
-      "Description": "Port for the virtual service on BIG-IP VE. Must be a valid port number (1-65535) except port 80.",
-      "Default": "443",
-      "ConstraintDescription": "Must be a valid port number (1-65535) except port 80.",
-      "Type": "Number",
-      "MaxValue": "65535",
-      "MinValue": "1"
-    },
-    "appCertificateS3Arn": {
-      "ConstraintDescription": "Verify S3 ARN of pfx ssl certificate used for application",
-      "Description": "S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of pfx ssl certificate used for application - ex. arn:aws:s3:::my_corporate_bucket/website.pfx",
-      "Default": "default",
-      "MaxLength": "255",
-      "MinLength": "1",
-      "Type": "String"
-    },
-    "applicationPort": {
-      "Description": "Port for the application pool member on BIG-IP VE. Must be a valid port number (1-65535).",
-      "Default": "80",
-      "ConstraintDescription": "Must be a valid port number (1-65535).",
-      "Type": "Number",
-      "MaxValue": "65535",
-      "MinValue": "1"
-    },
-    "appInternalDnsName": {
-      "Description": "DNS name poolapp.example.com for the application pool.  This is not required if you are using the Service Discovery feature.",
-      "Type": "String",
-      "Default": "www.example.com"
-    },
-    "applicationPoolTagKey": {
-      "Description": "This is used for the Service Discovery feature. If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next.",
-      "Type": "String",
-      "Default": "default"
-    },
-    "applicationPoolTagValue": {
-      "Description": "This is used for the Service Discovery feature. If you specify a non-default value here, the template automatically discovers the pool members you have tagged with the key you specified and this value.",
-      "Type": "String",
-      "Default": "default"
-    },
-    "application": {
-      "Default": "f5app",
-      "Description": "Application Tag",
-      "Type": "String"
-    },
-    "environment": {
-      "Default": "f5env",
-      "Description": "Environment Name Tag",
-      "Type": "String"
-    },
-    "group": {
-      "Default": "f5group",
-      "Description": "Group Tag",
-      "Type": "String"
-    },
-    "owner": {
-      "Default": "f5owner",
-      "Description": "Owner Tag",
-      "Type": "String"
-    },
-    "costcenter": {
-      "Default": "f5costcenter",
-      "Description": "Cost Center Tag",
-      "Type": "String"
-    },
-    "bigIqAddress": {
-     "ConstraintDescription": "Verify IP address of the BIG-IQ device that contains the pool of licenses",
-     "Description": "IP address of the BIG-IQ device that contains the pool of BIG-IP licenses",
-     "MaxLength": "255",
-     "MinLength": "1",
-     "Type": "String"
-    },
-    "bigIqLicensePoolName": {
-     "ConstraintDescription": "Verify Name of BIG-IQ License Pool",
-     "Description": "Name of the pool on BIG-IQ that contains the BIG-IP licenses",
-     "MaxLength": "255",
-     "MinLength": "1",
-     "Type": "String"
-    },
-    "bigIqLicenseSkuKeyword1": {
-     "ConstraintDescription": "Verify the BIG-IQ license filter to use for sku keyword 1",
-     "Default": "OPTIONAL",
-     "Description": "The BIG-IQ license filter to use for sku keyword 1 during BIG-IP licensing via BIG-IQ, for example LTM, BR, BT, ASM or LTMASM. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
-     "MaxLength": "255",
-     "MinLength": "1",
-     "Type": "String"
-    },
-    "bigIqLicenseUnitOfMeasure": {
-     "ConstraintDescription": "Verify the BIG-IQ License Unit Of Measure",
-     "Default": "OPTIONAL",
-     "Description": "The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example yearly, monthly, daily or hourly. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of OPTIONAL.",
-     "MaxLength": "255",
-     "MinLength": "1",
-     "Type": "String"
-    },
-    "bigIqPasswordS3Arn": {
-     "ConstraintDescription": "Verify S3 ARN of BIG-IQ Password file",
-     "Description": "S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file",
-     "MaxLength": "255",
-     "MinLength": "1",
-     "Type": "String"
-    },
-    "bigIqUsername": {
-     "ConstraintDescription": "Verify BIG-IQ user with privileges to license BIG-IP. Can be Admin, Device Manager, or Licensing Manager",
-     "Description": "BIG-IQ user with privileges to license BIG-IP. Must be 'Admin', 'Device Manager', or 'Licensing Manager'",
-     "MaxLength": "255",
-     "MinLength": "1",
-     "Type": "String"
+    "Period": "300",
+    "Statistic": "Average",
+    "Threshold": {
+     "Ref": "lowCpuThreshold"
     }
+   },
+   "Type": "AWS::CloudWatch::Alarm"
   },
-  "Resources": {
-    "bigipSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "VpcId": {
-          "Ref": "vpc"
-        },
-        "GroupDescription": "Enable SSH access via port 22 and enable access to virtual servers on 80 and 443",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "22",
-            "ToPort": "22",
-            "CidrIp": { "Ref": "restrictedSrcAddress" }
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "80",
-            "ToPort": "80",
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "443",
-            "ToPort": "443",
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": {
-              "Ref": "managementGuiPort"
-            },
-            "ToPort": {
-              "Ref": "managementGuiPort"
-            },
-            "CidrIp": { "Ref": "restrictedSrcAddress" }
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Join": [
-                "",
-                [
-                  "BIG-IP Autoscale Security Group: ",
-                  {
-                    "Ref": "deploymentName"
-                  }
-                ]
-              ]
-            }
-          },
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "application"
-            }
-          },
-          {
-            "Key": "Environment",
-            "Value": {
-              "Ref": "environment"
-            }
-          },
-          {
-            "Key": "Group",
-            "Value": {
-              "Ref": "group"
-            }
-          },
-          {
-            "Key": "Owner",
-            "Value": {
-              "Ref": "owner"
-            }
-          },
-          {
-            "Key": "Costcenter",
-            "Value": {
-              "Ref": "costcenter"
-            }
-          }
-        ]
-      }
+  "BigipLowbytesAlarm": {
+   "DependsOn": "BigipAutoscaleGroup",
+   "Properties": {
+    "ActionsEnabled": "true",
+    "AlarmActions": [
+     {
+      "Ref": "BigipScaleDownPolicy"
+     }
+    ],
+    "AlarmDescription": "Throughput below average threshold for 10 successive intervals of 5 minutes",
+    "ComparisonOperator": "LessThanThreshold",
+    "EvaluationPeriods": "10",
+    "MetricName": "throughput-per-sec",
+    "Namespace": {
+     "Ref": "BigipAutoscaleGroup"
     },
-    "bigipSecurityGroupIngressManagementGuiPort": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "GroupId": { "Ref": "bigipSecurityGroup" },
-        "IpProtocol": "tcp",
-        "FromPort": { "Ref": "managementGuiPort" },
-        "ToPort": { "Ref": "managementGuiPort" },
-        "SourceSecurityGroupId": { "Ref": "bigipSecurityGroup" }
-      }
+    "Period": "300",
+    "Statistic": "Average",
+    "Threshold": {
+     "Ref": "scaleDownBytesThreshold"
+    }
+   },
+   "Type": "AWS::CloudWatch::Alarm"
+  },
+  "BigipScaleDownPolicy": {
+   "Properties": {
+    "AdjustmentType": "ChangeInCapacity",
+    "AutoScalingGroupName": {
+     "Ref": "BigipAutoscaleGroup"
     },
-    "bigipSecurityGroupIngressConfigSync": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "GroupId": { "Ref": "bigipSecurityGroup" },
-        "IpProtocol": "tcp",
-        "FromPort": "4353",
-        "ToPort": "4353",
-        "SourceSecurityGroupId": { "Ref": "bigipSecurityGroup" }
-      }
+    "Cooldown": "1500",
+    "ScalingAdjustment": "-1"
+   },
+   "Type": "AWS::AutoScaling::ScalingPolicy"
+  },
+  "BigipScaleUpPolicy": {
+   "Properties": {
+    "AdjustmentType": "ChangeInCapacity",
+    "AutoScalingGroupName": {
+     "Ref": "BigipAutoscaleGroup"
     },
-    "S3Bucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "AccessControl": "BucketOwnerFullControl"
-      }
-    },
-    "SQSQueue": {
-      "Type" : "AWS::SQS::Queue",
-      "Properties" : {
-        "MessageRetentionPeriod": 3600
-      }
-    },
-    "BigipAutoScalingAccessRole": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": [
-                  "ec2.amazonaws.com"
-                ]
-              },
-              "Action": [
-                "sts:AssumeRole"
-              ]
-            }
-          ]
-        },
-        "Path": "/",
-        "Policies": [
-          {
-          "Fn::If" : [
-            "useDefaultCert",
-            {
-              "PolicyName": "BigipAutoScalingAcccessPolicy",
-              "PolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "s3:ListBucket"
-                    ],
-                    "Resource": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:*:s3:::",
-                          {
-                            "Ref": "S3Bucket"
-                          }
-                        ]
-                      ]
-                    }
-                  },
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "s3:PutObject",
-                      "s3:GetObject",
-                      "s3:DeleteObject"
-                    ],
-                    "Resource": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:*:s3:::",
-                          {
-                            "Ref": "S3Bucket"
-                          },
-                          "/*"
-                        ]
-                      ]
-                    }
-                  },
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "sqs:SendMessage",
-                      "sqs:ReceiveMessage",
-                      "sqs:DeleteMessage"
-                    ],
-                    "Resource": {
-                      "Fn::GetAtt": [ "SQSQueue", "Arn" ]
-                    }
-                  },
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                        "autoscaling:DescribeAutoScalingGroups",
-                        "autoscaling:DescribeAutoScalingInstances",
-                        "autoscaling:SetInstanceProtection",
-                        "ec2:DescribeInstances",
-                        "ec2:DescribeInstanceStatus",
-                        "ec2:DescribeAddresses",
-                        "ec2:AssociateAddress",
-                        "ec2:DisassociateAddress",
-                        "ec2:DescribeNetworkInterfaces",
-                        "ec2:DescribeNetworkInterfaceAttributes",
-                        "ec2:DescribeRouteTables",
-                        "ec2:ReplaceRoute",
-                        "ec2:assignprivateipaddresses",
-                        "sts:AssumeRole",
-                        "cloudwatch:PutMetricData"
-                    ],
-                    "Resource": [
-                        "*"
-                    ]
-                  },
-                  {
-                   "Action": [
-                    "s3:GetObject"
-                   ],
-                   "Effect": "Allow",
-                   "Resource": {
-                    "Ref": "bigIqPasswordS3Arn"
-                   }
-                  }
-                ]
-              }
-            },
-            {
-              "PolicyName": "BigipAutoScalingAcccessPolicy",
-              "PolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "s3:ListBucket"
-                    ],
-                    "Resource": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:*:s3:::",
-                          {
-                            "Ref": "S3Bucket"
-                          }
-                        ]
-                      ]
-                    }
-                  },
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "s3:PutObject",
-                      "s3:GetObject",
-                      "s3:DeleteObject"
-                    ],
-                    "Resource": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:*:s3:::",
-                          {
-                            "Ref": "S3Bucket"
-                          },
-                          "/*"
-                        ]
-                      ]
-                    }
-                  },
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "sqs:SendMessage",
-                      "sqs:ReceiveMessage",
-                      "sqs:DeleteMessage"
-                    ],
-                    "Resource": {
-                      "Fn::GetAtt": [ "SQSQueue", "Arn" ]
-                    }
-                  },
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                        "autoscaling:DescribeAutoScalingGroups",
-                        "autoscaling:DescribeAutoScalingInstances",
-                        "autoscaling:SetInstanceProtection",
-                        "ec2:DescribeInstances",
-                        "ec2:DescribeInstanceStatus",
-                        "ec2:DescribeAddresses",
-                        "ec2:AssociateAddress",
-                        "ec2:DisassociateAddress",
-                        "ec2:DescribeNetworkInterfaces",
-                        "ec2:DescribeNetworkInterfaceAttributes",
-                        "ec2:DescribeRouteTables",
-                        "ec2:ReplaceRoute",
-                        "ec2:assignprivateipaddresses",
-                        "sts:AssumeRole",
-                        "cloudwatch:PutMetricData"
-                    ],
-                    "Resource": [
-                        "*"
-                    ]
-                  },
-                  {
-                   "Action": [
-                    "s3:GetObject"
-                   ],
-                   "Effect": "Allow",
-                   "Resource": {
-                    "Ref": "bigIqPasswordS3Arn"
-                   }
-                  },
-                  {
-                   "Action": [
-                    "s3:GetObject"
-                   ],
-                   "Effect": "Allow",
-                   "Resource": {
-                    "Ref": "appCertificateS3Arn"
-                   }
-                  }
-                ]
-              }
-            }
-          ]
-          }
-        ]
-      }
-    },
-    "BigipAutoScalingInstanceProfile": {
-      "Type": "AWS::IAM::InstanceProfile",
-      "Properties": {
-        "Path": "/",
-        "Roles": [
-          {
-            "Ref": "BigipAutoScalingAccessRole"
-          }
-        ]
-      }
-    },
-    "SNSTopic": {
-      "Type": "AWS::SNS::Topic",
-      "Properties": {
-        "Subscription": [
-          {
-            "Endpoint": {
-              "Ref": "notificationEmail"
-            },
-            "Protocol": "email"
-          }
-        ]
-      }
-    },
-    "BigipLaunchConfig": {
-      "Type": "AWS::AutoScaling::LaunchConfiguration",
-      "Metadata": {
-        "AWS::CloudFormation::Init": {
-          "config": {
-            "files": {
-              "/config/cloud/f5.http.v1.2.0rc7.tmpl": {
-                "source": "http://cdn.f5.com/product/blackbox/aws/f5.http.v1.2.0rc7.tmpl",
-                "mode": "000644",
-                "owner": "root",
-                "group": "root"
-              },
-              "/config/cloud/f5-cloud-libs.tar.gz": {
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v4.2.0/dist/f5-cloud-libs.tar.gz",
-                "mode": "000644",
-                "owner": "root",
-                "group": "root"
-              },
-              "/config/cloud/f5-cloud-libs-aws.tar.gz": {
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v2.1.0/dist/f5-cloud-libs-aws.tar.gz",
-                "mode": "000644",
-                "owner": "root",
-                "group": "root"
-              },
-              "/config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl": {
-                "group": "root",
-                "mode": "000644",
-                "owner": "root",
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.0.3/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
-              },
-              "/config/cloud/aws/f5.service_discovery.tmpl": {
-                "group": "root",
-                "mode": "000644",
-                "owner": "root",
-                "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.0.3/f5-service-discovery/f5.service_discovery.tmpl"
-              },
-              "/config/cloud/aws/onboard_config_vars": {
-                "content": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "#!/bin/bash\n",
-                      "# Generated from v3.2.0\n",
-                      "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
-                      "region='",{"Ref": "AWS::Region"},"'\n",
-                      "deploymentName='",{"Ref": "deploymentName"},"'\n",
-                      "adminUsername='",{"Ref": "adminUsername"},"'\n",
-                      "managementGuiPort='",{"Ref": "managementGuiPort"},"'\n",
-                      "timezone='",{"Ref": "timezone"},"'\n",
-                      "ntpServer='",{"Ref": "ntpServer"},"'\n",
-                      "virtualServicePort='",{"Ref": "virtualServicePort"},"'\n",
-                      "applicationPort='",{"Ref": "applicationPort"},"'\n",
-                      "appInternalDnsName='",{"Ref": "appInternalDnsName"},"'\n",
-                      "applicationPoolTagKey='",{"Ref": "applicationPoolTagKey"},"'\n",
-                      "applicationPoolTagValue='",{"Ref": "applicationPoolTagValue"},"'\n",
-                      "s3Bucket='",{"Ref": "S3Bucket"},"'\n",
-                      "sqsUrl='",{"Ref": "SQSQueue"},"'\n",
-                      "bigIqAddress='",{"Ref": "bigIqAddress"},"'\n",
-                      "bigIqUsername='",{"Ref": "bigIqUsername"},"'\n",
-                      "bigIqPasswordS3Arn='",{"Ref": "bigIqPasswordS3Arn"},"'\n",
-                      "bigIqLicensePoolName='",{"Ref": "bigIqLicensePoolName"},"'\n",
-                      "bigIqLicenseUnitOfMeasure='",{"Ref": "bigIqLicenseUnitOfMeasure"},"'\n",
-                      "bigIqLicenseSkuKeyword1='",{"Ref": "bigIqLicenseSkuKeyword1"},"'\n",
-                      "appCertificateS3Arn='",{"Ref": "appCertificateS3Arn"},"'\n"
-                    ]
-                  ]
-                }
-              },
-              "/config/verifyHash": {
-                "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) a1de46685e31463e6c103078797b90e5f29a4b94702b0522eef2364c3792414067a0bea50c4ed49784c14277a578d8b41f9ac7ba058d9ff72ef687034e5119c6\n            set hashes(f5-cloud-libs-aws.tar.gz) d0803e306c01bdf82895c8f30f3b3c2df5f76edbe1875c0ffbfea6864436ece54a73ffd02ccd1b889c324b093897702087b722f10cc7f87994f518f81d7260ea\n            set hashes(f5-cloud-libs-azure.tar.gz) a1f264a165b88c03f55d49afb4fdb5f63d80755f1afe947a02e4a36755c7fcec432495417d8084329c6c14e4c426c2e63bab92862afb760d63f584a570b119e6\n            set hashes(f5-cloud-libs-gce.tar.gz) c01b25f4d6f48d9ac21b1a6ba3553c978e4fb8ce8655947a307f27e67833c4bebf8b72fef108ea02e11b5e9aa35d33e39db8624b3db34de509d0d79959c754c7\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(f5.aws_advanced_ha.v1.4.0rc3.tmpl) 2f2339b4bc3a23c9cfd42aae2a6de39ba0658366f25985de2ea53410a745f0f18eedc491b20f4a8dba8db48970096e2efdca7b8efffa1a83a78e5aadf218b134\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 7a4660468dffdc4f6d9aec4c1f9d22abfb3e484e7d6fe6a12fc9ab3eec3819dc34d133aea3cce4fdd87a0f4045069270061f2ea1ee7735922e4371592e498a0b\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) a26d5c470e70b821621476bcfd0579dbc0964f6a54158bc6314fa1e2f63b23bf3f3eb43ade5081131c24e08579db2e1e574beb3f8d9789d28acb4f312fad8c3e\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature jJpTQ0bcHm9SypZSOPeKaHoUKRdTyLbz80xHYXy39dWx76geCGT5otZi4SdqGBiiwKFydQTqSVu+Uzj8TQZGg2fbxKg/Ks28Ht+nvLoTiNwZGY5o+iPse45QvltBvE+aCOIaw8a5ZBd5ZMF7A8JQpTwttUFRjFgXFu9CncAWOTypov46ve9dzRW8dRPbAImaJSby38jUIVWjv2iB3qZHz//bXjdZ5qUpFvpPH5dGzYN5SoQmUVI3kbiOpZlRJcSj8cKzQ7EsQozile5JkzPrzUeeMgOHihAZcOzgvYWl2LYe9iedixzF7ci6d4YNUuUhFfyrlrUOZSMUPtRzM3+rYQ==\n    signing-key /Common/f5-irule\n}",
-                "group": "root",
-                "mode": "000755",
-                "owner": "root"
-              },
-              "/config/cloud/aws/run_autoscale_update.sh": {
-                "content": {
-                  "Fn::Join": [
-                      "",
-                      [
-                          "#!/bin/bash\n",
-                          "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/autoscale.js",
-                          " --cloud aws --provider-options '",
-                          "s3Bucket:",
-                          {"Ref": "S3Bucket"},
-                          ",sqsUrl:",
-                          {"Ref": "SQSQueue"},
-                          ",mgmtPort:",
-                          {"Ref": "managementGuiPort"},
-                          "'",
-                          " --host localhost",
-                          " --port ",
-                          {"Ref": "managementGuiPort"},
-                          " --user ",
-                          {"Ref": "adminUsername"},
-                          " --password-url file:///config/cloud/aws/.adminPassword",
-                          " --password-encrypted",
-                          " --device-group autoscale-group",
-                          " --cluster-action update",
-                          " --log-level info --output /var/log/cloud/aws/cloud/aws/aws-autoscale.log\n"
-                      ]
-                  ]
-                },
-                "mode": "000755",
-                "owner": "root",
-                "group": "root"
-              },
-              "/config/cloud/aws/run_autoscale_backup.sh": {
-                "content": {
-                  "Fn::Join": [
-                      "",
-                      [
-                          "#!/bin/bash\n",
-                          "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/autoscale.js",
-                          " --cloud aws --provider-options '",
-                          "s3Bucket:",
-                          {"Ref": "S3Bucket"},
-                          ",sqsUrl:",
-                          {"Ref": "SQSQueue"},
-                          ",mgmtPort:",
-                          {"Ref": "managementGuiPort"},
-                          "'",
-                          " --host localhost",
-                          " --port ",
-                          {"Ref": "managementGuiPort"},
-                          " --user ",
-                          {"Ref": "adminUsername"},
-                          " --password-url file:///config/cloud/aws/.adminPassword",
-                          " --password-encrypted",
-                          " --device-group autoscale-group",
-                          " --cluster-action backup-ucs",
-                          " --log-level info --output /var/log/cloud/aws/aws-autoscale.log\n"
-                      ]
-                  ]
-                },
-                "mode": "000755",
-                "owner": "root",
-                "group": "root"
-              },
-              "/config/cloud/aws/custom-config.sh": {
-                "content": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "#!/bin/bash\n",
-                      "# Generated from v3.2.0\n",
-                      "date\n",
-                      ". /config/cloud/aws/onboard_config_vars\n",
-                      "echo \"applicationPoolTagKey=$applicationPoolTagKey\" \n",
-                      "echo \"applicationPoolTagValue=$applicationPoolTagValue\" \n",
-                      "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
-                      "tmsh create sys icall handler periodic /Common/metricUploadHandler { first-occurrence now interval 60 script /Common/uploadMetrics }\n",
-                      "tmsh save /sys config\n",
-                      "echo 'Attempting to Join or Initiate LTM Autoscale Cluster' \n",
-                      "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},sqsUrl:${sqsUrl},mgmtPort:${managementGuiPort} --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --password-encrypted --device-group autoscale-group --block-sync -c join --log-level info --output /var/log/cloud/aws/cloud/aws/aws-autoscale.log\n",
-                      "if [ -f /config/cloud/master ]; then \n",
-                      "  if `jq '.ucsLoaded' < /config/cloud/master`; then \n",
-                      "    echo \"UCS backup loaded from backup folder in S3 bucket ${s3Bucket}.\"\n",
-                      "  else\n",
-                      "    echo 'SELF-SELECTED as LTM Master ... Initiated LTM Autoscale Cluster ... Loading default config'\n",
-                      "    tmsh load sys application template /config/cloud/f5.http.v1.2.0rc7.tmpl\n",
-                      "    tmsh load sys application template /config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl\n",
-                      "    tmsh load sys application template /config/cloud/aws/f5.service_discovery.tmpl\n",
-                      "    ### START CUSTOM CONFIGURTION: \n",
-                      "    if [[ \"${appCertificateS3Arn}\" != \"default\" ]]; then\n",
-                      "        f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs-aws/scripts/getCertFromS3.js ${appCertificateS3Arn}\n",
-                      "        tmsh install sys crypto pkcs12 site.example.com from-local-file /config/ssl/ssl.key/${appCertificateS3Arn##*/}\n",
-                      "        tmsh create ltm profile client-ssl example-clientssl-profile cert site.example.com.crt key site.example.com.key\n",
-                      "    else\n",
-                      "        tmsh create ltm profile client-ssl example-clientssl-profile cert default.crt key default.key\n",
-                      "    fi\n",
-                      "    if [ \"${applicationPoolTagKey}\" != \"default\" ]\n",
-                      "    then\n",
-                      "        tmsh create ltm pool ${deploymentName} { monitor http }\n",
-                      "        tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc7 tables add { pool__hosts { column-names { name } rows { { row { ${deploymentName} } } } }  pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { pool__pool_to_use { value /Common/${deploymentName} } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } net__vlan_mode { value all } monitor__http_version { value http11 } ssl__client_ssl_profile { value /Common/example-clientssl-profile } ssl__mode { value client_ssl } ssl_encryption_questions__advanced { value yes } pool__port_secure { value ${virtualServicePort} } pool__redirect_to_https { value yes } pool__redirect_port { value 80 } }}\n",
-                      "        tmsh create sys application service ${deploymentName}_sd { template f5.service_discovery variables add { cloud__aws_use_role { value no } cloud__cloud_provider { value aws } cloud__aws_region { value ${region} } pool__interval { value 15 } pool__lb_method_choice { value least-connections-member } pool__member_conn_limit { value 0 } pool__pool_to_use { value /Common/${deploymentName} } pool__member_port { value ${applicationPort} } pool__public_private { value private } pool__tag_key { value ${applicationPoolTagKey} } pool__tag_value { value ${applicationPoolTagValue} } }}\n",
-                      "    else\n",
-                      "        tmsh create ltm node ${deploymentName} fqdn { name ${appInternalDnsName} }\n",
-                      "        tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc7 tables add { pool__hosts { column-names { name } rows { { row { ${deploymentName} } } } }  pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}} } variables add {  pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } net__vlan_mode { value all } monitor__http_version { value http11 } ssl__client_ssl_profile { value /Common/example-clientssl-profile } ssl__mode { value client_ssl } ssl_encryption_questions__advanced { value yes } pool__port_secure { value ${virtualServicePort} } pool__redirect_to_https { value yes } pool__redirect_port { value 80 }  }}\n",
-                      "    fi\n",
-                      "    ### END CUSTOM CONFIGURATION\n",
-                      "    tmsh save /sys config\n",
-                      "    f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/autoscale.js --cloud aws --provider-options s3Bucket:${s3Bucket},sqsUrl:${sqsUrl},mgmtPort:${managementGuiPort}",
-                      "      --host localhost --port ${managementGuiPort} --user ${adminUsername} --password-url file:///config/cloud/aws/.adminPassword --password-encrypted --log-level info -c unblock-sync\n",
-                      "  fi\n",
-                      "fi\n",
-                      "(crontab -l 2>/dev/null; echo '*/2 * * * * /config/cloud/aws/run_autoscale_update.sh') | crontab -\n",
-                      "(crontab -l 2>/dev/null; echo '59 23 * * * /config/cloud/aws/run_autoscale_backup.sh') | crontab -\n",
-                      "tmsh save /sys config\n",
-                      "date\n",
-                      "echo 'custom-config.sh complete'\n"
-                    ]
-                  ]
-                },
-                "mode": "000755",
-                "owner": "root",
-                "group": "root"
-              },
-              "/config/installCloudLibs.sh": {
-                "content": {
-                  "Fn::Join": [
-                    "\n",
-                    [
-                      "#!/bin/bash",
-                      "# Generated from v3.2.0\n",
-                      "echo about to execute",
-                      "checks=0",
-                      "while [ $checks -lt 120 ]; do echo checking mcpd",
-                      "    tmsh -a show sys mcp-state field-fmt | grep -q running",
-                      "    if [ $? == 0 ]; then",
-                      "        echo mcpd ready",
-                      "        break",
-                      "    fi",
-                      "    echo mcpd not ready yet",
-                      "    let checks=checks+1",
-                      "    sleep 10",
-                      "done",
-                      "echo loading verifyHash script",
-                      "if ! tmsh load sys config merge file /config/verifyHash; then",
-                      "    echo cannot validate signature of /config/verifyHash",
-                      "    exit",
-                      "fi",
-                      "echo loaded verifyHash",
-                      "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/aws/f5.service_discovery.tmpl\" \"/config/cloud/aws/f5.cloud_logger.v1.0.0.tmpl\")",
-                      "for fileToVerify in \"${filesToVerify[@]}\"",
-                      "do",
-                      "    echo verifying \"$fileToVerify\"",
-                      "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-                      "       echo \"$fileToVerify\" is not valid",
-                      "        exit 1",
-                      "    fi",
-                      "    echo verified \"$fileToVerify\"",
-                      "done",
-                      "mkdir -p /config/cloud/aws/node_modules/@f5devcentral",
-                      "echo expanding f5-cloud-libs.tar.gz",
-                      "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules/@f5devcentral",
-                      "echo installing dependencies",
-                      "tar xvfz /config/cloud/f5-cloud-libs-aws.tar.gz -C /config/cloud/aws/node_modules/@f5devcentral",
-                      "echo cloud libs install complete",
-                      "touch /config/cloud/cloudLibsReady"
-                    ]
-                  ]
-                },
-                "mode": "000755",
-                "owner": "root",
-                "group": "root"
-              },
-              "/config/cloud/getNameServer.sh": {
-                "content": {
-                  "Fn::Join": [
-                    "\n",
-                    [
-                      "# Generated from v3.2.0\n",
-                      "INTERFACE=$1",
-                      "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep HWaddr | awk '{print tolower($5)}'`",
-                      "VPC_CIDR_BLOCK=`curl -s http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
-                      "VPC_NET=${VPC_CIDR_BLOCK%/*}",
-                      "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
-                      "echo $NAME_SERVER"
-                    ]
-                  ]
-                },
-                "mode": "000755",
-                "owner": "root",
-                "group": "root"
-              },
-              "/config/cloud/waitThenRun.sh": {
-                "content": {
-                  "Fn::Join": [
-                    "\n",
-                    [
-                      "#!/bin/bash",
-                      "# Generated from v3.2.0\n",
-                      "while true; do echo waiting for cloud libs install to complete",
-                      "    if [ -f /config/cloud/cloudLibsReady ]; then",
-                      "        echo cloud libs installed",
-                      "        break",
-                      "    else",
-                      "        sleep 10",
-                      "    fi",
-                      "done",
-                      "\"$@\""
-                    ]
-                  ]
-                },
-                "mode": "000755",
-                "owner": "root",
-                "group": "root"
-              }
-            },
-            "commands": {
-              "000-disable-1nicautoconfig": {
-                "command": "/usr/bin/setdb provision.1nicautoconfig disable"
-              },
-              "010-install-libs": {
-                "command": "mkdir -p /var/log/cloud/aws; nohup /config/installCloudLibs.sh &> /var/log/cloud/aws/cloudlibs-install.log < /dev/null &"
-              },
-              "020-generate-password": {
-                "command": {
-                 "Fn::Join": [
-                  "",
-                  [
-                   "nohup /config/cloud/waitThenRun.sh",
-                   " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
-                   " --signal PASSWORD_CREATED",
-                   " --file f5-rest-node",
-                   " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
-                   " --log-level info",
-                   " -o /var/log/cloud/aws/generatePassword.log",
-                   " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
-                   " &"
-                  ]
-                 ]
-                }
-              },
-              "030-create-admin-user": {
-                "command": {
-                 "Fn::Join": [
-                  "",
-                  [
-                   "nohup /config/cloud/waitThenRun.sh",
-                   " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
-                   " --wait-for PASSWORD_CREATED",
-                   " --signal ADMIN_CREATED",
-                   " --file /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/createUser.sh",
-                   " --cl-args '--user ",
-                   { "Ref": "adminUsername" },
-                   " --password-file /config/cloud/aws/.adminPassword",
-                   " --password-encrypted",
-                   "'",
-                   " --log-level info",
-                   " -o /var/log/cloud/aws/createUser.log",
-                   " &>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
-                   " &"
-                  ]
-                 ]
-                }
-              },
-              "040-network-config": {
-                "command": {
-                  "Fn::Join": [
-                    " ",
-                    [
-                      "nohup /config/cloud/waitThenRun.sh",
-                      "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
-                      "--file /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/aws/1nicSetup.sh",
-                      "--cwd /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/aws",
-                      "--log-level info",
-                      "-o /var/log/cloud/aws/1nicSetup.log",
-                      "--wait-for ADMIN_CREATED",
-                      "--signal NETWORK_CONFIG_DONE",
-                      "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
-                      "&"
-                    ]
-                  ]
-                }
-              },
-              "050-onboard-BIG-IP": {
-                "command": {
-                 "Fn::If": [
-                  "optin",
-                  {
-                    "Fn::Join": [
-                      " ",
-                      [
-                        "DEPLOYMENTID=`echo \"",
-                        {
-                        "Ref": "AWS::StackId"
-                        },
-                        "\"|sha512sum|cut -d \" \" -f 1`;",
-                        "CUSTOMERID=`echo \"",
-                        {
-                        "Ref": "AWS::AccountId"
-                        },
-                        "\"|sha512sum|cut -d \" \" -f 1`;",
-                        "NAME_SERVER=`/config/cloud/getNameServer.sh eth0`;",
-                        "nohup /config/cloud/waitThenRun.sh",
-                        "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
-                        "--log-level info",
-                        "--wait-for NETWORK_CONFIG_DONE",
-                        "-o /var/log/cloud/aws/cloud/aws/onboard.log",
-                        "--host localhost",
-                        "--user",
-                        { "Ref": "adminUsername" },
-                        "--password-url file:///config/cloud/aws/.adminPassword",
-                        "--password-encrypted",
-                        "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
-                        "--ntp ",
-                        { "Ref": "ntpServer" },
-                        "--tz ",
-                        { "Ref": "timezone" },
-                        "--dns ${NAME_SERVER}",
-                        "--port 8443",
-                        "--ssl-port ",
-                        { "Ref": "managementGuiPort" },
-                        "--module ltm:nominal",
-                        "--metrics \"cloudName:aws,region:${region},bigipVersion:13.1.0.2-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-ltm-nlb.template,templateVersion:3.2.0,licenseType:bigiq\"",
-                        "--license-pool --cloud aws",
-                        "--big-iq-host",
-                        {
-                        "Ref": "bigIqAddress"
-                        },
-                        "--big-iq-user ",
-                        {
-                        "Ref": "bigIqUsername"
-                        },
-                        "--big-iq-password-uri ",
-                        {
-                        "Ref": "bigIqPasswordS3Arn"
-                        },
-                        "--license-pool-name ",
-                        {
-                        "Ref": "bigIqLicensePoolName"
-                        },
-                        "--unit-of-measure ",
-                        {
-                        "Fn::If": [
-                         "noUnitOfMeasure",
-                         {
-                          "Ref": "AWS::NoValue"
-                         },
-                         {
-                          "Ref": "bigIqLicenseUnitOfMeasure"
-                         }
-                        ]
-                        },
-                        "--sku-keyword-1 ",
-                        {
-                        "Fn::If": [
-                         "noSkuKeyword1",
-                         {
-                          "Ref": "AWS::NoValue"
-                         },
-                         {
-                          "Ref": "bigIqLicenseSkuKeyword1"
-                         }
-                        ]
-                        },
-                        "--ping",
-                        "&>> /var/log/cloud/aws/cloud/aws/cloudlibs-install.log < /dev/null",
-                        "&"
-                      ]
-                    ]
-                  },
-                  {
-                    "Fn::Join": [
-                      " ",
-                      [
-                        "NAME_SERVER=`/config/cloud/getNameServer.sh eth0`;",
-                        "nohup /config/cloud/waitThenRun.sh",
-                        "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
-                        "--log-level info",
-                        "--wait-for NETWORK_CONFIG_DONE",
-                        "-o /var/log/cloud/aws/cloud/aws/onboard.log",
-                        "--host localhost",
-                        "--user",
-                        { "Ref": "adminUsername" },
-                        "--password-url file:///config/cloud/aws/.adminPassword",
-                        "--password-encrypted",
-                        "--hostname `curl http://169.254.169.254/latest/meta-data/hostname`",
-                        "--ntp ",
-                        { "Ref": "ntpServer" },
-                        "--tz ",
-                        { "Ref": "timezone" },
-                        "--dns ${NAME_SERVER}",
-                        "--port 8443",
-                        "--ssl-port ",
-                        { "Ref": "managementGuiPort" },
-                        "--module ltm:nominal",
-                        "--license-pool --cloud aws",
-                        "--big-iq-host",
-                        {
-                        "Ref": "bigIqAddress"
-                        },
-                        "--big-iq-user ",
-                        {
-                        "Ref": "bigIqUsername"
-                        },
-                        "--big-iq-password-uri ",
-                        {
-                        "Ref": "bigIqPasswordS3Arn"
-                        },
-                        "--license-pool-name ",
-                        {
-                        "Ref": "bigIqLicensePoolName"
-                        },
-                        "--unit-of-measure ",
-                        {
-                        "Fn::If": [
-                         "noUnitOfMeasure",
-                         {
-                          "Ref": "AWS::NoValue"
-                         },
-                         {
-                          "Ref": "bigIqLicenseUnitOfMeasure"
-                         }
-                        ]
-                        },
-                        "--sku-keyword-1 ",
-                        {
-                        "Fn::If": [
-                         "noSkuKeyword1",
-                         {
-                          "Ref": "AWS::NoValue"
-                         },
-                         {
-                          "Ref": "bigIqLicenseSkuKeyword1"
-                         }
-                        ]
-                        },
-                        "--ping",
-                        "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
-                        "&"
-                      ]
-                    ]
-                  }
-                 ]
-                }
-              },
-              "060-custom-config": {
-                "command": {
-                  "Fn::Join": [
-                    " ",
-                    [
-                      "nohup /config/cloud/waitThenRun.sh",
-                      "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
-                      "--log-level info",
-                      "--file /config/cloud/aws/custom-config.sh",
-                      "--cwd /config/cloud/aws",
-                      "-o /var/log/cloud/aws/custom-config.log",
-                      "--wait-for ONBOARD_DONE",
-                      "&>> /var/log/cloud/aws/cloudlibs-install.log < /dev/null",
-                      "&"
-                    ]
-                  ]
-                }
-              }
-            }
-          }
-        }
+    "Cooldown": "1500",
+    "ScalingAdjustment": "1"
+   },
+   "Type": "AWS::AutoScaling::ScalingPolicy"
+  },
+  "S3Bucket": {
+   "Properties": {
+    "AccessControl": "BucketOwnerFullControl"
+   },
+   "Type": "AWS::S3::Bucket"
+  },
+  "SNSTopic": {
+   "Properties": {
+    "Subscription": [
+     {
+      "Endpoint": {
+       "Ref": "notificationEmail"
       },
-      "Properties": {
-        "BlockDeviceMappings": [
+      "Protocol": "email"
+     }
+    ]
+   },
+   "Type": "AWS::SNS::Topic"
+  },
+  "SQSQueue": {
+   "Properties": {
+    "MessageRetentionPeriod": 3600
+   },
+   "Type": "AWS::SQS::Queue"
+  },
+  "bigipExternalSecurityGroup": {
+   "Properties": {
+    "GroupDescription": "Public or External interface rules, including BIG-IP management",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
+     },
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
+      "FromPort": {
+       "Ref": "managementGuiPort"
+      },
+      "IpProtocol": "tcp",
+      "ToPort": {
+       "Ref": "managementGuiPort"
+      }
+     },
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddressApp"
+      },
+      "FromPort": "80",
+      "IpProtocol": "tcp",
+      "ToPort": "80"
+     },
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddressApp"
+      },
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Bigip Security Group: ",
          {
-          "DeviceName": "/dev/xvda",
-          "Ebs": {
-           "DeleteOnTermination": "true",
-           "VolumeType": "gp2"
-          }
-         },
-         {
-          "DeviceName": "/dev/xvdb",
-          "NoDevice": "true"
+          "Ref": "AWS::StackName"
          }
-        ],
-        "AssociatePublicIpAddress": true,
-        "ImageId": {
-         "Fn::If": [
-          "noCustomImageId",
-          {
-            "Fn::FindInMap": [
-              "ByolBigipRegionMap",
-              {
-                "Ref": "AWS::Region"
-              },
-              {
-                "Ref": "imageName"
-              }
-            ]
-          },
-          {
-            "Ref": "customImageId"
-          }
-         ]
-        },
-        "InstanceMonitoring": false,
-        "InstanceType": {
-          "Ref": "instanceType"
-        },
-        "IamInstanceProfile": {
-          "Ref": "BigipAutoScalingInstanceProfile"
-        },
-        "KeyName": {
-          "Ref": "sshKey"
-        },
-        "SecurityGroups": [
-          {
-            "Ref": "bigipSecurityGroup"
-          }
-        ],
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "#!/bin/bash -x\n",
-                "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
-                {
-                  "Ref": "AWS::StackId"
-                },
-                " -r BigipLaunchConfig",
-                " --region ",
-                {
-                  "Ref": "AWS::Region"
-                },
-                "\n"
-              ]
-            ]
-          }
-        }
-      }
-    },
-    "BigipAutoscaleGroup": {
-      "Type": "AWS::AutoScaling::AutoScalingGroup",
-      "Properties": {
-        "VPCZoneIdentifier": { "Ref": "subnets" },
-        "Cooldown": "1500",
-        "TargetGroupARNs": [
-          {"Fn::If": ["noTargetGroup",
-            {"Ref" : "AWS::NoValue"},
-            {"Ref": "bigipNetworkLoadBalancerTargetGroupsArns"}
-          ]}
-        ],
-        "HealthCheckGracePeriod": "1500",
-        "HealthCheckType": "EC2",
-        "LaunchConfigurationName": {
-          "Ref": "BigipLaunchConfig"
-        },
-        "MaxSize": {
-          "Ref": "scalingMaxSize"
-        },
-        "MinSize": {
-          "Ref": "scalingMinSize"
-        },
-        "DesiredCapacity" : {
-          "Ref": "scalingMinSize"
-        },
-        "MetricsCollection": [
-          {
-            "Granularity": "1Minute"
-          }
-        ],
-        "NotificationConfigurations": [
-          {
-            "TopicARN": {
-              "Ref": "SNSTopic"
-            },
-            "NotificationTypes": [
-              "autoscaling:EC2_INSTANCE_LAUNCH",
-              "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
-              "autoscaling:EC2_INSTANCE_TERMINATE",
-              "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
-            ]
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Join": [
-                "",
-                [
-                  "BIG-IP Autoscale Instance: ",
-                  {
-                    "Ref": "deploymentName"
-                  }
-                ]
-              ]
-            },
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "Application",
-            "Value": {
-              "Ref": "application"
-            },
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "Environment",
-            "Value": {
-              "Ref": "environment"
-            },
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "Group",
-            "Value": {
-              "Ref": "group"
-            },
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "Owner",
-            "Value": {
-              "Ref": "owner"
-            },
-            "PropagateAtLaunch": true
-          },
-          {
-            "Key": "Costcenter",
-            "Value": {
-              "Ref": "costcenter"
-            },
-            "PropagateAtLaunch": true
-          }
         ]
-      },
-      "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "MaxBatchSize": "1",
-          "MinInstancesInService": "1",
-          "PauseTime": "PT30M"
-        }
+       ]
       }
-    },
-    "BigipScaleUpPolicy": {
-      "Type": "AWS::AutoScaling::ScalingPolicy",
-      "Properties": {
-        "AdjustmentType": "ChangeInCapacity",
-        "AutoScalingGroupName": {
-          "Ref": "BigipAutoscaleGroup"
-        },
-        "Cooldown": "1500",
-        "ScalingAdjustment": "1"
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
       }
-    },
-    "BigipScaleDownPolicy": {
-      "Type": "AWS::AutoScaling::ScalingPolicy",
-      "Properties": {
-        "AdjustmentType": "ChangeInCapacity",
-        "AutoScalingGroupName": {
-          "Ref": "BigipAutoscaleGroup"
-        },
-        "Cooldown": "1500",
-        "ScalingAdjustment": "-1"
-      }
-    },
-    "BigipHighbytesAlarm": {
-      "Type": "AWS::CloudWatch::Alarm",
-      "DependsOn": "BigipAutoscaleGroup",
-      "Properties": {
-        "ActionsEnabled": "True",
-        "AlarmActions": [
-          {
-            "Ref": "BigipScaleUpPolicy"
-          }
-        ],
-        "AlarmDescription": "Throughput exceeds average threshold after 1 successive interval of 1 minute",
-        "ComparisonOperator": "GreaterThanThreshold",
-        "EvaluationPeriods": "1",
-        "MetricName": "throughput-per-sec",
-        "Namespace": {
-          "Ref": "BigipAutoscaleGroup"
-        },
-        "Period": "60",
-        "Statistic": "Average",
-        "Threshold": {
-          "Ref": "scaleUpBytesThreshold"
-        }
-      }
-    },
-    "BigipLowbytesAlarm": {
-      "Type": "AWS::CloudWatch::Alarm",
-      "DependsOn": "BigipAutoscaleGroup",
-      "Properties": {
-        "ActionsEnabled": "True",
-        "AlarmActions": [
-          {
-            "Ref": "BigipScaleDownPolicy"
-          }
-        ],
-        "AlarmDescription": "Throughput below average threshold for 10 successive intervals of 5 minutes",
-        "ComparisonOperator": "LessThanThreshold",
-        "EvaluationPeriods": "10",
-        "MetricName": "throughput-per-sec",
-        "Namespace": {
-          "Ref": "BigipAutoscaleGroup"
-        },
-        "Period": "300",
-        "Statistic": "Average",
-        "Threshold": {
-          "Ref": "scaleDownBytesThreshold"
-        }
-      }
-    },
-    "BigipHighCpuAlarm": {
-      "Type": "AWS::CloudWatch::Alarm",
-      "DependsOn": "BigipAutoscaleGroup",
-      "Properties": {
-        "ActionsEnabled": "True",
-        "AlarmActions": [
-          {
-            "Ref": "BigipScaleUpPolicy"
-          }
-        ],
-        "AlarmDescription": "CPU usage % exceeds average threshold after 1 successive interval of 1 minute",
-        "ComparisonOperator": "GreaterThanThreshold",
-        "EvaluationPeriods": "1",
-        "MetricName": "tmm-stat",
-        "Namespace": {
-          "Ref": "BigipAutoscaleGroup"
-        },
-        "Period": "60",
-        "Statistic": "Average",
-        "Threshold": {
-          "Ref": "highCpuThreshold"
-        }
-      }
-    },
-    "BigipLowCpuAlarm": {
-      "Type": "AWS::CloudWatch::Alarm",
-      "DependsOn": "BigipAutoscaleGroup",
-      "Properties": {
-        "ActionsEnabled": "True",
-        "AlarmActions": [
-          {
-            "Ref": "BigipScaleDownPolicy"
-          }
-        ],
-        "AlarmDescription": "Throughput below average threshold for 10 successive intervals of 5 minutes",
-        "ComparisonOperator": "LessThanThreshold",
-        "EvaluationPeriods": "10",
-        "MetricName": "tmm-stat",
-        "Namespace": {
-          "Ref": "BigipAutoscaleGroup"
-        },
-        "Period": "300",
-        "Statistic": "Average",
-        "Threshold": {
-          "Ref": "lowCpuThreshold"
-        }
-      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
     }
+   },
+   "Type": "AWS::EC2::SecurityGroup"
   },
-  "Outputs": {
-    "bigipAutoscaleGroup": {
-      "Value": {
-        "Ref": "BigipAutoscaleGroup"
-      }
+  "bigipSecurityGroupIngressAsmPolicySync": {
+   "Properties": {
+    "FromPort": 6123,
+    "GroupId": {
+     "Ref": "bigipExternalSecurityGroup"
     },
-    "bigipSecurityGroup": {
-      "Value": {
-        "Ref": "bigipSecurityGroup"
-      }
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Ref": "bigipExternalSecurityGroup"
     },
-    "s3Bucket": {
-      "Value": {
-        "Ref": "S3Bucket"
-      }
+    "ToPort": 6128
+   },
+   "Type": "AWS::EC2::SecurityGroupIngress"
+  },
+  "bigipSecurityGroupIngressConfigSync": {
+   "Properties": {
+    "FromPort": 4353,
+    "GroupId": {
+     "Ref": "bigipExternalSecurityGroup"
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Ref": "bigipExternalSecurityGroup"
+    },
+    "ToPort": 4353
+   },
+   "Type": "AWS::EC2::SecurityGroupIngress"
+  },
+  "bigipSecurityGroupIngressManagementGuiPort": {
+   "Properties": {
+    "FromPort": {
+     "Ref": "managementGuiPort"
+    },
+    "GroupId": {
+     "Ref": "bigipExternalSecurityGroup"
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Ref": "bigipExternalSecurityGroup"
+    },
+    "ToPort": {
+     "Ref": "managementGuiPort"
     }
+   },
+   "Type": "AWS::EC2::SecurityGroupIngress"
   }
+ }
 }

@@ -1,4 +1,4 @@
-# Auto scaling the BIG-IP VE Web Application Firewall in AWS: Existing Stack with PAYG Licensing
+# Auto scaling the BIG-IP VE Web Application Firewall in AWS: Existing Stack with PAYG Licensing (Frontend via ELB)
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 [![Releases](https://img.shields.io/github/release/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/releases)
 [![Issues](https://img.shields.io/github/issues/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/issues)
@@ -21,7 +21,11 @@ This is an *existing stack* template, meaning the networking infrastructure MUST
 
 Auto scaling means that as traffic through the BIG-IP VE or the BIG-IP CPU utilization increases or decreases, the number of BIG-IP VE WAF instances automatically increases or decreases accordingly (based on values you enter in the template). The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) and <a href="https://f5.com/products/big-ip/application-security-manager-asm">Application Security Manager</a> (ASM) modules enabled to provide advanced traffic management and web application security functionality. 
 
+This template autoscales using BIG-IP VE Pay As You Go (PAYG) instances.This template autoscales using BIG-IP VE Pay As You Go (PAYG) instances.
+
 See our [video on YouTube](https://www.youtube.com/watch?v=TGHi_KbZ0t4) to see this template in action.  For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
+
+
 
 
 

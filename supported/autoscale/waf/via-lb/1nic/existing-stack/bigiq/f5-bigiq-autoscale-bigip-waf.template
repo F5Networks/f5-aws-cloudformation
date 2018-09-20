@@ -34,7 +34,7 @@
    ]
   }
  },
- "Description": "Template v3.3.0: Deploys an AWS Auto Scaling group of F5 WAF BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
+ "Description": "Template v3.3.1: Deploys an AWS Auto Scaling group of F5 WAF BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -362,7 +362,7 @@
     }
    }
   },
-  "Version": "3.3.0"
+  "Version": "3.3.1"
  },
  "Outputs": {
   "bigipAutoscaleGroup": {
@@ -1078,7 +1078,7 @@
               "Ref": "managementGuiPort"
              },
              "--module asm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-waf.template,templateVersion:3.3.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-waf.template,templateVersion:3.3.1,licenseType:bigiq\"",
              "--license-pool --cloud aws",
              "--big-iq-host",
              {
@@ -1241,7 +1241,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 3.3.0\n",
+           "# Generated from 3.3.1\n",
            "date\n",
            ". /config/cloud/aws/onboard_config_vars\n",
            "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
@@ -1332,7 +1332,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 3.3.0\n",
+           "# Generated from 3.3.1\n",
            "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

@@ -20,7 +20,7 @@ This solution uses a CloudFormation Template to launch and configure two BIG-IP 
 
 This is an *existing stack* template, meaning the networking infrastructure MUST be available prior to deploying. See the Template Parameters Section for required networking objects.
 
-The BIG-IP VE can detect Availability Zone failure and automatically shift public traffic to the BIG-IP in the Availability Zone that is unaffected. In a 2-NIC implementation, each BIG-IP VE has one interface used for management and data-plane traffic from the Internet, and the second interface connected into the Amazon networks where traffic is processed by the pool members in a traditional two-ARM design. Traffic flows from the BIG-IP VE to the application servers.  
+The BIG-IP VE can detect Availability Zone failure and automatically shift public traffic to the BIG-IP in the Availability Zone that is unaffected. In a 2-NIC implementation, one interface is for management and one is for data-plane traffic, each with a unique public/private IP. Traffic flows from the BIG-IP VE to the application servers.  
 
 The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality. This means you can also configure the BIG-IP VE to enable F5's L4/L7 security features, access control, and intelligent traffic management.
 
@@ -108,6 +108,7 @@ After clicking the Launch button, you must specify the following parameters.
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | Source Address(es) for Management Access | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances. |
+| Source Address(es) for Web Application Access (80/443) | restrictedSrcAddressApp | Yes | The IP address range that can be used for management access to the EC2 instances. |
 | NTP Server | ntpServer | Yes | NTP server you want to use for this implementation (the default is 0.pool.ntp.org). | 
 | Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC). |
 | Application | application | No | Application Tag (the default is f5app). |

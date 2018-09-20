@@ -77,6 +77,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
 | Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
+| Source Address(es) for Web Application Access (80/443) | restrictedSrcAddressApp | Yes | The IP address range that can be used for management access to the EC2 instances. |
 | Elastic Load Balancer for BIG-IP VEs | bigipElasticLoadBalancer | Yes | Name of the AWS Elastic Load Balancer group for the BIG-IP VEs |
 | SSH Key Name | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | AWS Instance Size | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
@@ -213,7 +214,7 @@ The CloudFormation template uses the default **Good** image available in the AWS
 
 The following is a simple configuration diagram deployment. 
 
-![Configuration example](../images/config-diagram-autoscale-ltm.png)
+![Configuration example](../images/config-diagram-autoscale-ltm-elb-bigiq.png)
 
 
 

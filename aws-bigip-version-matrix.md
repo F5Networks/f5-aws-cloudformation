@@ -3,6 +3,11 @@ The following table contains all of the tagged releases of the F5 Cloud Formatio
 
 | Release Tag | Template Family | BIG-IP Versions | BIG-IQ version | PAYG License Bundles and Throughput | BYOL/BIG-IQ Image options (v13.1.1 and later) |
 | --- | --- | --- | --- | --- | --- |
+| [v3.3.1](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v3.3.1) | Standalone | BIG-IP v13.1.1 | BIG-IQ v5.4, 6.0.1 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps | AllOneBootLocation, AllTwoBootLocations, LTMOneBootLocation, LTMTwoBootLocations |
+|  | Cluster | BIG-IP v13.1.1 | BIG-IQ v5.4, 6.0.1 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps | AllOneBootLocation, AllTwoBootLocations, LTMOneBootLocation, LTMTwoBootLocations |
+|  | Auto Scale WAF | BIG-IP v13.1.1 | BIG-IQ v5.4, 6.0.1 | Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps | AllOneBootLocation, AllTwoBootLocations |
+|  | Auto Scale LTM | BIG-IP v13.1.1 | BIG-IQ v5.4, 6.0.1 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps | AllOneBootLocation, AllTwoBootLocations, LTMOneBootLocation, LTMTwoBootLocations |
+|  | BIG-IQ | N/A | 6.0.1 | N/A | Best |
 | [v3.3.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v3.3.0) | Standalone | BIG-IP v13.1.1 | BIG-IQ v5.4, 6.0.1 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps | AllOneBootLocation, AllTwoBootLocations, LTMOneBootLocation, LTMTwoBootLocations |
 |  | Cluster | BIG-IP v13.1.1 | BIG-IQ v5.4, 6.0.1 | Good/Better/Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps | AllOneBootLocation, AllTwoBootLocations, LTMOneBootLocation, LTMTwoBootLocations |
 |  | Auto Scale WAF | BIG-IP v13.1.1 | BIG-IQ v5.4, 6.0.1 | Best: 5Gbps, 1Gbps, 200Mbps, 25Mbps | AllOneBootLocation, AllTwoBootLocations |

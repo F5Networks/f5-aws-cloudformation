@@ -1,7 +1,8 @@
 {
   "us-gov-west-1": {
-    "Best": "ami-bc7af3dd", 
-    "Better": "ami-d97bf2b8", 
-    "Good": "ami-b266efd3"
+    "AllOneBootLocation": "ami-72059813", 
+    "AllTwoBootLocations": "ami-557ce134", 
+    "LTMOneBootLocation": "ami-0d14896c", 
+    "LTMTwoBootLocations": "ami-04059865"
   }
 }

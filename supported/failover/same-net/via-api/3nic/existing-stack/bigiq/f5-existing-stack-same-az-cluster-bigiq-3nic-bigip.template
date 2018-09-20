@@ -34,7 +34,7 @@
    ]
   }
  },
- "Description": "Template v3.3.0: AWS CloudFormation Template for creating a Same-AZ cluster of 3NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v3.3.1: AWS CloudFormation Template for creating a Same-AZ cluster of 3NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -317,7 +317,7 @@
     }
    }
   },
-  "Version": "3.3.0"
+  "Version": "3.3.1"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -923,7 +923,7 @@
                }
               ]
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template,templateVersion:3.3.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template,templateVersion:3.3.1,licenseType:bigiq\"",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
             ]
@@ -1769,7 +1769,7 @@
                }
               ]
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template,templateVersion:3.3.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template,templateVersion:3.3.1,licenseType:bigiq\"",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
             ]

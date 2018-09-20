@@ -71,6 +71,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
 | Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
+| Source Address(es) for Web Application Access (80/443) | restrictedSrcAddressApp | Yes | The IP address range that can be used for management access to the EC2 instances. |
 | DNS Member IP Type (public | private) | dnsMemberIpType | Yes | The IP type (public | private) to add as the record when updating the DNS provider. |
 | DNS Member Port | dnsMemberPort | Yes | The port for the DNS member to use for monitoring the members status. |
 | BIG-IP DNS Management IP address (or hostname) | dnsProviderHost | Yes | The management IP address (or hostname) for the DNS provider to use when updating DNS. |
@@ -202,6 +203,12 @@ All BIG-IP VE instances deploy with a single interface (NIC) attached to a publi
 
 The CloudFormation template uses the default **Best** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
 
+#### Configuration Example <a name="config"></a>
+
+
+The following is a simple configuration diagram deployment. 
+
+![Configuration example](../images/config-diagram-autoscale-waf-dns.png)
 
 
 

@@ -50,7 +50,7 @@
    ]
   }
  },
- "Description": "Template v3.3.0: Deploys an AWS Auto Scaling group of F5 WAF BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
+ "Description": "Template v3.3.1: Deploys an AWS Auto Scaling group of F5 WAF BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -382,7 +382,7 @@
     }
    }
   },
-  "Version": "3.3.0"
+  "Version": "3.3.1"
  },
  "Outputs": {
   "bigipAutoscaleGroup": {
@@ -1219,7 +1219,7 @@
               "Ref": "managementGuiPort"
              },
              "--module asm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-waf-nlb.template,templateVersion:3.3.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-waf-nlb.template,templateVersion:3.3.1,licenseType:bigiq\"",
              "--license-pool --cloud aws",
              "--big-iq-host",
              {
@@ -1382,7 +1382,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 3.3.0\n",
+           "# Generated from 3.3.1\n",
            "date\n",
            ". /config/cloud/aws/onboard_config_vars\n",
            "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
@@ -1420,11 +1420,11 @@
            "    if [ \"${applicationPoolTagKey}\" != \"default\" ]\n",
            "    then\n",
            "        tmsh create ltm pool ${deploymentName} { monitor http }\n",
-           "        tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc7 lists add { asm__security_logging { value { \"${local_asm_log_name}\" } } } tables add { pool__hosts { column-names { name } rows { { row { ${deploymentName} } } } } pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { pool__pool_to_use { value /Common/${deploymentName} } asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http11 }  net__vlan_mode { value all } ssl__client_ssl_profile { value /Common/example-clientssl-profile } ssl__mode { value client_ssl } ssl_encryption_questions__advanced { value yes } pool__port_secure { value ${virtualServicePort} } pool__redirect_to_https { value yes } pool__redirect_port { value 80 } }}  }}\n",
+           "        tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc7 lists add { asm__security_logging { value { \"${local_asm_log_name}\" } } } tables add { pool__hosts { column-names { name } rows { { row { ${deploymentName} } } } } pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { pool__pool_to_use { value /Common/${deploymentName} } asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http11 }  net__vlan_mode { value all } ssl__client_ssl_profile { value /Common/example-clientssl-profile } ssl__mode { value client_ssl } ssl_encryption_questions__advanced { value yes } pool__port_secure { value ${virtualServicePort} } pool__redirect_to_https { value yes } pool__redirect_port { value 80 } }}\n",
            "        tmsh create sys application service ${deploymentName}_sd { template f5.service_discovery variables add { cloud__aws_use_role { value no } cloud__cloud_provider { value aws } cloud__aws_region { value ${region} } pool__interval { value 15 } pool__lb_method_choice { value least-connections-member } pool__member_conn_limit { value 0 } pool__pool_to_use { value /Common/${deploymentName} } pool__member_port { value ${applicationPort} } pool__public_private { value private } pool__tag_key { value ${applicationPoolTagKey} } pool__tag_value { value ${applicationPoolTagValue} } }}\n",
            "   else\n",
            "        tmsh create ltm node ${deploymentName} fqdn { name ${appInternalDnsName} }\n",
-           "        tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc7 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http11 }  net__vlan_mode { value all } ssl__client_ssl_profile { value /Common/example-clientssl-profile } ssl__mode { value client_ssl } ssl_encryption_questions__advanced { value yes } pool__port_secure { value ${virtualServicePort} } pool__redirect_to_https { value yes } pool__redirect_port { value 80 } }}  }}\n",
+           "        tmsh create sys application service ${deploymentName} { device-group autoscale-group template f5.http.v1.2.0rc7 tables add { pool__members { column-names { addr port connection_limit } rows {{ row { ${deploymentName} ${applicationPort} 0 }}}}} variables add { asm__use_asm { value app-ltm-policy } pool__addr { value 0.0.0.0 } pool__mask { value 0.0.0.0 } pool__port { value ${virtualServicePort} } monitor__http_version { value http11 }  net__vlan_mode { value all } ssl__client_ssl_profile { value /Common/example-clientssl-profile } ssl__mode { value client_ssl } ssl_encryption_questions__advanced { value yes } pool__port_secure { value ${virtualServicePort} } pool__redirect_to_https { value yes } pool__redirect_port { value 80 } }}\n",
            "    fi\n",
            "    ### END CUSTOM CONFIGURATION\n",
            "    tmsh save /sys config\n",
@@ -1480,7 +1480,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 3.3.0\n",
+           "# Generated from 3.3.1\n",
            "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

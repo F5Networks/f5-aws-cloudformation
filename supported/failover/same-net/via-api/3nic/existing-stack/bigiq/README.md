@@ -99,6 +99,7 @@ After clicking the Launch button, you must specify the following parameters.
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | Source Address(es) for Management Access | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances. |
+| Source Address(es) for Web Application Access (80/443) | restrictedSrcAddressApp | Yes | The IP address range that can be used for management access to the EC2 instances. |
 | NTP Server | ntpServer | Yes | NTP server you want to use for this implementation (the default is 0.pool.ntp.org). | 
 | Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC). |
 | Application | application | No | Application Tag (the default is f5app). |

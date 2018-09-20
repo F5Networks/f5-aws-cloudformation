@@ -21,9 +21,9 @@ This is an *existing stack* template, meaning the networking infrastructure MUST
 
 Auto scaling means that as traffic through the BIG-IP VE or the BIG-IP CPU utilization increases or decreases, the number of BIG-IP VE WAF instances automatically increases or decreases accordingly (based on values you enter in the template). The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) and <a href="https://f5.com/products/big-ip/application-security-manager-asm">Application Security Manager</a> (ASM) modules enabled to provide advanced traffic management and web application security functionality. 
 
-This template autoscales using BIG-IP VE Pay As You Go (PAYG) instances.This template autoscales using BIG-IP VE Pay As You Go (PAYG) instances.
+This template autoscales using BIG-IP VE Pay As You Go (PAYG) instances.
 
-See our [video on YouTube](https://www.youtube.com/watch?v=TGHi_KbZ0t4) to see this template in action.  For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
+See our [video on YouTube](https://www.youtube.com/watch?v=TGHi_KbZ0t4) to see a similar template in action.  For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
 
 
 
@@ -57,7 +57,7 @@ The following are prerequisites and notes for this solution:
 The easiest way to deploy one of the CloudFormation templates is to use the appropriate Launch Stack button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-PAYG-BIGIP-WAF-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-payg-autoscale-bigip-waf.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>  
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-PAYG-BIGIP-LTM-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-payg-autoscale-bigip-waf-nlb.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
 
 ### Template Parameters ###
@@ -71,6 +71,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
 | Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
+| Source Address(es) for Web Application Access (80/443) | restrictedSrcAddressApp | Yes | The IP address range that can be used for management access to the EC2 instances. |
 | Elastic Load Balancer for BIG-IP VEs | bigipElasticLoadBalancer | Yes | Name of the AWS Elastic Load Balancer group for the BIG-IP VEs |
 | SSH Key Name | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | AWS Instance Size | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |

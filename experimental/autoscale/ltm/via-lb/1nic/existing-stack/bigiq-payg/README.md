@@ -1,4 +1,4 @@
-# Auto scaling the BIG-IP VE Local Traffic Manager (LTM) in AWS
+# Auto scaling the BIG-IP VE Local Traffic Manager (LTM) in AWS: BYOL plus PAYG
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 [![Releases](https://img.shields.io/github/release/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/releases)
 [![Issues](https://img.shields.io/github/issues/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/issues)
@@ -61,7 +61,7 @@ The easiest way to deploy one of the CloudFormation templates is to use the appr
  
 See [Template Parameters](#template-parameters) for guidance on the parameters presented by the template.
 
-   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-Bigiq-Hourly-BIGIP-LTM-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-bigiq-hourly-autoscale-bigip-ltm.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+   <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-Bigiq-PAYG-BIGIP-LTM-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-bigiq-payg-autoscale-bigip-ltm.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
 
 <br>
@@ -78,6 +78,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
 | Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
+| Source Address(es) for Web Application Access (80/443) | restrictedSrcAddressApp | Yes | The IP address range that can be used for management access to the EC2 instances. |
 | Elastic Load Balancer for BIG-IP VEs | bigipElasticLoadBalancer | Yes | Name of the AWS Elastic Load Balancer group for the BIG-IP VEs |
 | SSH Key Name | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | AWS Instance Size | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |

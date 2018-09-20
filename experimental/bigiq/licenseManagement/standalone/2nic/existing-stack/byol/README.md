@@ -68,7 +68,7 @@ We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.c
 The easiest way to deploy this CloudFormation template is to use the Launch button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIq-2nic-LicMgmt&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-2nic-bigiq-licmgmt.template">  
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIq-2nic-LicMgmt&templateURL=https://s3.amazonaws.com/f5-cft/f5-existing-stack-byol-2nic-bigiq-licmgmt.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
     
 <br>
@@ -86,7 +86,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Custom Image Id | customImageId | No | This parameter allows you to deploy using a custom BIG-IP image if necessary. If applicable, type the AMI Id in this field. **Note**: Unless specifically required, leave the default of **OPTIONAL**. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | BIG-IQ License Key | licenseKey1  | Yes | F5 BYOL registration key for your BIG-IQ device |
-| BIG-IP Licence Pool | licensePoolKeys  | No | Enter a pool name and registration key using the format of name:key. Leave Do_Not_Create if you do not want to create a licensing pool on BIG-IQ at this time. |
+| BIG-IP License Pool | licensePoolKeys  | No | Enter a pool name and registration key using the format of name:key. Leave Do_Not_Create if you do not want to create a licensing pool on BIG-IQ at this time. |
 | BIG-IQ Reg Key Pool | regPoolKeys | No | Enter a pool name and a list of individual BIG-IP registration keys in the format of name:key,key,key. Leave Do_Not_Create if you do not want to create a reg key pool on BIG-IQ at this time. |
 | SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance. |
 | Source Address(es) for Management Access | restrictedSrcAddress | Yes | The IP address range that can be used for management access to the EC2 instances. |

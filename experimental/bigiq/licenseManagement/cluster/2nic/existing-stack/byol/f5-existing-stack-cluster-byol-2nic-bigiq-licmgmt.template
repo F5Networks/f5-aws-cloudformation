@@ -1,0 +1,1364 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Conditions": {
+		"noCustomImageId": {
+			"Fn::Equals": [
+				"OPTIONAL",
+				{
+					"Ref": "customImageId"
+				}
+			]
+		}
+	},
+	"Description": "Template v3.3.1: AWS CloudFormation Template for creating a cluster of 2NIC BIG-IQs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+	"Mappings": {
+		"regionMap": {
+			"ap-northeast-1": {
+			  "Best": "ami-0333dd63ae0b1112a"
+			},
+			"ap-northeast-2": {
+			  "Best": "ami-0edeb70b0aaf278a6"
+			},
+			"ap-south-1": {
+			  "Best": "ami-0b9201eb7648bb07d"
+			},
+			"ap-southeast-1": {
+			  "Best": "ami-08a3a55743fb2fd5d"
+			},
+			"ap-southeast-2": {
+			  "Best": "ami-094d47e7fedebb201"
+			},
+			"ca-central-1": {
+			  "Best": "ami-8d27aae9"
+			},
+			"eu-central-1": {
+			  "Best": "ami-04622a8db3ae94f89"
+			},
+			"eu-west-1": {
+			  "Best": "ami-0f3b2ffeb3c4ff43c"
+			},
+			"eu-west-2": {
+			  "Best": "ami-61ae5a06"
+			},
+			"sa-east-1": {
+			  "Best": "ami-08d385bd2cbe52df6"
+			},
+			"us-east-1": {
+			  "Best": "ami-075f269e21d926462"
+			},
+			"us-east-2": {
+			  "Best": "ami-076b40df0c056a3da"
+			},
+			"us-west-1": {
+			  "Best": "ami-0b69901ceb507a45b"
+			},
+			"us-west-2": {
+			  "Best": "ami-7f416207"
+			},
+			"us-gov-west-1": {
+			  "Best": "ami-74d64915"
+			}
+
+		}
+	},
+	"Metadata": {
+		"AWS::CloudFormation::Interface": {
+			"ParameterGroups": [{
+					"Label": {
+						"default": "NETWORKING CONFIGURATION"
+					},
+					"Parameters": [
+						"Vpc",
+						"managementSubnetAz1",
+						"managementSubnetAz2",
+						"subnet1Az1",
+						"subnet1Az2"
+					]
+				},
+				{
+					"Label": {
+						"default": "INSTANCE CONFIGURATION"
+					},
+					"Parameters": [
+						"customImageId",
+						"instanceType",
+						"licenseKey1",
+						"licenseKey2",
+						"licensePoolKeys",
+						"regPoolKeys",
+						"bigIqPasswordS3Arn",
+						"sshKey",
+						"restrictedSrcAddress",
+						"restrictedSrcAddressApp",
+						"ntpServer",
+						"timezone"
+					]
+				},
+				{
+					"Label": {
+						"default": "TAGS"
+					},
+					"Parameters": [
+						"application",
+						"environment",
+						"group",
+						"owner",
+						"costcenter"
+					]
+				},
+				{
+
+				},
+				{
+					"Label": {
+						"default": "TEMPLATE ANALYTICS"
+					},
+					"Parameters": [
+						"allowUsageAnalytics"
+					]
+				}
+			],
+			"ParameterLabels": {
+				"Vpc": {
+					"default": "VPC"
+				},
+				"allowUsageAnalytics": {
+					"default": "Send Anonymous Statistics to F5"
+				},
+				"application": {
+					"default": "Application"
+				},
+				"costcenter": {
+					"default": "Cost Center"
+				},
+				"customImageId": {
+					"default": "Custom Image Id"
+				},
+				"environment": {
+					"default": "Environment"
+				},
+				"group": {
+					"default": "Group"
+				},
+				"instanceType": {
+					"default": "AWS Instance Size"
+				},
+				"licenseKey1": {
+					"default": "BIG-IQ License Key 1"
+				},
+				"licenseKey2": {
+					"default": "BIG-IQ License Key 2"
+				},
+				"bigIqPasswordS3Arn": {
+					"default": "S3 ARN of the BIG-IQ Password File"
+				},
+				"licensePoolKeys": {
+					"default": "BIG-IP License Pool"
+				},
+				"regPoolKeys": {
+					"default": "BIG-IP Reg Key Pool"
+				},
+				"managementSubnetAz1": {
+					"default": "Management Subnet AZ1"
+				},
+				"managementSubnetAz2": {
+					"default": "Management Subnet AZ2"
+				},
+				"ntpServer": {
+					"default": "NTP Server"
+				},
+				"owner": {
+					"default": "Owner"
+				},
+				"restrictedSrcAddress": {
+					"default": "Source Address(es) for Management Access"
+				},
+				"restrictedSrcAddressApp": {
+					"default": "Source Address(es) for internal Management Access"
+				},
+				"sshKey": {
+					"default": "SSH Key"
+				},
+				"subnet1Az1": {
+					"default": "Subnet1 in AZ1"
+				},
+				"subnet1Az2": {
+					"default": "Subnet1 in AZ2"
+				},
+				"timezone": {
+					"default": "Timezone (Olson)"
+				}
+			}
+		},
+		"Version": "3.3.0-r12s2"
+	},
+	"Outputs": {
+		"device1InternalInterfacePrivateIp": {
+			"Description": "Internally routable IP of the public interface on the instance",
+			"Value": {
+				"Fn::GetAtt": [
+					"device1subnet1Az1Interface",
+					"PrimaryPrivateIpAddress"
+				]
+			}
+		},
+		"device1InstanceId": {
+			"Description": "Instance Id of BIG-IQ in AWS",
+			"Value": {
+				"Ref": "device1Instance"
+			}
+		},
+		"device1ManagementEipAddress": {
+			"Description": "IP address of the management port on the instance",
+			"Value": {
+				"Ref": "device1ManagementEipAddress"
+			}
+		},
+		"device1ManagementInterface": {
+			"Description": "Management interface ID on the instance",
+			"Value": {
+				"Ref": "device1ManagementInterface"
+			}
+		},
+		"device1ManagementInterfacePrivateIp": {
+			"Description": "Internally routable IP of the management interface on the instance",
+			"Value": {
+				"Fn::GetAtt": [
+					"device1ManagementInterface",
+					"PrimaryPrivateIpAddress"
+				]
+			}
+		},
+		"device1Url": {
+			"Description": "Management GUI",
+			"Value": {
+				"Fn::Join": [
+					"", [
+						"https://",
+						{
+							"Fn::GetAtt": [
+								"device1Instance",
+								"PublicIp"
+							]
+						}
+					]
+				]
+			}
+		},
+		"device1VipEipAddress": {
+			"Description": "EIP address for VIP",
+			"Value": {
+				"Fn::Join": [
+					"",
+					[
+						"http://",
+						{
+							"Ref": "device1VipEipAddress"
+						},
+						":80"
+					]
+				]
+			}
+		},
+		"device1VipPrivateIp": {
+			"Description": "VIP on External Interface Secondary IP 1",
+			"Value": {
+				"Fn::Select": [
+					"0",
+					{
+						"Fn::GetAtt": [
+							"device1subnet1Az1Interface",
+							"SecondaryPrivateIpAddresses"
+						]
+					}
+				]
+			}
+		},
+		"device1subnet1Az1Interface": {
+			"Description": "Internal interface Id on the device",
+			"Value": {
+				"Ref": "device1subnet1Az1Interface"
+			}
+		},
+		"device1subnet1Az1SelfEipAddress": {
+			"Description": "IP Address of the Internal interface attached to the device",
+			"Value": {
+				"Ref": "device1subnet1Az1SelfEipAddress"
+			}
+		},
+		"device2InternalInterfacePrivateIp": {
+			"Description": "Internally routable IP of the public interface on the instance",
+			"Value": {
+				"Fn::GetAtt": [
+					"device2subnet1Az2Interface",
+					"PrimaryPrivateIpAddress"
+				]
+			}
+		},
+		"device2InstanceId": {
+			"Description": "Instance Id of BIG-IQ in AWS",
+			"Value": {
+				"Ref": "device2Instance"
+			}
+		},
+		"device2ManagementEipAddress": {
+			"Description": "IP address of the management port on the device",
+			"Value": {
+				"Ref": "device2ManagementEipAddress"
+			}
+		},
+		"device2ManagementInterface": {
+			"Description": "Management interface ID on the device",
+			"Value": {
+				"Ref": "device2ManagementInterface"
+			}
+		},
+		"device2ManagementInterfacePrivateIp": {
+			"Description": "Internally routable IP of the management interface on BIG-IQ",
+			"Value": {
+				"Fn::GetAtt": [
+					"device2ManagementInterface",
+					"PrimaryPrivateIpAddress"
+				]
+			}
+		},
+		"device2Url": {
+			"Description": "BIG-IP Management GUI",
+			"Value": {
+				"Fn::Join": [
+					"",
+					[
+						"https://",
+						{
+							"Fn::GetAtt": [
+								"device2Instance",
+								"PublicIp"
+							]
+						}
+					]
+				]
+			}
+		},
+		"device2subnet1Az2Interface": {
+			"Description": "External interface Id on BIG-IQ",
+			"Value": {
+				"Ref": "device2subnet1Az2Interface"
+			}
+		},
+		"device2subnet1Az2SelfEipAddress": {
+			"Description": "IP Address of the External interface attached to BIG-IQ",
+			"Value": {
+				"Ref": "device2subnet1Az2SelfEipAddress"
+			}
+		},
+		"availabilityZone1": {
+			"Description": "Availability Zone",
+			"Value": {
+				"Fn::GetAtt": [
+					"device1Instance",
+					"AvailabilityZone"
+				]
+			}
+		},
+		"availabilityZone2": {
+			"Description": "Availability Zone",
+			"Value": {
+				"Fn::GetAtt": [
+					"device2Instance",
+					"AvailabilityZone"
+				]
+			}
+		},
+		"deviceSubnet1SecurityGroup": {
+			"Description": "Internal Security Group",
+			"Value": {
+				"Ref": "deviceSubnet1SecurityGroup"
+			}
+		},
+		"deviceManagementSecurityGroup": {
+			"Description": "Management Security Group",
+			"Value": {
+				"Ref": "deviceManagementSecurityGroup"
+			}
+		}
+	},
+	"Parameters": {
+		"Vpc": {
+			"ConstraintDescription": "This must be an existing VPC within the working region.",
+			"Type": "AWS::EC2::VPC::Id"
+		},
+		"allowUsageAnalytics": {
+			"AllowedValues": [
+				"Yes",
+				"No"
+			],
+			"Default": "Yes",
+			"Description": "This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent.",
+			"Type": "String"
+		},
+		"application": {
+			"Default": "f5app",
+			"Description": "Name of the Application Tag",
+			"Type": "String"
+		},
+		"costcenter": {
+			"Default": "f5costcenter",
+			"Description": "Name of the Cost Center Tag",
+			"Type": "String"
+		},
+		"customImageId": {
+			"ConstraintDescription": "Must be a valid AMI Id",
+			"Default": "OPTIONAL",
+			"Description": "If you would like to deploy using a custom image, provide the AMI Id.  **Note**: Unless specifically required, leave the default of **OPTIONAL**",
+			"MaxLength": 255,
+			"MinLength": 1,
+			"Type": "String"
+		},
+		"environment": {
+			"Default": "f5env",
+			"Description": "Name of the Environment Tag",
+			"Type": "String"
+		},
+		"group": {
+			"Default": "f5group",
+			"Description": "Name of the Group Tag",
+			"Type": "String"
+		},
+		"instanceType": {
+			"AllowedValues": [
+				"m4.xlarge",
+				"m4.2xlarge",
+				"m4.4xlarge"
+			],
+			"ConstraintDescription": "Must be a valid EC2 instance type for the instance",
+			"Default": "m4.2xlarge",
+			"Description": "Size of the F5 Instance",
+			"Type": "String"
+		},
+		"licenseKey1": {
+			"AllowedPattern": "([a-zA-Z0-9]{3,9}-[a-zA-Z0-9]{3,9}-[a-zA-Z0-9]{3,9}-[a-zA-Z0-9]{3,9}-[a-zA-Z0-9]{3,9})",
+			"ConstraintDescription": "Verify your F5 BYOL registration key.",
+			"Description": "F5 BIG-IQ license manager registration key",
+			"MaxLength": "255",
+			"MinLength": "1",
+			"Type": "String"
+		},
+		"licenseKey2": {
+			"AllowedPattern": "([a-zA-Z0-9]{3,9}-[a-zA-Z0-9]{3,9}-[a-zA-Z0-9]{3,9}-[a-zA-Z0-9]{3,9}-[a-zA-Z0-9]{3,9})",
+			"ConstraintDescription": "Verify your F5 BYOL registration key.",
+			"Description": "F5 BIG-IQ license manager registration key",
+			"MaxLength": "255",
+			"MinLength": "1",
+			"Type": "String"
+		},
+		"licensePoolKeys": {
+			"ConstraintDescription": "Verify your F5 BIG-IQ BIG-IP pool registration key.",
+			"Description": "Enter a pool name and registration key using the format of name:key. Leave Do_Not_Create if you do not want to create a licensing pool on BIG-IQ at this time.",
+			"MaxLength": "255",
+			"MinLength": "1",
+			"Type": "String",
+			"Default": "Do_Not_Create"
+		},
+		"regPoolKeys": {
+			"ConstraintDescription": "Verify your F5 BIG-IQ pool BIG-IP registration keys.",
+			"Description": "Enter a pool name and a list of individual BIG-IP registration keys in the format of name:key,key,key. Leave Do_Not_Create if you do not want to create a reg key pool on BIG-IQ at this time.",
+			"MaxLength": "255",
+			"MinLength": "1",
+			"Type": "String",
+			"Default": "Do_Not_Create"
+		},
+		"managementSubnetAz1": {
+			"ConstraintDescription": "The subnet ID must be within an existing VPC",
+			"Description": "Management Subnet ID",
+			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"managementSubnetAz2": {
+			"ConstraintDescription": "The subnet ID must be within an existing VPC",
+			"Description": "Management Subnet ID",
+			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"ntpServer": {
+			"Default": "0.pool.ntp.org",
+			"Description": "NTP server for this implementation",
+			"Type": "String"
+		},
+		"owner": {
+			"Default": "f5owner",
+			"Description": "Name of the Owner Tag",
+			"Type": "String"
+		},
+		"restrictedSrcAddress": {
+			"AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+			"ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+			"Description": " The IP address range used to SSH and access management GUI on the EC2 instances",
+			"MaxLength": "18",
+			"MinLength": "9",
+			"Type": "String"
+		},
+		"restrictedSrcAddressApp": {
+			"AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+			"ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+			"Description": " The IP address range that can be used to access BIG-IQ on the specified internal network via port 443.",
+			"MaxLength": "18",
+			"MinLength": "9",
+			"Type": "String"
+		   },
+		"sshKey": {
+			"Description": "EC2 KeyPair to enable SSH access to the instance",
+			"Type": "AWS::EC2::KeyPair::KeyName"
+		},
+		"subnet1Az1": {
+			"ConstraintDescription": "The subnet ID must be within an existing VPC",
+			"Description": "Private or Internal subnet",
+			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"subnet1Az2": {
+			"ConstraintDescription": "The subnet ID must be within an existing VPC",
+			"Description": "Private or Internal subnet",
+			"Type": "AWS::EC2::Subnet::Id"
+		},
+		"timezone": {
+			"Default": "UTC",
+			"Description": "Olson timezone string from /usr/share/zoneinfo",
+			"Type": "String"
+		},
+		"bigIqPasswordS3Arn": {
+			"ConstraintDescription": "Verify the S3 ARN of BIG-IQ Password file",
+			"Description": "S3 ARN of the BIG-IQ Password file. e.g. arn:aws:s3:::bucket_name/full_path_to_file for public regions. For GovCloud (US) region, start with arn:aws-us-gov:s3. For China region, start with arn:aws-cn:s3.",
+			"MaxLength": "255",
+			"MinLength": "1",
+			"Type": "String"
+		}
+	},
+	"Resources": {
+		"device1Instance": {
+			"Metadata": {
+				"AWS::CloudFormation::Init": {
+					"config": {
+						"commands": {
+							"init": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"mkdir -p /var/log/cloud/aws;cat /config/cloud/initEncoded | /usr/bin/base64 -d > /config/cloud/init.sh && chmod +x /config/cloud/init.sh;",
+											"/config/cloud/init.sh --cloud aws --skip-verify --log-level debug --data-interface eth1 --license ",
+											{
+												"Ref": "licenseKey1"
+											},
+											" --ntp ",
+											{
+												"Ref": "ntpServer"
+											},
+											" --timezone ",
+											{
+												"Ref": "timezone"
+											},
+											" --create-license-pool ",
+											{
+												"Ref": "licensePoolKeys"
+											},
+											" --create-reg-key-pool ",
+											{
+												"Ref": "regPoolKeys"
+											},
+											" --big-iq-password-data-uri ",
+											{
+												"Ref": "bigIqPasswordS3Arn"
+											},
+											" --fcl-tag develop",
+											" --fcl-cloud-tag develop",
+											" --vlan 'n:internal,nic:1.1' ",
+											" --self-ip 'n:internal_self,a:",
+											{
+												"Fn::GetAtt": [
+													"device1subnet1Az1Interface",
+													"PrimaryPrivateIpAddress"
+												]
+											},
+											",i:eth1',v:internal --discovery-address ",
+											{
+												"Fn::GetAtt": [
+													"device1subnet1Az1Interface",
+													"PrimaryPrivateIpAddress"
+												]
+											},
+											" --usage-analytics 'send:",
+											{
+												"Ref": "allowUsageAnalytics"
+											},
+											",r:",
+											{
+												"Ref": "AWS::Region"
+											},
+											",cI:",
+											{
+												"Ref": "AWS::AccountId"
+											},
+											",dI:",
+											{
+												"Ref": "AWS::StackId"
+											},
+											",cN:aws,lT:byol,bIV:6.0.0,tN:f5-existing-stack-byol-2nic-bigiq,tV:4.3.0' ",
+											"&>> /var/log/cloud/aws/install.log &"
+										]
+									]
+								}
+							}
+						},
+						"files": {
+							"/config/cloud/initEncoded": {
+								"group": "root",
+								"mode": "000400",
+								"owner": "root",
+								"content": {
+									"Fn::Join": [
+										"", [
+											"IyEvYmluL2Jhc2gKCiMjIyBDb25maWd1cmUgZGVmYXVsdCB2YWx1ZXMKbG9nX2xldmVsPSJpbmZvIgpoZWxwPWZhbHNlCnNraXBfdmVyaWZ5PWZhbHNlCnNjcmlwdF9kaXI9JChkaXJuYW1lICQwKQoKVE1TSD0vdXNyL2Jpbi90bXNoCkNVUkw9L3Vzci9iaW4vY3VybApOT0RFPS91c3IvYmluL25vZGUKCiMjIyBGdW5jdGlvbnMgLSBUaGVzZSBzaG91bGQgZ28gaW50byBzZXBlcmF0ZSBmaWxlKHMpCiMgdXNhZ2U6IGxvZyBtZXNzYWdlCmZ1bmN0aW9uIGxvZygpIHsKICAgIGVjaG8gIiQoZGF0ZSAnKyVZLSVtLSVkVCVIOiVNOiVTWicpOiAkMSIKfQojIHVzYWdlOiBnZXRfdmVyc2lvbgpmdW5jdGlvbiBnZXRfdmVyc2lvbigpIHsKICAgIHJldD0kKCRUTVNIIHNob3cgc3lzIHZlcnNpb24gfCBncmVwIC1pIHByb2R1Y3QgfCBhd2sgJ3twcmludCAkMn0nKQogICAgZWNobyAke3JldCwsfQp9CiMgdXNhZ2U6IGpzb25pZnkga2V5OnZhbHVlLGtleTE6dmFsdWUxCmZ1bmN0aW9uIGpzb25pZnkoKSB7CiAgICBsaXN0PSQoZWNobyAkMSB8IHRyICcsJyAnICcpCiAgICBqc29uPSd7fScKICAgIGZvciBpIGluICRsaXN0IDsgZG8KICAgICAgICBrdj0oJChlY2hvICRpIHwgdHIgJzonICcgJykpCiAgICAgICAganNvbj0kKGVjaG8gJGpzb24gfCBqcSAtLWFyZyBrICR7a3ZbMF19IC0tYXJnIHYgJHtrdlsxXX0gJy4gfCAuWyRrXT0kdicpCiAgICBkb25lCiAgICBlY2hvICRqc29uCn0KIyB1c2FnZTogZ2V0X3ZhbCBqc29uX29iamVjdCBrZXkKZnVuY3Rpb24gZ2V0X3ZhbCgpIHsKICAgIHJldD0kKGVjaG8gJDEgfCBqcSAuJDIgLXIpCiAgICBlY2hvICRyZXQKfQojIHVzYWdlOiBtYWtlIHN1cmUgdGhlcmUgaXMgaW50ZXJuZXQgY29ubmVjdGlvbiB0byBHaXRIdWIKZnVuY3Rpb24gY2hlY2tfaW50ZXJuZXRfY29ubmVjdGlvbiB7CiAgICBlY2hvICItLS0gQ2hlY2tpbmcgR2l0aHViIHN0YXR1cyAtLS0iCiAgICBjaGVja3M9MAogICAgZ2l0aHViX3Jlc3BvbnNlPSJiYWQiCiAgICB3aGlsZSBbICRjaGVja3MgLWx0IDEyMCBdIDsgZG8KICAgICAgICBnaXRodWJfcmVzcG9uc2U9YGN1cmwgaHR0cHM6Ly9zdGF0dXMuZ2l0aHViLmNvbS9hcGkvc3RhdHVzLmpzb24/Y2FsbGJhY2stYXBpU3RhdHVzIHwganEgLnN0YXR1cyAtLXJhdy1vdXRwdXRgCiAgICAgICAgaWYgWyAkZ2l0aHViX3Jlc3BvbnNlID09ICJnb29kIiBdOyB0aGVuCiAgICAgICAgICAgIGxvZyAiR2l0SHViIGlzIHJlYWR5IgogICAgICAgICAgICBicmVhawogICAgICAgIGZpCiAgICAgICAgbG9nICJHaXRIdWIgbm90IHJlYWR5OiAkY2hlY2tzIgogICAgICAgIGxldCBjaGVja3M9Y2hlY2tzKzEKICAgICAgICBzbGVlcCA1CiAgICBkb25lCiAgICBpZiBbICRnaXRodWJfcmVzcG9uc2UgPT0gImJhZCIgXTsgdGhlbgogICAgICAgIGxvZyAiTm8gR2l0SHViIGludGVybmV0IGNvbm5lY3Rpb24uIgogICAgICAgIGV4aXQKICAgIGZpCn0KIyB1c2FnZTogbWNwX3J1bm5pbmcKZnVuY3Rpb24gbWNwX3J1bm5pbmcgewogICAgY2hlY2tzPTAKICAgIHdoaWxlIFsgJGNoZWNrcyAtbHQgMTIwIF0gOyBkbwogICAgICAgICRUTVNIIC1hIHNob3cgc3lzIG1jcC1zdGF0ZSBmaWVsZC1mbXQgfCBncmVwIC1xIHJ1bm5pbmcKICAgICAgICBpZiBbICQ/ID09IDAgXTsgdGhlbgogICAgICAgICAgICBsb2cgIk1DUEQgcmVhZHkiCiAgICAgICAgICAgIGJyZWFrCiAgICAgICAgZmkKICAgICAgICBsb2cgIk1DUEQgbm90IHJlYWR5OiAkY2hlY2tzIgogICAgICAgIGxldCBjaGVja3M9Y2hlY2tzKzEKICAgICAgICBzbGVlcCA1CiAgICBkb25lCn0KIyB1c2FnZTogRG93bmxvYWQgZnJvbSBHaXRodWIgdW50aWwgc3VjY2Vzc2Z1bAojCiMgJDE6IG91dHB1dCBmaWxlIG5hbWUKIyAkMjogVVJMCmZ1bmN0aW9uIHNhZmVfZG93bmxvYWQgewogICAgY2hlY2tzPTAKICAgIHdoaWxlIFsgJGNoZWNrcyAtbHQgMTIwIF0gOyBkbwogICAgICAgICRDVVJMIC0tZmFpbCAtLXJldHJ5IDIwIC0tcmV0cnktZGVsYXkgNSAtLXJldHJ5LW1heC10aW1lIDI0MCAtbyAkMSAkMiAmJiBicmVhawogICAgICAgIGxldCBjaGVja3M9Y2hlY2tzKzEKICAgICAgICBzbGVlcCA1CiAgICBkb25lCn0KIyB1c2FnZTogYmFzZV9jb25maWdfYXZhaWxhYmxlIC0gcmVzb2x2ZXMgaXNzdWUgZm91bmQgaW4gNi4wLjAgdmVyc2lvbnMgb2YgYmlnLWlxCmZ1bmN0aW9uIGJhc2VfY29uZmlnX2F2YWlsYWJsZSB7CiAgICBjaGVja3M9MAogICAgd2hpbGUgWyAkY2hlY2tzIC1sdCAxMjAgXSA7IGRvCiAgICAgICAgJFRNU0ggLWEgc2hvdyBzeXMgbWNwLXN0YXRlIGZpZWxkLWZtdCB8IGdyZXAgLXEgcnVubmluZwogICAgICAgIGlmIFsgLWYgL2NvbmZpZy9iaWdpcF9iYXNlLmNvbmYgXTsgdGhlbgogICAgICAgICAgICBsb2cgIkJhc2UgQ29uZmlnIGZpbGUgcHJlc2VudDsgc2F2aW5nIGNvbmZpZyIKICAgICAgICAgICAgdG1zaCBzYXZlIHN5cyBjb25maWcKICAgICAgICAgICAgY2F0IC9jb25maWcvYmlnaXBfYmFzZS5jb25mCiAgICAgICAgICAgIGJyZWFrCiAgICAgICAgZmkKICAgICAgICBsb2cgIkJhc2UgY29uZmlnIGZpbGUgbm90IHlldCBwcmVzZW50OiAkY2hlY2tzIgogICAgICAgIGxldCBjaGVja3M9Y2hlY2tzKzEKICAgICAgICBzbGVlcCA1CiAgICBkb25lCn0KIyB1c2FnZTogZ2V0X25ldF9pbmZvIGV0aDAgbnN8Z3cgaW5jbHVkZV9jaWRyCmZ1bmN0aW9uIGdldF9uZXRfaW5mbygpIHsKICAgIFJFVD0iIgogICAgQ0lEUl9CTE9DSz0iIgogICAgaWYgW1sgJGNsb3VkID09ICJhenVyZSIgXV07IHRoZW4KICAgICAgICBhZGRfaW50PTEKICAgICAgICBJRl9NQUM9JChpZmNvbmZpZyAkMSB8IGdyZXAgLWkgaHdhZGRyIHwgYXdrICd7cHJpbnQgJDV9JyB8IHNlZCAncy86Ly9nJykKICAgICAgICBJRl9JTkZPPSQoY3VybCAtc2YgLS1yZXRyeSAyMCBjdXJsIC1IIE1ldGFkYXRhOnRydWUgImh0dHA6Ly8xNjkuMjU0LjE2OS4yNTQvbWV0YWRhdGEvaW5zdGFuY2UvbmV0d29yay9pbnRlcmZhY2U/YXBpLXZlcnNpb249MjAxNy0wOC0wMSIgfCBqcSAnLltdIHwgc2VsZWN0KC5tYWNBZGRyZXNzPT0iJyR7SUZfTUFDfSciKScpCiAgICAgICAgQ0lEUl9CTE9DSz0kKGVjaG8gJHtJRl9JTkZPfSB8IGpxIC5pcHY0LnN1Ym5ldFswXS5hZGRyZXNzIC0tcmF3LW91dHB1dCkKICAgICAgICBDSURSX0JMT0NLKz0iLyIKICAgICAgICBDSURSX0JMT0NLKz0kKGVjaG8gJHtJRl9JTkZPfSB8IGpxIC5pcHY0LnN1Ym5ldFswXS5wcmVmaXggLS1yYXctb3V0cHV0KQogICAgZWxpZiBbWyAkY2xvdWQgPT0gImF3cyIgXV07IHRoZW4KICAgICAgICBjaWRyX2Jsb2NrX3VyaT0idnBjLWlwdjQtY2lkci1ibG9jayIKICAgICAgICBhZGRfaW50PTIKICAgICAgICAjIElmIGdldHRpbmcgZ2F0ZXdheSwgdXBkYXRlIG5lY2Vzc2FyeSB2YXJzCiAgICAgICAgaWYgW1sgJDIgPT0gImd3IiBdXSA7IHRoZW4gY2lkcl9ibG9ja191cmk9InN1Ym5ldC1pcHY0LWNpZHItYmxvY2siIDsgYWRkX2ludD0xIDsgZmkKICAgICAgICBJRl9NQUM9JChpZmNvbmZpZyAkMSB8IGdyZXAgLWkgaHdhZGRyIHwgYXdrICd7cHJpbnQgdG9sb3dlcigkNSl9JykKICAgICAgICBDSURSX0JMT0NLPSQoY3VybCAtc2YgLS1yZXRyeSAyMCBodHRwOi8vMTY5LjI1NC4xNjkuMjU0L2xhdGVzdC9tZXRhLWRhdGEvbmV0d29yay9pbnRlcmZhY2VzL21hY3MvJHtJRl9NQUN9LyR7Y2lkcl9ibG9ja191cml9KQogICAgZmkKICAgIFJFVD0kKGVjaG8gJHtDSURSX0JMT0NLJS8qfSB8IGF3ayAtRi4gJ3sgcHJpbnRmICIlZC4lZC4lZC4lZCIsICQxLCAkMiwgJDMsICQ0Kycke2FkZF9pbnR9JyB9JykKICAgICMgSW5jbHVkZSBtYXNrIGluIHJlc3BvbnNlIGlmIHJlcXVlc3RlZAogICAgaWYgW1sgLW4gIiQzIiBdXSA7IHRoZW4gZWNobyAke1JFVH0vJHtDSURSX0JMT0NLIyovfSA7IGVsc2UgZWNobyAkUkVUIDsgZmkKfQoKcmVhZCAtciAtZCAnJyBVU0FHRSA8PCBFT00KICAgIFVzYWdlOiAkMAogICAgICAgIC0taGVscCAgICAgICAgICAgICAgICAgICAgICBQcmludCB1c2FnZSBtZXNzYWdlIGFuZCBleGl0CiAgICAgICAgLS1sb2ctbGV2ZWwgPHN0cmluZz4gICAgICAgIExldmVsIG9mIGxvZ2dpbmcgZGVzaXJlZDogZXJyb3IsIHdhcm4sIGluZm8sIGRlYnVnCiAgICAgICAgLS1jbG91ZCA8c3RyaW5nPiAgICAgICAgICAgIENsb3VkIGVudmlyb25tZW50IGV4ZWN1dGVkIGFnYWluc3Q6IGF3cwogICAgICAgIC0tc2tpcC12ZXJpZnkgPHN0cmluZz4gICAgICBTa2lwIHZlcmlmaWNhdGlvbiBvZiBkZXBlbmRlbmNpZXMKICAgICAgICAtLWxpY2Vuc2UgPHN0cmluZz4gICAgICAgICAgTGljZW5zZSBmb3IgdGhlIGRldmljZQogICAgICAgIC0tbnRwIDxzdHJpbmc+ICAgICAgICAgICAgICBOVFAgZm9yIHRoZSBkZXZpY2UKICAgICAgICAtLXRpbWV6b25lIDxzdHJpbmc+ICAgICAgICAgVGltZXpvbmUgZm9yIHRoZSBkZXZpY2UKICAgICAgICAtLWRhdGEtaW50ZXJmYWNlIDxzdHJpbmc+ICAgUHJpbWFyeSBpbnRlcmZhY2UgdG8gdXNlIGZvciBkYXRhLXBsYW5lCiAgICAgICAgLS12bGFuIDxzdHJpbmc+ICAgICAgICAgICAgIFZMQU4ocykgdG8gY3JlYXRlIG9uIHRoZSBkZXZpY2UgKDsgZm9yIG11bHRpcGxlKSAnbjpleHQsbmljOjEuMScKICAgICAgICAtLXNlbGYtaXAgPHN0cmluZz4gICAgICAgICAgU2VsZiBJUChzKSB0byBjcmVhdGUgb24gdGhlIGRldmljZSAoOyBmb3IgbXVsdGlwbGUpOiAnbjpleHQsYTp4LngueC54LHY6ZXh0LGk6ZXRoMScKICAgICAgICAtLXVzYWdlLWFuYWx5dGljcyA8c3RyaW5nPiAgVXNhZ2UgYW5hbHl0aWNzIHRvIHNlbmQ6ICdjTjp2YWwscjp2YWwsY0k6dmFsLGRJOnZhbCxsVDp2YWwsYklWOnZhbCx0Tjp2YWwsdFY6dmFsLHNlbmQ6eWVzJwogICAgICAgIC0tY3JlYXRlLWxpY2Vuc2UtcG9vbCAgICAgICBDcmVhdGVzIGxpY2Vuc2UgcG9vbCwgc2VuZDogbmFtZTpyZWdfa2V5CiAgICAgICAgLS1jcmVhdGUtcmVnLWtleS1wb29sICAgICAgIENyZWF0ZXMgYSByZWdrZXkgcG9vbCwgc2VuZDogbmFtZTpyZWdfa2V5X2xpc3QKICAgICAgICAtLWZjbC10YWcgICAgICAgICAgICAgICAgICAgRjUgY2xvdWQgbGliIHRhZyB0byBkb3dubG9hZCBmNS1jbG91ZC1saWJzLnRhci5negogICAgICAgIC0tZmNsLWNsb3VkLXRhZyAgICAgICAgICAgICBGNSBzcGVjaWZpZWQgY2xvdWQgdGFnIHRvIGRvd25sb2FkIGY1LWNsb3VkLWxpYnMtPGNsb3VkPi50YXIuZ3oKICAgICAgICAtLWJpZy1pcS1wYXNzd29yZC1kYXRhLXVyaSAgVVJJIHRvIHRoZSBsb2NhdGlvbiB0aGF0IGNvbnRhaW5zIEJJRy1JUSBhZG1pbiB1c2VyIHBhc3N3b3JkCiAgICAgICAgLS1tYXN0ZXIgICAgICAgICAgICAgICAgICAgIEluZGljYXRlcyB0aGF0IHRoaXMgaW5zdGFuY2UgaXMgbWFzdGVyICh1c2VkIGluIEJJRy1JUSBjbHVzdGVyaW5nKSB1c2Ugd2l0aCAtLWJpZy1pcS1mYWlsb3Zlci1wZWVyLWlwIG9wdGlvbgogICAgICAgIC0tYmlnLWlxLWZhaWxvdmVyLXBlZXItaXAgICBUaGlzIGlzIHRoZSBwcml2YXRlIElQIGFkZHJlc3MgZm9yIHRoZSBzZWNvbmRhcnkgQklHLUlRCgpFT00KCiMjIyBQYXJzZSBjb21tYW5kIGxpbmUgYXJndW1lbnRzCndoaWxlIFtbICQjIC1ndCAwIF1dIDsgZG8KICAgIGNhc2UgIiQxIiBpbgogICAgICAgIC0taGVscCkKICAgICAgICAgICAgaGVscD10cnVlCiAgICAgICAgICAgIHNoaWZ0IDs7CiAgICAgICAgLS1sb2ctbGV2ZWwpCiAgICAgICAgICAgIGxvZ19sZXZlbD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLWNsb3VkKQogICAgICAgICAgICBjbG91ZD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLXNraXAtdmVyaWZ5KQogICAgICAgICAgICBza2lwX3ZlcmlmeT10cnVlCiAgICAgICAgICAgIHNoaWZ0IDs7CiAgICAgICAgLS1saWNlbnNlKQogICAgICAgICAgICBsaWNlbnNlPSIkMiIKICAgICAgICAgICAgc2hpZnQgMiA7OwogICAgICAgIC0tbnRwKQogICAgICAgICAgICBudHA9IiQyIgogICAgICAgICAgICBzaGlmdCAyIDs7CiAgICAgICAgLS10aW1lem9uZSkKICAgICAgICAgICAgdGltZXpvbmU9IiQyIgogICAgICAgICAgICBzaGlmdCAyIDs7CiAgICAgICAgLS1kYXRhLWludGVyZmFjZSkKICAgICAgICAgICAgZGF0YV9pbnRlcmZhY2U9IiQyIgogICAgICAgICAgICBzaGlmdCAyIDs7CiAgICAgICAgLS11c2FnZS1hbmFseXRpY3MpCiAgICAgICAgICAgIHVzYWdlX2FuYWx5dGljcz0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDs7CiAgICAgICAgLS12bGFuKQogICAgICAgICAgICB2bGFuPSIkMiIKICAgICAgICAgICAgc2hpZnQgMiA7OwogICAgICAgIC0tc2VsZi1pcCkKICAgICAgICAgICAgc2VsZl9pcD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLWRpc2NvdmVyeS1hZGRyZXNzKQogICAgICAgICAgICBkaXNjb3ZlcnlfYWRkcmVzcz0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLWNyZWF0ZS1saWNlbnNlLXBvb2wpCiAgICAgICAgICAgIGxpY2Vuc2VfcG9vbD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLWNyZWF0ZS1yZWcta2V5LXBvb2wpCiAgICAgICAgICAgIHJlZ19rZXlfcG9vbD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLWZjbC10YWcpCiAgICAgICAgICAgIGZjbF90YWc9IiQyIgogICAgICAgICAgICBzaGlmdCAyIDs7CiAgICAgICAgLS1mY2wtY2xvdWQtdGFnKQogICAgICAgICAgICBmY2xfY2xvdWRfdGFnPSIkMiIKICAgICAgICAgICAgc2hpZnQgMiA7OwogICAgICAgIC0tYmlnLWlxLXBhc3N3b3JkLWRhdGEtdXJpKQogICAgICAgICAgICBwYXNzd29yZF9kYXRhX3VyaT0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLW1hc3RlcikKICAgICAgICAgICAgbWFzdGVyPXRydWUKICAgICAgICAgICAgc2hpZnQgOzsKICAgICAgICAtLWJpZy1pcS1mYWlsb3Zlci1wZWVyLWlwKQogICAgICAgICAgICBiaWdfaXFfZmFpbG92ZXJfcGVlcl9pcD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAqfC0tKQogICAgICAgICAgICBzaGlmdAogICAgICAgICAgICBicmVhayA7OwogICAgZXNhYwpkb25lCgppZiAkaGVscCA7IHRoZW4KICAgIGVjaG8gIiRVU0FHRSIKICAgIGV4aXQKZmkKCiMgVmVyaWZ5IHJlcXVpcmVkIHBhcmFtZXRlcnMKcmVxdWlyZWQ9KCJjbG91ZCIpCmZvciBpIGluICR7cmVxdWlyZWRbQF19IDsgZG8KICAgIGlmIFsgLXogJHshaX0gXSA7IHRoZW4KICAgICAgICBsb2cgIkEgcmVxdWlyZWQgcGFyYW1ldGVyIGlzIG1pc3Npbmc6ICRpIgogICAgICAgIGV4aXQKICAgIGZpCmRvbmUKCmNvbmZpZ19wYXJhbXMgPSAiLS1oZWxwICRoZWxwIC0tbG9nLWxldmVsICRsb2dfbGV2ZWwgLS1jbG91ZCAkY2xvdWQgLS1za2lwLXZlcmlmeSAkc2tpcF92ZXJpZnkgLS1saWNlbnNlICRsaWNlbnNlIC0tbnRwICRudHAgLS10aW1lem9uZSAkdGltZXpvbmUgIC0tZGF0YS1pbnRlcmZhY2UgJGRhdGFfaW50ZXJmYWNlIC0tdXNhZ2UtYW5hbHl0aWNzICR1c2FnZV9hbmFseXRpY3MgLS12bGFuICR2bGFuIC0tc2VsZi1pcCAkc2VsZl9pcCAtLWRpc2NvdmVyeS1hZGRyZXNzICRkaXNjb3ZlcnlfYWRkcmVzcyAtLWNyZWF0ZS1saWNlbnNlLXBvb2wgJGxpY2Vuc2VfcG9vbCAtLWNyZWF0ZS1yZWcta2V5LXBvb2wgJHJlZ19rZXlfcG9vbCAtLWZjbC10YWcgJGZjbF90YWcgLS1mY2wtY2xvdWQtdGFnICRmY2xfY2xvdWRfdGFnIC0tYmlnLWlxLXBhc3N3b3JkLWRhdGEtdXJpICRwYXNzd29yZF9kYXRhX3VyaSIKCmlmIFsgLW4gJG1hc3RlciBdIDsgdGhlbgogICAgY29uZmlnX3BhcmFtcys9ICIgLS1tYXN0ZXIgJG1hc3RlciAiCmZpCmlmIFsgLW4gJGJpZ19pcV9mYWlsb3Zlcl9wZWVyX2lwIF0gOyB0aGVuCiAgICBjb25maWdfcGFyYW1zKz0gIiAtLWJpZy1pcS1mYWlsb3Zlci1wZWVyLWlwICRiaWdfaXFfZmFpbG92ZXJfcGVlcl9pcCAiCmZpCgplY2hvICJDb25maWd1cmF0aW9uIHBhcmFtZXRlcnM6ICRjb25maWdfcGFyYW1zIgoKIyBDaGVjayBmb3IgIkRvIE5vdCBDcmVhdGUiIGluIGNyZWF0ZSBwb29sIHBhcm1ldGVycwpzaG9wdCAtcyBub2Nhc2VtYXRjaAppZiBbWyAkbGljZW5zZV9wb29sID09ICJEb19Ob3RfQ3JlYXRlIiBdXSA7IHRoZW4KICAgIGxvZyAiU2V0dGluZyBsaWNlbnNpbmcgcG9vbCB0byBudWxsIGFzICdEb19Ob3RfQ3JlYXRlJyBoYXMgYmVlbiBzcGVjaWZpZWQ6ICRsaWNlbnNpbmdfcG9vbCIKICAgIGxpY2Vuc2VfcG9vbD0iIgpmaQppZiBbWyAkcmVnX2tleV9wb29sID09ICJEb19Ob3RfQ3JlYXRlIiBdXSA7IHRoZW4KICAgIGxvZyAiU2V0dGluZyByZWcga2V5IHBvb2wgdG8gbnVsbCBhcyAnRG9fTm90X0NyZWF0ZScgaGFzIGJlZW4gc3BlY2lmaWVkOiAkbGljZW5zaW5nX3Bvb2wiCiAgICByZWdfa2V5X3Bvb2w9IiIKZmkKc2hvcHQgLXUgbm9jYXNlbWF0Y2gKCiMjIyBJbnN0YWxsIGRlcGVuZGVuY2llcyAjIyMKIyMgVGhlcmUgbXVzdCBiZSBHaXRIdWIgaW50ZXJuZXQgY29ubmVjdGlvbgpjaGVja19pbnRlcm5ldF9jb25uZWN0aW9uCgpiYXNlX3VybD0iaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL0Y1TmV0d29ya3MiCmJhc2VfZGlyPSIvY29uZmlnL2Nsb3VkIgpiYXNlX2xvZ19kaXI9Ii92YXIvbG9nL2Nsb3VkLyR7Y2xvdWR9IgpiYXNlX2RlcGVuZGVuY3lfZGlyPSIke2Jhc2VfZGlyfS8ke2Nsb3VkfS9ub2RlX21vZHVsZXMvQGY1ZGV2Y2VudHJhbCIKCiMjIERvd25sb2FkCmRlcGVuZGVuY2llcz0oIiR7YmFzZV91cmx9L2Y1LWNsb3VkLWxpYnMvJHtmY2xfdGFnfS9kaXN0L2Y1LWNsb3VkLWxpYnMudGFyLmd6IikKZGVwZW5kZW5jaWVzKz0oIiR7YmFzZV91cmx9L2Y1LWNsb3VkLWxpYnMtJHtjbG91ZH0vJHtmY2xfY2xvdWRfdGFnfS9kaXN0L2Y1LWNsb3VkLWxpYnMtJHtjbG91ZH0udGFyLmd6IikKZGVwZW5kZW5jaWVzKz0oIiR7YmFzZV91cmx9L2Y1LWNsb3VkLWxpYnMvJHtmY2xfdGFnfS9kaXN0L3ZlcmlmeUhhc2giKQoKZm9yIGkgaW4gJHtkZXBlbmRlbmNpZXNbQF19IDsgZG8KICAgIGxvZyAiRG93bmxvYWRpbmcgZGVwZW5kZW5jeTogJGkiCiAgICBmPSQoYmFzZW5hbWUgJGkpCiAgICBzYWZlX2Rvd25sb2FkICR7YmFzZV9kaXJ9LyRmICRpCiAgICAjICRDVVJMIC1rc2YgLS1yZXRyeSAxMCAtLXJldHJ5LWRlbGF5IDUgLS1yZXRyeS1tYXgtdGltZSAyNDAgLW8gJHtiYXNlX2Rpcn0vJGYgJGkKZG9uZQoKIyMgVmVyaWZ5CiMgTUNQIG11c3QgYmUgcnVubmluZyBmaXJzdAptY3BfcnVubmluZwpiYXNlX2NvbmZpZ19hdmFpbGFibGUKCmlmICEgJHNraXBfdmVyaWZ5IDsgdGhlbgogICAgdmVyaWZ5X3NjcmlwdD0iJHtiYXNlX2Rpcn0vdmVyaWZ5SGFzaCIKICAgIGlmICEgJFRNU0ggbG9hZCBzeXMgY29uZmlnIG1lcmdlIGZpbGUgJHZlcmlmeV9zY3JpcHQgOyB0aGVuCiAgICAgICAgbG9nICJDTEkgdmVyaWZpY2F0aW9uIHNjcmlwdCBpcyBub3QgdmFsaWQ6ICR2ZXJpZnlfc2NyaXB0IgogICAgICAgIGV4aXQgMQogICAgZmkKCiAgICBmb3IgaSBpbiAke2RlcGVuZGVuY2llc1tAXX0gOyBkbwogICAgICAgIGY9JChiYXNlbmFtZSAkaSkKICAgICAgICBpZiBbWyAkZiAhPSAidmVyaWZ5SGFzaCIgXV0gOyB0aGVuCiAgICAgICAgICAgIGxvZyAiVmVyaWZ5aW5nIGRlcGVuZGVuY3k6ICRmIgogICAgICAgICAgICBpZiAhICRUTVNIIHJ1biBjbGkgc2NyaXB0IHZlcmlmeUhhc2ggIi9jb25maWcvY2xvdWQvJGYiIDsgdGhlbgogICAgICAgICAgICAgICAgbG9nICJEZXBlbmRlbmN5IGlzIG5vdCB2YWxpZDogJGYiCiAgICAgICAgICAgICAgICBleGl0IDEKICAgICAgICAgICAgZmkKICAgICAgICBmaQogICAgZG9uZQplbHNlCiAgICBsb2cgIldhcm5pbmc6IFNraXBwaW5nIGRlcGVuZGVuY3kgdmVyaWZpY2F0aW9uIgpmaQoKIyMgSW5zdGFsbApta2RpciAtcCAkYmFzZV9kZXBlbmRlbmN5X2Rpcgpmb3IgaSBpbiAke2RlcGVuZGVuY2llc1tAXX0gOyBkbwogICAgZj0kKGJhc2VuYW1lICRpKQogICAgbG9nICJJbnN0YWxsaW5nIGRlcGVuZGVuY3k6ICRmIgogICAgaWYgW1sgJGYgPT0gKiIudGFyIiogXV0gOyB0aGVuCiAgICAgICAgdGFyIHhmeiAke2Jhc2VfZGlyfS8ke2Z9IC1DICRiYXNlX2RlcGVuZGVuY3lfZGlyCiAgICBmaQpkb25lCgojIyBTaWduYWwKdG91Y2ggIiR7YmFzZV9kaXJ9L2Nsb3VkTGlic1JlYWR5IgoKIyMjIFByb3Zpc2lvbiBEZXZpY2UgIyMjCm1rZGlyIC1wICRiYXNlX2xvZ19kaXIKaG9zdG5hbWU9IiIKaWYgW1sgJGNsb3VkID09ICJhd3MiIF1dOyB0aGVuCiAgICBob3N0bmFtZT0kKCRDVVJMIC1zZiAtLXJldHJ5IDIwIGh0dHA6Ly8xNjkuMjU0LjE2OS4yNTQvbGF0ZXN0L21ldGEtZGF0YS9ob3N0bmFtZSkKZWxpZiBbWyAkY2xvdWQgPT0gImF6dXJlIiBdXTsgdGhlbgogICAgbWV0YWRhdGE9JCgkQ1VSTCAtSCBNZXRhZGF0YTp0cnVlICJodHRwOi8vMTY5LjI1NC4xNjkuMjU0L21ldGFkYXRhL2luc3RhbmNlL2NvbXB1dGU/YXBpLXZlcnNpb249MjAxNy0xMi0wMSIpCiAgICBob3N0bmFtZT0kKGVjaG8gJHttZXRhZGF0YX0gfCBqcSAubmFtZSAtLXJhdy1vdXRwdXQpCiAgICBob3N0bmFtZSs9Ii4iCiAgICBob3N0bmFtZSs9JChlY2hvICR7bWV0YWRhdGF9IHwganEgLmxvY2F0aW9uIC0tcmF3LW91dHB1dCkKICAgIGhvc3RuYW1lKz0iLmNsb3VkYXBwLmF6dXJlLmNvbSIKZmkKaG9zdD0ibG9jYWxob3N0IgpzZXBhcmF0b3I9IjsiCgojIENvdWxkIHVzZSBhIGdlbmVyaWMgLS1vbmJvYXJkfC0tbmV0d29ya3xldGMgZm9yIG9wdGlvbmFsIGFyZ3VtZW50cwojIGluc3RlYWQsIGF0IGxlYXN0IGZvciBub3cgaW1wbGVtZW50IHRoZSBhZGRpdGlvbmFsIGFic3RyYWN0aW9uCgojIyBPbmJvYXJkCm9uYm9hcmRfYXJncz0iIgppZiBbIC1uICIkY2xvdWQiIF0gOyB0aGVuIG9uYm9hcmRfYXJncys9Ii0tY2xvdWQgJHtjbG91ZH0gIiA7IGZpCmlmIFsgLW4gIiRsaWNlbnNlIiBdIDsgdGhlbiBvbmJvYXJkX2FyZ3MrPSItLWxpY2Vuc2UgJHtsaWNlbnNlfSAiIDsgZmkKaWYgWyAtbiAiJG50cCIgXSA7IHRoZW4gb25ib2FyZF9hcmdzKz0iLS1udHAgJHtudHB9ICIgOyBmaQppZiBbIC1uICIkdGltZXpvbmUiIF0gOyB0aGVuIG9uYm9hcmRfYXJncys9Ii0tdHogJHt0aW1lem9uZX0gIiA7IGZpCmlmIFsgLW4gIiRsaWNlbnNlX3Bvb2wiIF0gOyB0aGVuCiAgICAjIENoZWNrIGZvciBtdWxpdGlwbGUgbGljZW5zZSBwb29scwogICAgT0lGUz0kSUZTCiAgICBJRlM9IiwiOwogICAgbGljZW5zZUFycmF5PSgkbGljZW5zZV9wb29sKTsKICAgIGZvciBpIGluICR7bGljZW5zZUFycmF5W0BdfTsgZG8KICAgICAgICBmbGFnPScgLS1jcmVhdGUtbGljZW5zZS1wb29sICcKICAgICAgICBjYXRfYXJncz0iJHtjYXRfYXJnc30ke2ZsYWd9JGkiCiAgICBkb25lCiAgICBJRlM9JE9JRlM7CiAgICBvbmJvYXJkX2FyZ3MrPSIke2NhdF9hcmdzfSAiIDsgZmkKCmlmIFsgLW4gIiRyZWdfa2V5X3Bvb2wiIF0gOyB0aGVuIG9uYm9hcmRfYXJncys9Ii0tY3JlYXRlLXJlZy1rZXktcG9vbCAke3JlZ19rZXlfcG9vbH0gIiA7IGZpCgppZiBbWyAkY2xvdWQgPT0gImF3cyIgXV07IHRoZW4KICAgIGlmIFsgLW4gIiRkYXRhX2ludGVyZmFjZSIgXSA7IHRoZW4gb25ib2FyZF9hcmdzKz0iLS1kbnMgJChnZXRfbmV0X2luZm8gJGRhdGFfaW50ZXJmYWNlIG5zKSAiIDsgZmkKZWxpZiBbWyAkY2xvdWQgPT0gImF6dXJlIiBdXTsgdGhlbgogICAgaWYgWyAtbiAiJGRhdGFfaW50ZXJmYWNlIiBdIDsgdGhlbiBvbmJvYXJkX2FyZ3MrPSItLWRucyAxNjguNjMuMTI5LjE2ICIgOyBmaQpmaQoKaWYgW1sgIiQoZ2V0X3ZlcnNpb24pIiA9PSAiYmlnLWlxIiAmJiAtbiAiJHBhc3N3b3JkX2RhdGFfdXJpIiBdXTsgdGhlbgogICAgb25ib2FyZF9hcmdzKz0iLS1iaWctaXEtcGFzc3dvcmQtZGF0YS11cmkgJHtwYXNzd29yZF9kYXRhX3VyaX0gIgplbGlmIFtbICIkKGdldF92ZXJzaW9uKSIgPT0gImJpZy1pcSIgXV07IHRoZW4KICAgIG9uYm9hcmRfYXJncys9Ii0tc2V0LW1hc3Rlci1rZXkgIgpmaQoKaWYgWyAtbiAiJHVzYWdlX2FuYWx5dGljcyIgXSA7IHRoZW4KICAgIG89JChqc29uaWZ5ICR1c2FnZV9hbmFseXRpY3MpCiAgICAjIE9iZnVzY2F0ZSBzZW5zaXRpdmUgaW5mb3JtYXRpb24KICAgIGNJPSQoZWNobyAkKGdldF92YWwgIiRvIiBjSSkgfCBzaGE1MTJzdW0gfCBjdXQgLWQgIiAiIC1mIDEpCiAgICBkST0kKGVjaG8gJChnZXRfdmFsICIkbyIgZEkpIHwgc2hhNTEyc3VtIHwgY3V0IC1kICIgIiAtZiAxKQogICAgbWV0cmljcys9ImNsb3VkTmFtZTokKGdldF92YWwgIiRvIiBjTikscmVnaW9uOiQoZ2V0X3ZhbCAiJG8iIHIpLGN1c3RvbWVySWQ6JHtjSX0iCiAgICBtZXRyaWNzKz0iLGRlcGxveW1lbnRJZDoke2RJfSxsaWNlbnNlVHlwZTokKGdldF92YWwgIiRvIiBsVCksYmlnSXBWZXJzaW9uOiQoZ2V0X3ZhbCAiJG8iIGJJVikiCiAgICBtZXRyaWNzKz0iLHRlbXBsYXRlTmFtZTokKGdldF92YWwgIiRvIiB0TiksdGVtcGxhdGVWZXJzaW9uOiQoZ2V0X3ZhbCAiJG8iIHRWKSAiCiAgICBzZW5kX2FuYWx5dGljcz0kKGdldF92YWwgIiRvIiBzZW5kKQogICAgaWYgW1sgIiR7c2VuZF9hbmFseXRpY3MsLH0iID09ICJ5ZXMiIF1dIDsgdGhlbiBvbmJvYXJkX2FyZ3MrPSItLW1ldHJpY3MgJG1ldHJpY3MgIiA7IGZpCmZpCgokTk9ERSAiJHtiYXNlX2RlcGVuZGVuY3lfZGlyfS9mNS1jbG91ZC1saWJzL3NjcmlwdHMvb25ib2FyZC5qcyIgLS1ob3N0ICRob3N0IC0tbG9nLWxldmVsICRsb2dfbGV2ZWwgXAogICAgLS1vdXRwdXQgIiR7YmFzZV9sb2dfZGlyfS9vbmJvYXJkLmxvZyIgLS1zaWduYWwgT05CT0FSRF9ET05FIC0taG9zdG5hbWUgJGhvc3RuYW1lICRvbmJvYXJkX2FyZ3MgJj4+ICR7YmFzZV9sb2dfZGlyfS9pbnN0YWxsLmxvZwoKIyBUT0RPOiBSYWNlIGNvbmRpdGlvbiBiZXR3ZWVuIG9uYm9hcmQvbmV0d29yayAtIFVzaW5nIGF1dGggdG9rZW4gcmVzdWx0cyBpbiA0MDMgIm5vdCBhdXRob3JpemVkIgojIGlmIG5ldHdvcmsgY2FsbCBpbW1lZGlhdGVseSBmb2xsb3dzIG9uYm9hcmQuICBVc2UgZm9sbG93aW5nIHBsYWNlaG9sZGVyIHVudGlsIGZpeGVkIGluIGY1LWNsb3VkLWxpYnMKIyBhZGRpbmcgLS13YWl0LWZvciBzaWduYWwgZm9yIG5ldHdvcmsgY2FsbC4Kd2FpdF90aW1lPTMwCmxvZyAiV2FpdGluZzogJHdhaXRfdGltZSIKc2xlZXAgJHdhaXRfdGltZQoKIyMgTmV0d29yawplY2hvICJDb25maWd1cmluZyBuZXR3b3JrLi4uIgpuZXR3b3JrX2FyZ3M9IiIKaWYgWyAtbiAiJGRhdGFfaW50ZXJmYWNlIiBdIDsgdGhlbiBuZXR3b3JrX2FyZ3MrPSItLWRlZmF1bHQtZ3cgJChnZXRfbmV0X2luZm8gJGRhdGFfaW50ZXJmYWNlIGd3KSAiIDsgZmkKaWYgWyAtbiAiJHZsYW4iIF0gOyB0aGVuCiAgICBmb3IgaSBpbiAkKGVjaG8gJHZsYW4gfCB0ciAiJHNlcGFyYXRvciIgJyAnKSA7IGRvCiAgICAgICAgbz0kKGpzb25pZnkgJGkpCiAgICAgICAgbmV0d29ya19hcmdzKz0iLS12bGFuIG5hbWU6JChnZXRfdmFsICIkbyIgbiksbmljOiQoZ2V0X3ZhbCAiJG8iIG5pYykgIgogICAgZG9uZQpmaQppZiBbIC1uICIkc2VsZl9pcCIgXSA7IHRoZW4KICAgIGZvciBpIGluICQoZWNobyAkc2VsZl9pcCB8IHRyICIkc2VwYXJhdG9yIiAnICcpIDsgZG8KICAgICAgICBvPSQoanNvbmlmeSAkaSkKICAgICAgICBndz0kKGdldF9uZXRfaW5mbyAkKGdldF92YWwgIiRvIiBpKSBndyBjaWRyKQogICAgICAgIG5ldHdvcmtfYXJncys9Ii0tc2VsZi1pcCBuYW1lOiQoZ2V0X3ZhbCAiJG8iIG4pLGFkZHJlc3M6JChnZXRfdmFsICIkbyIgYSkvJHtndyMqL30sdmxhbjokKGdldF92YWwgIiRvIiB2KSAiCiAgICBkb25lCmZpCmlmIFsgLW4gIiRkaXNjb3ZlcnlfYWRkcmVzcyIgXSA7IHRoZW4KICAgIG5ldHdvcmtfYXJncys9Ii0tZGlzY292ZXJ5LWFkZHJlc3MgJHtkaXNjb3ZlcnlfYWRkcmVzc30iCmZpCiROT0RFICIke2Jhc2VfZGVwZW5kZW5jeV9kaXJ9L2Y1LWNsb3VkLWxpYnMvc2NyaXB0cy9uZXR3b3JrLmpzIiAtLWhvc3QgJGhvc3QgLS1sb2ctbGV2ZWwgJGxvZ19sZXZlbCBcCiAgICAtLW91dHB1dCAiJHtiYXNlX2xvZ19kaXJ9L25ldHdvcmsubG9nIiAtLXdhaXQtZm9yIE9OQk9BUkRfRE9ORSAtLXNpZ25hbCBORVRXT1JLX0RPTkUgJG5ldHdvcmtfYXJncyAmPj4gJHtiYXNlX2xvZ19kaXJ9L2luc3RhbGwubG9nCgojIyBDbHVzdGVyCmlmIFtbIC1uICIkbWFzdGVyIiAmJiAtbiAiJGJpZ19pcV9mYWlsb3Zlcl9wZWVyX2lwIiBdXSA7IHRoZW4KICAgIGVjaG8gIkNvbmZpZ3VyaW5nIGNsdXN0ZXIuLi4iCiAgICBjbHVzdGVyX2FyZ3M9Ii0tY2xvdWQgJGNsb3VkIC0tbWFzdGVyIC0tYmlnLWlxLWZhaWxvdmVyLXBlZXItaXAgJGJpZ19pcV9mYWlsb3Zlcl9wZWVyX2lwIgogICAgaWYgWyAtbiAiJHBhc3N3b3JkX2RhdGFfdXJpIiBdIDsgdGhlbgogICAgICAgIGNsdXN0ZXJfYXJncys9IiAtLWJpZy1pcS1wYXNzd29yZC1kYXRhLXVyaSAkcGFzc3dvcmRfZGF0YV91cmkiCiAgICBmaQogICAgJE5PREUgIiR7YmFzZV9kZXBlbmRlbmN5X2Rpcn0vZjUtY2xvdWQtbGlicy9zY3JpcHRzL2NsdXN0ZXIuanMiIC0taG9zdCAkaG9zdCAtLWxvZy1sZXZlbCAkbG9nX2xldmVsIFwKICAgICAgICAtLW91dHB1dCAiJHtiYXNlX2xvZ19kaXJ9L2NsdXN0ZXIubG9nIiAtLXVzZXIgYWRtaW4gJGNsdXN0ZXJfYXJncyAmPj4gJHtiYXNlX2xvZ19kaXJ9L2luc3RhbGwubG9nCmZpCg=="
+										]
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			"Properties": {
+				"BlockDeviceMappings": [{
+						"DeviceName": "/dev/xvda",
+						"Ebs": {
+							"DeleteOnTermination": "true",
+							"VolumeType": "gp2"
+						}
+					},
+					{
+						"DeviceName": "/dev/xvdb",
+						"NoDevice": {
+
+						}
+					}
+				],
+				"IamInstanceProfile": {
+					"Ref": "deviceServiceDiscoveryProfile"
+				},
+				"ImageId": {
+					"Fn::If": [
+						"noCustomImageId",
+						{
+							"Fn::FindInMap": [
+								"regionMap",
+								{
+									"Ref": "AWS::Region"
+								},
+								"Best"
+							]
+						},
+						{
+							"Ref": "customImageId"
+						}
+					]
+				},
+				"InstanceType": {
+					"Ref": "instanceType"
+				},
+				"KeyName": {
+					"Ref": "sshKey"
+				},
+				"NetworkInterfaces": [{
+						"Description": "Management Interface",
+						"DeviceIndex": "0",
+						"NetworkInterfaceId": {
+							"Ref": "device1ManagementInterface"
+						}
+					},
+					{
+						"Description": "Private or Internal Interface",
+						"DeviceIndex": "1",
+						"NetworkInterfaceId": {
+							"Ref": "device1subnet1Az1Interface"
+						}
+					}
+				],
+				"Tags": [{
+						"Key": "Application",
+						"Value": {
+							"Ref": "application"
+						}
+					},
+					{
+						"Key": "Costcenter",
+						"Value": {
+							"Ref": "costcenter"
+						}
+					},
+					{
+						"Key": "Environment",
+						"Value": {
+							"Ref": "environment"
+						}
+					},
+					{
+						"Key": "Group",
+						"Value": {
+							"Ref": "group"
+						}
+					},
+					{
+						"Key": "Name",
+						"Value": {
+							"Fn::Join": [
+								"", [
+									"Instance: ",
+									{
+										"Ref": "AWS::StackName"
+									}
+								]
+							]
+						}
+					},
+					{
+						"Key": "Owner",
+						"Value": {
+							"Ref": "owner"
+						}
+					}
+				],
+				"UserData": {
+					"Fn::Base64": {
+						"Fn::Join": [
+							"", [
+								"#!/bin/bash\n",
+								"/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
+								{
+									"Ref": "AWS::StackId"
+								},
+								" -r ",
+								"device1Instance",
+								" --region ",
+								{
+									"Ref": "AWS::Region"
+								},
+								"\n"
+							]
+						]
+					}
+				}
+			},
+			"Type": "AWS::EC2::Instance"
+		},
+		"device1ManagementEipAddress": {
+			"Properties": {
+				"Domain": "vpc"
+			},
+			"Type": "AWS::EC2::EIP"
+		},
+		"device1ManagementEipAssociation": {
+			"Properties": {
+				"AllocationId": {
+					"Fn::GetAtt": [
+						"device1ManagementEipAddress",
+						"AllocationId"
+					]
+				},
+				"NetworkInterfaceId": {
+					"Ref": "device1ManagementInterface"
+				}
+			},
+			"Type": "AWS::EC2::EIPAssociation"
+		},
+		"device1ManagementInterface": {
+			"Properties": {
+				"Description": "Management Interface for the BIG-IP",
+				"GroupSet": [
+					{
+						"Ref": "deviceManagementSecurityGroup"
+					}
+				],
+				"SubnetId": {
+					"Ref": "managementSubnetAz1"
+				}
+			},
+			"Type": "AWS::EC2::NetworkInterface"
+		},
+		"device1VipEipAddress": {
+			"Properties": {
+				"Domain": "vpc"
+			},
+			"Type": "AWS::EC2::EIP"
+		},
+		"device1VipEipAssociation": {
+			"Properties": {
+				"AllocationId": {
+					"Fn::GetAtt": [
+						"device1VipEipAddress",
+						"AllocationId"
+					]
+				},
+				"NetworkInterfaceId": {
+					"Ref": "device1subnet1Az1Interface"
+				},
+				"PrivateIpAddress": {
+					"Fn::Select": [
+						"0",
+						{
+							"Fn::GetAtt": [
+								"device1subnet1Az1Interface",
+								"SecondaryPrivateIpAddresses"
+							]
+						}
+					]
+				}
+			},
+			"Type": "AWS::EC2::EIPAssociation"
+		},
+		"device1subnet1Az1Interface": {
+			"Properties": {
+				"Description": "Public External Interface for the BIG-IP",
+				"GroupSet": [
+					{
+						"Ref": "deviceSubnet1SecurityGroup"
+					}
+				],
+				"SecondaryPrivateIpAddressCount": "1",
+				"SubnetId": {
+					"Ref": "subnet1Az1"
+				}
+			},
+			"Type": "AWS::EC2::NetworkInterface"
+		},
+		"device1subnet1Az1SelfEipAddress": {
+			"Properties": {
+				"Domain": "vpc"
+			},
+			"Type": "AWS::EC2::EIP"
+		},
+		"device1subnet1Az1SelfEipAssociation": {
+			"Properties": {
+				"AllocationId": {
+					"Fn::GetAtt": [
+						"device1subnet1Az1SelfEipAddress",
+						"AllocationId"
+					]
+				},
+				"NetworkInterfaceId": {
+					"Ref": "device1subnet1Az1Interface"
+				},
+				"PrivateIpAddress": {
+					"Fn::GetAtt": [
+						"device1subnet1Az1Interface",
+						"PrimaryPrivateIpAddress"
+					]
+				}
+			},
+			"Type": "AWS::EC2::EIPAssociation"
+		},
+		"device2Instance": {
+			"DependsOn": "device1Instance",
+			"Metadata": {
+				"AWS::CloudFormation::Init": {
+					"config": {
+						"commands": {
+							"init": {
+								"command": {
+									"Fn::Join": [
+										"", [
+											"mkdir -p /var/log/cloud/aws;cat /config/cloud/initEncoded | /usr/bin/base64 -d > /config/cloud/init.sh && chmod +x /config/cloud/init.sh;",
+											"/config/cloud/init.sh --cloud aws --skip-verify --log-level debug --data-interface eth1 --license ",
+											{
+												"Ref": "licenseKey2"
+											},
+											" --ntp ",
+											{
+												"Ref": "ntpServer"
+											},
+											" --timezone ",
+											{
+												"Ref": "timezone"
+											},
+											" --create-license-pool ",
+											{
+												"Ref": "licensePoolKeys"
+											},
+											" --create-reg-key-pool ",
+											{
+												"Ref": "regPoolKeys"
+											},
+											" --big-iq-password-data-uri ",
+											{
+												"Ref": "bigIqPasswordS3Arn"
+											},
+											" --fcl-tag develop",
+											" --fcl-cloud-tag develop",
+											" --vlan 'n:internal,nic:1.1' ",
+											" --self-ip 'n:internal_self,a:",
+											{
+												"Fn::GetAtt": [
+													"device2subnet1Az2Interface",
+													"PrimaryPrivateIpAddress"
+												]
+											},
+											",i:eth1',v:internal --discovery-address ",
+											{
+												"Fn::GetAtt": [
+													"device2subnet1Az2Interface",
+													"PrimaryPrivateIpAddress"
+												]
+											},
+											" --master --big-iq-failover-peer-ip ",
+											{
+												"Fn::GetAtt": [
+													"device1subnet1Az1Interface",
+													"PrimaryPrivateIpAddress"
+												]
+											},
+											" --usage-analytics 'send:",
+											{
+												"Ref": "allowUsageAnalytics"
+											},
+											",r:",
+											{
+												"Ref": "AWS::Region"
+											},
+											",cI:",
+											{
+												"Ref": "AWS::AccountId"
+											},
+											",dI:",
+											{
+												"Ref": "AWS::StackId"
+											},
+											",cN:aws,lT:byol,bIV:6.0.0,tN:f5-existing-stack-byol-2nic-bigiq,tV:4.3.0' ",
+											"&>> /var/log/cloud/aws/install.log &"
+										]
+									]
+								}
+							}
+						},
+						"files": {
+							"/config/cloud/initEncoded": {
+								"group": "root",
+								"mode": "000400",
+								"owner": "root",
+								"content": {
+									"Fn::Join": [
+										"", [
+											"IyEvYmluL2Jhc2gKCiMjIyBDb25maWd1cmUgZGVmYXVsdCB2YWx1ZXMKbG9nX2xldmVsPSJpbmZvIgpoZWxwPWZhbHNlCnNraXBfdmVyaWZ5PWZhbHNlCnNjcmlwdF9kaXI9JChkaXJuYW1lICQwKQoKVE1TSD0vdXNyL2Jpbi90bXNoCkNVUkw9L3Vzci9iaW4vY3VybApOT0RFPS91c3IvYmluL25vZGUKCiMjIyBGdW5jdGlvbnMgLSBUaGVzZSBzaG91bGQgZ28gaW50byBzZXBlcmF0ZSBmaWxlKHMpCiMgdXNhZ2U6IGxvZyBtZXNzYWdlCmZ1bmN0aW9uIGxvZygpIHsKICAgIGVjaG8gIiQoZGF0ZSAnKyVZLSVtLSVkVCVIOiVNOiVTWicpOiAkMSIKfQojIHVzYWdlOiBnZXRfdmVyc2lvbgpmdW5jdGlvbiBnZXRfdmVyc2lvbigpIHsKICAgIHJldD0kKCRUTVNIIHNob3cgc3lzIHZlcnNpb24gfCBncmVwIC1pIHByb2R1Y3QgfCBhd2sgJ3twcmludCAkMn0nKQogICAgZWNobyAke3JldCwsfQp9CiMgdXNhZ2U6IGpzb25pZnkga2V5OnZhbHVlLGtleTE6dmFsdWUxCmZ1bmN0aW9uIGpzb25pZnkoKSB7CiAgICBsaXN0PSQoZWNobyAkMSB8IHRyICcsJyAnICcpCiAgICBqc29uPSd7fScKICAgIGZvciBpIGluICRsaXN0IDsgZG8KICAgICAgICBrdj0oJChlY2hvICRpIHwgdHIgJzonICcgJykpCiAgICAgICAganNvbj0kKGVjaG8gJGpzb24gfCBqcSAtLWFyZyBrICR7a3ZbMF19IC0tYXJnIHYgJHtrdlsxXX0gJy4gfCAuWyRrXT0kdicpCiAgICBkb25lCiAgICBlY2hvICRqc29uCn0KIyB1c2FnZTogZ2V0X3ZhbCBqc29uX29iamVjdCBrZXkKZnVuY3Rpb24gZ2V0X3ZhbCgpIHsKICAgIHJldD0kKGVjaG8gJDEgfCBqcSAuJDIgLXIpCiAgICBlY2hvICRyZXQKfQojIHVzYWdlOiBtYWtlIHN1cmUgdGhlcmUgaXMgaW50ZXJuZXQgY29ubmVjdGlvbiB0byBHaXRIdWIKZnVuY3Rpb24gY2hlY2tfaW50ZXJuZXRfY29ubmVjdGlvbiB7CiAgICBlY2hvICItLS0gQ2hlY2tpbmcgR2l0aHViIHN0YXR1cyAtLS0iCiAgICBjaGVja3M9MAogICAgZ2l0aHViX3Jlc3BvbnNlPSJiYWQiCiAgICB3aGlsZSBbICRjaGVja3MgLWx0IDEyMCBdIDsgZG8KICAgICAgICBnaXRodWJfcmVzcG9uc2U9YGN1cmwgaHR0cHM6Ly9zdGF0dXMuZ2l0aHViLmNvbS9hcGkvc3RhdHVzLmpzb24/Y2FsbGJhY2stYXBpU3RhdHVzIHwganEgLnN0YXR1cyAtLXJhdy1vdXRwdXRgCiAgICAgICAgaWYgWyAkZ2l0aHViX3Jlc3BvbnNlID09ICJnb29kIiBdOyB0aGVuCiAgICAgICAgICAgIGxvZyAiR2l0SHViIGlzIHJlYWR5IgogICAgICAgICAgICBicmVhawogICAgICAgIGZpCiAgICAgICAgbG9nICJHaXRIdWIgbm90IHJlYWR5OiAkY2hlY2tzIgogICAgICAgIGxldCBjaGVja3M9Y2hlY2tzKzEKICAgICAgICBzbGVlcCA1CiAgICBkb25lCiAgICBpZiBbICRnaXRodWJfcmVzcG9uc2UgPT0gImJhZCIgXTsgdGhlbgogICAgICAgIGxvZyAiTm8gR2l0SHViIGludGVybmV0IGNvbm5lY3Rpb24uIgogICAgICAgIGV4aXQKICAgIGZpCn0KIyB1c2FnZTogbWNwX3J1bm5pbmcKZnVuY3Rpb24gbWNwX3J1bm5pbmcgewogICAgY2hlY2tzPTAKICAgIHdoaWxlIFsgJGNoZWNrcyAtbHQgMTIwIF0gOyBkbwogICAgICAgICRUTVNIIC1hIHNob3cgc3lzIG1jcC1zdGF0ZSBmaWVsZC1mbXQgfCBncmVwIC1xIHJ1bm5pbmcKICAgICAgICBpZiBbICQ/ID09IDAgXTsgdGhlbgogICAgICAgICAgICBsb2cgIk1DUEQgcmVhZHkiCiAgICAgICAgICAgIGJyZWFrCiAgICAgICAgZmkKICAgICAgICBsb2cgIk1DUEQgbm90IHJlYWR5OiAkY2hlY2tzIgogICAgICAgIGxldCBjaGVja3M9Y2hlY2tzKzEKICAgICAgICBzbGVlcCA1CiAgICBkb25lCn0KIyB1c2FnZTogRG93bmxvYWQgZnJvbSBHaXRodWIgdW50aWwgc3VjY2Vzc2Z1bAojCiMgJDE6IG91dHB1dCBmaWxlIG5hbWUKIyAkMjogVVJMCmZ1bmN0aW9uIHNhZmVfZG93bmxvYWQgewogICAgY2hlY2tzPTAKICAgIHdoaWxlIFsgJGNoZWNrcyAtbHQgMTIwIF0gOyBkbwogICAgICAgICRDVVJMIC0tZmFpbCAtLXJldHJ5IDIwIC0tcmV0cnktZGVsYXkgNSAtLXJldHJ5LW1heC10aW1lIDI0MCAtbyAkMSAkMiAmJiBicmVhawogICAgICAgIGxldCBjaGVja3M9Y2hlY2tzKzEKICAgICAgICBzbGVlcCA1CiAgICBkb25lCn0KIyB1c2FnZTogYmFzZV9jb25maWdfYXZhaWxhYmxlIC0gcmVzb2x2ZXMgaXNzdWUgZm91bmQgaW4gNi4wLjAgdmVyc2lvbnMgb2YgYmlnLWlxCmZ1bmN0aW9uIGJhc2VfY29uZmlnX2F2YWlsYWJsZSB7CiAgICBjaGVja3M9MAogICAgd2hpbGUgWyAkY2hlY2tzIC1sdCAxMjAgXSA7IGRvCiAgICAgICAgJFRNU0ggLWEgc2hvdyBzeXMgbWNwLXN0YXRlIGZpZWxkLWZtdCB8IGdyZXAgLXEgcnVubmluZwogICAgICAgIGlmIFsgLWYgL2NvbmZpZy9iaWdpcF9iYXNlLmNvbmYgXTsgdGhlbgogICAgICAgICAgICBsb2cgIkJhc2UgQ29uZmlnIGZpbGUgcHJlc2VudDsgc2F2aW5nIGNvbmZpZyIKICAgICAgICAgICAgdG1zaCBzYXZlIHN5cyBjb25maWcKICAgICAgICAgICAgY2F0IC9jb25maWcvYmlnaXBfYmFzZS5jb25mCiAgICAgICAgICAgIGJyZWFrCiAgICAgICAgZmkKICAgICAgICBsb2cgIkJhc2UgY29uZmlnIGZpbGUgbm90IHlldCBwcmVzZW50OiAkY2hlY2tzIgogICAgICAgIGxldCBjaGVja3M9Y2hlY2tzKzEKICAgICAgICBzbGVlcCA1CiAgICBkb25lCn0KIyB1c2FnZTogZ2V0X25ldF9pbmZvIGV0aDAgbnN8Z3cgaW5jbHVkZV9jaWRyCmZ1bmN0aW9uIGdldF9uZXRfaW5mbygpIHsKICAgIFJFVD0iIgogICAgQ0lEUl9CTE9DSz0iIgogICAgaWYgW1sgJGNsb3VkID09ICJhenVyZSIgXV07IHRoZW4KICAgICAgICBhZGRfaW50PTEKICAgICAgICBJRl9NQUM9JChpZmNvbmZpZyAkMSB8IGdyZXAgLWkgaHdhZGRyIHwgYXdrICd7cHJpbnQgJDV9JyB8IHNlZCAncy86Ly9nJykKICAgICAgICBJRl9JTkZPPSQoY3VybCAtc2YgLS1yZXRyeSAyMCBjdXJsIC1IIE1ldGFkYXRhOnRydWUgImh0dHA6Ly8xNjkuMjU0LjE2OS4yNTQvbWV0YWRhdGEvaW5zdGFuY2UvbmV0d29yay9pbnRlcmZhY2U/YXBpLXZlcnNpb249MjAxNy0wOC0wMSIgfCBqcSAnLltdIHwgc2VsZWN0KC5tYWNBZGRyZXNzPT0iJyR7SUZfTUFDfSciKScpCiAgICAgICAgQ0lEUl9CTE9DSz0kKGVjaG8gJHtJRl9JTkZPfSB8IGpxIC5pcHY0LnN1Ym5ldFswXS5hZGRyZXNzIC0tcmF3LW91dHB1dCkKICAgICAgICBDSURSX0JMT0NLKz0iLyIKICAgICAgICBDSURSX0JMT0NLKz0kKGVjaG8gJHtJRl9JTkZPfSB8IGpxIC5pcHY0LnN1Ym5ldFswXS5wcmVmaXggLS1yYXctb3V0cHV0KQogICAgZWxpZiBbWyAkY2xvdWQgPT0gImF3cyIgXV07IHRoZW4KICAgICAgICBjaWRyX2Jsb2NrX3VyaT0idnBjLWlwdjQtY2lkci1ibG9jayIKICAgICAgICBhZGRfaW50PTIKICAgICAgICAjIElmIGdldHRpbmcgZ2F0ZXdheSwgdXBkYXRlIG5lY2Vzc2FyeSB2YXJzCiAgICAgICAgaWYgW1sgJDIgPT0gImd3IiBdXSA7IHRoZW4gY2lkcl9ibG9ja191cmk9InN1Ym5ldC1pcHY0LWNpZHItYmxvY2siIDsgYWRkX2ludD0xIDsgZmkKICAgICAgICBJRl9NQUM9JChpZmNvbmZpZyAkMSB8IGdyZXAgLWkgaHdhZGRyIHwgYXdrICd7cHJpbnQgdG9sb3dlcigkNSl9JykKICAgICAgICBDSURSX0JMT0NLPSQoY3VybCAtc2YgLS1yZXRyeSAyMCBodHRwOi8vMTY5LjI1NC4xNjkuMjU0L2xhdGVzdC9tZXRhLWRhdGEvbmV0d29yay9pbnRlcmZhY2VzL21hY3MvJHtJRl9NQUN9LyR7Y2lkcl9ibG9ja191cml9KQogICAgZmkKICAgIFJFVD0kKGVjaG8gJHtDSURSX0JMT0NLJS8qfSB8IGF3ayAtRi4gJ3sgcHJpbnRmICIlZC4lZC4lZC4lZCIsICQxLCAkMiwgJDMsICQ0Kycke2FkZF9pbnR9JyB9JykKICAgICMgSW5jbHVkZSBtYXNrIGluIHJlc3BvbnNlIGlmIHJlcXVlc3RlZAogICAgaWYgW1sgLW4gIiQzIiBdXSA7IHRoZW4gZWNobyAke1JFVH0vJHtDSURSX0JMT0NLIyovfSA7IGVsc2UgZWNobyAkUkVUIDsgZmkKfQoKcmVhZCAtciAtZCAnJyBVU0FHRSA8PCBFT00KICAgIFVzYWdlOiAkMAogICAgICAgIC0taGVscCAgICAgICAgICAgICAgICAgICAgICBQcmludCB1c2FnZSBtZXNzYWdlIGFuZCBleGl0CiAgICAgICAgLS1sb2ctbGV2ZWwgPHN0cmluZz4gICAgICAgIExldmVsIG9mIGxvZ2dpbmcgZGVzaXJlZDogZXJyb3IsIHdhcm4sIGluZm8sIGRlYnVnCiAgICAgICAgLS1jbG91ZCA8c3RyaW5nPiAgICAgICAgICAgIENsb3VkIGVudmlyb25tZW50IGV4ZWN1dGVkIGFnYWluc3Q6IGF3cwogICAgICAgIC0tc2tpcC12ZXJpZnkgPHN0cmluZz4gICAgICBTa2lwIHZlcmlmaWNhdGlvbiBvZiBkZXBlbmRlbmNpZXMKICAgICAgICAtLWxpY2Vuc2UgPHN0cmluZz4gICAgICAgICAgTGljZW5zZSBmb3IgdGhlIGRldmljZQogICAgICAgIC0tbnRwIDxzdHJpbmc+ICAgICAgICAgICAgICBOVFAgZm9yIHRoZSBkZXZpY2UKICAgICAgICAtLXRpbWV6b25lIDxzdHJpbmc+ICAgICAgICAgVGltZXpvbmUgZm9yIHRoZSBkZXZpY2UKICAgICAgICAtLWRhdGEtaW50ZXJmYWNlIDxzdHJpbmc+ICAgUHJpbWFyeSBpbnRlcmZhY2UgdG8gdXNlIGZvciBkYXRhLXBsYW5lCiAgICAgICAgLS12bGFuIDxzdHJpbmc+ICAgICAgICAgICAgIFZMQU4ocykgdG8gY3JlYXRlIG9uIHRoZSBkZXZpY2UgKDsgZm9yIG11bHRpcGxlKSAnbjpleHQsbmljOjEuMScKICAgICAgICAtLXNlbGYtaXAgPHN0cmluZz4gICAgICAgICAgU2VsZiBJUChzKSB0byBjcmVhdGUgb24gdGhlIGRldmljZSAoOyBmb3IgbXVsdGlwbGUpOiAnbjpleHQsYTp4LngueC54LHY6ZXh0LGk6ZXRoMScKICAgICAgICAtLXVzYWdlLWFuYWx5dGljcyA8c3RyaW5nPiAgVXNhZ2UgYW5hbHl0aWNzIHRvIHNlbmQ6ICdjTjp2YWwscjp2YWwsY0k6dmFsLGRJOnZhbCxsVDp2YWwsYklWOnZhbCx0Tjp2YWwsdFY6dmFsLHNlbmQ6eWVzJwogICAgICAgIC0tY3JlYXRlLWxpY2Vuc2UtcG9vbCAgICAgICBDcmVhdGVzIGxpY2Vuc2UgcG9vbCwgc2VuZDogbmFtZTpyZWdfa2V5CiAgICAgICAgLS1jcmVhdGUtcmVnLWtleS1wb29sICAgICAgIENyZWF0ZXMgYSByZWdrZXkgcG9vbCwgc2VuZDogbmFtZTpyZWdfa2V5X2xpc3QKICAgICAgICAtLWZjbC10YWcgICAgICAgICAgICAgICAgICAgRjUgY2xvdWQgbGliIHRhZyB0byBkb3dubG9hZCBmNS1jbG91ZC1saWJzLnRhci5negogICAgICAgIC0tZmNsLWNsb3VkLXRhZyAgICAgICAgICAgICBGNSBzcGVjaWZpZWQgY2xvdWQgdGFnIHRvIGRvd25sb2FkIGY1LWNsb3VkLWxpYnMtPGNsb3VkPi50YXIuZ3oKICAgICAgICAtLWJpZy1pcS1wYXNzd29yZC1kYXRhLXVyaSAgVVJJIHRvIHRoZSBsb2NhdGlvbiB0aGF0IGNvbnRhaW5zIEJJRy1JUSBhZG1pbiB1c2VyIHBhc3N3b3JkCiAgICAgICAgLS1tYXN0ZXIgICAgICAgICAgICAgICAgICAgIEluZGljYXRlcyB0aGF0IHRoaXMgaW5zdGFuY2UgaXMgbWFzdGVyICh1c2VkIGluIEJJRy1JUSBjbHVzdGVyaW5nKSB1c2Ugd2l0aCAtLWJpZy1pcS1mYWlsb3Zlci1wZWVyLWlwIG9wdGlvbgogICAgICAgIC0tYmlnLWlxLWZhaWxvdmVyLXBlZXItaXAgICBUaGlzIGlzIHRoZSBwcml2YXRlIElQIGFkZHJlc3MgZm9yIHRoZSBzZWNvbmRhcnkgQklHLUlRCgpFT00KCiMjIyBQYXJzZSBjb21tYW5kIGxpbmUgYXJndW1lbnRzCndoaWxlIFtbICQjIC1ndCAwIF1dIDsgZG8KICAgIGNhc2UgIiQxIiBpbgogICAgICAgIC0taGVscCkKICAgICAgICAgICAgaGVscD10cnVlCiAgICAgICAgICAgIHNoaWZ0IDs7CiAgICAgICAgLS1sb2ctbGV2ZWwpCiAgICAgICAgICAgIGxvZ19sZXZlbD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLWNsb3VkKQogICAgICAgICAgICBjbG91ZD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLXNraXAtdmVyaWZ5KQogICAgICAgICAgICBza2lwX3ZlcmlmeT10cnVlCiAgICAgICAgICAgIHNoaWZ0IDs7CiAgICAgICAgLS1saWNlbnNlKQogICAgICAgICAgICBsaWNlbnNlPSIkMiIKICAgICAgICAgICAgc2hpZnQgMiA7OwogICAgICAgIC0tbnRwKQogICAgICAgICAgICBudHA9IiQyIgogICAgICAgICAgICBzaGlmdCAyIDs7CiAgICAgICAgLS10aW1lem9uZSkKICAgICAgICAgICAgdGltZXpvbmU9IiQyIgogICAgICAgICAgICBzaGlmdCAyIDs7CiAgICAgICAgLS1kYXRhLWludGVyZmFjZSkKICAgICAgICAgICAgZGF0YV9pbnRlcmZhY2U9IiQyIgogICAgICAgICAgICBzaGlmdCAyIDs7CiAgICAgICAgLS11c2FnZS1hbmFseXRpY3MpCiAgICAgICAgICAgIHVzYWdlX2FuYWx5dGljcz0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDs7CiAgICAgICAgLS12bGFuKQogICAgICAgICAgICB2bGFuPSIkMiIKICAgICAgICAgICAgc2hpZnQgMiA7OwogICAgICAgIC0tc2VsZi1pcCkKICAgICAgICAgICAgc2VsZl9pcD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLWRpc2NvdmVyeS1hZGRyZXNzKQogICAgICAgICAgICBkaXNjb3ZlcnlfYWRkcmVzcz0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLWNyZWF0ZS1saWNlbnNlLXBvb2wpCiAgICAgICAgICAgIGxpY2Vuc2VfcG9vbD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLWNyZWF0ZS1yZWcta2V5LXBvb2wpCiAgICAgICAgICAgIHJlZ19rZXlfcG9vbD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLWZjbC10YWcpCiAgICAgICAgICAgIGZjbF90YWc9IiQyIgogICAgICAgICAgICBzaGlmdCAyIDs7CiAgICAgICAgLS1mY2wtY2xvdWQtdGFnKQogICAgICAgICAgICBmY2xfY2xvdWRfdGFnPSIkMiIKICAgICAgICAgICAgc2hpZnQgMiA7OwogICAgICAgIC0tYmlnLWlxLXBhc3N3b3JkLWRhdGEtdXJpKQogICAgICAgICAgICBwYXNzd29yZF9kYXRhX3VyaT0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAtLW1hc3RlcikKICAgICAgICAgICAgbWFzdGVyPXRydWUKICAgICAgICAgICAgc2hpZnQgOzsKICAgICAgICAtLWJpZy1pcS1mYWlsb3Zlci1wZWVyLWlwKQogICAgICAgICAgICBiaWdfaXFfZmFpbG92ZXJfcGVlcl9pcD0iJDIiCiAgICAgICAgICAgIHNoaWZ0IDIgOzsKICAgICAgICAqfC0tKQogICAgICAgICAgICBzaGlmdAogICAgICAgICAgICBicmVhayA7OwogICAgZXNhYwpkb25lCgppZiAkaGVscCA7IHRoZW4KICAgIGVjaG8gIiRVU0FHRSIKICAgIGV4aXQKZmkKCiMgVmVyaWZ5IHJlcXVpcmVkIHBhcmFtZXRlcnMKcmVxdWlyZWQ9KCJjbG91ZCIpCmZvciBpIGluICR7cmVxdWlyZWRbQF19IDsgZG8KICAgIGlmIFsgLXogJHshaX0gXSA7IHRoZW4KICAgICAgICBsb2cgIkEgcmVxdWlyZWQgcGFyYW1ldGVyIGlzIG1pc3Npbmc6ICRpIgogICAgICAgIGV4aXQKICAgIGZpCmRvbmUKCmNvbmZpZ19wYXJhbXMgPSAiLS1oZWxwICRoZWxwIC0tbG9nLWxldmVsICRsb2dfbGV2ZWwgLS1jbG91ZCAkY2xvdWQgLS1za2lwLXZlcmlmeSAkc2tpcF92ZXJpZnkgLS1saWNlbnNlICRsaWNlbnNlIC0tbnRwICRudHAgLS10aW1lem9uZSAkdGltZXpvbmUgIC0tZGF0YS1pbnRlcmZhY2UgJGRhdGFfaW50ZXJmYWNlIC0tdXNhZ2UtYW5hbHl0aWNzICR1c2FnZV9hbmFseXRpY3MgLS12bGFuICR2bGFuIC0tc2VsZi1pcCAkc2VsZl9pcCAtLWRpc2NvdmVyeS1hZGRyZXNzICRkaXNjb3ZlcnlfYWRkcmVzcyAtLWNyZWF0ZS1saWNlbnNlLXBvb2wgJGxpY2Vuc2VfcG9vbCAtLWNyZWF0ZS1yZWcta2V5LXBvb2wgJHJlZ19rZXlfcG9vbCAtLWZjbC10YWcgJGZjbF90YWcgLS1mY2wtY2xvdWQtdGFnICRmY2xfY2xvdWRfdGFnIC0tYmlnLWlxLXBhc3N3b3JkLWRhdGEtdXJpICRwYXNzd29yZF9kYXRhX3VyaSIKCmlmIFsgLW4gJG1hc3RlciBdIDsgdGhlbgogICAgY29uZmlnX3BhcmFtcys9ICIgLS1tYXN0ZXIgJG1hc3RlciAiCmZpCmlmIFsgLW4gJGJpZ19pcV9mYWlsb3Zlcl9wZWVyX2lwIF0gOyB0aGVuCiAgICBjb25maWdfcGFyYW1zKz0gIiAtLWJpZy1pcS1mYWlsb3Zlci1wZWVyLWlwICRiaWdfaXFfZmFpbG92ZXJfcGVlcl9pcCAiCmZpCgplY2hvICJDb25maWd1cmF0aW9uIHBhcmFtZXRlcnM6ICRjb25maWdfcGFyYW1zIgoKIyBDaGVjayBmb3IgIkRvIE5vdCBDcmVhdGUiIGluIGNyZWF0ZSBwb29sIHBhcm1ldGVycwpzaG9wdCAtcyBub2Nhc2VtYXRjaAppZiBbWyAkbGljZW5zZV9wb29sID09ICJEb19Ob3RfQ3JlYXRlIiBdXSA7IHRoZW4KICAgIGxvZyAiU2V0dGluZyBsaWNlbnNpbmcgcG9vbCB0byBudWxsIGFzICdEb19Ob3RfQ3JlYXRlJyBoYXMgYmVlbiBzcGVjaWZpZWQ6ICRsaWNlbnNpbmdfcG9vbCIKICAgIGxpY2Vuc2VfcG9vbD0iIgpmaQppZiBbWyAkcmVnX2tleV9wb29sID09ICJEb19Ob3RfQ3JlYXRlIiBdXSA7IHRoZW4KICAgIGxvZyAiU2V0dGluZyByZWcga2V5IHBvb2wgdG8gbnVsbCBhcyAnRG9fTm90X0NyZWF0ZScgaGFzIGJlZW4gc3BlY2lmaWVkOiAkbGljZW5zaW5nX3Bvb2wiCiAgICByZWdfa2V5X3Bvb2w9IiIKZmkKc2hvcHQgLXUgbm9jYXNlbWF0Y2gKCiMjIyBJbnN0YWxsIGRlcGVuZGVuY2llcyAjIyMKIyMgVGhlcmUgbXVzdCBiZSBHaXRIdWIgaW50ZXJuZXQgY29ubmVjdGlvbgpjaGVja19pbnRlcm5ldF9jb25uZWN0aW9uCgpiYXNlX3VybD0iaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL0Y1TmV0d29ya3MiCmJhc2VfZGlyPSIvY29uZmlnL2Nsb3VkIgpiYXNlX2xvZ19kaXI9Ii92YXIvbG9nL2Nsb3VkLyR7Y2xvdWR9IgpiYXNlX2RlcGVuZGVuY3lfZGlyPSIke2Jhc2VfZGlyfS8ke2Nsb3VkfS9ub2RlX21vZHVsZXMvQGY1ZGV2Y2VudHJhbCIKCiMjIERvd25sb2FkCmRlcGVuZGVuY2llcz0oIiR7YmFzZV91cmx9L2Y1LWNsb3VkLWxpYnMvJHtmY2xfdGFnfS9kaXN0L2Y1LWNsb3VkLWxpYnMudGFyLmd6IikKZGVwZW5kZW5jaWVzKz0oIiR7YmFzZV91cmx9L2Y1LWNsb3VkLWxpYnMtJHtjbG91ZH0vJHtmY2xfY2xvdWRfdGFnfS9kaXN0L2Y1LWNsb3VkLWxpYnMtJHtjbG91ZH0udGFyLmd6IikKZGVwZW5kZW5jaWVzKz0oIiR7YmFzZV91cmx9L2Y1LWNsb3VkLWxpYnMvJHtmY2xfdGFnfS9kaXN0L3ZlcmlmeUhhc2giKQoKZm9yIGkgaW4gJHtkZXBlbmRlbmNpZXNbQF19IDsgZG8KICAgIGxvZyAiRG93bmxvYWRpbmcgZGVwZW5kZW5jeTogJGkiCiAgICBmPSQoYmFzZW5hbWUgJGkpCiAgICBzYWZlX2Rvd25sb2FkICR7YmFzZV9kaXJ9LyRmICRpCiAgICAjICRDVVJMIC1rc2YgLS1yZXRyeSAxMCAtLXJldHJ5LWRlbGF5IDUgLS1yZXRyeS1tYXgtdGltZSAyNDAgLW8gJHtiYXNlX2Rpcn0vJGYgJGkKZG9uZQoKIyMgVmVyaWZ5CiMgTUNQIG11c3QgYmUgcnVubmluZyBmaXJzdAptY3BfcnVubmluZwpiYXNlX2NvbmZpZ19hdmFpbGFibGUKCmlmICEgJHNraXBfdmVyaWZ5IDsgdGhlbgogICAgdmVyaWZ5X3NjcmlwdD0iJHtiYXNlX2Rpcn0vdmVyaWZ5SGFzaCIKICAgIGlmICEgJFRNU0ggbG9hZCBzeXMgY29uZmlnIG1lcmdlIGZpbGUgJHZlcmlmeV9zY3JpcHQgOyB0aGVuCiAgICAgICAgbG9nICJDTEkgdmVyaWZpY2F0aW9uIHNjcmlwdCBpcyBub3QgdmFsaWQ6ICR2ZXJpZnlfc2NyaXB0IgogICAgICAgIGV4aXQgMQogICAgZmkKCiAgICBmb3IgaSBpbiAke2RlcGVuZGVuY2llc1tAXX0gOyBkbwogICAgICAgIGY9JChiYXNlbmFtZSAkaSkKICAgICAgICBpZiBbWyAkZiAhPSAidmVyaWZ5SGFzaCIgXV0gOyB0aGVuCiAgICAgICAgICAgIGxvZyAiVmVyaWZ5aW5nIGRlcGVuZGVuY3k6ICRmIgogICAgICAgICAgICBpZiAhICRUTVNIIHJ1biBjbGkgc2NyaXB0IHZlcmlmeUhhc2ggIi9jb25maWcvY2xvdWQvJGYiIDsgdGhlbgogICAgICAgICAgICAgICAgbG9nICJEZXBlbmRlbmN5IGlzIG5vdCB2YWxpZDogJGYiCiAgICAgICAgICAgICAgICBleGl0IDEKICAgICAgICAgICAgZmkKICAgICAgICBmaQogICAgZG9uZQplbHNlCiAgICBsb2cgIldhcm5pbmc6IFNraXBwaW5nIGRlcGVuZGVuY3kgdmVyaWZpY2F0aW9uIgpmaQoKIyMgSW5zdGFsbApta2RpciAtcCAkYmFzZV9kZXBlbmRlbmN5X2Rpcgpmb3IgaSBpbiAke2RlcGVuZGVuY2llc1tAXX0gOyBkbwogICAgZj0kKGJhc2VuYW1lICRpKQogICAgbG9nICJJbnN0YWxsaW5nIGRlcGVuZGVuY3k6ICRmIgogICAgaWYgW1sgJGYgPT0gKiIudGFyIiogXV0gOyB0aGVuCiAgICAgICAgdGFyIHhmeiAke2Jhc2VfZGlyfS8ke2Z9IC1DICRiYXNlX2RlcGVuZGVuY3lfZGlyCiAgICBmaQpkb25lCgojIyBTaWduYWwKdG91Y2ggIiR7YmFzZV9kaXJ9L2Nsb3VkTGlic1JlYWR5IgoKIyMjIFByb3Zpc2lvbiBEZXZpY2UgIyMjCm1rZGlyIC1wICRiYXNlX2xvZ19kaXIKaG9zdG5hbWU9IiIKaWYgW1sgJGNsb3VkID09ICJhd3MiIF1dOyB0aGVuCiAgICBob3N0bmFtZT0kKCRDVVJMIC1zZiAtLXJldHJ5IDIwIGh0dHA6Ly8xNjkuMjU0LjE2OS4yNTQvbGF0ZXN0L21ldGEtZGF0YS9ob3N0bmFtZSkKZWxpZiBbWyAkY2xvdWQgPT0gImF6dXJlIiBdXTsgdGhlbgogICAgbWV0YWRhdGE9JCgkQ1VSTCAtSCBNZXRhZGF0YTp0cnVlICJodHRwOi8vMTY5LjI1NC4xNjkuMjU0L21ldGFkYXRhL2luc3RhbmNlL2NvbXB1dGU/YXBpLXZlcnNpb249MjAxNy0xMi0wMSIpCiAgICBob3N0bmFtZT0kKGVjaG8gJHttZXRhZGF0YX0gfCBqcSAubmFtZSAtLXJhdy1vdXRwdXQpCiAgICBob3N0bmFtZSs9Ii4iCiAgICBob3N0bmFtZSs9JChlY2hvICR7bWV0YWRhdGF9IHwganEgLmxvY2F0aW9uIC0tcmF3LW91dHB1dCkKICAgIGhvc3RuYW1lKz0iLmNsb3VkYXBwLmF6dXJlLmNvbSIKZmkKaG9zdD0ibG9jYWxob3N0IgpzZXBhcmF0b3I9IjsiCgojIENvdWxkIHVzZSBhIGdlbmVyaWMgLS1vbmJvYXJkfC0tbmV0d29ya3xldGMgZm9yIG9wdGlvbmFsIGFyZ3VtZW50cwojIGluc3RlYWQsIGF0IGxlYXN0IGZvciBub3cgaW1wbGVtZW50IHRoZSBhZGRpdGlvbmFsIGFic3RyYWN0aW9uCgojIyBPbmJvYXJkCm9uYm9hcmRfYXJncz0iIgppZiBbIC1uICIkY2xvdWQiIF0gOyB0aGVuIG9uYm9hcmRfYXJncys9Ii0tY2xvdWQgJHtjbG91ZH0gIiA7IGZpCmlmIFsgLW4gIiRsaWNlbnNlIiBdIDsgdGhlbiBvbmJvYXJkX2FyZ3MrPSItLWxpY2Vuc2UgJHtsaWNlbnNlfSAiIDsgZmkKaWYgWyAtbiAiJG50cCIgXSA7IHRoZW4gb25ib2FyZF9hcmdzKz0iLS1udHAgJHtudHB9ICIgOyBmaQppZiBbIC1uICIkdGltZXpvbmUiIF0gOyB0aGVuIG9uYm9hcmRfYXJncys9Ii0tdHogJHt0aW1lem9uZX0gIiA7IGZpCmlmIFsgLW4gIiRsaWNlbnNlX3Bvb2wiIF0gOyB0aGVuCiAgICAjIENoZWNrIGZvciBtdWxpdGlwbGUgbGljZW5zZSBwb29scwogICAgT0lGUz0kSUZTCiAgICBJRlM9IiwiOwogICAgbGljZW5zZUFycmF5PSgkbGljZW5zZV9wb29sKTsKICAgIGZvciBpIGluICR7bGljZW5zZUFycmF5W0BdfTsgZG8KICAgICAgICBmbGFnPScgLS1jcmVhdGUtbGljZW5zZS1wb29sICcKICAgICAgICBjYXRfYXJncz0iJHtjYXRfYXJnc30ke2ZsYWd9JGkiCiAgICBkb25lCiAgICBJRlM9JE9JRlM7CiAgICBvbmJvYXJkX2FyZ3MrPSIke2NhdF9hcmdzfSAiIDsgZmkKCmlmIFsgLW4gIiRyZWdfa2V5X3Bvb2wiIF0gOyB0aGVuIG9uYm9hcmRfYXJncys9Ii0tY3JlYXRlLXJlZy1rZXktcG9vbCAke3JlZ19rZXlfcG9vbH0gIiA7IGZpCgppZiBbWyAkY2xvdWQgPT0gImF3cyIgXV07IHRoZW4KICAgIGlmIFsgLW4gIiRkYXRhX2ludGVyZmFjZSIgXSA7IHRoZW4gb25ib2FyZF9hcmdzKz0iLS1kbnMgJChnZXRfbmV0X2luZm8gJGRhdGFfaW50ZXJmYWNlIG5zKSAiIDsgZmkKZWxpZiBbWyAkY2xvdWQgPT0gImF6dXJlIiBdXTsgdGhlbgogICAgaWYgWyAtbiAiJGRhdGFfaW50ZXJmYWNlIiBdIDsgdGhlbiBvbmJvYXJkX2FyZ3MrPSItLWRucyAxNjguNjMuMTI5LjE2ICIgOyBmaQpmaQoKaWYgW1sgIiQoZ2V0X3ZlcnNpb24pIiA9PSAiYmlnLWlxIiAmJiAtbiAiJHBhc3N3b3JkX2RhdGFfdXJpIiBdXTsgdGhlbgogICAgb25ib2FyZF9hcmdzKz0iLS1iaWctaXEtcGFzc3dvcmQtZGF0YS11cmkgJHtwYXNzd29yZF9kYXRhX3VyaX0gIgplbGlmIFtbICIkKGdldF92ZXJzaW9uKSIgPT0gImJpZy1pcSIgXV07IHRoZW4KICAgIG9uYm9hcmRfYXJncys9Ii0tc2V0LW1hc3Rlci1rZXkgIgpmaQoKaWYgWyAtbiAiJHVzYWdlX2FuYWx5dGljcyIgXSA7IHRoZW4KICAgIG89JChqc29uaWZ5ICR1c2FnZV9hbmFseXRpY3MpCiAgICAjIE9iZnVzY2F0ZSBzZW5zaXRpdmUgaW5mb3JtYXRpb24KICAgIGNJPSQoZWNobyAkKGdldF92YWwgIiRvIiBjSSkgfCBzaGE1MTJzdW0gfCBjdXQgLWQgIiAiIC1mIDEpCiAgICBkST0kKGVjaG8gJChnZXRfdmFsICIkbyIgZEkpIHwgc2hhNTEyc3VtIHwgY3V0IC1kICIgIiAtZiAxKQogICAgbWV0cmljcys9ImNsb3VkTmFtZTokKGdldF92YWwgIiRvIiBjTikscmVnaW9uOiQoZ2V0X3ZhbCAiJG8iIHIpLGN1c3RvbWVySWQ6JHtjSX0iCiAgICBtZXRyaWNzKz0iLGRlcGxveW1lbnRJZDoke2RJfSxsaWNlbnNlVHlwZTokKGdldF92YWwgIiRvIiBsVCksYmlnSXBWZXJzaW9uOiQoZ2V0X3ZhbCAiJG8iIGJJVikiCiAgICBtZXRyaWNzKz0iLHRlbXBsYXRlTmFtZTokKGdldF92YWwgIiRvIiB0TiksdGVtcGxhdGVWZXJzaW9uOiQoZ2V0X3ZhbCAiJG8iIHRWKSAiCiAgICBzZW5kX2FuYWx5dGljcz0kKGdldF92YWwgIiRvIiBzZW5kKQogICAgaWYgW1sgIiR7c2VuZF9hbmFseXRpY3MsLH0iID09ICJ5ZXMiIF1dIDsgdGhlbiBvbmJvYXJkX2FyZ3MrPSItLW1ldHJpY3MgJG1ldHJpY3MgIiA7IGZpCmZpCgokTk9ERSAiJHtiYXNlX2RlcGVuZGVuY3lfZGlyfS9mNS1jbG91ZC1saWJzL3NjcmlwdHMvb25ib2FyZC5qcyIgLS1ob3N0ICRob3N0IC0tbG9nLWxldmVsICRsb2dfbGV2ZWwgXAogICAgLS1vdXRwdXQgIiR7YmFzZV9sb2dfZGlyfS9vbmJvYXJkLmxvZyIgLS1zaWduYWwgT05CT0FSRF9ET05FIC0taG9zdG5hbWUgJGhvc3RuYW1lICRvbmJvYXJkX2FyZ3MgJj4+ICR7YmFzZV9sb2dfZGlyfS9pbnN0YWxsLmxvZwoKIyBUT0RPOiBSYWNlIGNvbmRpdGlvbiBiZXR3ZWVuIG9uYm9hcmQvbmV0d29yayAtIFVzaW5nIGF1dGggdG9rZW4gcmVzdWx0cyBpbiA0MDMgIm5vdCBhdXRob3JpemVkIgojIGlmIG5ldHdvcmsgY2FsbCBpbW1lZGlhdGVseSBmb2xsb3dzIG9uYm9hcmQuICBVc2UgZm9sbG93aW5nIHBsYWNlaG9sZGVyIHVudGlsIGZpeGVkIGluIGY1LWNsb3VkLWxpYnMKIyBhZGRpbmcgLS13YWl0LWZvciBzaWduYWwgZm9yIG5ldHdvcmsgY2FsbC4Kd2FpdF90aW1lPTMwCmxvZyAiV2FpdGluZzogJHdhaXRfdGltZSIKc2xlZXAgJHdhaXRfdGltZQoKIyMgTmV0d29yawplY2hvICJDb25maWd1cmluZyBuZXR3b3JrLi4uIgpuZXR3b3JrX2FyZ3M9IiIKaWYgWyAtbiAiJGRhdGFfaW50ZXJmYWNlIiBdIDsgdGhlbiBuZXR3b3JrX2FyZ3MrPSItLWRlZmF1bHQtZ3cgJChnZXRfbmV0X2luZm8gJGRhdGFfaW50ZXJmYWNlIGd3KSAiIDsgZmkKaWYgWyAtbiAiJHZsYW4iIF0gOyB0aGVuCiAgICBmb3IgaSBpbiAkKGVjaG8gJHZsYW4gfCB0ciAiJHNlcGFyYXRvciIgJyAnKSA7IGRvCiAgICAgICAgbz0kKGpzb25pZnkgJGkpCiAgICAgICAgbmV0d29ya19hcmdzKz0iLS12bGFuIG5hbWU6JChnZXRfdmFsICIkbyIgbiksbmljOiQoZ2V0X3ZhbCAiJG8iIG5pYykgIgogICAgZG9uZQpmaQppZiBbIC1uICIkc2VsZl9pcCIgXSA7IHRoZW4KICAgIGZvciBpIGluICQoZWNobyAkc2VsZl9pcCB8IHRyICIkc2VwYXJhdG9yIiAnICcpIDsgZG8KICAgICAgICBvPSQoanNvbmlmeSAkaSkKICAgICAgICBndz0kKGdldF9uZXRfaW5mbyAkKGdldF92YWwgIiRvIiBpKSBndyBjaWRyKQogICAgICAgIG5ldHdvcmtfYXJncys9Ii0tc2VsZi1pcCBuYW1lOiQoZ2V0X3ZhbCAiJG8iIG4pLGFkZHJlc3M6JChnZXRfdmFsICIkbyIgYSkvJHtndyMqL30sdmxhbjokKGdldF92YWwgIiRvIiB2KSAiCiAgICBkb25lCmZpCmlmIFsgLW4gIiRkaXNjb3ZlcnlfYWRkcmVzcyIgXSA7IHRoZW4KICAgIG5ldHdvcmtfYXJncys9Ii0tZGlzY292ZXJ5LWFkZHJlc3MgJHtkaXNjb3ZlcnlfYWRkcmVzc30iCmZpCiROT0RFICIke2Jhc2VfZGVwZW5kZW5jeV9kaXJ9L2Y1LWNsb3VkLWxpYnMvc2NyaXB0cy9uZXR3b3JrLmpzIiAtLWhvc3QgJGhvc3QgLS1sb2ctbGV2ZWwgJGxvZ19sZXZlbCBcCiAgICAtLW91dHB1dCAiJHtiYXNlX2xvZ19kaXJ9L25ldHdvcmsubG9nIiAtLXdhaXQtZm9yIE9OQk9BUkRfRE9ORSAtLXNpZ25hbCBORVRXT1JLX0RPTkUgJG5ldHdvcmtfYXJncyAmPj4gJHtiYXNlX2xvZ19kaXJ9L2luc3RhbGwubG9nCgojIyBDbHVzdGVyCmlmIFtbIC1uICIkbWFzdGVyIiAmJiAtbiAiJGJpZ19pcV9mYWlsb3Zlcl9wZWVyX2lwIiBdXSA7IHRoZW4KICAgIGVjaG8gIkNvbmZpZ3VyaW5nIGNsdXN0ZXIuLi4iCiAgICBjbHVzdGVyX2FyZ3M9Ii0tY2xvdWQgJGNsb3VkIC0tbWFzdGVyIC0tYmlnLWlxLWZhaWxvdmVyLXBlZXItaXAgJGJpZ19pcV9mYWlsb3Zlcl9wZWVyX2lwIgogICAgaWYgWyAtbiAiJHBhc3N3b3JkX2RhdGFfdXJpIiBdIDsgdGhlbgogICAgICAgIGNsdXN0ZXJfYXJncys9IiAtLWJpZy1pcS1wYXNzd29yZC1kYXRhLXVyaSAkcGFzc3dvcmRfZGF0YV91cmkiCiAgICBmaQogICAgJE5PREUgIiR7YmFzZV9kZXBlbmRlbmN5X2Rpcn0vZjUtY2xvdWQtbGlicy9zY3JpcHRzL2NsdXN0ZXIuanMiIC0taG9zdCAkaG9zdCAtLWxvZy1sZXZlbCAkbG9nX2xldmVsIFwKICAgICAgICAtLW91dHB1dCAiJHtiYXNlX2xvZ19kaXJ9L2NsdXN0ZXIubG9nIiAtLXVzZXIgYWRtaW4gJGNsdXN0ZXJfYXJncyAmPj4gJHtiYXNlX2xvZ19kaXJ9L2luc3RhbGwubG9nCmZpCg=="
+										]
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			"Properties": {
+				"BlockDeviceMappings": [{
+					"DeviceName": "/dev/xvda",
+					"Ebs": {
+						"DeleteOnTermination": "true",
+						"VolumeType": "gp2"
+					}
+				},
+					{
+						"DeviceName": "/dev/xvdb",
+						"NoDevice": {
+
+						}
+					}
+				],
+				"IamInstanceProfile": {
+					"Ref": "deviceServiceDiscoveryProfile"
+				},
+				"ImageId": {
+					"Fn::If": [
+						"noCustomImageId",
+						{
+							"Fn::FindInMap": [
+								"regionMap",
+								{
+									"Ref": "AWS::Region"
+								},
+								"Best"
+							]
+						},
+						{
+							"Ref": "customImageId"
+						}
+					]
+				},
+				"InstanceType": {
+					"Ref": "instanceType"
+				},
+				"KeyName": {
+					"Ref": "sshKey"
+				},
+				"NetworkInterfaces": [{
+					"Description": "Management Interface",
+					"DeviceIndex": "0",
+					"NetworkInterfaceId": {
+						"Ref": "device2ManagementInterface"
+					}
+				},
+					{
+						"Description": "Private or Internal Interface",
+						"DeviceIndex": "1",
+						"NetworkInterfaceId": {
+							"Ref": "device2subnet1Az2Interface"
+						}
+					}
+				],
+				"Tags": [{
+					"Key": "Application",
+					"Value": {
+						"Ref": "application"
+					}
+				},
+					{
+						"Key": "Costcenter",
+						"Value": {
+							"Ref": "costcenter"
+						}
+					},
+					{
+						"Key": "Environment",
+						"Value": {
+							"Ref": "environment"
+						}
+					},
+					{
+						"Key": "Group",
+						"Value": {
+							"Ref": "group"
+						}
+					},
+					{
+						"Key": "Name",
+						"Value": {
+							"Fn::Join": [
+								"", [
+									"Instance: ",
+									{
+										"Ref": "AWS::StackName"
+									}
+								]
+							]
+						}
+					},
+					{
+						"Key": "Owner",
+						"Value": {
+							"Ref": "owner"
+						}
+					}
+				],
+				"UserData": {
+					"Fn::Base64": {
+						"Fn::Join": [
+							"", [
+								"#!/bin/bash\n",
+								"/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
+								{
+									"Ref": "AWS::StackId"
+								},
+								" -r ",
+								"device2Instance",
+								" --region ",
+								{
+									"Ref": "AWS::Region"
+								},
+								"\n"
+							]
+						]
+					}
+				}
+			},
+			"Type": "AWS::EC2::Instance"
+		},
+		"device2ManagementEipAddress": {
+			"Properties": {
+				"Domain": "vpc"
+			},
+			"Type": "AWS::EC2::EIP"
+		},
+		"device2ManagementEipAssociation": {
+			"Properties": {
+				"AllocationId": {
+					"Fn::GetAtt": [
+						"device2ManagementEipAddress",
+						"AllocationId"
+					]
+				},
+				"NetworkInterfaceId": {
+					"Ref": "device2ManagementInterface"
+				}
+			},
+			"Type": "AWS::EC2::EIPAssociation"
+		},
+		"device2ManagementInterface": {
+			"Properties": {
+				"Description": "Management Interface for the device",
+				"GroupSet": [
+					{
+						"Ref": "deviceManagementSecurityGroup"
+					}
+				],
+				"SubnetId": {
+					"Ref": "managementSubnetAz2"
+				}
+			},
+			"Type": "AWS::EC2::NetworkInterface"
+		},
+		"device2subnet1Az2Interface": {
+			"Properties": {
+				"Description": "Public External Interface for the device",
+				"GroupSet": [
+					{
+						"Ref": "deviceSubnet1SecurityGroup"
+					}
+				],
+				"SecondaryPrivateIpAddressCount": "1",
+				"SubnetId": {
+					"Ref": "subnet1Az2"
+				}
+			},
+			"Type": "AWS::EC2::NetworkInterface"
+		},
+		"device2subnet1Az2SelfEipAddress": {
+			"Properties": {
+				"Domain": "vpc"
+			},
+			"Type": "AWS::EC2::EIP"
+		},
+		"device2subnet1Az2SelfEipAssociation": {
+			"Properties": {
+				"AllocationId": {
+					"Fn::GetAtt": [
+						"device2subnet1Az2SelfEipAddress",
+						"AllocationId"
+					]
+				},
+				"NetworkInterfaceId": {
+					"Ref": "device2subnet1Az2Interface"
+				},
+				"PrivateIpAddress": {
+					"Fn::GetAtt": [
+						"device2subnet1Az2Interface",
+						"PrimaryPrivateIpAddress"
+					]
+				}
+			},
+			"Type": "AWS::EC2::EIPAssociation"
+		},
+		"deviceManagementSecurityGroup": {
+			"Properties": {
+				"GroupDescription": "management interface policy",
+				"SecurityGroupIngress": [{
+						"CidrIp": {
+							"Ref": "restrictedSrcAddress"
+						},
+						"FromPort": "22",
+						"IpProtocol": "tcp",
+						"ToPort": "22"
+					},
+					{
+						"CidrIp": {
+							"Ref": "restrictedSrcAddress"
+						},
+						"FromPort": "443",
+						"IpProtocol": "tcp",
+						"ToPort": "443"
+					},
+					{
+						"CidrIp": {
+							"Ref": "restrictedSrcAddressApp"
+						},
+						"FromPort": "27017",
+						"IpProtocol": "tcp",
+						"ToPort": "27017"
+					}
+
+				],
+				"Tags": [{
+						"Key": "Application",
+						"Value": {
+							"Ref": "application"
+						}
+					},
+					{
+						"Key": "Costcenter",
+						"Value": {
+							"Ref": "costcenter"
+						}
+					},
+					{
+						"Key": "Environment",
+						"Value": {
+							"Ref": "environment"
+						}
+					},
+					{
+						"Key": "Group",
+						"Value": {
+							"Ref": "group"
+						}
+					},
+					{
+						"Key": "Name",
+						"Value": {
+							"Fn::Join": [
+								"", [
+									"Management Security Group:",
+									{
+										"Ref": "AWS::StackName"
+									}
+								]
+							]
+						}
+					},
+					{
+						"Key": "Owner",
+						"Value": {
+							"Ref": "owner"
+						}
+					}
+				],
+				"VpcId": {
+					"Ref": "Vpc"
+				}
+			},
+			"Type": "AWS::EC2::SecurityGroup"
+		},
+		"deviceSubnet1SecurityGroup": {
+			"Properties": {
+				"GroupDescription": "internal interface policy",
+				"SecurityGroupIngress": [
+					{
+						"CidrIp": {
+						"Ref": "restrictedSrcAddress"
+						},
+						"FromPort": "22",
+						"IpProtocol": "tcp",
+						"ToPort": "22"
+					},
+					{
+						"CidrIp": {
+							"Ref": "restrictedSrcAddressApp"
+						},
+						"FromPort": "443",
+						"IpProtocol": "tcp",
+						"ToPort": "443"
+					},
+					{
+						"CidrIp": {
+							"Ref": "restrictedSrcAddressApp"
+						},
+						"FromPort": "27017",
+						"IpProtocol": "tcp",
+						"ToPort": "27017"
+					}
+
+				],
+				"Tags": [{
+						"Key": "Application",
+						"Value": {
+							"Ref": "application"
+						}
+					},
+					{
+						"Key": "Costcenter",
+						"Value": {
+							"Ref": "costcenter"
+						}
+					},
+					{
+						"Key": "Environment",
+						"Value": {
+							"Ref": "environment"
+						}
+					},
+					{
+						"Key": "Group",
+						"Value": {
+							"Ref": "group"
+						}
+					},
+					{
+						"Key": "Name",
+						"Value": {
+							"Fn::Join": [
+								"", [
+									"Internal Security Group:",
+									{
+										"Ref": "AWS::StackName"
+									}
+								]
+							]
+						}
+					},
+					{
+						"Key": "Owner",
+						"Value": {
+							"Ref": "owner"
+						}
+					}
+				],
+				"VpcId": {
+					"Ref": "Vpc"
+				}
+			},
+			"Type": "AWS::EC2::SecurityGroup"
+		},
+		"deviceServiceDiscoveryAccessRole": {
+			"Properties": {
+				"AssumeRolePolicyDocument": {
+					"Statement": [
+						{
+							"Action": [
+								"sts:AssumeRole"
+							],
+							"Effect": "Allow",
+							"Principal": {
+								"Service": [
+									"ec2.amazonaws.com"
+								]
+							}
+						}
+					],
+					"Version": "2012-10-17"
+				},
+				"Path": "/",
+				"Policies": [
+					{
+						"PolicyDocument": {
+							"Statement": [
+								{
+									"Effect": "Allow",
+									"Action": [
+										"s3:Get*",
+										"s3:List*"
+									],
+									"Resource": {
+										"Ref": "bigIqPasswordS3Arn"
+									}
+								}
+							],
+							"Version": "2012-10-17"
+						},
+						"PolicyName": "deviceServiceDiscoveryPolicy"
+					}
+				]
+			},
+			"Type": "AWS::IAM::Role"
+		},
+		"deviceServiceDiscoveryProfile": {
+			"Properties": {
+				"Path": "/",
+				"Roles": [
+					{
+						"Ref": "deviceServiceDiscoveryAccessRole"
+					}
+				]
+			},
+			"Type": "AWS::IAM::InstanceProfile"
+		}
+	}
+}

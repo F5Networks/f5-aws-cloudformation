@@ -26,7 +26,7 @@ F5 has created a matrix that contains all of the tagged releases of the F5 Cloud
 
 
 ## List of Supported F5 CloudFormation templates for AWS deployments
-The following is a list of the current *supported* F5 CloudFormation templates. Click the links to view the README files which include the Launch buttons and additional information, or click the **Launch Stack** buttons to immediately launch the stack. Because individual templates may have specific prerequisites, we strongly recommend you view the README file before attempting to launch a template. 
+The following is a list of the current **supported** F5 CloudFormation templates. See the **experimental** directory for experimental templates. Click the links to view the README files which include the Launch buttons and additional information, or click the **Launch Stack** buttons to immediately launch the stack. Because individual templates may have specific prerequisites, we strongly recommend you view the README file before attempting to launch a template. 
 
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button
 <br><br>

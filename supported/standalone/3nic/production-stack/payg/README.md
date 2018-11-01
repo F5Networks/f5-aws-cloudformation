@@ -36,6 +36,7 @@ The following are prerequisites for the F5 3-NIC CFT:
   
   
 ## Important configuration notes
+  - There are new options for BIG-IP license bundles, including Per App VE LTM, Advanced WAF, and Per App VE Advanced WAF. See the [the version matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md) for details and applicable templates.  
   - This template creates AWS Security Groups as a part of the deployment. For the external Security Group, this includes a port for accessing your applications on port 80/443.  If your applications need additional ports, you must add those to the external Security Group created by the template.  For instructions on adding ports, see the AWS documentation.
   - This solution uses the SSH key to enable access to the BIG-IP system. If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This solution uses an AMI image with BIG-IP v13 or later.  
@@ -95,6 +96,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Management Subnet AZ1 | managementSubnetAz1 | Yes | Management subnet ID |
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID |
 | Subnet2 AZ1 | subnet1Az1 | Yes | Public or External subnet ID for the second subnet. |
+| Subnet1 AZ1 Static IP Addresses |  subnet1Az1Address | No | Optional. If you want to assign static IP address(es) in the subnet, type them here.  Separate multiple IP addresses with a comma (the first is the Primary IP address, all others are Secondary).  Otherwise leave DYNAMIC and a dynamic address is assigned based on the subnet you specified. |
 | BIG-IP Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
 | Custom Image Id | customImageId | No | This parameter allows you to deploy using a custom BIG-IP image if necessary. If applicable, type the AMI Id in this field. **Note**: Unless specifically required, leave the default of **OPTIONAL**. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |

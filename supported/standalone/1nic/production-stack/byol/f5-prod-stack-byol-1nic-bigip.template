@@ -16,9 +16,53 @@
      "Ref": "allowUsageAnalytics"
     }
    ]
+  },
+  "useDynamicExternalIpAddr": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      "DYNAMIC",
+      {
+       "Ref": "subnet1Az1Address"
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      "",
+      {
+       "Ref": "subnet1Az1Address"
+      }
+     ]
+    }
+   ]
+  },
+  "useStaticExternalIpAddr": {
+   "Fn::Not": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        "DYNAMIC",
+        {
+         "Ref": "subnet1Az1Address"
+        }
+       ]
+      },
+      {
+       "Fn::Equals": [
+        "",
+        {
+         "Ref": "subnet1Az1Address"
+        }
+       ]
+      }
+     ]
+    }
+   ]
   }
  },
- "Description": "Template v3.3.1: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v4.0.0: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -129,10 +173,13 @@
      "Parameters": [
       "Vpc",
       "managementSubnetAz1",
+      "managementSubnetAz1Address",
       "managementSubnetAz2",
       "subnet1Az1",
+      "subnet1Az1Address",
       "subnet1Az2",
       "subnet2Az1",
+      "subnet2Az1Address",
       "subnet2Az2",
       "availabilityZone1",
       "availabilityZone2",
@@ -233,6 +280,9 @@
     "managementSubnetAz1": {
      "default": "Management Subnet AZ1"
     },
+    "managementSubnetAz1Address": {
+     "default": "Management Subnet AZ1 Static IP Address"
+    },
     "managementSubnetAz2": {
      "default": "Management Subnet AZ2"
     },
@@ -257,11 +307,17 @@
     "subnet1Az1": {
      "default": "Subnet1 in AZ1"
     },
+    "subnet1Az1Address": {
+     "default": "Subnet1 AZ1 Static IP Addresses"
+    },
     "subnet1Az2": {
      "default": "Subnet1 in AZ2"
     },
     "subnet2Az1": {
      "default": "Subnet2 in AZ1"
+    },
+    "subnet2Az1Address": {
+     "default": "Subnet2 AZ1 Static IP Address"
     },
     "subnet2Az2": {
      "default": "Subnet2 in AZ2"
@@ -271,15 +327,26 @@
     }
    }
   },
-  "Version": "3.3.1"
+  "Version": "4.0.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
    "Description": "Internally routable IP of the public interface on BIG-IP",
    "Value": {
-    "Fn::GetAtt": [
-     "Bigip1subnet1Az1Interface",
-     "PrimaryPrivateIpAddress"
+    "Fn::If": [
+     "useDynamicExternalIpAddr",
+     {
+      "Fn::GetAtt": [
+       "Bigip1subnet1Az1Interface",
+       "PrimaryPrivateIpAddress"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
+       "Bigip1Staticsubnet1Az1Interface",
+       "PrimaryPrivateIpAddress"
+      ]
+     }
     ]
    }
   },
@@ -292,7 +359,15 @@
   "Bigip1subnet1Az1Interface": {
    "Description": "External interface Id on BIG-IP",
    "Value": {
-    "Ref": "Bigip1subnet1Az1Interface"
+    "Fn::If": [
+     "useDynamicExternalIpAddr",
+     {
+      "Ref": "Bigip1subnet1Az1Interface"
+     },
+     {
+      "Ref": "Bigip1Staticsubnet1Az1Interface"
+     }
+    ]
    }
   },
   "availabilityZone1": {
@@ -448,6 +523,11 @@
    "Description": "Public or External subnet",
    "Type": "AWS::EC2::Subnet::Id"
   },
+  "subnet1Az1Address": {
+   "Default": "DYNAMIC",
+   "Description": "Optional. If you want to assign static IP address(es) in the subnet, type them here.  Separate multiple IP addresses with a comma (the first is the Primary IP address, all others are Secondary).  Otherwise leave DYNAMIC and a dynamic address is assigned based on the subnet you specified.",
+   "Type": "String"
+  },
   "timezone": {
    "Default": "UTC",
    "Description": "Olson timezone string from /usr/share/zoneinfo",
@@ -587,7 +667,7 @@
              {
               "Ref": "licenseKey1"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-prod-stack-byol-1nic-bigip.template,templateVersion:3.3.1,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-prod-stack-byol-1nic-bigip.template,templateVersion:4.0.0,licenseType:byol\"",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
             ]
@@ -721,13 +801,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.1.1/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.2.0/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
        },
        "/config/cloud/aws/f5.service_discovery.tmpl": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.1.1/f5-service-discovery/f5.service_discovery.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.2.0/f5-service-discovery/f5.service_discovery.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
@@ -782,13 +862,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v2.2.1/dist/f5-cloud-libs-aws.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs-aws/v2.3.0/dist/f5-cloud-libs-aws.tar.gz"
        },
        "/config/cloud/f5-cloud-libs.tar.gz": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v4.3.1/dist/f5-cloud-libs.tar.gz"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-libs/v4.5.0/dist/f5-cloud-libs.tar.gz"
        },
        "/config/installCloudLibs.sh": {
         "content": {
@@ -839,7 +919,7 @@
         "owner": "root"
        },
        "/config/verifyHash": {
-        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) ce4f117ee84dc5e05be0bb29d2536f6e8dbb8ce3d899c1c380bdab56c9584983ddc64213ef7b1dfd305ca6ad9c830d73d4c3343256822fb500c5b77f48cf1c4e\n            set hashes(f5-cloud-libs-aws.tar.gz) 01ad00f2210375e3b770151a55a28198187e74cf57aedb83da7579de821933828e7fe129a05adcb27b0d036bc185393adda5619a4c1a30a7b5d9c79d21b1f6d2\n            set hashes(f5-cloud-libs-azure.tar.gz) d5e2e26f92f61f3917d8212b71fee55e9f58811ee488137e9c28ac54e5eb2434725696af286839e8b5ea68e05078188e0ada6e215c6c233d2585fd2acca0532d\n            set hashes(f5-cloud-libs-gce.tar.gz) 67e9fef439851ad4f9fbaf3f3574dadb2fceea0b13a77ccde41bcf31c42f87d6c37c64d50d685fc9a90acedc8c80abee9114b9a232809f36746bdc8e1de1b22a\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(f5.aws_advanced_ha.v1.4.0rc3.tmpl) 2f2339b4bc3a23c9cfd42aae2a6de39ba0658366f25985de2ea53410a745f0f18eedc491b20f4a8dba8db48970096e2efdca7b8efffa1a83a78e5aadf218b134\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 592f94c6bfcf543f97632b8ac42b773e30390db77f150291815c45d7f62c30b5ade515ae7257f3bedc0329084499fdf18a6d9a93c90cade23542116edefd6849\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) a26d5c470e70b821621476bcfd0579dbc0964f6a54158bc6314fa1e2f63b23bf3f3eb43ade5081131c24e08579db2e1e574beb3f8d9789d28acb4f312fad8c3e\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature L3b5hKxLwPj6VsVBGly/pd2sMA1N+gCZfLVv0MZ071f5HM5krchDDhHrJupT4rN30OkMo0rThjV5iRGhCsx2kNqKnUtIJYGX8LrONUV9Iwb+XzfUhhTh3djK4R/NHn6RV+J8x+nrppk5D0vuVsBNim7D2/M8IdAT4QIbEW+uTZQ8EDubm6+4fC71cQoS98ebs69PhBb8u4cFWerIkBgT/ChWKahQ8GQpXgcFtI2DsjxWY9fMePf4c//EMGIeDA0ur1QZovPgWwotleAS238LPfO6brESgDm4NawKDnlKMZ9fDgUStK4jEdy/9sK870B0y8SprXonx8fhoBQE0zlsGw==\n    signing-key /Common/f5-irule\n}",
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 2481d285c33b97ed083f6e48edcfbd1d5f8fb1dea0578f429017706a1829d3625fab6aff8f55fe71b2b5929410110043a17d57179d833f0f51c90fb0f6ff292d\n            set hashes(f5-cloud-libs-aws.tar.gz) 35361a507a4ef0c8f5205c05d913dbea024f287777e86dccd0c345560a637c106aeab4150af9eafd828929eb7798184e076ea5359e16b4c2d5544cc380800711\n            set hashes(f5-cloud-libs-azure.tar.gz) def8780b308a7cfea52d524e5ad07121e7091ecb826e01c87bc758c90fee5c25d12a2a4a06dc78ff64cb478a471f8514bde2cd5da19fb427de28598272a978bb\n            set hashes(f5-cloud-libs-gce.tar.gz) 9d0d8c32909a272cc9a56dad60121916830462ba26c9bb1d731c10f4e33ba7a856520db55016097db2043e27d048027924470a8e68f366de0339a43b7b68b0d6\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(f5.aws_advanced_ha.v1.4.0rc3.tmpl) 2f2339b4bc3a23c9cfd42aae2a6de39ba0658366f25985de2ea53410a745f0f18eedc491b20f4a8dba8db48970096e2efdca7b8efffa1a83a78e5aadf218b134\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 01dc84d4a4be2bc484ab57b771f186f87d4b664e1fb9a073e025b5362ee14d712b970eef4041f794f66286fb1429418aab16e832c89df8a25e02229c68b83de8\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) 64a0ed3b5e32a037ba4e71d460385fe8b5e1aecc27dc0e8514b511863952e419a89f4a2a43326abb543bba9bc34376afa114ceda950d2c3bd08dab735ff5ad20\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature rDemf/H1eVNT9zqev0rGMqJMAsDqmxZOsgwl7LuxD0bocfXqCnZyIt5B6e1nAFWJRwI2m4uKeknO58YAoNJo/+HvoG+4ifoAT71d5f0o2JX13kbvb4qEJAdl0nkGjy2j62CeHSl40+XimWzCBn8FA3bFOhfP6kfs/gAo7OhokBbk4YTxa1Y16hI5rf5Z9fS78/Km2Fs55XU18KKwL81lWyA/6by46V2LvmGYc461j8yFGLsaJLOsgJ6HZQBKRyH1ZrVAA5mdqOU7i9P1VsRgvgLhE/WBraHIDz5olowiq5AfiqnRG//Z6Wn4QgZONn4IGPMViPq+f2NxrDHlirfy/A==\n    signing-key /Common/f5-irule\n}\n",
         "group": "root",
         "mode": "000755",
         "owner": "root"
@@ -916,7 +996,15 @@
       "Description": "Public or External Interface",
       "DeviceIndex": "0",
       "NetworkInterfaceId": {
-       "Ref": "Bigip1subnet1Az1Interface"
+       "Fn::If": [
+        "useDynamicExternalIpAddr",
+        {
+         "Ref": "Bigip1subnet1Az1Interface"
+        },
+        {
+         "Ref": "Bigip1Staticsubnet1Az1Interface"
+        }
+       ]
       }
      }
     ],
@@ -990,7 +1078,57 @@
    },
    "Type": "AWS::EC2::Instance"
   },
+  "Bigip1Staticsubnet1Az1Interface": {
+   "Condition": "useStaticExternalIpAddr",
+   "Properties": {
+    "Description": "Public External Interface for the BIG-IP",
+    "GroupSet": [
+     {
+      "Ref": "bigipExternalSecurityGroup"
+     }
+    ],
+    "PrivateIpAddresses": [
+     {
+      "Primary": "true",
+      "PrivateIpAddress": {
+       "Fn::Select": [
+        "0",
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Ref": "subnet1Az1Address"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "Primary": "false",
+      "PrivateIpAddress": {
+       "Fn::Select": [
+        "1",
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Ref": "subnet1Az1Address"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ],
+    "SubnetId": {
+     "Ref": "subnet1Az1"
+    }
+   },
+   "Type": "AWS::EC2::NetworkInterface"
+  },
   "Bigip1subnet1Az1Interface": {
+   "Condition": "useDynamicExternalIpAddr",
    "Properties": {
     "Description": "Public External Interface for the BIG-IP",
     "GroupSet": [
@@ -1129,7 +1267,7 @@
           "ec2:AssociateAddress",
           "ec2:DisassociateAddress",
           "ec2:DescribeNetworkInterfaces",
-          "ec2:DescribeNetworkInterfaceAttributes",
+          "ec2:DescribeNetworkInterfaceAttribute",
           "ec2:DescribeRouteTables",
           "ec2:ReplaceRoute",
           "ec2:assignprivateipaddresses",

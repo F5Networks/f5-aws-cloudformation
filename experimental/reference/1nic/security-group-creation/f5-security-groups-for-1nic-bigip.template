@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template v3.3.1: AWS CloudFormation Template for creating security groups for a 1NIC BIG-IP",
+ "Description": "Template v4.0.0: AWS CloudFormation Template for creating security groups for a 1NIC BIG-IP",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -171,7 +171,7 @@
     }
    }
   },
-  "Version": "3.3.1"
+  "Version": "4.0.0"
  },
  "Outputs": {
   "bigipExternalSecurityGroup": {

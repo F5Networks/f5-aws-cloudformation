@@ -16,7 +16,7 @@
  
 ## Introduction
 
-This solution uses an experimental CloudFormation Template to launch and configure two BIG-IQ 2-NIC VEs in a clustered, highly available configuration across Amazon Availability Zones, using BYOL (bring your own license) licensing.
+This solution uses an experimental CloudFormation Template to launch and configure two BIG-IQ 2-NIC VEs in a clustered (hot-standby) configuration across Amazon Availability Zones, using BYOL (bring your own license) licensing.
 
 This is an *existing stack* template, meaning the networking infrastructure MUST be available prior to deploying. See the Template Parameters Section for required networking objects. 
 

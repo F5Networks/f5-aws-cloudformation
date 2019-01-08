@@ -62,7 +62,7 @@
    ]
   }
  },
- "Description": "Template v4.1.0: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v4.1.1: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -567,7 +567,7 @@
     }
    }
   },
-  "Version": "4.1.0"
+  "Version": "4.1.1"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -957,7 +957,7 @@
              },
              "--dns ${NAME_SERVER}",
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-payg-1nic-bigip.template,templateVersion:4.1.0,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-payg-1nic-bigip.template,templateVersion:4.1.1,licenseType:hourly\"",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
             ]

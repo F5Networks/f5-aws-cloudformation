@@ -34,7 +34,7 @@
    ]
   }
  },
- "Description": "Template v4.1.0: Deploys an AWS Auto Scaling group of F5 LTM BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
+ "Description": "Template v4.1.1: Deploys an AWS Auto Scaling group of F5 LTM BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -359,7 +359,7 @@
     }
    }
   },
-  "Version": "4.1.0"
+  "Version": "4.1.1"
  },
  "Outputs": {
   "bigipAutoscaleGroup": {
@@ -1087,7 +1087,7 @@
               "Ref": "managementGuiPort"
              },
              "--module ltm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-ltm.template,templateVersion:4.1.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-ltm.template,templateVersion:4.1.1,licenseType:bigiq\"",
              "--license-pool --cloud aws",
              "--big-iq-host",
              {
@@ -1246,7 +1246,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 4.1.0\n",
+           "# Generated from 4.1.1\n",
            "date\n",
            ". /config/cloud/aws/onboard_config_vars\n",
            "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
@@ -1334,7 +1334,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 4.1.0\n",
+           "# Generated from 4.1.1\n",
            "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

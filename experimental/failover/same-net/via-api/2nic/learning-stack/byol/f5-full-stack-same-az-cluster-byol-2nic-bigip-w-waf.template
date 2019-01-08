@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template v4.1.0: AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of 2NIC BIG-IPs, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v4.1.1: AWS CloudFormation Template for creating a full stack with a Same-AZ cluster of 2NIC BIG-IPs, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-northeast-1": {
@@ -315,7 +315,7 @@
     }
    }
   },
-  "Version": "4.1.0"
+  "Version": "4.1.1"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -1039,7 +1039,7 @@
               "Ref": "licenseKey1"
              },
              "--module asm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-byol-2nic-bigip-w-waf.template,templateVersion:4.1.0,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-byol-2nic-bigip-w-waf.template,templateVersion:4.1.1,licenseType:byol\"",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
             ]
@@ -1809,7 +1809,7 @@
               "Ref": "licenseKey2"
              },
              "--module asm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-byol-2nic-bigip-w-waf.template,templateVersion:4.1.0,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-same-az-cluster-byol-2nic-bigip-w-waf.template,templateVersion:4.1.1,licenseType:byol\"",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
             ]

@@ -34,7 +34,7 @@
    ]
   }
  },
- "Description": "Template v4.1.0: Deploys an AWS Auto Scaling group of F5 WAF PAYG instances. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
+ "Description": "Template v4.1.1: Deploys an AWS Auto Scaling group of F5 WAF PAYG instances. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
  "Mappings": {
   "AWSBigipThrougput": {
    "1000Mbps": {
@@ -596,7 +596,7 @@
     }
    }
   },
-  "Version": "4.1.0"
+  "Version": "4.1.1"
  },
  "Outputs": {
   "bigipAutoscaleGroup": {
@@ -1390,7 +1390,7 @@
               "Ref": "managementGuiPort"
              },
              "--module asm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-payg-autoscale-bigip-waf-nlb.template,templateVersion:4.1.0,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:13.1.1-0.0.4,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-payg-autoscale-bigip-waf-nlb.template,templateVersion:4.1.1,licenseType:hourly\"",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null",
              "&"
@@ -1473,7 +1473,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 4.1.0\n",
+           "# Generated from 4.1.1\n",
            "date\n",
            ". /config/cloud/aws/onboard_config_vars\n",
            "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
@@ -1570,7 +1570,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 4.1.0\n",
+           "# Generated from 4.1.1\n",
            "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {
@@ -1643,7 +1643,7 @@
            },
            "'\n",
            "passwd=$(f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/decryptDataFromFile.js --data-file /config/cloud/aws/.adminPassword)\n",
-           "payload='{\"class\":\"ADC\",\"schemaVersion\":\"3.0.0\",\"label\":\"autoscale_waf\",\"id\":\"AUTOSCALE_WAF\",\"remark\":\"Autoscale WAF\",\"waf\":{\"class\":\"Tenant\",\"Shared\":{\"class\":\"Application\",\"template\":\"shared\",\"serviceAddress\":{\"class\":\"Service_Address\",\"virtualAddress\":\"0.0.0.0\"},\"policyWAF\":{\"class\":\"WAF_Policy\",\"file\":\"/tmp/as30-linux-medium.xml\"}},\"http\":{\"class\":\"Application\",\"template\":\"http\",\"serviceMain\":{\"class\":\"Service_HTTP\",\"virtualAddresses\":[{\"use\":\"/waf/Shared/serviceAddress\"}],\"serverTLS\":{\"bigip\":\"/Common/example-clientssl-profile\"},\"snat\":\"auto\",\"securityLogProfiles\":[{\"bigip\":\"/Common/Log illegal requests\"}],\"pool\":\"pool\",\"policyWAF\":{\"use\":\"/waf/Shared/policyWAF\"}},\"pool\":{\"class\":\"Pool\",\"monitors\":[\"http\"],\"members\":[{\"autoPopulate\":true,\"hostname\":\"demo.example.com\",\"servicePort\":80,\"addressDiscovery\":\"aws\",\"updateInterval\":15,\"tagKey\":\"applicationPoolTagKey\",\"tagValue\":\"applicationPoolTagValue\",\"addressRealm\":\"private\",\"region\":\"us-west-2\"}]}}}}'\n",
+           "payload='{\"class\":\"ADC\",\"schemaVersion\":\"3.0.0\",\"label\":\"autoscale_waf\",\"id\":\"AUTOSCALE_WAF\",\"remark\":\"Autoscale WAF\",\"waf\":{\"class\":\"Tenant\",\"Shared\":{\"class\":\"Application\",\"template\":\"shared\",\"serviceAddress\":{\"class\":\"Service_Address\",\"virtualAddress\":\"0.0.0.0\"},\"policyWAF\":{\"class\":\"WAF_Policy\",\"file\":\"/tmp/as30-linux-medium.xml\"}},\"http\":{\"class\":\"Application\",\"template\":\"https\",\"serviceMain\":{\"class\":\"Service_HTTPS\",\"virtualAddresses\":[{\"use\":\"/waf/Shared/serviceAddress\"}],\"serverTLS\":{\"bigip\":\"/Common/example-clientssl-profile\"},\"snat\":\"auto\",\"securityLogProfiles\":[{\"bigip\":\"/Common/Log illegal requests\"}],\"pool\":\"pool\",\"policyWAF\":{\"use\":\"/waf/Shared/policyWAF\"}},\"pool\":{\"class\":\"Pool\",\"monitors\":[\"http\"],\"members\":[{\"autoPopulate\":true,\"hostname\":\"demo.example.com\",\"servicePort\":80,\"addressDiscovery\":\"aws\",\"updateInterval\":15,\"tagKey\":\"applicationPoolTagKey\",\"tagValue\":\"applicationPoolTagValue\",\"addressRealm\":\"private\",\"region\":\"us-west-2\"}]}}}}'\n",
            "appCertificateS3Arn='",
            {
             "Ref": "appCertificateS3Arn"

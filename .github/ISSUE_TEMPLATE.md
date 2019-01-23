@@ -1,6 +1,9 @@
+## Do you already have an issue opened with F5 support?
+Github Issues are consistently monitored by F5 staff, but should be considered as best effort only and you should not expect to receive the same level of response as provided by F5 Support. Please [open an case](https://support.f5.com/csp/article/K2633) with F5 if this is a critical issue.
+
+
 ## Description
 Describe the problem you're having or the enhancement you'd like to request.
-
 
 
 ## Template

@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template v4.1.1: AWS CloudFormation Template for creating a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v4.1.2: AWS CloudFormation Template for creating a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "WebserverRegionMap": {
    "ap-northeast-1": {
@@ -125,6 +125,14 @@
      "Parameters": [
       "allowUsageAnalytics"
      ]
+    },
+    {
+     "Label": {
+      "default": "VIRTUAL SERVICE CONFIGURATION"
+     },
+     "Parameters": [
+      "declarationUrl"
+     ]
     }
    ],
    "ParameterLabels": {
@@ -154,6 +162,9 @@
     },
     "customImageId": {
      "default": "Custom Image Id"
+    },
+    "declarationUrl": {
+     "default": "AS3 Declaration URL"
     },
     "environment": {
      "default": "Environment"
@@ -217,7 +228,7 @@
     }
    }
   },
-  "Version": "4.1.1"
+  "Version": "4.1.2"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -329,6 +340,12 @@
    "Description": "If you would like to deploy using a custom BIG-IP image, provide the AMI Id.  **Note**: Unless specifically required, leave the default of **OPTIONAL**",
    "MaxLength": 255,
    "MinLength": 1,
+   "Type": "String"
+  },
+  "declarationUrl": {
+   "AllowedPattern": "^(http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$|^none$",
+   "Default": "none",
+   "Description": "URL for the AS3 declaration JSON file to be deployed. Leave as **none** to deploy without a service configuration.",
    "Type": "String"
   },
   "environment": {

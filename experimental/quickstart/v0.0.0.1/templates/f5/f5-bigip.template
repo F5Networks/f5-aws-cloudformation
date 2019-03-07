@@ -573,7 +573,7 @@
     },
     "qss3Region":{
       "default":"Quickstart S3 Region"
-    },    
+    },
     "QSS3BucketName": {
         "default": "Quick Start S3 Bucket Name"
     },
@@ -828,7 +828,7 @@
     "Default":"s3",
     "Description":"S3 Region",
     "Type":"String"
-  },  
+  },
   "QSS3BucketName": {
     "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
     "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
@@ -1446,7 +1446,7 @@
              "nohup /config/waitThenRun.sh",
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
              "--install-ilx-package file:///config/cloud/f5-appsvcs-3.5.1-5.noarch.rpm",
-             "--wait-for NETWORK_CONFIG_DONE",             
+             "--wait-for NETWORK_CONFIG_DONE",
              "--log-level silly",
              "-o /var/log/cloud/aws/onboard.log",
              "--host localhost",
@@ -1613,13 +1613,13 @@
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/master/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.3.2/f5-cloud-logger/f5.cloud_logger.v1.0.0.tmpl"
        },
        "/config/cloud/aws/f5.service_discovery.tmpl": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
-        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/master/f5-service-discovery/f5.service_discovery.tmpl"
+        "source": "https://raw.githubusercontent.com/F5Networks/f5-cloud-iapps/v2.2.3/f5-service-discovery/f5.service_discovery.tmpl"
        },
        "/config/cloud/aws/getNameServer.sh": {
         "content": {
@@ -2097,6 +2097,7 @@
    "Type": "AWS::SNS::Topic"
   },
   "SQSQueue": {
+   "DependsOn":"S3Bucket",
    "Properties": {
     "MessageRetentionPeriod": 3600
    },

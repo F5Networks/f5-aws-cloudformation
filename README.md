@@ -36,7 +36,7 @@ Or you can use the Launch Stack button to get started:
 
   
 ### All F5 Supported templates for AWS
-To see a list of all of our supported AWS CloudFormation templates, see the [AWS Supported Template index](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/template-index.md)
+To see a list of all of our supported AWS CloudFormation templates, see the **[AWS Supported Template index](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/template-index.md)**.
 
 
 ---
@@ -44,7 +44,7 @@ To see a list of all of our supported AWS CloudFormation templates, see the [AWS
 
 ### Copyright
 
-Copyright 2014-2018 F5 Networks Inc.
+Copyright2014-2019 F5 Networks Inc.
 
 
 ### License

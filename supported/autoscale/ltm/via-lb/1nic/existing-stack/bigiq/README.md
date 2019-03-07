@@ -78,8 +78,8 @@ Once you have launched the CFT, you need to complete the template by entering th
 | VPC ID | vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
 | Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
-| Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
-| Source Address(es) for Web Application Access (80/443) | restrictedSrcAddressApp | Yes | The IP address range that can be used for management access to the EC2 instances. |
+| Restricted Source Address to BIG-IP | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH and access the BIG-IP management GUI on the EC2 instances. For stronger security, we do not recommend using 0.0.0.0/0. |
+| Restricted Source Address to Application | restrictedSrcAddressApp | Yes | The IP address range that can be used to access web traffic (80/443) to the EC2 instances. |
 | Elastic Load Balancer for BIG-IP VEs | bigipElasticLoadBalancer | Yes | Name of the AWS Elastic Load Balancer group for the BIG-IP VEs |
 | SSH Key Name | sshKey | Yes | EC2 KeyPair to enable SSH access to the BIG-IP instance |
 | AWS Instance Size | instanceType | Yes | AWS Instance Type (the default is m4.xlarge) |
@@ -102,19 +102,20 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Application Pool DNS | appInternalDnsName | Yes | DNS name (such as poolapp.example.com) for the application pool.  This is not required if you are using the [Service Discovery feature](#service-discovery). |
 | Application Pool Tag Key | applicationPoolTagKey | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next. |
 | Application Pool Tag Value | applicationPoolTagValue | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with the key you specified and this value. |
+| AS3 Declaration URL | declarationUrl | No | URL for the [AS3](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/3.5.1/) declaration JSON file to be deployed. Leave as **none** to deploy without a service configuration. |
 | Application | application | No | Application Tag (the default is f5app) |
 | Environment | environment | No | Environment Name Tag (the default is f5env) |
 | Group | group | No | Group Tag (the default is f5group) |
 | Owner | owner | No | Owner Tag (the default is f5owner) |
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter) |
-| IP address of BIG-IQ | bigiqAddress | Yes | Private IP address of the BIG-IQ device that contains the pool of BIG-IP licenses |
-| BIG-IQ user with licensing privileges | bigiqUsername | Yes | BIG-IQ user with privileges to license BIG-IQ. Must be 'Admin', 'Device Manager', or 'Licensing Manager' |
+| BIG-IQ address (private) | bigiqAddress | Yes | Private IP address of the BIG-IQ device that contains the pool of BIG-IP licenses |
+| BIG-IQ user with Licensing Privileges | bigiqUsername | Yes | BIG-IQ user with privileges to license BIG-IP. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
+| S3 ARN of the BIG-IQ Password File | bigiqPasswordS3Arn | Yes | S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file |
+| BIG-IQ License Pool Name | bigiqLicensePoolName | Yes | Name of the pool on BIG-IQ that contains the BIG-IP licenses |
 | BIG-IQ Unit of Measure | bigIqLicenseUnitOfMeasure | No | The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example **yearly**, **monthly**, **daily** or **hourly**. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of **OPTIONAL**. |
 | BIG-IQ SKU Keyword 1 | bigIqLicenseSkuKeyword1 | No | The BIG-IQ license filter (based on SKU keyword) you want to use for licensing the BIG-IPs from the BIG-IQ. For example **F5-BIG-MSP-LTM-25M**, **F5-BIG-MSP-BR-200M**, **F5-BIG-MSP-BT-1G** or **F5-BIG-MSP-ASM-1G** |
-| S3 ARN of the BIG-IQ Password File | bigiqPasswordS3Arn | Yes | S3 ARN of the BIG-IQ Password file. e.g. arn:aws:s3:::bucket_name/full_path_to_file for public regions. For GovCloud (US) region, start with arn:aws-us-gov:s3. For China region, start with arn:aws-cn:s3. |
-| BIG-IQ License Pool Name | bigiqLicensePoolName | Yes | Name of the pool on BIG-IQ that contains the BIG-IP licenses |
 | Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |
-| AS3 Declaration URL | declarationUrl | No | URL for the [AS3](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/3.5.1/) declaration JSON file to be deployed. Leave as **none** to deploy without a service configuration. |
+
 
 <br>
 
@@ -538,7 +539,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright 2014-2018 F5 Networks Inc.
+Copyright2014-2019 F5 Networks Inc.
 
 
 ## License

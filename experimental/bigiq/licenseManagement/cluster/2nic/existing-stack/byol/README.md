@@ -39,6 +39,14 @@ The following are prerequisites for the F5 2-NIC CFT:
   - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = < region >.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
   - Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
   - Because you are deploying the BYOL template, you must have valid BIG-IQ license tokens.
+  - An AS3 ARN that contains a BIG-IQ password file in JSON format, which specifies master-key, admin password, and root password to be used during deployment. The JSON file should look like the following:  
+  ```json
+    {
+      "masterPassphrase": "34jkcvni389#494kcx@dfkdi9H",
+      "root": "randPass4Root!",
+      "admin": "b1gAdminPazz"
+    }
+  ``` 
   
 
 ## Important configuration notes
@@ -95,7 +103,7 @@ After clicking the Launch button, you must specify the following parameters.
 | BIG-IQ License Key 2 | licenseKey2  | Yes | F5 BYOL registration key for your BIG-IQ device |
 | BIG-IP License Pool | licensePoolKeys  | No | Enter a pool name and registration key using the format of name:key. Leave Do_Not_Create if you do not want to create a licensing pool on BIG-IQ at this time. |
 | BIG-IQ Reg Key Pool | regPoolKeys | No | Enter a pool name and a list of individual BIG-IP registration keys in the format of name:key,key,key. Leave Do_Not_Create if you do not want to create a reg key pool on BIG-IQ at this time. |
-| S3 ARN of the BIG-IQ Password File | bigIqPasswordS3Arn | Yes | Arn of password file in JSON format with master passphrase, admin and root password.
+| S3 ARN of the BIG-IQ Password File | bigIqPasswordS3Arn | Yes | ARN of password file in JSON format with master passphrase, admin and root password.
 | SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
 | Source Address(es) for Management Access | restrictedSrcAddress | Yes | The IP address range that can be used to SSH to the EC2 instances. |
 | Source Address(es) for internal Management Access | restrictedSrcAddressApp | Yes | The IP address range that can be used for management access to the EC2 instances. |
@@ -238,7 +246,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright 2014-2018 F5 Networks Inc.
+Copyright2014-2019 F5 Networks Inc.
 
 
 ## License

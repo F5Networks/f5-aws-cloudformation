@@ -10,7 +10,7 @@
 			]
 		}
 	},
-	"Description": "Template v3.3.1: AWS CloudFormation Template for creating a cluster of 2NIC BIG-IQs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+	"Description": "Template v4.1.4: AWS CloudFormation Template for creating a cluster of 2NIC BIG-IQs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
 	"Mappings": {
 		"regionMap": {
 			"ap-northeast-1": {
@@ -908,7 +908,7 @@
 											{
 												"Ref": "bigIqPasswordS3Arn"
 											},
-											" --fcl-tag v4.6.0",
+											" --fcl-tag v4.8.1",
 											" --fcl-cloud-tag v2.4.0",
 											" --vlan 'n:internal,nic:1.1' ",
 											" --self-ip 'n:internal_self,a:",

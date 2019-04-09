@@ -20,7 +20,7 @@ This solution uses an experimental CloudFormation Template to launch and configu
 
 This is an *existing stack* template, meaning the networking infrastructure MUST be available prior to deploying. See the Template Parameters Section for required networking objects. 
 
-The BIG-IQ VE can detect Availability Zone failure and automatically shift public traffic to the BIG-IQ in the Availability Zone that is unaffected. In a 2-NIC implementation, one interface is for management and one is for data-plane traffic, each with a unique public/private IP.  
+In a BIG-IQ high availability configuration, the BIG-IQ system replicates configuration changes since the last synchronization from the primary device to the secondary device every 30 seconds. If it ever becomes necessary, you can have the secondary peer take over management of the BIG-IP devices. In a 2-NIC implementation, one interface is for management and one is for data-plane traffic, each with a unique public/private IP.  
 
 You can choose one or both of these types of license pools on your BIG-IQ device for licensing your BIG-IP VE devices:
   - A License (Purchase) Pool, which can either be a registration key with a particular number of licenses, or an [ELA](https://www.f5.com/pdf/licensing/big-ip-virtual-edition-enterprise-licensing-agreement-overview.pdf)/subscription pool, which enables self-licensing of BIG-IP virtual editions (VEs), 

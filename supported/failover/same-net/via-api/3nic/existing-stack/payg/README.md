@@ -28,8 +28,8 @@ For information on getting started using F5's CFT templates on GitHub, see [Amaz
 ## Prerequisites
 The following are prerequisites for the F5 clustered 3-NIC CFT:
   - An AWS VPC with three subnets: 
-    - A subnet for the BIG-IP management interface. The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
-    - A subnet for the BIG-IP external interface. 
+    - Management subnet (the subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library).
+    - External subnet (the subnet for the external network requires a route and access to the Internet for onboarding BIG-IP). 
     - A subnet for the BIG-IP internal interface.  
   - Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
   

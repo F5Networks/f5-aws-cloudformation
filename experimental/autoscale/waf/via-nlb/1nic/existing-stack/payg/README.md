@@ -51,7 +51,7 @@ The following are prerequisites and notes for this solution:
 The easiest way to deploy this CloudFormation template is to use the Launch Stack button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-Hourly-BIGIP-WAF-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-hourly-autoscale-bigip-waf.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>   
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-Hourly-BIGIP-WAF-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-payg-autoscale-bigip-waf-nlb.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>   
 
 
 

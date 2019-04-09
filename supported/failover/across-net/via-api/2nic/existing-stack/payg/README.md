@@ -30,8 +30,8 @@ For information on getting started using F5's CFT templates on GitHub, see [Amaz
 ## Prerequisites and configuration notes
 The following are prerequisites for the F5 2-NIC CFT:
   - An existing AWS VPC with two separate Availability Zones, each with two subnets: 
-    - Management subnet (called Public in the AWS UI). The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
-    - External subnet (called Private in the AWS UI). 
+    - Management subnet (the subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library).
+    - External subnet (the subnet for the external network requires a route and access to the Internet for onboarding BIG-IP).  
   - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = < region >.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
   - Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
   

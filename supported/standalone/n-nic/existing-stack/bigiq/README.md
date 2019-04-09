@@ -29,7 +29,7 @@ For information on getting started using F5's CFT templates on GitHub, see [Amaz
 The following are prerequisites for this CFT:
   - An AWS VPC with three subnets: 
     - Management subnet (the subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library)
-    - External subnet
+    - External subnet (the subnet for the external network requires a route and access to the Internet for onboarding BIG-IP)
     - Internal subnet
   - Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
   - BIG-IQ prerequisites:

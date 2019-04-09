@@ -440,7 +440,7 @@
 											{
 												"Ref": "bigIqPasswordS3Arn"
 											},											
-											" --fcl-tag v4.7.0",
+											" --fcl-tag v4.8.1",
 											" --fcl-cloud-tag v2.4.0",
 											" --vlan 'n:internal,nic:1.1' ",
 											" --self-ip 'n:internal_self,a:",

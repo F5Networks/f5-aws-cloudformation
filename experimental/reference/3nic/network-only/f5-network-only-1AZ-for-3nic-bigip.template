@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template v4.1.4: AWS CloudFormation Template for creating network components for a 1 Availability Zone VPC",
+ "Description": "Template v4.2.0: AWS CloudFormation Template for creating network components for a 1 Availability Zone VPC",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -182,7 +182,7 @@
     }
    }
   },
-  "Version": "4.1.4"
+  "Version": "4.2.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {

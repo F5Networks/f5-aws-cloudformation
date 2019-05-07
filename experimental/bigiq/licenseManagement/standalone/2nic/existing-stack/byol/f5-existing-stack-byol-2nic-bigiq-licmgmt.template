@@ -10,55 +10,57 @@
 			]
 		}
 	},
-	"Description": "AWS CloudFormation Template for creating a 2NIC BIG-IQ in an existing VPC. **WARNING** This template creates Amazon EC2 Instances, you will be billed for the AWS resources created by this template.",
+	"Description": "Template v4.2.0 AWS CloudFormation Template for creating a 2NIC BIG-IQ in an existing VPC. **WARNING** This template creates Amazon EC2 Instances, you will be billed for the AWS resources created by this template.",
 	"Mappings": {
 		"regionMap": {
 			"ap-northeast-1": {
-			  "Best": "ami-0333dd63ae0b1112a"
-			},
-			"ap-northeast-2": {
-			  "Best": "ami-0edeb70b0aaf278a6"
-			},
-			"ap-south-1": {
-			  "Best": "ami-0b9201eb7648bb07d"
-			},
-			"ap-southeast-1": {
-			  "Best": "ami-08a3a55743fb2fd5d"
-			},
-			"ap-southeast-2": {
-			  "Best": "ami-094d47e7fedebb201"
-			},
-			"ca-central-1": {
-			  "Best": "ami-8d27aae9"
-			},
-			"eu-central-1": {
-			  "Best": "ami-04622a8db3ae94f89"
-			},
-			"eu-west-1": {
-			  "Best": "ami-0f3b2ffeb3c4ff43c"
-			},
-			"eu-west-2": {
-			  "Best": "ami-61ae5a06"
-			},
-			"sa-east-1": {
-			  "Best": "ami-08d385bd2cbe52df6"
-			},
-			"us-east-1": {
-			  "Best": "ami-075f269e21d926462"
-			},
-			"us-east-2": {
-			  "Best": "ami-076b40df0c056a3da"
-			},
-			"us-west-1": {
-			  "Best": "ami-0b69901ceb507a45b"
-			},
-			"us-west-2": {
-			  "Best": "ami-7f416207"
-			},
-			"us-gov-west-1": {
-			  "Best": "ami-74d64915"
-			}
-
+				"Best": "ami-03796972da9048ab2"
+			  }, 
+			  "ap-northeast-2": {
+				"Best": "ami-00007ebd9e15cb581"
+			  }, 
+			  "ap-south-1": {
+				"Best": "ami-07f35c4b4760fb76f"
+			  }, 
+			  "ap-southeast-1": {
+				"Best": "ami-0374f84dc0cc86cee"
+			  }, 
+			  "ap-southeast-2": {
+				"Best": "ami-02126de94a8e4a605"
+			  }, 
+			  "ca-central-1": {
+				"Best": "ami-0dd51fe2c81d4e7b0"
+			  }, 
+			  "eu-central-1": {
+				"Best": "ami-0653f874e93ba6682"
+			  }, 
+			  "eu-north-1": {
+				"Best": "ami-48b13f36"
+			  }, 
+			  "eu-west-1": {
+				"Best": "ami-0c95964ce0f5d45ac"
+			  }, 
+			  "eu-west-2": {
+				"Best": "ami-0602be07b34c80953"
+			  }, 
+			  "sa-east-1": {
+				"Best": "ami-00c1b0342af6d712b"
+			  }, 
+			  "us-east-1": {
+				"Best": "ami-031d2878cb4d3fb48"
+			  }, 
+			  "us-east-2": {
+				"Best": "ami-063ddf2d42d75365f"
+			  }, 
+			  "us-west-1": {
+				"Best": "ami-0049e8ea793a198d9"
+			  }, 
+			  "us-west-2": {
+				"Best": "ami-056accdfaf0533c43"
+			  },
+			  "us-gov-west-1": {
+				"Best": "ami-b3d7b6d2"
+			  }
 		}
 	},
 	"Metadata": {
@@ -440,7 +442,7 @@
 											{
 												"Ref": "bigIqPasswordS3Arn"
 											},											
-											" --fcl-tag v4.8.1",
+											" --fcl-tag v4.8.2",
 											" --fcl-cloud-tag v2.4.0",
 											" --vlan 'n:internal,nic:1.1' ",
 											" --self-ip 'n:internal_self,a:",

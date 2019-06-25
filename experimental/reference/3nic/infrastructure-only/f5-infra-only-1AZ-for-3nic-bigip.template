@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template v4.2.0: AWS CloudFormation Template for creating a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v5.0.0: AWS CloudFormation Template for creating a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "WebserverRegionMap": {
    "ap-northeast-1": {
@@ -102,7 +102,8 @@
       "restrictedSrcAddress",
       "restrictedSrcAddressApp",
       "ntpServer",
-      "timezone"
+      "timezone",
+      "bigIpModules"
      ]
     },
     {
@@ -156,6 +157,9 @@
     },
     "availabilityZone2": {
      "default": "Availability Zone 2"
+    },
+    "bigIpModules": {
+     "default": "BIG-IP Modules"
     },
     "costcenter": {
      "default": "Cost Center"
@@ -228,7 +232,7 @@
     }
    }
   },
-  "Version": "4.2.0"
+  "Version": "5.0.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -352,6 +356,11 @@
   "availabilityZone1": {
    "Description": "Name of an Availability Zone in this Region",
    "Type": "AWS::EC2::AvailabilityZone::Name"
+  },
+  "bigIpModules": {
+   "Default": "ltm:nominal",
+   "Description": "Comma separated list of modules and levels to provision, for example: ltm:nominal,asm:nominal",
+   "Type": "String"
   },
   "costcenter": {
    "Default": "f5costcenter",

@@ -20,6 +20,7 @@ Across all branches in this repository, there are two directories: *supported* a
 ## Template information
 Descriptions for each template are contained at the top of each template in the *Description* key.
 For additional information, including how the templates are generated, and assistance in deploying a template, see the README file on the individual template pages.
+Standalone and HA production stack templates have been deprecated; a new parameter has been added to existing-stack templates to control deployment of public IP addresses.
 
 ### Matrix for tagged releases
 F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types, and throughput levels available for a specific tagged release. See the [AWS Matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md).

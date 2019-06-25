@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template v4.2.0: AWS CloudFormation Template for creating network components for a 2 Availability Zone VPC",
+ "Description": "Template v5.0.0: AWS CloudFormation Template for creating network components for a 2 Availability Zone VPC",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -56,7 +56,8 @@
       "restrictedSrcAddress",
       "restrictedSrcAddressApp",
       "ntpServer",
-      "timezone"
+      "timezone",
+      "bigIpModules"
      ]
     },
     {
@@ -110,6 +111,9 @@
     },
     "availabilityZone2": {
      "default": "Availability Zone 2"
+    },
+    "bigIpModules": {
+     "default": "BIG-IP Modules"
     },
     "costcenter": {
      "default": "Cost Center"
@@ -182,7 +186,7 @@
     }
    }
   },
-  "Version": "4.2.0"
+  "Version": "5.0.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -242,6 +246,11 @@
   "availabilityZone2": {
    "Description": "Name of an Availability Zone in this Region",
    "Type": "AWS::EC2::AvailabilityZone::Name"
+  },
+  "bigIpModules": {
+   "Default": "ltm:nominal",
+   "Description": "Comma separated list of modules and levels to provision, for example: ltm:nominal,asm:nominal",
+   "Type": "String"
   },
   "costcenter": {
    "Default": "f5costcenter",

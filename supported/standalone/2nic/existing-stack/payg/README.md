@@ -17,7 +17,7 @@
  
 This solution uses a CloudFormation Template to launch a 2-NIC deployment of a BIG-IP VE in an Amazon Virtual Private Cloud, using PAYG (pay as you go) hourly licensing. 
 
-This is an *existing stack* template, meaning the networking infrastructure MUST be available prior to deploying. See the Template Parameters Section for required networking objects. See the *production stack* directory for additional deployment options.
+This is an *existing stack* template, meaning the networking infrastructure MUST be available prior to deploying. See the Template Parameters Section for required networking objects. By default, the template will create and attach Public IP Address(es) to the BIG-IP interface(s). Where dictated by security policy or in deployments where accessing resources does not require a Public IP address on the BIG-IP VE, such as users connecting to internal applications using a VPN, set the **provisionPublicIP** parameter to 'No', which will not create Public IP Address(es).
 
 In a 2-NIC implementation, one interface is for management and one is for data-plane traffic, each with a unique public/private IP. Traffic flows from the BIG-IP VE to the application servers. The BIG-IP VE has the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality. This means you can also configure the BIG-IP VE to enable F5's L4/L7 security features, access control, and intelligent traffic management.
 
@@ -106,6 +106,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
 | Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |
 | AS3 Declaration URL | declarationUrl | No | URL for the [AS3](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/3.5.1/) declaration JSON file to be deployed. Leave as **none** to deploy without a service configuration. |
+| Provision Public IP addresses for the BIG-IP interfaces | provisionPublicIP | Yes | Whether or not to provision Public IP Addresses for the BIG-IP Network Interfaces. By Default Public IP address(es) are provisioned. | 
 <br>
 
 

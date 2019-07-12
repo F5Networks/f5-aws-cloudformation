@@ -74,7 +74,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
 | Restricted Source Addresses | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH to the BIG-IP instances. For stronger security, we do not recommend using 0.0.0.0/0. |
 | Source Address(es) for Web Application Access (80/443) | restrictedSrcAddressApp | Yes | The IP address range that can be used for management access to the EC2 instances. |
-| DNS Member IP Type (public | private) | dnsMemberIpType | Yes | The IP type (public | private) to add as the record when updating the DNS provider. |
+| DNS Member IP Type (public / private) | dnsMemberIpType | Yes | The IP type (public / private) to add as the record when updating the DNS provider. |
 | DNS Member Port | dnsMemberPort | Yes | The port for the DNS member to use for monitoring the members status. |
 | BIG-IP DNS Management IP address (or hostname) | dnsProviderHost | Yes | The management IP address (or hostname) for the DNS provider to use when updating DNS. |
 | BIG-IP DNS Management Port | dnsProviderPort | Yes | The management port for the DNS provider to use when updating DNS. |
@@ -89,6 +89,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | BIG-IP Admin User for clustering | adminUsername | Yes | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
 | Management Port | managementGuiPort | Yes | Port of BIG-IP management Configuration utility (the default is 8443) |
 | Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
+| BIG-IP Modules | bigIpModules | No | Comma separated list of modules and levels to provision, for example, 'ltm:nominal,asm:nominal' |
 | NTP Server | ntpServer | Yes | NTP server for this implementation (Default 0.pool.ntp.org) |
 | Minimum Instances | scalingMinSize | Yes | Minimum number of BIG-IP instances (1-8) to be available in the Auto Scaling Group (we recommend starting with 1 and increasing to at least 2. This can be performed by [updating the stack](#restoring-or-upgrading-the-solution) |
 | Maximum Instances | scalingMaxSize | Yes | Maximum number of BIG-IP instances (2-8) that can be created in the Auto Scale Group |

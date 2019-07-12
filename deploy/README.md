@@ -20,16 +20,16 @@ Go to the marketplace and accept the user agreement for the version being launch
 If you are new to AWS, we recommend running a full-stack template as that will give you a full working environment you can inspect
 
 ex.
-[full-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/full-stack-byol-1nic-bigip.template)
+[full-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/standalone/1nic/learning-stack/payg/f5-full-stack-payg-1nic-bigip.template)
 
 
 If you are familiar with AWS and have an existing stack, we recommend first trying:
 
-[existing-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/existing-stack-hourly-1nic-bigip.template)
+[existing-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/standalone/1nic/existing-stack/payg/f5-existing-stack-payg-1nic-bigip-w-waf.template)
 
 and taking a look at:
 
-[security-groups-for-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/security-groups-for-1nic-bigip.template)
+[security-groups-for-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/reference/2nic/security-group-creation/f5-security-groups-for-2nic-bigip.template)
 
 to know which ports to enable.
 
@@ -52,19 +52,19 @@ http://docs.aws.amazon.com/cli/latest/userguide/installing.html
 
     aws cloudformation create-stack 
     --region us-west-2 
-    --template-body file://full-stack-vpc-w-byol-1nic-bigip.template 
+    --template-body file://f5-full-stack-payg-1nic-bigip.template 
     --stack-name full-stack-bigip-1nic
     --parameters  
-    ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
-    ParameterKey=AvailabilityZone1,ParameterValue=us-west-2a
-    ParameterKey=AvailabilityZone2,ParameterValue=us-west-2b
-    ParameterKey=BigipInstanceType,ParameterValue=m3.xlarge
-    ParameterKey=BigipPerformanceType,ParameterValue=Good
-    ParameterKey=WebserverInstanceType,ParameterValue=t1.micro
-    ParameterKey=BigipAdminUsername,ParameterValue=admin
-    ParameterKey=BigipAdminPassword,ParameterValue='YOURPASSWORD'
-    ParameterKey=BigipManagementGuiPort,ParameterValue=443
-    ParameterKey=Bigip1LicenseKey,ParameterValue=LUFJD-YREAG-VQHVI-EYOQH-JBBKXAI
+    ParameterKey=sshKey,ParameterValue=YOUR-SSH-KEY
+    ParameterKey=availabilityZone1,ParameterValue=us-west-2a
+    ParameterKey=availabilityZone2,ParameterValue=us-west-2b
+    ParameterKey=bigipInstanceType,ParameterValue=m3.xlarge
+    ParameterKey=bigipPerformanceType,ParameterValue=Good
+    ParameterKey=webserverInstanceType,ParameterValue=t1.micro
+    ParameterKey=bigipAdminUsername,ParameterValue=admin
+    ParameterKey=bigipAdminPassword,ParameterValue='YOURPASSWORD'
+    ParameterKey=bigipManagementGuiPort,ParameterValue=443
+    ParameterKey=bigip1LicenseKey,ParameterValue=LUFJD-YREAG-VQHVI-EYOQH-JBBKXAI
 
 ####Existing Stack - BYOL:
 
@@ -73,17 +73,17 @@ http://docs.aws.amazon.com/cli/latest/userguide/installing.html
     --template-body file://existing-stack-byol-1nic-bigip.template
     --stack-name existing-stack-bigip-1nic
     --parameters  
-    ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
-    ParameterKey=BigipInstanceType,ParameterValue=m3.xlarge
-    ParameterKey=BigipPerformanceType,ParameterValue=Good
-    ParameterKey=BigipAdminUsername,ParameterValue=admin
-    ParameterKey=BigipAdminPassword,ParameterValue='YOURPASSWORD'
-    ParameterKey=BigipManagementGuiPort,ParameterValue=443
-    ParameterKey=Vpc,ParameterValue=vpc-61a94705
-    ParameterKey=Az1ExternalSubnet,ParameterValue=subnet-aec1d4d9
-    ParameterKey=BigipExternalSecurityGroup,ParameterValue=sg-d90eb9be
-    ParameterKey=WebserverPrivateIp,ParameterValue="10.0.3.8"
-    ParameterKey=Bigip1LicenseKey,ParameterValue=NEHQF-CDKUY-RJTJB-XSPTZ-XVKSQJS
+    ParameterKey=sshKey,ParameterValue=YOUR-SSH-KEY
+    ParameterKey=bigipInstanceType,ParameterValue=m3.xlarge
+    ParameterKey=bigipPerformanceType,ParameterValue=Good
+    ParameterKey=bigipAdminUsername,ParameterValue=admin
+    ParameterKey=bigipAdminPassword,ParameterValue='YOURPASSWORD'
+    ParameterKey=bigipManagementGuiPort,ParameterValue=443
+    ParameterKey=vpc,ParameterValue=vpc-61a94705
+    ParameterKey=az1ExternalSubnet,ParameterValue=subnet-aec1d4d9
+    ParameterKey=bigipExternalSecurityGroup,ParameterValue=sg-d90eb9be
+    ParameterKey=webserverPrivateIp,ParameterValue="10.0.3.8"
+    ParameterKey=bigip1LicenseKey,ParameterValue=NEHQF-CDKUY-RJTJB-XSPTZ-XVKSQJS
 
 
 ####Existing Stack - BYOL w/ WAF:
@@ -93,17 +93,17 @@ http://docs.aws.amazon.com/cli/latest/userguide/installing.html
     --template-body file://existing-stack-byol-1nic-bigip-w-waf.template
     --stack-name existing-stack-bigip-1nic-w-waf
     --parameters  
-    ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
-    ParameterKey=BigipInstanceType,ParameterValue=m3.xlarge
-    ParameterKey=BigipPerformanceType,ParameterValue=Best
-    ParameterKey=BigipAdminUsername,ParameterValue=admin
-    ParameterKey=BigipAdminPassword,ParameterValue='YOURPASSWORD'
-    ParameterKey=BigipManagementGuiPort,ParameterValue=443
-    ParameterKey=Vpc,ParameterValue=vpc-61a94705
-    ParameterKey=Az1ExternalSubnet,ParameterValue=subnet-aec1d4d9
-    ParameterKey=BigipExternalSecurityGroup,ParameterValue=sg-d90eb9be
-    ParameterKey=WebserverPrivateIp,ParameterValue="10.0.3.8"
-    ParameterKey=Bigip1LicenseKey,ParameterValue=NEHQF-CDKUY-RJTJB-XSPTZ-XZKSQIS
+    ParameterKey=sshKey,ParameterValue=YOUR-SSH-KEY
+    ParameterKey=bigipInstanceType,ParameterValue=m3.xlarge
+    ParameterKey=bigipPerformanceType,ParameterValue=Best
+    ParameterKey=bigipAdminUsername,ParameterValue=admin
+    ParameterKey=bigipAdminPassword,ParameterValue='YOURPASSWORD'
+    ParameterKey=bigipManagementGuiPort,ParameterValue=443
+    ParameterKey=vpc,ParameterValue=vpc-61a94705
+    ParameterKey=az1ExternalSubnet,ParameterValue=subnet-aec1d4d9
+    ParameterKey=bigipExternalSecurityGroup,ParameterValue=sg-d90eb9be
+    ParameterKey=webserverPrivateIp,ParameterValue="10.0.3.8"
+    ParameterKey=bigip1LicenseKey,ParameterValue=NEHQF-CDKUY-RJTJB-XSPTZ-XZKSQIS
 
 _NOTE:_ _The only difference for "with WAF" example above is the template name and "Performance Type" = Best_
 
@@ -114,20 +114,20 @@ _NOTE:_ _The only difference for "with WAF" example above is the template name a
     --template-body file://existing-stack-bigiq-license-pool-1nic-bigip.template
     --stack-name existing-stack-bigiq-license-pool-bigip-1nic
     --parameters  
-    ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
-    ParameterKey=BigipInstanceType,ParameterValue=m3.xlarge
-    ParameterKey=BigipPerformanceType,ParameterValue=Good
-    ParameterKey=BigipAdminUsername,ParameterValue=admin
-    ParameterKey=BigipAdminPassword,ParameterValue='YOURPASSWORD'
-    ParameterKey=BigipManagementGuiPort,ParameterValue=443
-    ParameterKey=Vpc,ParameterValue=vpc-61a94705
-    ParameterKey=Az1ExternalSubnet,ParameterValue=subnet-aec1d4d9
-    ParameterKey=BigipExternalSecurityGroup,ParameterValue=sg-d90eb9be
-    ParameterKey=WebserverPrivateIp,ParameterValue="10.0.3.8"
-    ParameterKey=BigiqUsername,ParameterValue=admin 
-    ParameterKey=BigiqPassword,ParameterValue='YOURPASSWORD' 
-    ParameterKey=BigiqAddress,ParameterValue=52.89.223.222 
-    ParameterKey=BigiqLicensePoolUUID,ParameterValue=5ba3f9b1-52f1-4fd1-93fd-111111b5aa23
+    ParameterKey=sshKey,ParameterValue=YOUR-SSH-KEY
+    ParameterKey=bigipInstanceType,ParameterValue=m3.xlarge
+    ParameterKey=bigipPerformanceType,ParameterValue=Good
+    ParameterKey=bigipAdminUsername,ParameterValue=admin
+    ParameterKey=bigipAdminPassword,ParameterValue='YOURPASSWORD'
+    ParameterKey=bigipManagementGuiPort,ParameterValue=443
+    ParameterKey=vpc,ParameterValue=vpc-61a94705
+    ParameterKey=az1ExternalSubnet,ParameterValue=subnet-aec1d4d9
+    ParameterKey=bigipExternalSecurityGroup,ParameterValue=sg-d90eb9be
+    ParameterKey=webserverPrivateIp,ParameterValue="10.0.3.8"
+    ParameterKey=bigiqUsername,ParameterValue=admin 
+    ParameterKey=bigiqPassword,ParameterValue='YOURPASSWORD' 
+    ParameterKey=bigiqAddress,ParameterValue=52.89.223.222 
+    ParameterKey=bigiqLicensePoolUUID,ParameterValue=5ba3f9b1-52f1-4fd1-93fd-111111b5aa23
 
 
 ###2 NIC:
@@ -139,15 +139,15 @@ _NOTE:_ _The only difference for "with WAF" example above is the template name a
     --template-body file://full-stack-vpc-w-byol-2nic-bigip.template 
     --stack-name full-stack-bigip-2nic
     --parameters  
-    ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
-    ParameterKey=AvailabilityZone1,ParameterValue=us-west-2a
-    ParameterKey=AvailabilityZone2,ParameterValue=us-west-2b
-    ParameterKey=BigipInstanceType,ParameterValue=m3.xlarge
-    ParameterKey=BigipPerformanceType,ParameterValue=Good
-    ParameterKey=WebserverInstanceType,ParameterValue=t1.micro
-    ParameterKey=BigipAdminUsername,ParameterValue=admin
-    ParameterKey=BigipAdminPassword,ParameterValue='YOURPASSWORD'
-    ParameterKey=Bigip1LicenseKey,ParameterValue=HOXXC-QTDPU-KARFZ-GCNAN-EKVPEDU
+    ParameterKey=sshKey,ParameterValue=YOUR-SSH-KEY
+    ParameterKey=availabilityZone1,ParameterValue=us-west-2a
+    ParameterKey=availabilityZone2,ParameterValue=us-west-2b
+    ParameterKey=bigipInstanceType,ParameterValue=m3.xlarge
+    ParameterKey=bigipPerformanceType,ParameterValue=Good
+    ParameterKey=webserverInstanceType,ParameterValue=t1.micro
+    ParameterKey=bigipAdminUsername,ParameterValue=admin
+    ParameterKey=bigipAdminPassword,ParameterValue='YOURPASSWORD'
+    ParameterKey=bigip1LicenseKey,ParameterValue=HOXXC-QTDPU-KARFZ-GCNAN-EKVPEDU
 
 ####Existing Stack:
 
@@ -156,18 +156,18 @@ _NOTE:_ _The only difference for "with WAF" example above is the template name a
     --template-body file://existing-stack-byol-2nic-bigip.template
     --stack-name existing-stack-bigip-2nic
     --parameters  
-    ParameterKey=KeyName,ParameterValue=YOUR-SSH-KEY
-    ParameterKey=BigipInstanceType,ParameterValue=m3.xlarge
-    ParameterKey=BigipPerformanceType,ParameterValue=Good
-    ParameterKey=BigipAdminUsername,ParameterValue=admin
-    ParameterKey=BigipAdminPassword,ParameterValue='YOURPASSWORD'
-    ParameterKey=Vpc,ParameterValue=vpc-8a05ebee
-    ParameterKey=Az1ExternalSubnet,ParameterValue=subnet-436d7934
-    ParameterKey=Az1ManagementSubnet,ParameterValue=subnet-406d7937
-    ParameterKey=BigipExternalSecurityGroup,ParameterValue=sg-bd8c3dda
-    ParameterKey=BigipManagementSecurityGroup,ParameterValue=sg-bc8c3ddb
-    ParameterKey=WebserverPrivateIp,ParameterValue="10.0.3.39"
-    ParameterKey=Bigip1LicenseKey,ParameterValue=CCSVQ-ZXHDA-JBJYU-ZKXZI-LLUHUMX
+    ParameterKey=sshKey,ParameterValue=YOUR-SSH-KEY
+    ParameterKey=bigipInstanceType,ParameterValue=m3.xlarge
+    ParameterKey=bigipPerformanceType,ParameterValue=Good
+    ParameterKey=bigipAdminUsername,ParameterValue=admin
+    ParameterKey=bigipAdminPassword,ParameterValue='YOURPASSWORD'
+    ParameterKey=vpc,ParameterValue=vpc-8a05ebee
+    ParameterKey=az1ExternalSubnet,ParameterValue=subnet-436d7934
+    ParameterKey=az1ManagementSubnet,ParameterValue=subnet-406d7937
+    ParameterKey=bigipExternalSecurityGroup,ParameterValue=sg-bd8c3dda
+    ParameterKey=bigipManagementSecurityGroup,ParameterValue=sg-bc8c3ddb
+    ParameterKey=webserverPrivateIp,ParameterValue="10.0.3.39"
+    ParameterKey=bigip1LicenseKey,ParameterValue=CCSVQ-ZXHDA-JBJYU-ZKXZI-LLUHUMX
 
 
 ## deploy_stacks.py
@@ -198,7 +198,25 @@ Above will launch the first infra-only stack (vpc, subnets, security groups, web
 
 
 
-#####Known Issues:
+## Troubleshooting steps
+
+This section provides steps intended to assist with troubleshooting common problems with AWS CloudFormation deployments: 
+
+  - In a case of stack creation failures, disabling rollback allows to preview events for each provisioned resource as well as preview cf-init.log; see [AWS Docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-init.html#cfn-init-Examples) for more details
+  - There are several common reasons for deployment failure: 
+    * Missing pre-request; see "Prerequisites" section for a particular AWS CloudFomration Template; see [example](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/standalone/1nic/existing-stack/payg/README.md#prerequisites) for more details
+    * Missing required parameters; see "Template parameters" section for the complete list of template paramteres required for a particular AWS CloudFormation Template; see [example](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/standalone/1nic/existing-stack/payg/README.md#user-content-installing-the-image-using-the-aws-launch-stack-button) for more details 
+    * Missing required resources/infastruture; extistent stack templates require existent infastructure
+    * Lack of permissions for IAM user used for CloudFormation deployment
+    * Template validation problem; using the [validate-template](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/validate-template.html) method allows to validate template against AWS
+  - AWS Docs provide additional details on possible resolutions of common AWS problems [AWS Docs Troubleshooing](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html#troubleshooting-errors)
+  - In case of recieving deployment failure during BIGIP on-boarding, the BIGIP service logs allow to get insights about the problem: 
+    * /var/log/restnoded/restnoded.log - [AS3](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/about-as3.html) error log
+    * /var/log/restjavad.[0-9].log - restjavad logs; this service provides control-plane access to the BIG-IP using an http REST api.
+    * /var/log/cloud/aws/ - this directory includes logs generated by [f5-cloud-libs](https://github.com/F5Networks/f5-cloud-libs) tool intended for on-boarding and configuring BIGIP device; the following page [f5-cloud-libs](https://github.com/F5Networks/f5-cloud-libs/blob/master/USAGE.md) provides details about each module used by f5-cloud-libs
+
+
+## Known Issues:
 
 
 1. Some Full stack templates may get too large to be deployed via AWS cli.

@@ -9,6 +9,8 @@ The quickstart template allows you to quickly launch an auto scale group of BIG-
 
 This quickstart template deploys a full demo application stack, including the Network, a Bastion Host, and an auto scale group of BIG-IP VEs in front of two application Auto Scale Groups. 
 
+![Configuration example](images/quickstart-f5-big-ip-virtual-edition-diagram.png)
+
 The BIG-IP VEs provide advanced application services, such as Web Application Firewall (WAF), SSL termination/inspection, URI routing and service discovery. The virtual service on BIG-IP is configured via its declarative API named [Application Services Extension](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/).
 
 ### Prerequisites
@@ -29,24 +31,30 @@ In addition to standard requirements for the BIG-IP deployment you also need per
 The easiest way to deploy this CloudFormation template is to use the Launch Stack button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=quickstart-stack&templateURL=https://s3.amazonaws.com/f5-cft/quickstarts/v0.0.0.1/templates/f5/master.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
-Complete the template as applicable for your configuration.  You can leave all the default values, but you must specify your **Availability Zones**, **Key Pair Name**, and **Notification Email**.
+Complete the template as applicable for your configuration.  You can leave all the default values, but you must specify the following required parameters: 
+  1. Availability Zones
+  2. Key Pair Name
+  3. Notification Email
   
 
 Once deployed *(takes approximately 30 Minutes)* and the master.template reports **COMPLETE**, navigate to master template **Outputs** tab and find the output for **appUrl**.  Click or copy the URL in browser. For example: https://f5awsqs-f5demoapp-extnlb-6766938b76e2eb2b.elb.us-east-1.amazonaws.com
 
+
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=quickstart-stack&templateURL=https://s3.amazonaws.com/f5-cft/quickstarts/v0.0.0.1/templates/f5/master.template">
+    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
 ### To test the WAF
 Use the following command to test the F5 Web Application Firewall (WAF):  
 
 `curl -sk -H "Content-Type: application/json; ls /usr/bin" https://f5awsqs-f5demoapp-extnlb-6766938b76e2eb2b.elb.us-east-1.amazonaws.com`
 
+This command reprsents an example of linux command injection into curl command and therefore, it should be prevented/blocked by WAF service
+
 
 ### To test the Application
 
-The virtual service is using a self-signed certificate, so click through any browser warnings (see your browser documentation for details). You will land on the home page, which points at the pool for the first Auto scale Group (blue). Click the **API** tab, and you are routed via the URI routing policy to the pool for the second Auto Scale Group (green). 
+The virtual service is using a self-signed certificate, so click through any browser warnings (see your browser documentation for details). You will land on the home page, which points at the pool for the first Auto scale Group (blue). Click the API tab, and you are routed via the URI routing policy to the pool for the second Auto Scale Group (green).
 
 
 #### To Explore to BIG-IP itself via Bastion Host
@@ -100,7 +108,7 @@ In the AppUrl, click the **API** tab. Notice it turns green. Requests are being 
 From the CLI: 
 
 ```
-admin@(ip-10-0-11-112)(cfg-sync In Sync)(Active)(/Common)(tmos)# cd /tenant/https_virtual
+admin@(ip-10-0-11-112)(cfg-sync In Sync)(Active)(/Common)(tmos)# cd /tenant/https
 admin@(ip-10-0-11-112)(cfg-sync In Sync)(Active)(/tenant/https_virtual)(tmos)# show ltm pool
 ```
 
@@ -117,7 +125,7 @@ You can also inspect the URI Policy Rules executing:
 
 From the CLI:
 
-`admin@(ip-10-0-11-112)(cfg-sync In Sync)(Active)(/tenant/https_virtual)(tmos)# show ltm policy forward_policy`
+`admin@(ip-10-0-11-112)(cfg-sync In Sync)(Active)(/tenant/https)(tmos)# show ltm policy forward_policy_green`
 
 From the BIG-IP Configuration utility:
 
@@ -132,7 +140,7 @@ You can test manually updating a pool to look for a different tag by updating th
 
 From a bash shell (either the bastion host or BIG-IP VE's (assuming you have access via tunnel above)):
 
-`admin@(ip-10-0-11-112)(cfg-sync In Sync)(Active)(/tenant/https_virtual)(tmos)# bash`
+`admin@(ip-10-0-11-112)(cfg-sync In Sync)(Active)(/tenant/https)(tmos)# bash`
 
 After replacing the variables to match your deployment, you can copy/paste the following directly:
 
@@ -150,17 +158,17 @@ curl -sk -u ${bigip_username}:${bigip_password} -H "Content-type: application/js
 Edit **virtual_service_definition.json** to change the values for tagValue fields:
 ```
    "tagKey": "f5demoapp",
-   "tagValue": "f5-demo-app-0.0.1",
+   "tagValue": "f5-demo-app-1.0.1",
 ```
 For example, from 
 
-**"f5-demo-app-0.0.1"** to  **"f5-demo-app-0.0.2"**
+**"f5-demo-app-1.0.1"** to  **"f5-demo-app-1.0.2"**
 
 and
 
-**"f5-demo-app-0.0.2"** to  **"f5-demo-app-0.0.3"**  *(non-existent)*
+**"f5-demo-app-1.0.2"** to  **"f5-demo-app-1.0.3"**  *(non-existent)*
 
-So that default pool (pool_blue) is now pointing at the green Auto Scale Group (with the tag "f5demoapp: f5-demo-app-0.0.2"). 
+So that default pool (pool_blue) is now pointing at the green Auto Scale Group (with the tag "f5demoapp: f5-demo-app-1.0.2"). 
 
 Update the Virtual Service:
 ```
@@ -172,7 +180,9 @@ Review the output to confirm the values have changed.
 
 Now you can go back to your appURL and notice default home page is going to 2nd pool (green).
 
+### Troubleshooting 
 
+The [troubleshooting steps](./troubleshooting-steps.md) page provides a list of most common problems with AWS CloudFormation deployments and their resolutions
 
 #### More Information
 

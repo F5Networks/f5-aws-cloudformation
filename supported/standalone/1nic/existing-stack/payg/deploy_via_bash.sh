@@ -81,7 +81,7 @@ then
         read -p "Please enter value for imageName:" imageName
     done
     
-    template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-hourly-1nic-bigip.template"
+    template="https://s3.amazonaws.com/f5-cft/f5-existing-stack-payg-1nic-bigip.template"
 fi
 
 echo "Disclaimer: Scripting to Deploy F5 Solution templates into Cloud Environments are provided as examples. They will be treated as best effort for issues that occur, feedback is encouraged."

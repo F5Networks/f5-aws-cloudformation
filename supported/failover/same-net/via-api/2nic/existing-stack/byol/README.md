@@ -103,6 +103,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Source Address(es) for Web Application Access (80/443) | restrictedSrcAddressApp | Yes | The IP address range that can be used for management access to the EC2 instances. |
 | NTP Server | ntpServer | Yes | NTP server you want to use for this implementation (the default is 0.pool.ntp.org). | 
 | Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC). |
+| BIG-IP Modules | bigIpModules | No | Comma separated list of modules and levels to provision, for example, 'ltm:nominal,asm:nominal' |
 | Application | application | No | Application Tag (the default is f5app). |
 | Environment | environment | No | Environment Name Tag (the default is f5env). |
 | Group | group | No | Group Tag (the default is f5group). |

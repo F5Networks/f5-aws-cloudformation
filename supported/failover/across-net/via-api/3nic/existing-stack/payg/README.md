@@ -94,8 +94,8 @@ After clicking the Launch button, you must specify the following parameters.
 | Management Subnet AZ2 | managementSubnetAz2 | Yes | Management subnet ID for Availability Zone 2. |
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID for Availability Zone 1. |
 | Subnet1 AZ2 | subnet1Az2 | Yes | Public or External subnet ID for Availability Zone 2. |
-| Subnet2 AZ1 | subnet2Az1 | Yes | Public or External subnet ID for Availability Zone 1. |
-| Subnet2 AZ2 | subnet2Az2 | Yes | Public or External subnet ID for Availability Zone 2. |
+| Subnet2 AZ1 | subnet2Az1 | Yes | Private or Internal subnet ID for Availability Zone 1. |
+| Subnet2 AZ2 | subnet2Az2 | Yes | Private or Internal subnet ID for Availability Zone 2. |
 | BIG-IP Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
 | Custom Image Id | customImageId | No | This parameter allows you to deploy using a custom BIG-IP image if necessary. If applicable, type the AMI Id in this field. **Note**: Unless specifically required, leave the default of **OPTIONAL**. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |

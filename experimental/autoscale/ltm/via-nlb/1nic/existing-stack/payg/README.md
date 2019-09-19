@@ -200,7 +200,7 @@ The CloudFormation template uses the default **Good** image available in the AWS
 
 The following is a simple configuration diagram deployment. 
 
-![Configuration example](images/config-diagram-autoscale-ltm-nlb.png)
+![Configuration example](../images/config-diagram-autoscale-ltm-nlb.png)
 
 
 

@@ -38,7 +38,7 @@ Complete the template as applicable for your configuration.  You can leave all t
   3. Notification Email
   
 
-Once deployed *(takes approximately 30 Minutes)* and the master.template reports **COMPLETE**, navigate to master template **Outputs** tab and find the output for **appUrl**.  Click or copy the URL in browser. For example: https://f5awsqs-f5demoapp-extnlb-6766938b76e2eb2b.elb.us-east-1.amazonaws.com
+Once deployed *(takes approximately 30 Minutes)* and the master.template reports **COMPLETE**, navigate to master template **Outputs** tab and find the output for **appUrl**.  Click or copy the URL in browser. For example: https://example.com
 
 
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=quickstart-stack&templateURL=https://s3.amazonaws.com/f5-cft/quickstarts/v0.0.0.1/templates/f5/master.template">
@@ -47,7 +47,7 @@ Once deployed *(takes approximately 30 Minutes)* and the master.template reports
 ### To test the WAF
 Use the following command to test the F5 Web Application Firewall (WAF):  
 
-`curl -sk -H "Content-Type: application/json; ls /usr/bin" https://f5awsqs-f5demoapp-extnlb-6766938b76e2eb2b.elb.us-east-1.amazonaws.com`
+`curl -sk -H "Content-Type: application/json; ls /usr/bin" https://example.com`
 
 This command reprsents an example of linux command injection into curl command and therefore, it should be prevented/blocked by WAF service
 

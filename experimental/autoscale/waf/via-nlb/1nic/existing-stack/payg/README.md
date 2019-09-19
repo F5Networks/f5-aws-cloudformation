@@ -201,7 +201,7 @@ The CloudFormation template uses the default **Best** image available in the AWS
 
 The following is a simple configuration diagram deployment. 
 
-![Configuration example](images/config-diagram-autoscale-waf-nlb.png)
+![Configuration example](../images/config-diagram-autoscale-waf-nlb.png)
 
 
 

@@ -40,6 +40,18 @@
     "LTMOneBootLocation": "ami-0b132a213a6a79210", 
     "LTMTwoBootLocations": "ami-02dfa1bb770fa07fc"
   }, 
+  "cn-north-1": {
+    "AllOneBootLocation": "ami-093cf48e4154c9cfe", 
+    "AllTwoBootLocations": "ami-09bb8f277c0d020bc", 
+    "LTMOneBootLocation": "ami-0b10ad4dc26de6a55", 
+    "LTMTwoBootLocations": "ami-00042eefd2bc8dbd9"
+  }, 
+  "cn-northwest-1": {
+    "AllOneBootLocation": "ami-0a15fdf6531f76499", 
+    "AllTwoBootLocations": "ami-0a7a423cff4ef2544", 
+    "LTMOneBootLocation": "ami-0ebdf7c9292e3174f", 
+    "LTMTwoBootLocations": "ami-004b1fd94a431fbb2"
+  }, 
   "eu-central-1": {
     "AllOneBootLocation": "ami-09d96ce7f4aabbf2f", 
     "AllTwoBootLocations": "ami-005f511541b955fcc", 
@@ -86,11 +98,17 @@
     "LTMOneBootLocation": "ami-01cefb96ca5188292", 
     "LTMTwoBootLocations": "ami-06b6ea091d12384b2"
   }, 
+  "us-gov-east-1": {
+    "AllOneBootLocation": "ami-adfb1bdc", 
+    "AllTwoBootLocations": "ami-aefe1edf", 
+    "LTMOneBootLocation": "ami-85c020f4", 
+    "LTMTwoBootLocations": "ami-41fe1e30"
+  }, 
   "us-gov-west-1": {
-    "AllOneBootLocation": "ami-fe75039f", 
-    "AllTwoBootLocations": "ami-fa71079b", 
-    "LTMOneBootLocation": "ami-ac2a5ccd", 
-    "LTMTwoBootLocations": "ami-fb0e789a"
+    "AllOneBootLocation": "ami-41105820", 
+    "AllTwoBootLocations": "ami-322b6353", 
+    "LTMOneBootLocation": "ami-9b054dfa", 
+    "LTMTwoBootLocations": "ami-ec1f578d"
   }, 
   "us-west-1": {
     "AllOneBootLocation": "ami-091c8ceda8668a24e", 

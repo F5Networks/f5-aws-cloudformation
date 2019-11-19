@@ -6,7 +6,7 @@
             "ParameterGroups": [
                 {
                     "Label": {
-                        "default": "DEPLOYMNENT"
+                        "default": "DEPLOYMENT"
                     },
                     "Parameters": [
                         "DeploymentName"

@@ -49,7 +49,7 @@ Use the following command to test the F5 Web Application Firewall (WAF):
 
 `curl -sk -H "Content-Type: application/json; ls /usr/bin" https://example.com`
 
-This command reprsents an example of linux command injection into curl command and therefore, it should be prevented/blocked by WAF service
+This command represents an example of linux command injection into curl command and therefore, it should be prevented/blocked by WAF service
 
 
 ### To test the Application

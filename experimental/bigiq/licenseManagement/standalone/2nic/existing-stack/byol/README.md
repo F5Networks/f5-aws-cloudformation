@@ -101,7 +101,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Source Address(es) for Management Access | restrictedSrcAddress | Yes | The IP address range that can be used for management access to the EC2 instances. |
 | Source Address(es) for internal Management Access | restrictedSrcAddressApp | Yes | The IP address range that can be used to access BIG-IQ on the specified internal network via port 443. |
 | NTP Server | ntpServer | Yes | NTP server you want to use for this implementation (the default is 0.pool.ntp.org). | 
-| Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC). |
+| Timezone (Olson) | timezone | Yes | Enter the Olson timezone string from /usr/share/zoneinfo. The default is 'UTC'. See the TZ column here (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for legal values. For example, 'US/Eastern'. |
 | Application | application | No | Application Tag (the default is f5app). |
 | Environment | environment | No | Environment Name Tag (the default is f5env). |
 | Group | group | No | Group Tag (the default is f5group). |

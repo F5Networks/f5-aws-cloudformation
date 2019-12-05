@@ -1,0 +1,39 @@
+auth partition LOCAL_ONLY { }
+
+net tunnels tunnel /Common/my_vpn_cp { profile /Common/ppp }
+
+apm log-setting /Common/default-log-setting { access { general-log { publisher /Common/sys-db-access-publisher } } description "Default log setting for all APM messages." url-filters { urlf { publisher /Common/local-db-publisher } } }
+apm aaa localdb /Common/my_local_db { }
+apm oauth db-instance /Common/oauthdb { description "Default OAuth DB." }
+apm policy access-policy /Common/my_vpn { caption general default-ending /Common/my_vpn_end_deny items { /Common/my_vpn_act_full_resource_assign { } /Common/my_vpn_act_localdb_auth { } /Common/my_vpn_act_logon_page { priority 2 } /Common/my_vpn_end_allow { priority 5 } /Common/my_vpn_end_deny { priority 4 } /Common/my_vpn_ent_in { } } start-item /Common/my_vpn_ent_in }
+apm policy customization-group /Common/my_vpn_act_logon_page_ag { cache-path /config/filestore/files_d/Common_d/customization_group_d/:Common:my_vpn_act_logon_page_ag_65273_5 revision 5 }
+apm policy customization-group /Common/my_vpn_cp_secure_access_client_customization { cache-path /config/filestore/files_d/Common_d/customization_group_d/:Common:my_vpn_cp_secure_access_client_customization_65385_1 revision 1 type secure-access-client }
+apm policy customization-group /Common/my_vpn_end_deny_ag { cache-path /config/filestore/files_d/Common_d/customization_group_d/:Common:my_vpn_end_deny_ag_65259_1 revision 1 type logout }
+apm policy customization-group /Common/my_vpn_eps { cache-path /config/filestore/files_d/Common_d/customization_group_d/:Common:my_vpn_eps_65340_1 revision 1 type eps }
+apm policy customization-group /Common/my_vpn_errormap { cache-path /config/filestore/files_d/Common_d/customization_group_d/:Common:my_vpn_errormap_65337_1 revision 1 type errormap }
+apm policy customization-group /Common/my_vpn_framework_installation { cache-path /config/filestore/files_d/Common_d/customization_group_d/:Common:my_vpn_framework_installation_65343_1 revision 1 type framework-installation }
+apm policy customization-group /Common/my_vpn_general_ui { cache-path /config/filestore/files_d/Common_d/customization_group_d/:Common:my_vpn_general_ui_65346_1 revision 1 type general-ui }
+apm policy customization-group /Common/my_vpn_logout { cache-path /config/filestore/files_d/Common_d/customization_group_d/:Common:my_vpn_logout_65334_1 revision 1 type logout }
+apm policy customization-group /Common/my_vpn_na_res_resource_network_access_customization { cache-path /config/filestore/files_d/Common_d/customization_group_d/:Common:my_vpn_na_res_resource_network_access_customization_65237_1 revision 1 type resource-network-access }
+apm policy customization-group /Common/my_vpn_webtop_customization { cache-path /config/filestore/files_d/Common_d/customization_group_d/:Common:my_vpn_webtop_customization_65241_1 revision 1 type webtop }
+apm policy policy-item /Common/my_vpn_act_full_resource_assign { agents { /Common/my_vpn_act_full_resource_assign_ag { type resource-assign } } caption "Advanced Resource Assign" color 1 item-type action rules { { caption fallback next-item /Common/my_vpn_end_allow } } }
+apm policy policy-item /Common/my_vpn_act_localdb_auth { agents { /Common/my_vpn_act_localdb_auth_ag { type aaa-localdb } } caption "LocalDB Auth" color 1 item-type action rules { { caption Successful expression "expr {[mcget {session.localdb.last.result}] == 1}" next-item /Common/my_vpn_act_full_resource_assign } { caption "Locked User Out" expression "expr {[mcget {session.localdb.last.result}] == 2}" next-item /Common/my_vpn_end_deny } { caption fallback next-item /Common/my_vpn_end_deny } } }
+apm policy policy-item /Common/my_vpn_act_logon_page { agents { /Common/my_vpn_act_logon_page_ag { type logon-page } } caption "Logon Page" color 1 item-type action rules { { caption fallback next-item /Common/my_vpn_act_localdb_auth } } }
+apm policy policy-item /Common/my_vpn_end_allow { agents { /Common/my_vpn_end_allow_ag { type ending-allow } } caption Allow color 1 item-type ending }
+apm policy policy-item /Common/my_vpn_end_deny { agents { /Common/my_vpn_end_deny_ag { type ending-deny } } caption Deny color 2 item-type ending }
+apm policy policy-item /Common/my_vpn_ent_in { caption Start color 1 rules { { caption fallback next-item /Common/my_vpn_act_logon_page } } }
+apm policy agent aaa-localdb /Common/my_vpn_act_localdb_auth_ag { localdb-instance /Common/my_local_db }
+apm policy agent ending-allow /Common/my_vpn_end_allow_ag { }
+apm policy agent ending-deny /Common/my_vpn_end_deny_ag { customization-group /Common/my_vpn_end_deny_ag }
+apm policy agent logon-page /Common/my_vpn_act_logon_page_ag { customization-group /Common/my_vpn_act_logon_page_ag }
+apm policy agent resource-assign /Common/my_vpn_act_full_resource_assign_ag { rules { { network-access-resources { /Common/my_vpn_na_res } webtop /Common/my_vpn_webtop } } }
+apm profile access /Common/my_vpn { accept-languages { en } access-policy /Common/my_vpn app-service none customization-group /Common/my_vpn_logout default-language en eps-group /Common/my_vpn_eps errormap-group /Common/my_vpn_errormap framework-installation-group /Common/my_vpn_framework_installation general-ui-group /Common/my_vpn_general_ui generation 15 generation-action noop log-settings { /Common/default-log-setting } modified-since-last-policy-sync true type all user-identity-method http }
+apm profile connectivity /Common/my_vpn_cp { adaptive-compression enabled app-service none citrix-client-bundle /Common/default-citrix-client-bundle client-policy { my_vpn_cp { } } compress-buffer-size 4096 compress-cpu-saver true compress-cpu-saver-high 90 compress-cpu-saver-low 75 compress-gzip-level 6 compress-gzip-memlevel 8192 compress-gzip-window-size 16384 compress-ingress false compression enabled compression-codecs { deflate lzo bzip2 } customization-group /Common/my_vpn_cp_secure_access_client_customization defaults-from /Common/connectivity deflate-compression-level 1 description none fec-name none location-specific false tunnel-name /Common/my_vpn_cp }
+apm report default-report { report-name sessionReports/sessionSummary user /Common/admin }
+apm resource leasepool /Common/my_vpn_lp { members { ${CLIENT_IP_RANGE_START}-${CLIENT_IP_RANGE_END} { } } }
+apm resource network-access /Common/my_vpn_na_res { address-space-include-dns-name { ${DNS_SUFFIX} } address-space-include-subnet { { subnet ${VPC_CIDR_BLOCK} } } address-space-loc-dns-servers-excluded true address-space-local-subnets-excluded true customization-group /Common/my_vpn_na_res_resource_network_access_customization dns-primary ${DNS_SERVER} dns-suffix ${DNS_SUFFIX} leasepool-name /Common/my_vpn_lp split-tunneling true }
+apm resource webtop /Common/my_vpn_webtop { customization-group /Common/my_vpn_webtop_customization webtop-type full }
+
+
+ltm virtual /Common/my_vpn_vs { destination /Common/${APM_VIP_ADDRESS}:4443 ip-protocol tcp mask ${APM_VIP_MASK} profiles { /Common/clientssl { context clientside } /Common/http { } /Common/my_vpn { } /Common/my_vpn_cp { context clientside } /Common/ppp { } /Common/rba { } /Common/tcp { } /Common/websso { } } source 0.0.0.0/0 translate-address enabled translate-port enabled }
+ltm virtual-address /Common/${APM_VIP_ADDRESS} { address ${APM_VIP_ADDRESS} arp enabled mask ${APM_VIP_MASK} traffic-group /Common/traffic-group-1 }

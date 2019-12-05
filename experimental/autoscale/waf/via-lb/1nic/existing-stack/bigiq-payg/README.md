@@ -79,7 +79,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Maximum Throughput | throughput | Yes | The maximum amount of throughput for the BIG-IP VEs (the default is 1000Mbps) |
 | BIG-IP Admin User for clustering | adminUsername | Yes | BIG-IP Admin Username for clustering. Note that the user name can contain only alphanumeric characters, periods ( . ), underscores ( _ ), or hyphens ( - ). Note also that the user name cannot be any of the following: adm, apache, bin, daemon, guest, lp, mail, manager, mysql, named, nobody, ntp, operator, partition, password, pcap, postfix, radvd, root, rpc, rpm, sshd, syscheck, tomcat, uucp, or vcsa. |
 | Management Port | managementGuiPort | Yes | Port of BIG-IP management Configuration utility (the default is 8443) |
-| Timezone (Olson) | timezone | Yes | Olson timezone string from /usr/share/zoneinfo (the default is UTC) |
+| Timezone (Olson) | timezone | Yes | Enter the Olson timezone string from /usr/share/zoneinfo. The default is 'UTC'. See the TZ column here (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for legal values. For example, 'US/Eastern'. |
 | NTP Server | ntpServer | Yes | NTP server for this implementation (Default 0.pool.ntp.org) |
 | Number of Static BYOL Instances | numberOfStaticInstances | Yes | The number of static BYOL BIG-IP instances (1-4) that will be deployed in this solution |
 | Minimum Number of Hourly Instances | scalingMinSize | Yes | Minimum number of Hourly BIG-IP instances (0-6) you want available in the Auto Scale Group |

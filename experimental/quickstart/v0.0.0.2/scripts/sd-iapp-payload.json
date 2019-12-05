@@ -1,0 +1,48 @@
+{
+    "name": " quickstart-1_sd",
+    "partition": "Common",
+    "execute-action": "definition",
+    "template": "/Common/f5.service_discovery",
+    "variables": [
+        {
+            "name": "cloud__aws_use_role",
+            "value": "no"
+        },
+        {
+            "name": "cloud__cloud_provider",
+            "value": "aws"
+        },
+        {
+            "name": "cloud__aws_region",
+            "value": "us-west-2"
+        },
+        {
+            "name": "pool__interval",
+            "value": "10"
+        },
+        {
+            "name": "pool__member_conn_limit",
+            "value": "0"
+        },
+        {
+            "name": "pool__member_port",
+            "value": "80"
+        },
+        {
+            "name": "pool__pool_to_use",
+            "value": "/Common/quickstart-1"
+        },
+        {
+            "name": "pool__public_private",
+            "value": "private"
+        },
+        {
+            "name": "pool__tag_key",
+            "value": "Application"
+        },
+        {
+            "name": "pool__tag_value",
+            "value": "f5-demo-app-0.0.2"
+        }
+    ]
+}

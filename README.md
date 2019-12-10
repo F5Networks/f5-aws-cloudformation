@@ -32,7 +32,7 @@ The quickstart template allows you to quickly launch an auto scale group of BIG-
 For detailed information, we recommend you first see the [Quick Start README file](https://github.com/F5Networks/f5-aws-cloudformation/tree/master/experimental/quickstart)
 
 Or you can use the Launch Stack button to get started:  
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=quickstart-stack&templateURL=https://s3.amazonaws.com/f5-cft/quickstarts/v0.0.0.3/templates/f5/master.template">
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=quickstart-stack&templateURL=https://f5-cft.s3.amazonaws.com/quickstarts/v0.0.0.3/templates/f5/master.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a> 
 
   

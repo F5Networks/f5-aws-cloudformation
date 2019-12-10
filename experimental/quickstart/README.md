@@ -41,7 +41,7 @@ Complete the template as applicable for your configuration.  You can leave all t
 Once deployed *(takes approximately 30 Minutes)* and the master.template reports **COMPLETE**, navigate to master template **Outputs** tab and find the output for **appUrl**.  Click or copy the URL in browser. For example: https://example.com
 
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=quickstart-stack&templateURL=https://s3.amazonaws.com/f5-cft/quickstarts/v0.0.0.3/templates/f5/master.template">
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=quickstart-stack&templateURL=https://f5-cft.s3.amazonaws.com/quickstarts/v0.0.0.3/templates/f5/master.template">
     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
 ### To test the WAF

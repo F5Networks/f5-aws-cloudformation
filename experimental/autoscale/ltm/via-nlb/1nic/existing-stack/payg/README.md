@@ -48,7 +48,7 @@ The following are prerequisites for this solution:
 The easiest way to deploy this CloudFormation template is to use the Launch Stack button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-PAYG-BIGIP-LTM-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-payg-autoscale-bigip-ltm-nlb.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>  
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-PAYG-BIGIP-LTM-Autoscale&templateURL=https://f5-cft.s3.amazonaws.com/f5-payg-autoscale-bigip-ltm-nlb.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>  
 
 
  

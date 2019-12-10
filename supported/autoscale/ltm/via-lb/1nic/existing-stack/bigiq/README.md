@@ -62,7 +62,7 @@ The easiest way to deploy one of the CloudFormation templates is to use the appr
  
 See [Template Parameters](#template-parameters) for guidance on the parameters presented by the template.
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-BYOL-BIGIP-LTM-Autoscale&templateURL=https://s3.amazonaws.com/f5-cft/f5-bigiq-autoscale-bigip-ltm.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=F5-BYOL-BIGIP-LTM-Autoscale&templateURL=https://f5-cft.s3.amazonaws.com/f5-bigiq-autoscale-bigip-ltm.template"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
 
 <br>

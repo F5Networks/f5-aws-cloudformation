@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template v5.2.0: AWS CloudFormation Template for creating a full stack with a Across-AZs cluster of 2NIC BIG-IPs, a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v5.2.1: AWS CloudFormation Template for creating a full stack with a Across-AZs cluster of 2NIC BIG-IPs, a 2 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-east-1": {
@@ -746,7 +746,7 @@
     }
    }
   },
-  "Version": "5.2.0"
+  "Version": "5.2.1"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -1612,7 +1612,7 @@
              {
               "Ref": "bigIpModules"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:15.0.1-0.0.11,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-across-az-cluster-payg-2nic-bigip.template,templateVersion:5.2.0,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:15.0.1-0.0.11,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-across-az-cluster-payg-2nic-bigip.template,templateVersion:5.2.1,licenseType:hourly\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -1927,7 +1927,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.2.0\n",
+           "# Generated from 5.2.1\n",
            "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {
@@ -2478,7 +2478,7 @@
              {
               "Ref": "bigIpModules"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:15.0.1-0.0.11,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-across-az-cluster-payg-2nic-bigip.template,templateVersion:5.2.0,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:15.0.1-0.0.11,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-across-az-cluster-payg-2nic-bigip.template,templateVersion:5.2.1,licenseType:hourly\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -2732,7 +2732,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.2.0\n",
+           "# Generated from 5.2.1\n",
            "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

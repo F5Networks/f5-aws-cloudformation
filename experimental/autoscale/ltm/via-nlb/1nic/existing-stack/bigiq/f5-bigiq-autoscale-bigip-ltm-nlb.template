@@ -50,7 +50,7 @@
    ]
   }
  },
- "Description": "Template v5.2.0: Deploys an AWS Auto Scaling group of F5 LTM BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
+ "Description": "Template v5.2.1: Deploys an AWS Auto Scaling group of F5 LTM BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-east-1": {
@@ -424,7 +424,7 @@
     }
    }
   },
-  "Version": "5.2.0"
+  "Version": "5.2.1"
  },
  "Outputs": {
   "bigipAutoscaleGroup": {
@@ -1209,7 +1209,7 @@
        "017-set-master-key": {
         "command": {
          "Fn::Join": [
-          " ",
+          "",
           [
            "nohup /config/waitThenRun.sh",
            " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
@@ -1328,7 +1328,7 @@
              {
               "Ref": "bigIpModules"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:15.0.1-0.0.11,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-ltm-nlb.template,templateVersion:5.2.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:15.0.1-0.0.11,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-ltm-nlb.template,templateVersion:5.2.1,licenseType:bigiq\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--license-pool --cloud aws",
              "--big-iq-host",
@@ -1492,7 +1492,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 5.2.0\n",
+           "# Generated from 5.2.1\n",
            "date\n",
            ". /config/cloud/aws/onboard_config_vars\n",
            "tmsh create sys icall script uploadMetrics definition { exec /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs-aws/scripts/reportMetrics.sh }\n",
@@ -1613,7 +1613,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 5.2.0\n",
+           "# Generated from 5.2.1\n",
            "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

@@ -147,7 +147,7 @@
    ]
   }
  },
- "Description": "Template v5.2.0: AWS CloudFormation Template for creating a 8NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v5.2.1: AWS CloudFormation Template for creating a 8NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-east-1": {
@@ -446,7 +446,7 @@
     }
    }
   },
-  "Version": "5.2.0"
+  "Version": "5.2.1"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -1149,7 +1149,7 @@
              {
               "Ref": "licenseKey1"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:15.0.1-0.0.11,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-byol-n-nic-bigip.template,templateVersion:5.2.0,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:15.0.1-0.0.11,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-byol-n-nic-bigip.template,templateVersion:5.2.1,licenseType:byol\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -1344,7 +1344,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.2.0\n",
+           "# Generated from 5.2.1\n",
            "hostname=`curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

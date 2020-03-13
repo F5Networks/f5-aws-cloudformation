@@ -2166,7 +2166,7 @@
        "",
        [
         "#!/bin/bash -x\n",
-        "/opt/aws/apitools/cfn-init-1.4-0.amzn1/bin/cfn-init -v -s ",
+        "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ",
         {
          "Ref": "AWS::StackId"
         },

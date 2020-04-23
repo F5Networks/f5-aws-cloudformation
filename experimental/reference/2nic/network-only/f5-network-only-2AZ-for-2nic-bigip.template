@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template v5.4.0: AWS CloudFormation Template for creating network components for a 2 Availability Zone VPC",
+ "Description": "Template v5.5.0: AWS CloudFormation Template for creating network components for a 2 Availability Zone VPC",
  "Metadata": {
   "AWS::CloudFormation::Interface": {
    "ParameterGroups": [
@@ -78,7 +78,8 @@
       "default": "TEMPLATE ANALYTICS"
      },
      "Parameters": [
-      "allowUsageAnalytics"
+      "allowUsageAnalytics",
+      "allowPhoneHome"
      ]
     },
     {
@@ -97,8 +98,11 @@
     "additionalNicLocation": {
      "default": "Additional NIC Location"
     },
+    "allowPhoneHome": {
+     "default": "Send Anonymous Device Statistics to F5"
+    },
     "allowUsageAnalytics": {
-     "default": "Send Anonymous Statistics to F5"
+     "default": "Send Anonymous Template Statistics to F5"
     },
     "application": {
      "default": "Application"
@@ -186,7 +190,7 @@
     }
    }
   },
-  "Version": "5.4.0"
+  "Version": "5.5.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -237,13 +241,22 @@
   }
  },
  "Parameters": {
+  "allowPhoneHome": {
+   "AllowedValues": [
+    "Yes",
+    "No"
+   ],
+   "Default": "Yes",
+   "Description": "This deployment can send anonymous device statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent.",
+   "Type": "String"
+  },
   "allowUsageAnalytics": {
    "AllowedValues": [
     "Yes",
     "No"
    ],
    "Default": "Yes",
-   "Description": "This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent.",
+   "Description": "This deployment can send anonymous template statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent.",
    "Type": "String"
   },
   "application": {

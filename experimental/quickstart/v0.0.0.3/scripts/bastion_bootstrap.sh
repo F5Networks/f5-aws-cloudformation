@@ -582,6 +582,9 @@ if [[ ${TCP_FORWARDING} == "false" ]];then
     awk '!/AllowTcpForwarding/' /etc/ssh/sshd_config > temp && mv temp /etc/ssh/sshd_config
     echo "AllowTcpForwarding no" >> /etc/ssh/sshd_config
     harden_ssh_security
+else
+    echo "AllowTcpForwarding yes" >> /etc/ssh/sshd_config
+    echo "PermitOpen any" >> /etc/ssh/sshd_confi
 fi
 
 if [[ ${X11_FORWARDING} == "false" ]];then

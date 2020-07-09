@@ -4,7 +4,7 @@
 [![Issues](https://img.shields.io/github/issues/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/issues)
 
 ## CVE-2020-5902
-"Warning: due to [CVE-2020-5902](https://support.f5.com/csp/article/K52145254), do not use templates unless using customImage parameter. Updated images are pending publication to Marketplace. Please see [CVE-2020-5902](https://support.f5.com/csp/article/K52145254) and Cloud Provider for latest updates.
+**Warning:** due to [CVE-2020-5902](https://support.f5.com/csp/article/K52145254), do not use templates unless using customImage parameter. Updated images are pending publication to Marketplace. Please see [CVE-2020-5902](https://support.f5.com/csp/article/K52145254) and Cloud Provider for latest updates.
 
 ## Introduction
 

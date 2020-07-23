@@ -48,8 +48,8 @@ The following are prerequisites for the F5 clustered 2-NIC CFT:
   - This template creates AWS Security Groups as a part of the deployment. For the external Security Group, this includes a port for accessing your applications on port 80/443.  If your applications need additional ports, you must add those to the external Security Group created by the template.  For instructions on adding ports, see the AWS documentation.
   - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
   - This solution uses an AMI image with BIG-IP v13 or later.
-  - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
-  - F5 has created an iApp for configuring logging for BIG-IP modules to be sent to a specific set of cloud analytics solutions.  See [Logging iApp](#logging-iapp).
+  - This template supports service discovery via the Application Services 3 Extension (AS3).  See the [Service Discovery section](#service-discovery) for details.
+  - This template supports telemetry streaming via the F5 Telemetry Streaming extension (TS). See [Telemetry Streaming](#telemetry-streaming) for details.
   - In order to pass traffic from your clients to the servers, after launching the template you must create virtual servers on the BIG-IP VE.  See [Creating a virtual server](#creating-virtual-servers-on-the-big-ip-ve).
   - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
   - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates.  See [Sending statistical information to F5](#sending-statistical-information-to-f5).
@@ -118,6 +118,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Cost Center | costcenter | No | Cost Center Tag (the default is f5costcenter). |
 | BIG-IQ Address | bigiqAddress | Yes | Private IP address or DNS hostname of the BIG-IQ device that contains the pool of licenses |
 | BIG-IQ user with Licensing Privileges | bigiqUsername | Yes | BIG-IQ user with privileges to license BIG-IP. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
+| BIG-IQ Tenant | bigIqLicenseTenant | No | The BIG-IQ license tenant to use during BIG-IP licensing via BIG-IQ. Note: Curly braces are not allowed. This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of **OPTIONAL**. |
 | BIG-IQ Unit of Measure | bigIqLicenseUnitOfMeasure | No | The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example **yearly**, **monthly**, **daily** or **hourly**. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of **OPTIONAL**. |
 | BIG-IQ SKU Keyword 1 | bigIqLicenseSkuKeyword1 | No | The BIG-IQ license filter (based on SKU keyword) you want to use for licensing the BIG-IPs from the BIG-IQ. For example **F5-BIG-MSP-LTM-25M**, **F5-BIG-MSP-BR-200M**, **F5-BIG-MSP-BT-1G** or **F5-BIG-MSP-ASM-1G** |
 | S3 ARN of the BIG-IQ Password File | bigiqPasswordS3ARN | Yes | S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the file object containing the password of the BIG-IQ user that will license the BIG-IP VE |
@@ -132,29 +133,13 @@ If you want to deploy the template using the AWS CLI(aws-cli/1.11.165), use the 
 
 ---
 
-## Service Discovery
-Once you launch your BIG-IP instance using the CFT template, you can use the Service Discovery iApp template on the BIG-IP VE to automatically update pool members based on auto-scaled cloud application hosts.  In the iApp template, you enter information about your cloud environment, including the tag key and tag value for the pool members you want to include, and then the BIG-IP VE programmatically discovers (or removes) members using those tags. See our [Service Discovery video](https://www.youtube.com/watch?v=ig_pQ_tqvsI) to see this feature in action.
+### Service Discovery
 
-### Tagging
-In AWS, you have two options for tagging objects that the Service Discovery iApp uses. Note that you select public or private IP addresses within the iApp.
-  - *Tag a VM resource*<br>
-The BIG-IP VE will discover the primary public or private IP addresses for the primary NIC configured for the tagged VM.
-  - *Tag a NIC resource*<br>
-The BIG-IP VE will discover the primary public or private IP addresses for the tagged NIC.  Use this option if you want to use the secondary NIC of a VM in the pool.
+This template previously supported configuring service discovery using the f5.service_discovery iApp template.  That iApp has been deprecated and removed from this template.  You can now configure service discovery using the F5 AS3 extension, which is installed by all Cloudformation templates by default.  See the official AS3 [documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/service-discovery.html) and the iApp migration [guide](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/iapp-migration.md) for more information and examples.
 
+### Telemetry Streaming
 
-The iApp first looks for NIC resources with the tags you specify.  If it finds NICs with the proper tags, it does not look for VM resources. If it does not find NIC resources, it looks for VM resources with the proper tags. 
-
-**Important**: Make sure the tags and IP addresses you use are unique. You should not tag multiple AWS nodes with the same key/tag combination if those nodes use the same IP address.
-
-To launch the template:
-  1.	From the BIG-IP VE web-based Configuration utility, on the Main tab, click **iApps > Application Services > Create**.
-  2.	In the **Name** field, give the template a unique name.
-  3.	From the **Template** list, select **f5.service_discovery**.  The template opens.
-  4.	Complete the template with information from your environment.  For assistance, from the Do you want to see inline help? question, select Yes, show inline help.
-  5.	When you are done, click the **Finished** button.
-  
-If you want to verify the integrity of the template, from the BIG-IP VE Configuration utility click **iApps > Templates**. In the template list, look for **f5.service_discovery**. In the Verification column, you should see **F5 Verified**.
+This template previously supported configuring device telemetry using the f5.cloud_logger iApp template.  That iApp has been deprecated and removed from this template.  You can now configure telemetry streaming using the F5 Telemetry Streaming extension.  See the official TS [documentation](https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest/) and the iApp migration [guide](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/iapp-migration.md) for installation steps and examples.
 
 ## Creating virtual servers on the BIG-IP VE
 
@@ -168,27 +153,9 @@ In order to pass traffic from your clients to the servers through the BIG-IP sys
 4. In the **Destination/Mask** field, type the AWS secondary private IP address.
 5. In the **Service Port** field, type the appropriate port. 
 6. Configure the rest of the virtual server as appropriate.
-7. If you used the Service Discovery iApp template: <br>In the Resources section, from the **Default Pool** list, select the name of the pool created by the iApp.
+7. In the Resources section, from the **Default Pool** list, select the name of the pool you want to use.
 8. Click the **Finished** button.
 9. Repeat as necessary.
-
-
-### Logging iApp
-
-F5 has created an iApp for configuring logging for BIG-IP modules to be sent to a specific set of cloud analytics solutions. The iApp creates logging profiles which can be attached to the appropriate objects (virtual servers, APM policy, and so on) which results in logs being sent to the selected cloud analytics solution, Azure in this case.
-
-We recommend you watch the [Viewing ASM Data in Azure Analytics video](https://www.youtube.com/watch?v=X3B_TOG5ZpA&feature=youtu.be) that shows this iApp in action, everything from downloading and importing the iApp, to configuring it, to a demo of an attack on an application and the resulting ASM violation log that is sent to ASM Analytics.
-
-**Important**: Be aware that this may (depending on the level of logging required) affect performance of the BIG-IP as a result of the processing to construct and send the log messages over HTTP to the cloud analytics solution.
-It is also important to note this cloud logging iApp template is a *different solution and iApp template* than the F5 Analytics iApp template described [here](https://f5.com/solutions/deployment-guides/analytics-big-ip-v114-v1212-ltm-apm-aam-asm-afm).
-
-Use the following guidance using the iApp template (the iApp now is present on the BIG-IP VE image as a part of the templates).
-
-1. Log on to the BIG-IP VE Configuration utility.
-2. On the Main tab, from the **iApp** menu, click **Application Services > Applications > Create**.
-3. From the **Template** list, select f5.cloud_logger.v1.0.0.tmpl (or later version if applicable).
-
-For assistance running the iApp template, once you open the iApp, from the *Do you want to see inline help?* question, select **Yes, show inline help**.
 
 ## Configuration Example
 

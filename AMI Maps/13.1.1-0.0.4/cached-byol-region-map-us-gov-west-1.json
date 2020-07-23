@@ -1,8 +1,0 @@
-{
-  "us-gov-west-1": {
-    "AllOneBootLocation": "ami-72059813", 
-    "AllTwoBootLocations": "ami-557ce134", 
-    "LTMOneBootLocation": "ami-0d14896c", 
-    "LTMTwoBootLocations": "ami-04059865"
-  }
-}

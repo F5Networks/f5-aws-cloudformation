@@ -49,8 +49,8 @@ The following are prerequisites and notes for this solution:
  - All of the BIG-IP VE members in the cluster are active and process traffic.  See [Detailed Clustering Information](#detailed-clustering-information).
  - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
  - After deploying the template, if you make manual changes to the BIG-IP configuration, you must see [this section](#important-if-you-make-manual-changes-to-big-ip-after-launching-the-template).
- - This template supports service discovery.  See the [Service Discovery section](#service-discovery) for details.
- - F5 has created an iApp for configuring logging for BIG-IP modules to be sent to a specific set of cloud analytics solutions.  See [Logging iApp](#logging-iapp).
+ - This template supports service discovery via the Application Services 3 Extension (AS3).  See the [Service Discovery section](#service-discovery) for details.
+ - This template supports telemetry streaming via the F5 Telemetry Streaming extension (TS). See [Telemetry Streaming](#telemetry-streaming) for details.
  - This template includes a master election feature, which ensures that if the existing master BIG-IP VE is unavailable, a new master is selected from the BIG-IP VEs in the cluster. As a part of this process, the template creates an IAM role-protected SQS queue (https://aws.amazon.com/sqs/) for communication between the BIG-IP VEs, and encrypted credentials are sent on this queue. Additionally, the template creates public keys for the BIG-IP VEs and puts them in an S3 bucket in the public_keys folder. See [How this solution works](#how-this-solution-works) for more details.
  - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates.  See [Sending statistical information to F5](#sending-statistical-information-to-f5).
  - F5 AWS CFT templates now capture all deployment logs to the BIG-IP VE in **/var/log/cloud/aws**. Depending on which template you are using, this includes deployment logs (stdout/stderr), Cloud Libs execution logs, recurring solution logs (metrics, failover, and so on), and more.
@@ -117,6 +117,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | BIG-IQ user with Licensing Privileges | bigiqUsername | Yes | BIG-IQ user with privileges to license BIG-IP. Must be **Admin**, **Device Manager**, or **Licensing Manager**. |
 | S3 ARN of the BIG-IQ Password File | bigiqPasswordS3Arn | Yes | S3 ARN (arn:aws:s3:::bucket_name/full_path_to_object) of the BIG-IQ Password file |
 | BIG-IQ License Pool Name | bigiqLicensePoolName | Yes | Name of the pool on BIG-IQ that contains the BIG-IP licenses |
+| BIG-IQ Tenant | bigIqLicenseTenant | No | The BIG-IQ license tenant to use during BIG-IP licensing via BIG-IQ. Note: Curly braces are not allowed. This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of **OPTIONAL**. |
 | BIG-IQ Unit of Measure | bigIqLicenseUnitOfMeasure | No | The BIG-IQ license unit of measure to use during BIG-IP licensing via BIG-IQ, for example **yearly**, **monthly**, **daily** or **hourly**. Note: This is only required when licensing with an ELA/subscription (utility) pool on the BIG-IQ, if not using this pool type leave the default of **OPTIONAL**. |
 | BIG-IQ SKU Keyword 1 | bigIqLicenseSkuKeyword1 | No | The BIG-IQ license filter (based on SKU keyword) you want to use for licensing the BIG-IPs from the BIG-IQ. For example **F5-BIG-MSP-LTM-25M**, **F5-BIG-MSP-BR-200M**, **F5-BIG-MSP-BT-1G** or **F5-BIG-MSP-ASM-1G** |
 | Send Anonymous Statistics to F5 | allowUsageAnalytics | No | This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent. |
@@ -263,7 +264,24 @@ The CloudFormation Template creates and leverages several AWS resources to suppo
   - **SQS Queue**<br>
   The SQS queue is used for cluster synchronization messages between cluster members.
 
-The template now automatically saves a BIG-IP back up UCS file (to the **/backup** directory in the S3 bucket created by the template) every night at 12am, and saves 7 days of back up UCS files.  In the event the system needs to restore from a backup UCS file, it uses the file with the latest timestamp.
+  - **Primary Election Process**<br>
+    In the event of a failure or scale-in event that deallocates the primary instance, a new primary instance is elected by the autoscale script based on the following criteria:
+    - Last backup time: If only one device has a running configuration, that device is promoted to primary. This is determined based on the lastBackup timestamp, which is set to the beginning of epoch time by default; this date gets updated with sync cluster creation.
+    - Lowest management IP address (private): If ***both*** devices have lastBackup set to either a) the default value or b) a non-default value, the device with the lowest private management IP address will be promoted to primary.
+  - **Restore From UCS**<br>
+    The template now automatically saves a BIG-IP back up UCS file (to the **/backup** directory in the S3 bucket created by the template) every night at 12am, and saves 7 days of back up UCS files. In the event the system needs to restore from a backup UCS file, the UCS with the latest timestamp will be restored when the following conditions are met:
+    - No device present has a running configuration. Any device with a running configuration will be promoted to primary before UCS will be restored.
+  - **Autoscale Timing**<br>
+    This section describes the different autoscale timing intervals and how to override them.
+    - Autoscale script execution interval: This interval can be overridden by changing the crontab schedule.
+      - AWS default: 60 seconds. 
+        - Usage example (from [AWS Autoscale template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/autoscale/ltm/via-lb/1nic/existing-stack/payg/f5-payg-autoscale-bigip-ltm.template)): ("(crontab -l 2>/dev/null; echo '*/1 * * * * /config/cloud/aws/run_autoscale_update.sh') | crontab -\n",)
+    - Primary instance expiration timeout default: 3 minutes. Expiration of this interval causes the re-election of a new primary device, and can be overridden by passing the following parameter to autoscale.js:
+      - --primary-disconnected-time (milliseconds)
+      - Usage example: **f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/autoscale.js --cloud aws --primary-disconnected-time 90000**. See [f5-cloud-libs usage](https://github.com/F5Networks/f5-cloud-libs/blob/master/USAGE.md) for complete usage information.
+    - Autoscale script execution timeout default: 10 minutes. Expiration of this interval causes the autoscale script execution to terminate, and can be overridden by passing the following parameter to autoscale.js:
+      - --autoscale-timeout (minutes)
+      - Usage example: **f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/autoscale.js --cloud aws --autoscale-timeout 5**. See [f5-cloud-libs usage](https://github.com/F5Networks/f5-cloud-libs/blob/master/USAGE.md) for complete usage information.
 
 ---
 

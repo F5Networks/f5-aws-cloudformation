@@ -3,9 +3,6 @@
 [![Releases](https://img.shields.io/github/release/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/releases)
 [![Issues](https://img.shields.io/github/issues/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/issues)
 
-## CVE-2020-5902
-**Warning:** due to [CVE-2020-5902](https://support.f5.com/csp/article/K52145254), do not use templates unless using customImageId parameter. Updated images are pending publication to Marketplace. Please see [CVE-2020-5902](https://support.f5.com/csp/article/K52145254) and Cloud Provider for latest updates.
-
 ## Introduction
 
 Welcome to the GitHub repository for F5's CloudFormation templates for deploying F5 in Amazon Web Services.  All of the templates in this repository have been developed by F5 Networks engineers.

@@ -150,7 +150,9 @@ This template previously supported configuring device telemetry using the f5.clo
 
 ## Creating virtual servers on the BIG-IP VE
 
-In order to pass traffic from your clients to the servers through the BIG-IP system, you must create at least two virtual servers on the BIG-IP VE using Traffic Group **None** using the following guidance. To create a BIG-IP virtual server you need to know the AWS secondary private IP addresses for each BIG-IP VE created by the template. If you need additional virtual servers for your applications/servers, you can add more secondary private IP addresses in AWS, and corresponding virtual servers on the BIG-IP system. See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html for information on multiple IP addresses.
+In order to pass traffic from your clients to the servers through the BIG-IP system, you must create at least two virtual servers on the BIG-IP VE using Traffic Group **None** using the following guidance. For AWS Across AZ templates, Traffic Group None must be on virtual addresses because by doing so the IP address (node) will not be synced between systems. AWS availability zones use separate subnets, so the virtual address (node) from system A on subnet A can not be synced over to system B using subnet B. 
+
+To create a BIG-IP virtual server you need to know the AWS secondary private IP addresses for each BIG-IP VE created by the template. If you need additional virtual servers for your applications/servers, you can add more secondary private IP addresses in AWS, and corresponding virtual servers on the BIG-IP system. See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html for information on multiple IP addresses.
 
 **To create virtual servers on the BIG-IP system**
 

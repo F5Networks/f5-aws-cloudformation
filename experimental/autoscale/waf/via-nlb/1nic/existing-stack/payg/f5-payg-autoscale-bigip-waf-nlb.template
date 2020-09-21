@@ -2261,7 +2261,9 @@
           {
            "Ref": "throughput"
           },
-          "Best"
+          {
+            "Ref": "imageName"
+          }
          ]
         }
        ]

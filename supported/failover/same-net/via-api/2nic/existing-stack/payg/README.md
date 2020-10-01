@@ -60,6 +60,16 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
 Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
 Note that in order to form a cluster of devices, a secure trust must be established between BIG-IP systems. To establish this trust, we generate and store credentials in an Amazon S3 bucket.
 
+## Tested BIG-IP versions
+The following table lists the versions of BIG-IP that have been tested and validated against F5 AWS solution templates.
+
+| BIG-IP Version | Build | Solution | Status | Notes |
+| --- | --- | --- | --- | --- |
+| 15.1.0 | 0.0.4 | Standalone, Failover, Autoscale | Validated | |
+| 14.1.2 | 0.0.6 | Standalone, Failover, Autoscale | Validated | |
+| 13.1.3 | 0.0.4 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
+| 12.1.5 | 0.0.2 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
+
 ## Supported instance types and hypervisors
   - For a list of supported AWS instance types for this solutions, see http://clouddocs.f5.com/cloud/public/v1/aws/AWS_singleNIC.html#amazon-ec2-instances-for-big-ip-ve.
 
@@ -146,7 +156,7 @@ In order to pass traffic from your clients to the servers through the BIG-IP sys
 ## Configuration Example
 
 The following is a simple configuration diagram for this clustered, 2-NIC deployment. This solution uses IAM roles for authentication.<br>
-![Clustered 2-NIC configuration example](../../images/cluster2nic-same-az.png)
+![Clustered 2-NIC configuration example](../../images/aws-failover-same-net-2nic-multiple-vips-animated.gif)
 
 ### Sending statistical information to F5
 All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  

@@ -176,6 +176,18 @@ To use service discovery, in the **WAF Virtual Service Configuration** section o
 
 ---
 
+## Tested BIG-IP versions
+The following table lists the versions of BIG-IP that have been tested and validated against F5 AWS solution templates.
+
+| BIG-IP Version | Build | Solution | Status | Notes |
+| --- | --- | --- | --- | --- |
+| 15.1.0 | 0.0.4 | Standalone, Failover, Autoscale | Validated | |
+| 14.1.2 | 0.0.6 | Standalone, Failover, Autoscale | Validated | |
+| 13.1.3 | 0.0.4 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
+| 12.1.5 | 0.0.2 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
+
+---
+
 ### Getting Help
 **F5 Support**  
 Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565). You can modify the template itself if necessary, but if you modify any of the code ***outside*** of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.

@@ -60,6 +60,16 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
   
 Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
 
+## Tested BIG-IP versions
+The following table lists the versions of BIG-IP that have been tested and validated against F5 AWS solution templates.
+
+| BIG-IP Version | Build | Solution | Status | Notes |
+| --- | --- | --- | --- | --- |
+| 15.1.0 | 0.0.4 | Standalone, Failover, Autoscale | Validated | |
+| 14.1.2 | 0.0.6 | Standalone, Failover, Autoscale | Validated | |
+| 13.1.3 | 0.0.4 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
+| 12.1.5 | 0.0.2 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
+
 ## Supported instance types and hypervisors
   - For a list of supported AWS instance types for this solutions, see http://clouddocs.f5.com/cloud/public/v1/aws/AWS_singleNIC.html#amazon-ec2-instances-for-big-ip-ve.
 

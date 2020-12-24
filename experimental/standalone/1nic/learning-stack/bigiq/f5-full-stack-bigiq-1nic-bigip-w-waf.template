@@ -50,140 +50,146 @@
    ]
   }
  },
- "Description": "Template v5.9.0: AWS CloudFormation Template for creating a full stack with a 1NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v5.10.0: AWS CloudFormation Template for creating a full stack with a 1NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "ap-east-1": {
-    "AllOneBootLocation": "ami-023e9cef987d3ff28",
-    "AllTwoBootLocations": "ami-0c0ab75887aee070f",
-    "LTMOneBootLocation": "ami-0cb39b1c0fb8a59ef",
-    "LTMTwoBootLocations": "ami-08d7fbf921667623a"
+    "AllOneBootLocation": "ami-007e12d241b50a27d",
+    "AllTwoBootLocations": "ami-027359d3539a7f402",
+    "LTMOneBootLocation": "ami-094dc3c87456b06d5",
+    "LTMTwoBootLocations": "ami-02ad2e26a6d0508bd"
    },
    "ap-northeast-1": {
-    "AllOneBootLocation": "ami-0e7927f692e2b2a07",
-    "AllTwoBootLocations": "ami-0ce6dfc763fe76345",
-    "LTMOneBootLocation": "ami-0efd0a6f319436174",
-    "LTMTwoBootLocations": "ami-062a31f3171eeda73"
+    "AllOneBootLocation": "ami-0f2f8e4d0f1f98ac0",
+    "AllTwoBootLocations": "ami-047f96d6124026a69",
+    "LTMOneBootLocation": "ami-017962d19a948b6fd",
+    "LTMTwoBootLocations": "ami-04c278f1b13c3cfc8"
    },
    "ap-northeast-2": {
-    "AllOneBootLocation": "ami-01266e8602f860e07",
-    "AllTwoBootLocations": "ami-0ab55667ccd38c1e9",
-    "LTMOneBootLocation": "ami-09b4e04faa2a62932",
-    "LTMTwoBootLocations": "ami-0d70cc7778418f21c"
+    "AllOneBootLocation": "ami-055c134a06822a404",
+    "AllTwoBootLocations": "ami-077d7dcd06fbec777",
+    "LTMOneBootLocation": "ami-0adc47ba057f6a0a5",
+    "LTMTwoBootLocations": "ami-00e81b30cfd38d2a8"
    },
    "ap-south-1": {
-    "AllOneBootLocation": "ami-07c94e67dd3be73bd",
-    "AllTwoBootLocations": "ami-0577e681defe36d3a",
-    "LTMOneBootLocation": "ami-04de23e871e74305b",
-    "LTMTwoBootLocations": "ami-058cf79d3e97d4879"
+    "AllOneBootLocation": "ami-0391c99cefb36bd41",
+    "AllTwoBootLocations": "ami-0d2f93ef049a8db3e",
+    "LTMOneBootLocation": "ami-0cd7bf38e29220e29",
+    "LTMTwoBootLocations": "ami-027e4f02aba8a46c8"
    },
    "ap-southeast-1": {
-    "AllOneBootLocation": "ami-069cfaad23330c9f4",
-    "AllTwoBootLocations": "ami-0daf7ecfd1d5848f4",
-    "LTMOneBootLocation": "ami-0c5a73940d67758e7",
-    "LTMTwoBootLocations": "ami-0554cde829edef15a"
+    "AllOneBootLocation": "ami-097dfd9e5c1220ec6",
+    "AllTwoBootLocations": "ami-0d0c3d0d97f5e6663",
+    "LTMOneBootLocation": "ami-046d89b0320e3a0ff",
+    "LTMTwoBootLocations": "ami-0bfe510367ddbb933"
    },
    "ap-southeast-2": {
-    "AllOneBootLocation": "ami-0bd950481f70e429d",
-    "AllTwoBootLocations": "ami-012acc5cdab881a3b",
-    "LTMOneBootLocation": "ami-000d69519ff56db45",
-    "LTMTwoBootLocations": "ami-0eeac5a28f5c13efd"
+    "AllOneBootLocation": "ami-05d37618b3b7ce953",
+    "AllTwoBootLocations": "ami-0c7ce5e18fed18d9d",
+    "LTMOneBootLocation": "ami-0c11ee3cf25222146",
+    "LTMTwoBootLocations": "ami-0bc44151b4743d372"
    },
    "ca-central-1": {
-    "AllOneBootLocation": "ami-0cf79189f07182154",
-    "AllTwoBootLocations": "ami-0caf6ef0b9176ca51",
-    "LTMOneBootLocation": "ami-0d73e7421618e2f8b",
-    "LTMTwoBootLocations": "ami-0e13f9aba220e46ba"
+    "AllOneBootLocation": "ami-0bf32ebab1f57fd71",
+    "AllTwoBootLocations": "ami-0843a3563fcd380bc",
+    "LTMOneBootLocation": "ami-02e6c9cf0b2490e00",
+    "LTMTwoBootLocations": "ami-0454b849aa12e1995"
    },
    "cn-north-1": {
-    "AllOneBootLocation": "ami-0129a17cc26e41591",
-    "AllTwoBootLocations": "ami-0c1cbf6ec50fde9d5",
-    "LTMOneBootLocation": "ami-0cd930752c16aec43",
-    "LTMTwoBootLocations": "ami-0c866ce278cb8dd05"
+    "AllOneBootLocation": "ami-0ff4ceafed546a293",
+    "AllTwoBootLocations": "ami-0ff1ffebd6569f7af",
+    "LTMOneBootLocation": "ami-0a23c01bba98e2e95",
+    "LTMTwoBootLocations": "ami-03518bc60c0405cdd"
    },
    "cn-northwest-1": {
-    "AllOneBootLocation": "ami-0945183f07525ddf3",
-    "AllTwoBootLocations": "ami-0eb2d6deb33f5d917",
-    "LTMOneBootLocation": "ami-0a8ff3d4b265351c0",
-    "LTMTwoBootLocations": "ami-027293b5f5abb9687"
+    "AllOneBootLocation": "ami-0f73cdc37d481fc27",
+    "AllTwoBootLocations": "ami-032df16e1602f3f7d",
+    "LTMOneBootLocation": "ami-0b349d88ace4979ad",
+    "LTMTwoBootLocations": "ami-0bbf7fa0d65288b66"
    },
    "eu-central-1": {
-    "AllOneBootLocation": "ami-0e34312efc4b1c678",
-    "AllTwoBootLocations": "ami-0f126f2823a9f01c8",
-    "LTMOneBootLocation": "ami-06a4075653a3dfe35",
-    "LTMTwoBootLocations": "ami-044b620cabf619814"
+    "AllOneBootLocation": "ami-07d689b833e6bd725",
+    "AllTwoBootLocations": "ami-05128a8f7168df296",
+    "LTMOneBootLocation": "ami-07191c50fb83ad8a7",
+    "LTMTwoBootLocations": "ami-0b37bcafdfb74646c"
    },
    "eu-north-1": {
-    "AllOneBootLocation": "ami-0083f3809917f690f",
-    "AllTwoBootLocations": "ami-0f62d6b13878f82b2",
-    "LTMOneBootLocation": "ami-0f13edf5938f7abd5",
-    "LTMTwoBootLocations": "ami-0051b21d40a6d7cb0"
+    "AllOneBootLocation": "ami-070f7a344b9c3352a",
+    "AllTwoBootLocations": "ami-083d0984ef1425f60",
+    "LTMOneBootLocation": "ami-0294ea1f3c4738f5f",
+    "LTMTwoBootLocations": "ami-0587a6450cb396b56"
+   },
+   "eu-south-1": {
+    "AllOneBootLocation": "ami-0dd8f4381aa12983f",
+    "AllTwoBootLocations": "ami-0e2a9b281297b3d6e",
+    "LTMOneBootLocation": "ami-07e99d7628954ee62",
+    "LTMTwoBootLocations": "ami-0e6079627596ece1e"
    },
    "eu-west-1": {
-    "AllOneBootLocation": "ami-0e6de1d39e8238791",
-    "AllTwoBootLocations": "ami-0c157bf4dbefe3d04",
-    "LTMOneBootLocation": "ami-0fc2623834bcc2ba0",
-    "LTMTwoBootLocations": "ami-046807056044d5795"
+    "AllOneBootLocation": "ami-0964747b8e0d27561",
+    "AllTwoBootLocations": "ami-049205a8d37b251d5",
+    "LTMOneBootLocation": "ami-0215ab023865324e5",
+    "LTMTwoBootLocations": "ami-0c791291ba70355e6"
    },
    "eu-west-2": {
-    "AllOneBootLocation": "ami-0647708bae5ab110a",
-    "AllTwoBootLocations": "ami-03e652694fb9b1d9e",
-    "LTMOneBootLocation": "ami-0a8ff9b06cbc0c461",
-    "LTMTwoBootLocations": "ami-013ce31b36ec9c2f2"
+    "AllOneBootLocation": "ami-090e097dd6c3922e1",
+    "AllTwoBootLocations": "ami-01479d6e2b047b2f0",
+    "LTMOneBootLocation": "ami-04ec1c6765a590762",
+    "LTMTwoBootLocations": "ami-0e3a85b2991d9bb02"
    },
    "eu-west-3": {
-    "AllOneBootLocation": "ami-0c2042bd5a3cedca1",
-    "AllTwoBootLocations": "ami-0cda87d99f53da21b",
-    "LTMOneBootLocation": "ami-058bad5f806c249bf",
-    "LTMTwoBootLocations": "ami-0720266adc633364b"
+    "AllOneBootLocation": "ami-08957b7fd4a34bbb6",
+    "AllTwoBootLocations": "ami-0b2c6dfdee66294a8",
+    "LTMOneBootLocation": "ami-0f681026c560a3367",
+    "LTMTwoBootLocations": "ami-004d03e8ce4a295c2"
    },
    "me-south-1": {
-    "AllOneBootLocation": "ami-071cd3f00ecb24182",
-    "AllTwoBootLocations": "ami-02a363ab4280142c8",
-    "LTMOneBootLocation": "ami-0b2663c6e73e5bda1",
-    "LTMTwoBootLocations": "ami-0e087fb7e60bfc9c6"
+    "AllOneBootLocation": "ami-00a878512278140fb",
+    "AllTwoBootLocations": "ami-0d4c9cd7812f02b98",
+    "LTMOneBootLocation": "ami-082496b47ba8d8c84",
+    "LTMTwoBootLocations": "ami-0e570fda4c4e825a9"
    },
    "sa-east-1": {
-    "AllOneBootLocation": "ami-0f848511fd8ec666e",
-    "AllTwoBootLocations": "ami-016ea926cbaf31d04",
-    "LTMOneBootLocation": "ami-06e201745064f6673",
-    "LTMTwoBootLocations": "ami-020f47b1f5959954e"
+    "AllOneBootLocation": "ami-08548b30605282008",
+    "AllTwoBootLocations": "ami-0c3a66b6dea5e84d1",
+    "LTMOneBootLocation": "ami-08ad10ad34962e952",
+    "LTMTwoBootLocations": "ami-042096ffb1f915164"
    },
    "us-east-1": {
-    "AllOneBootLocation": "ami-0a3be2692efa997b1",
-    "AllTwoBootLocations": "ami-019d034be61bb654b",
-    "LTMOneBootLocation": "ami-01fa373169d58756e",
-    "LTMTwoBootLocations": "ami-00c4b390b9c3a297e"
+    "AllOneBootLocation": "ami-0dfb3599c12d23d44",
+    "AllTwoBootLocations": "ami-0abfe223310f724aa",
+    "LTMOneBootLocation": "ami-01ce35e64d1c0c354",
+    "LTMTwoBootLocations": "ami-014723b3050deaf04"
    },
    "us-east-2": {
-    "AllOneBootLocation": "ami-0df9dc673d3be37d4",
-    "AllTwoBootLocations": "ami-0ebeb5e2cb20666da",
-    "LTMOneBootLocation": "ami-05e9b9ebec1e1ca79",
-    "LTMTwoBootLocations": "ami-06b5f2c0ab10bf2f6"
+    "AllOneBootLocation": "ami-04dc18fd398ee811a",
+    "AllTwoBootLocations": "ami-0e4814cf1abddc148",
+    "LTMOneBootLocation": "ami-0663f5ee399a55624",
+    "LTMTwoBootLocations": "ami-0c496e8de589c1d85"
    },
    "us-gov-east-1": {
-    "AllOneBootLocation": "ami-0fb95189286e91096",
-    "AllTwoBootLocations": "ami-0d87a5ce04472cc89",
-    "LTMOneBootLocation": "ami-0aa2f311b49a043a1",
-    "LTMTwoBootLocations": "ami-081db06e39084b66c"
+    "AllOneBootLocation": "ami-08ca529cd1ca57bc9",
+    "AllTwoBootLocations": "ami-028af1e3984777e49",
+    "LTMOneBootLocation": "ami-07c50be4f9108057e",
+    "LTMTwoBootLocations": "ami-0f6932f22ee3182e0"
    },
    "us-gov-west-1": {
-    "AllOneBootLocation": "ami-0e241a712c001179d",
-    "AllTwoBootLocations": "ami-05766e6a1f67c1fb7",
-    "LTMOneBootLocation": "ami-0b6f62e542082066c",
-    "LTMTwoBootLocations": "ami-0eba26b2b349e0bf0"
+    "AllOneBootLocation": "ami-0fe4ec781b5d82e39",
+    "AllTwoBootLocations": "ami-0cfc79a3350b8b661",
+    "LTMOneBootLocation": "ami-0f1655f5622d625a4",
+    "LTMTwoBootLocations": "ami-058aba340649168f7"
    },
    "us-west-1": {
-    "AllOneBootLocation": "ami-0c0f2ed76eccc171c",
-    "AllTwoBootLocations": "ami-01eb3823cebf4746d",
-    "LTMOneBootLocation": "ami-0833e1682a0f5830e",
-    "LTMTwoBootLocations": "ami-097970128a58e4378"
+    "AllOneBootLocation": "ami-0586d9a6d2b4ecbc5",
+    "AllTwoBootLocations": "ami-0a319cb19ce7767fa",
+    "LTMOneBootLocation": "ami-098657319c7eece70",
+    "LTMTwoBootLocations": "ami-0cc4df35c7e58ea8a"
    },
    "us-west-2": {
-    "AllOneBootLocation": "ami-0aaec7c853871f2e8",
-    "AllTwoBootLocations": "ami-0f132de42336f3ef1",
-    "LTMOneBootLocation": "ami-003c200fe06a20b8d",
-    "LTMTwoBootLocations": "ami-089f4fc6d8b168cb3"
+    "AllOneBootLocation": "ami-024e85984a2d33344",
+    "AllTwoBootLocations": "ami-06827d241c67e3426",
+    "LTMOneBootLocation": "ami-094357dd181742a06",
+    "LTMTwoBootLocations": "ami-06d56e0cf643997c5"
    }
   },
   "WebserverRegionMap": {
@@ -440,7 +446,7 @@
     }
    }
   },
-  "Version": "5.9.0"
+  "Version": "5.10.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -1079,7 +1085,7 @@
              "NAME_SERVER=`/config/cloud/aws/getNameServer.sh mgmt`;",
              "nohup /config/waitThenRun.sh",
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
-             "--install-ilx-package file:///config/cloud/f5-appsvcs-3.20.0-3.noarch.rpm",
+             "--install-ilx-package file:///var/config/rest/downloads/f5-appsvcs-3.20.0-3.noarch.rpm",
              "--port 8443",
              "--ssl-port ",
              {
@@ -1174,7 +1180,7 @@
               ]
              },
              "--module asm:nominal",
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:15.1.0.4-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-bigiq-1nic-bigip-w-waf.template,templateVersion:5.9.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:15.1.2-0.0.9,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-bigiq-1nic-bigip-w-waf.template,templateVersion:5.10.0,licenseType:bigiq\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -1188,7 +1194,7 @@
              "NAME_SERVER=`/config/cloud/aws/getNameServer.sh mgmt`;",
              "nohup /config/waitThenRun.sh",
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
-             "--install-ilx-package file:///config/cloud/f5-appsvcs-3.20.0-3.noarch.rpm",
+             "--install-ilx-package file:///var/config/rest/downloads/f5-appsvcs-3.20.0-3.noarch.rpm",
              "--port 8443",
              "--ssl-port ",
              {
@@ -1456,7 +1462,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.9.0\n",
+           "# Generated from 5.10.0\n",
            "hostname=`/usr/bin/curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {
@@ -1528,12 +1534,6 @@
         "mode": "000755",
         "owner": "root"
        },
-       "/config/cloud/f5-appsvcs-3.20.0-3.noarch.rpm": {
-        "group": "root",
-        "mode": "000755",
-        "owner": "root",
-        "source": "http://cdn.f5.com/product/cloudsolutions/f5-appsvcs-extension/v3.20.0/f5-appsvcs-3.20.0-3.noarch.rpm"
-       },
        "/config/cloud/f5-cloud-libs-aws.tar.gz": {
         "group": "root",
         "mode": "000755",
@@ -1570,7 +1570,7 @@
            "    exit",
            "fi",
            "echo loaded verifyHash",
-           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/config/cloud/f5-appsvcs-3.20.0-3.noarch.rpm\" )",
+           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/var/config/rest/downloads/f5-appsvcs-3.20.0-3.noarch.rpm\" )",
            "for fileToVerify in \"${filesToVerify[@]}\"",
            "do",
            "    echo verifying \"$fileToVerify\"",
@@ -1620,6 +1620,12 @@
         "group": "root",
         "mode": "000755",
         "owner": "root"
+       },
+       "/var/config/rest/downloads/f5-appsvcs-3.20.0-3.noarch.rpm": {
+        "group": "root",
+        "mode": "000755",
+        "owner": "root",
+        "source": "http://cdn.f5.com/product/cloudsolutions/f5-appsvcs-extension/v3.20.0/f5-appsvcs-3.20.0-3.noarch.rpm"
        }
       }
      }

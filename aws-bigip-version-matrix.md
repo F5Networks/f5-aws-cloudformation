@@ -3,6 +3,16 @@ The following table contains all of the tagged releases of the F5 Cloud Formatio
 
 | Release Tag | Template Family | BIG-IP Versions | BIG-IQ version | PAYG License Bundles and Throughput | BYOL/BIG-IQ Image options (v13.1.1 and later) |
 | --- | --- | --- | --- | --- | --- |
+| [v5.10.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v5.10.0) | Standalone | BIG-IP v15.1.2 | BIG-IQ v6.1.0, 6.0.1 | Good/Better/Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps<br>Advanced WAF:25Mbps, 200Mbps, 1Gbps, 16vCPU, 8vCPU | AllOneBootLocation, AllTwoBootLocations, LTMOneBootLocation, LTMTwoBootLocations |
+|  | Cluster | BIG-IP v15.1.2, BIG-IP v14.1.3 | BIG-IQ v6.1.0, 6.0.1 | Good/Better/Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps <br>Advanced WAF: 25Mbps, 200Mbps, 1Gbps, 16vCPU, 8vCPU | AllTwoBootLocations, LTMTwoBootLocations |
+|  | Auto Scale WAF | BIG-IP v15.1.2, BIG-IP v14.1.3| BIG-IQ v6.1.0, 6.0.1 | Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps <br> Advanced WAF: 25Mbps, 200Mbps, 1Gbps, 16vCPU, 8vCPU | AllOneBootLocation, AllTwoBootLocations |
+|  | Auto Scale LTM | BIG-IP v15.1.2, BIG-IP v14.1.3 | BIG-IQ v6.1.0, 6.0.1 | Good/Better/Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps | AllOneBootLocation, AllTwoBootLocations, LTMOneBootLocation, LTMTwoBootLocations |
+|  | BIG-IQ | N/A | 6.1.0 | N/A | Best |
+| [v5.9.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v5.9.0) | Standalone | BIG-IP v15.1.0 | BIG-IQ v6.1.0, 6.0.1 | Good/Better/Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps<br>Advanced WAF:25Mbps, 200Mbps, 1Gbps, 16vCPU, 8vCPU | AllOneBootLocation, AllTwoBootLocations, LTMOneBootLocation, LTMTwoBootLocations |
+|  | Cluster | BIG-IP v15.1.0, BIG-IP v14.1.2.6 | BIG-IQ v6.1.0, 6.0.1 | Good/Better/Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps <br>Advanced WAF: 25Mbps, 200Mbps, 1Gbps, 16vCPU, 8vCPU | AllTwoBootLocations, LTMTwoBootLocations |
+|  | Auto Scale WAF | BIG-IP v15.1.0, BIG-IP v14.1.2.6 | BIG-IQ v6.1.0, 6.0.1 | Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps <br> Advanced WAF: 25Mbps, 200Mbps, 1Gbps, 16vCPU, 8vCPU | AllOneBootLocation, AllTwoBootLocations |
+|  | Auto Scale LTM | BIG-IP v15.1.0, BIG-IP v14.1.2.6 | BIG-IQ v6.1.0, 6.0.1 | Good/Better/Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps | AllOneBootLocation, AllTwoBootLocations, LTMOneBootLocation, LTMTwoBootLocations |
+|  | BIG-IQ | N/A | 6.1.0 | N/A | Best |
 | [v5.8.0](https://github.com/F5Networks/f5-aws-cloudformation/releases/tag/v5.8.0) | Standalone | BIG-IP v15.1.0 | BIG-IQ v6.1.0, 6.0.1 | Good/Better/Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps<br>Advanced WAF:25Mbps, 200Mbps, 1Gbps, 16vCPU, 8vCPU | AllOneBootLocation, AllTwoBootLocations, LTMOneBootLocation, LTMTwoBootLocations |
 |  | Cluster | BIG-IP v15.1.0, BIG-IP v14.1.2.6 | BIG-IQ v6.1.0, 6.0.1 | Good/Better/Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps <br>Advanced WAF: 25Mbps, 200Mbps, 1Gbps, 16vCPU, 8vCPU | AllTwoBootLocations, LTMTwoBootLocations |
 |  | Auto Scale WAF | BIG-IP v15.1.0, BIG-IP v14.1.2.6 | BIG-IQ v6.1.0, 6.0.1 | Best: 10Gbps, 5Gbps, 1Gbps, 200Mbps, 25Mbps <br> Advanced WAF: 25Mbps, 200Mbps, 1Gbps, 16vCPU, 8vCPU | AllOneBootLocation, AllTwoBootLocations |

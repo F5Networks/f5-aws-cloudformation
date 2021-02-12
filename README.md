@@ -25,16 +25,6 @@ Standalone and HA production stack templates have been deprecated; a new paramet
 ### Matrix for tagged releases
 F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types, and throughput levels available for a specific tagged release. See the [AWS Matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md).
 
-
-## Quick Start
-The quickstart template allows you to quickly launch an auto scale group of BIG-IP VEs into AWS to demonstrate a typical micro services use case and/or Blue and Green deployment strategy.
-
-For detailed information, we recommend you first see the [Quick Start README file](https://github.com/F5Networks/f5-aws-cloudformation/tree/master/experimental/quickstart)
-
-Or you can use the Launch Stack button to get started:  
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=quickstart-stack&templateURL=https://f5-cft.s3.amazonaws.com/quickstarts/v0.0.0.3/templates/f5/master.template">
-    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a> 
-
   
 ### All F5 Supported templates for AWS
 To see a list of all of our supported AWS CloudFormation templates, see the **[AWS Supported Template index](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/template-index.md)**.

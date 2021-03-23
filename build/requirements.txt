@@ -1,0 +1,5 @@
+troposphere
+requests
+awacs
+boto
+boto3==1.14.20

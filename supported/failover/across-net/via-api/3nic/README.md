@@ -1,0 +1,4 @@
+## Stack Type
+For each of the standalone templates, you must choose the type of stack into which you want to deploy the BIG-IP VE. See the individual README files for exact requirements.  Note that not all options are available for all templates. 
+
+  - **Existing Stack** <br> These templates deploy into an existing cloud network. This means that all of the cloud networking infrastructure must be available prior to launching the template. Public IP Address(es) for the BIG-IP interface(s) may be optionally created and attached, or not created. By default, these templates will create and attach a Public IP Address(es) to the BIG-IP interface(s). If Public IP address(es) are not created by the template, the BIG-IP VEs will still need to access the internet to access Cloud API services and download files for onboarding, and the templates assume internet access is provided via another Public NAT Service, Firewall, etc.w

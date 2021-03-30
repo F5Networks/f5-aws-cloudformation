@@ -1,0 +1,28 @@
+ANALYTICS: 'No'
+BIG IP MODULES: 'ltm:nominal'
+BIG-IP BUILD: 0.0.10
+BIG-IP VERSION: 15.1.2.1
+BRANCH: master
+CLUSTER TYPE: none
+CUSTOM IMAGE ID: OPTIONAL
+CUSTOM USER: dewpt_user
+DECLARATION URL: none
+IMAGE NAME: PerAppVeAwaf200Mbps
+INSTANCE TYPE: m5.xlarge
+LICENSE TYPE: payg
+MGMT PORT: 8443
+MULTI NIC COUNT: 0
+NIC COUNT: 1
+NTP SERVER: 0.us.pool.ntp.org
+PHONEHOME: 'No'
+PRIVATE IP TYPE: DYNAMIC
+PUBLIC IP: 'Yes'
+REGION: me-south-1
+SOLUTION TYPE: standalone
+SSH KEY: dewpt
+STACK NAME: dewdrop-<LICENSE TYPE>-<IMAGE NAME>-<NIC COUNT>nic-<DEWPOINT JOB ID>
+STACK TYPE: existing-stack
+STACK TYPE FILE: existing-stack
+TEMPLATE NAME: <NIC COUNT>nic
+TEMPLATE URL: 'https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/<BRANCH>/supported/standalone/<TEMPLATE NAME>/<STACK TYPE>/<LICENSE TYPE>/f5-<STACK TYPE FILE>-<LICENSE TYPE>-<TEMPLATE NAME>-bigip.template'
+TIMEZONE: US/Pacific

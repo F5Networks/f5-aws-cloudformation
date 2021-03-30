@@ -1,0 +1,170 @@
+---
+name: AWS AUTOSCALE <AUTOSCALE TYPE> <LICENSE TYPE> <THROUGHPUT> <REGION> <BRANCH>
+onStart:
+- ../../../common/create_vpc.sh
+- ../../../common/verify_create_vpc.sh
+- ../../../common/create_s3_bucket.sh
+- ../../../common/create_bastion.sh
+- ../../../common/create_stack_gtm.sh
+- ../../../common/verify_create_gtm.sh
+- ../../../common/create_bigiq.sh
+- ../../../common/verify_create_bigiq.sh
+- ../../../common/verify_onboard_gtm.sh
+- ../../../common/verify_onboard_bigiq_env.sh
+- ./create_stack.sh
+- ../../../common/verify_create.sh
+- ./modify_cooldown_scaling_policies.sh
+- ./verify_initial_setMasterKey.sh
+- ../../../common/verify_onboard.sh
+- ../../../common/verify_bigip_version.sh
+- ../../../common/verify_ntp.sh
+- ../../../common/verify_time_zone.sh
+- ../../../common/verify_provisioned_modules.sh
+- ../../../common/verify_AS3.sh
+- ../../../common/verify_phone_home.sh
+- ../../../common/create_user.sh
+- ../../../common/verify_declaration_url_AS3.sh
+- ./verify_update_autoscale_ucs.sh
+- ./verify_dns_provider.sh
+- ./verify_min_instances.sh
+- ./create_backup.sh
+- ./verify_backup.sh
+- ./modify_high_bytes_alarm.sh
+- ./generate_traffic.sh
+- ./verify_high_bytes_alarm_triggered.sh
+- ./stop_jmeter.sh
+- ./verify_scale_out.sh
+- ./modify_low_bytes_alarm.sh
+- ./verify_low_bytes_alarm_triggered.sh
+- ./verify_scale_in.sh
+- ./delete_scale_in_protect.sh
+- ./terminate_all.sh
+- ../../../../sleep/10_minutes.sh
+- ./verify_setMasterKey.sh
+- ../../../common/delete_s3_bucket.sh
+- ../../../common/delete_cft_s3_bucket.sh
+- ../../../common/delete_stack.sh
+- ../../../common/verify_delete.sh
+- ../../../common/delete_stack_gtm.sh
+- ../../../common/verify_delete_gtm.sh
+- ../../../common/delete_stack_bigiq.sh
+- ../../../common/verify_delete_bigiq.sh
+- ../../../common/delete_stack_vpc.sh
+- ../../../common/verify_delete_vpc.sh
+onFail:
+- ../../../common/capture_logs.sh
+- ../../../common/delete_s3_bucket.sh
+- ../../../common/delete_cft_s3_bucket.sh
+- ./delete_scale_in_protect.sh
+- ../../../common/delete_stack.sh
+- ../../../common/verify_delete.sh
+- ../../../common/delete_stack_gtm.sh
+- ../../../common/verify_delete_gtm.sh
+- ../../../common/delete_stack_bigiq.sh
+- ../../../common/verify_delete_bigiq.sh
+- ../../../common/delete_stack_vpc.sh
+- ../../../common/verify_delete_vpc.sh
+params:
+- tag: STACK TYPE
+  values:
+  - existing-stack
+- tag: ANALYTICS
+  values:
+  - No
+  - No
+  - No
+  - No
+  - No
+  - No
+  - No
+  - No
+  - No
+  - Yes
+- tag: CUSTOM USER
+  values:
+  - dewpt_user
+- tag: EMAIL
+  values:
+  - dewpoint@f5.com
+- tag: SOLUTION TYPE
+  values:
+  - autoscale
+- tag: SSH KEY
+  values:
+  - dewpt
+- tag: DECLARATION URL
+  values:
+  - none
+  - default
+  - https://cdn.f5.com/product/cloudsolutions/declarations/sample_02.json
+- tag: AUTOSCALE DNS TYPE
+  values:
+  - via-lb
+- tag: AUTOSCALE TYPE
+  values:
+  - ltm
+  - waf
+- tag: BRANCH
+  values:
+  - R19.1.1
+  - R19-2
+  - master
+- tag: MGMT PORT
+  values:
+  - 8443
+- tag: NTP SERVER
+  values:
+  - pool.ntp.org
+  - 0.us.pool.ntp.org
+  - 1.us.pool.ntp.org
+- tag: TIMEZONE
+  values:
+  - UTC
+  - US/Pacific
+  - US/Mountain
+- tag: THROUGHPUT
+  values:
+  - 25Mbps
+- tag: LICENSE TYPE
+  values:
+  - payg
+- tag: BIGIQ LICENSE POOL NAME
+  values:
+  - production
+- tag: MIN INSTANCES
+  values:
+  - 1
+  - 2
+- tag: MAX INSTANCES
+  values:
+  - 3
+  - 4
+- tag: REGION
+  values:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ca-central-1
+  - eu-central-1
+  - eu-west-1
+  - eu-west-2
+  - sa-east-1
+- tag: DECLARATION URL
+  values:
+    - default
+    - https://cdn.f5.com/product/cloudsolutions/declarations/sample_02.json
+- tag: STACK NAME
+  values:
+  - dewpt-AUTOSCALE-<LICENSE TYPE>-<AUTOSCALE TYPE>-<DEWPOINT JOB ID>
+- tag: TEMPLATE NAME
+  values:
+  - dp-as-<AUTOSCALE TYPE>-<LICENSE TYPE>-<REGION>-github-<BRANCH>-supported-<THROUGHPUT>
+- tag: TEMPLATE URL
+  values:
+  - https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/<BRANCH>/supported/<SOLUTION TYPE>/<AUTOSCALE TYPE>/<AUTOSCALE DNS TYPE>/1nic/existing-stack/<LICENSE TYPE>/f5-<LICENSE TYPE>-autoscale-bigip-<AUTOSCALE TYPE>.template
+  - file://$PWD/../f5-cloud-factory/f5-cloud-factory/f5-aws-cloudformation/supported/<SOLUTION TYPE>/<AUTOSCALE TYPE>/<AUTOSCALE DNS TYPE>/1nic/existing-stack/<LICENSE TYPE>/f5-<LICENSE TYPE>-autoscale-bigip-<AUTOSCALE TYPE>.template

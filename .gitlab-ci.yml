@@ -1,0 +1,104 @@
+image: ${ARTIFACTORY_SERVER}/ecosystems-cloudsolutions-docker-dev/dewdrop:$DEWDROP_IMAGE_ID
+
+services:
+  - ${ARTIFACTORY_SERVER}/dockerhub-remote/docker:dind
+
+
+stages:
+  - template-generator-smoke-tests
+  - sprinkle-tests
+  - droplets
+  - release
+
+
+# validate Cloudformation templates with cfn-lint
+run_cfn_lint:
+  image: ${ARTIFACTORY_SERVER}/dockerhub-remote/python:3.7-alpine
+  stage: template-generator-smoke-tests
+  tags:
+    - docker-executor
+  except:
+    refs:
+      - schedules
+      - triggers
+      - pipelines
+  script:
+    - apk add --no-cache git
+    - git clone -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_URL}/cloudsolutions/automation-templates/cloud-tools
+    - cd cloud-tools/cfn-lint
+    - pip install -r requirements.txt
+    # need to override primitiveType for autoscaling.Tags.propagateAtLaunch
+    - cfn-lint --override-spec override_propagate.json
+
+execute_test_job:
+  image: ${ARTIFACTORY_SERVER}/dockerhub-remote/python:3.7-alpine
+  stage: sprinkle-tests
+  tags:
+    - docker-executor
+  only:
+    - schedules
+  variables:
+    TEST_POLICY: set in schedule!
+    STACK_TYPE: dewdrop-preproduction
+  script:
+    - apk add --no-cache git
+    - git clone -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_URL}/cloudsolutions/automation-templates/cloud-tools
+    - pip install -r cloud-tools/master-job/requirements.txt
+    - cloud-tools/master-job/sprinkler.py --test-plan $TEST_POLICY --token $CI_JOB_TOKEN --branch $CI_COMMIT_REF_NAME --stack-type $STACK_TYPE --project-id $CI_PROJECT_ID
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+# This job gets triggered by the sprinkler.py script that get ran by the 'master_test_job' it ingests TEMPLATE_URL
+# and TEMPLATE_PARAMETERS which are passed down by the sprinkler.py script. Using the variables runs dewdrop with
+# the set environment variables
+dewdrop_test_run:
+  stage: droplets
+  tags:
+    - docker-executor
+  variables:
+    SSH_KEY: "$SSH_KEY"
+    AWS_DEFAULT_REGION: "$AWS_DEFAULT_REGION"
+    AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
+    TEMPLATE_URL: "$TEMPLATE_URL"
+    TEMPLATE_PARAMETERS: "$TEMPLATE_PARAMETERS"
+    STACK_TYPE: "$STACK_TYPE"
+    GITLAB_JOB_URL: "$CI_JOB_URL"
+    GIT_SUBMODULE_STRATEGY: recursive
+  only:
+    variables:
+      - $RUN_SCHEDULED_DEWDROP_TEST == "true"
+  script:
+    # the dewdrop image itself does not contain any test files, so ensure dewdrop
+    # is run from the known location where test policies expect it to be
+    # location: root of the cloud factory repository
+    - pip install taskcat
+    - if [ "$CLOUD_PROVIDER_ENVIRONMENT" == "aws_china" ]; then
+    -   AWS_DEFAULT_REGION=$AWS_CHINA_DEFAULT_REGION
+    -   AWS_ACCESS_KEY_ID=$AWS_CHINA_ACCESS_KEY_ID
+    -   AWS_SECRET_ACCESS_KEY=$AWS_CHINA_SECRET_ACCESS_KEY
+    - fi
+    - python /dewdrop/dewdrop-docker.py
+  artifacts:
+    paths:
+      - test_results/**/*
+    when: always
+    expire_in: 1 week
+
+
+
+publish_to_github:
+  stage: release
+  image: ${ARTIFACTORY_SERVER}/dockerhub-remote/python:3.7-alpine
+  only:
+    - /(^publish-(\d+\.){1,2}(\d)-(\d+)?$)/
+  script:
+    - apk add --no-cache jq
+    - apk add --no-cache git
+    - git clone -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_URL}/cloudsolutions/automation-templates/cloud-tools
+    # Execute Release script to push source to github repo
+    - ./cloud-tools/release-tool/publish_github.sh
+

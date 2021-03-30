@@ -1,0 +1,253 @@
+---
+name: AWS STANDALONE <NIC COUNT>nic <LICENSE TYPE> <IMAGE NAME> <STACK TYPE> <REGION> <BRANCH>
+onStart:
+- ../../common/create_vpc.sh
+- ../../common/verify_create_vpc.sh
+- ../../common/create_s3_bucket.sh
+- ../../common/create_bastion.sh
+- ../../common/create_bigiq.sh
+- ../../common/verify_create_bigiq.sh
+- ../../common/verify_onboard_bigiq_env.sh
+- ./create_stack.sh
+- ../../common/verify_create.sh
+- ../../common/verify_instance_status_ok.sh
+- ../../common/verify_public_ip.sh
+- ../../common/verify_onboard.sh
+- ../../common/reboot_instance.sh
+- ../../common/verify_instance_status_ok.sh
+- ../../common/verify_bigip_version.sh
+- ../../common/verify_ntp.sh
+- ../../common/verify_time_zone.sh
+- ../../common/verify_provisioned_modules.sh
+- ../../common/verify_AS3.sh
+- ../../common/create_user.sh
+- ../../common/verify_phone_home.sh
+- ../../common/delete_tags_sd.sh
+- ../../common/delete_s3_bucket.sh
+- ../../common/delete_stack.sh
+- ../../common/verify_delete.sh
+- ../../common/delete_stack_bigiq.sh
+- ../../common/verify_delete_bigiq.sh
+- ../../common/delete_stack_vpc.sh
+- ../../common/verify_delete_vpc.sh
+onFail:
+- ../../common/capture_logs.sh
+- ../../common/delete_tags_sd.sh
+- ../../common/delete_s3_bucket.sh
+- ../../common/delete_stack.sh
+- ../../../sleep/3_minutes.sh
+- ../../common/verify_delete.sh
+- ../../common/delete_stack_bigiq.sh
+- ../../common/verify_delete_bigiq.sh
+- ../../common/delete_stack_vpc.sh
+- ../../common/verify_delete_vpc.sh
+params:
+- tag: SOLUTION TYPE
+  values:
+  - standalone
+- tag: STACK TYPE
+  values:
+  - existing-stack
+  - production-stack
+- tag: STACK TYPE FILE
+  values:
+  - value: existing-stack
+    when:
+      tag: STACK TYPE
+      values:
+      - existing-stack
+  - value: prod-stack
+    when:
+      tag: STACK TYPE
+      values:
+      - production-stack
+- tag: DECLARATION URL
+  values:
+  - none
+  - https://cdn.f5.com/product/cloudsolutions/declarations/sample_02.json
+- tag: ANALYTICS
+  values:
+  - No
+  - No
+  - No
+  - No
+  - No
+  - No
+  - No
+  - No
+  - No
+  - Yes
+- tag: BIGIQ LICENSE POOL
+  values:
+  - production
+- tag: BIGIQ LICENSE S3 ARN
+  values:
+  - arn:aws:s3:::bigiqtest/bigiq.txt
+- tag: BRANCH
+  values:
+  - R19.1.1
+  - R19-2
+  - master
+- tag: CLUSTER TYPE
+  values:
+  - none
+- tag: IMAGE NAME
+  values:
+  - AllOneBootLocation
+  - AllTwoBootLocations
+  - LTMOneBootLocation
+  - LTMTwoBootLocations
+  - Good25Mbps
+  - Good200Mbps
+  - Good1000Mbps
+  - Good5000Mbps
+  - Better25Mbps
+  - Better200Mbps
+  - Better1000Mbps
+  - Better5000Mbps
+  - Best25Mbps
+  - Best200Mbps
+  - Best1000Mbps
+  - Best5000Mbps
+  - AdvancedWaf200Mbps
+  - AdvancedWaf200Mbps
+  - AdvancedWaf25Mbps
+  - PerAppVeAwaf200Mbps
+  - PerAppVeAwaf25Mbps
+  - PerAppVeLtm200Mbps
+  - PerAppVeLtm25Mbps
+- tag: CUSTOM IMAGE ID
+  values:
+  - OPTIONAL
+- tag: INSTANCE TYPE
+  values:
+  - m5.xlarge
+- tag: LICENSE TYPE
+  values:
+  - value: byol
+    when:
+      tag: IMAGE NAME
+      values:
+      - AllOneBootLocation
+      - AllTwoBootLocations
+      - LTMOneBootLocation
+      - LTMTwoBootLocations
+  - value: payg
+    when:
+      tag: IMAGE NAME
+      values:
+      - Good25Mbps
+      - Good200Mbps
+      - Good1000Mbps
+      - Good5000Mbps
+      - Better25Mbps
+      - Better200Mbps
+      - Better1000Mbps
+      - Better5000Mbps
+      - Best25Mbps
+      - Best200Mbps
+      - Best1000Mbps
+      - Best5000Mbps
+      - AdvancedWaf200Mbps
+      - AdvancedWaf200Mbps
+      - AdvancedWaf25Mbps
+      - PerAppVeAwaf200Mbps
+      - PerAppVeAwaf25Mbps
+      - PerAppVeLtm200Mbps
+      - PerAppVeLtm25Mbps
+- tag: NIC COUNT
+  values:
+  - 1
+  - 2
+  - 3
+  - 4
+- tag: MULTI NIC COUNT
+  values:
+  - value: 0
+    when:
+      tag: NIC COUNT
+      values:
+      - 1
+      - 2
+      - 3
+  - value: 1
+    when:
+      tag: NIC COUNT
+      values:
+      - 4
+- tag: PRIVATE IP TYPE
+  values:
+  - DYNAMIC
+  - STATIC
+- tag: PUBLIC IP
+  values:
+  - No
+  - Yes
+- tag: TEMPLATE NAME
+  values:
+  - value: <NIC COUNT>nic
+    when:
+      tag: NIC COUNT
+      values:
+      - 1
+      - 2
+      - 3
+  - value: n-nic
+    when:
+      tag: NIC COUNT
+      values:
+      - 4
+- tag: MGMT PORT
+  values:
+  - value: 8443
+    when:
+      tag: NIC COUNT
+      values:
+      - 1
+  - value: 443
+    when:
+      tag: NIC COUNT
+      values:
+      - 2
+      - 3
+      - 4
+- tag: NTP SERVER
+  values:
+  - pool.ntp.org
+  - 0.us.pool.ntp.org
+  - 1.us.pool.ntp.org
+- tag: CUSTOM USER
+  values:
+  - dewpt_user
+- tag: REGION
+  values:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ca-central-1
+  - eu-central-1
+  - eu-west-1
+  - eu-west-2
+  - sa-east-1
+  - cn-north-1
+  - cn-northwest-1
+- tag: STACK NAME
+  values:
+  - dewpt--<LICENSE TYPE>-<IMAGE NAME>-<NIC COUNT>nic-<DEWPOINT JOB ID>
+- tag: SSH KEY
+  values:
+  - dewpt
+- tag: TEMPLATE URL
+  values:
+  - https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/<BRANCH>/supported/standalone/<TEMPLATE NAME>/<STACK TYPE>/<LICENSE TYPE>/f5-<STACK TYPE FILE>-<LICENSE TYPE>-<TEMPLATE NAME>-bigip.template
+  - file://$PWD/../f5-cloud-factory/f5-cloud-factory/f5-aws-cloudformation/supported/standalone/<TEMPLATE NAME>/<STACK TYPE>/<LICENSE TYPE>/f5-<STACK TYPE FILE>-<LICENSE TYPE>-<TEMPLATE NAME>-bigip.template
+- tag: TIMEZONE
+  values:
+  - UTC
+  - US/Pacific
+  - US/Mountain

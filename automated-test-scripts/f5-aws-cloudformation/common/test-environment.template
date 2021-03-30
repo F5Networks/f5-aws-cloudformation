@@ -1,0 +1,2468 @@
+{
+ "AWSTemplateFormatVersion": "2010-09-09",
+ "Conditions": {
+  "noCustomImageId": {
+   "Fn::Equals": [
+    "OPTIONAL",
+    {
+     "Ref": "customImageId"
+    }
+   ]
+  },
+  "optin": {
+   "Fn::Equals": [
+    "Yes",
+    {
+     "Ref": "allowUsageAnalytics"
+    }
+   ]
+  },
+  "useProduction": {
+    "Fn::Equals": [
+      "Yes",
+      {
+        "Ref": "productionStack"
+      }
+    ]
+  },
+  "useJmeter": {
+    "Fn::Equals": [
+      "Yes",
+      {
+        "Ref": "jmeterInstance"
+      }
+    ]
+  },
+  "useELB": {
+    "Fn::Equals": [
+      "Yes",
+      {
+        "Ref": "elbInstance"
+      }
+    ]
+  }
+ },
+ "Description": "USED FOR DEWDROP TESTS: CloudFormation Template for creating a 2 Availability Zone VPC, subnets, security groups, webserver, ELB, and jMeter **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Mappings": {
+   "WebserverRegionMap": {
+     "ap-northeast-1": {
+       "AMI": "ami-0a84a504d6d5ad732"
+     },
+     "ap-northeast-2": {
+       "AMI": "ami-0f7b7753aba0b7a5d"
+     },
+     "ap-south-1": {
+       "AMI": "ami-0ce2a01ec1fe31129"
+     },
+     "ap-southeast-1": {
+       "AMI": "ami-042a84288996ec3c1"
+     },
+     "ap-southeast-2": {
+       "AMI": "ami-0118debc71f4a5be3"
+     },
+     "ca-central-1": {
+       "AMI": "ami-0179543623c8e6647"
+     },
+     "eu-central-1": {
+       "AMI": "ami-0dffee650f80cbced"
+     },
+     "eu-north-1": {
+       "AMI": "ami-72018d0c"
+     },
+     "eu-west-1": {
+       "AMI": "ami-06f42fd8c0931ce4b"
+     },
+     "eu-west-2": {
+       "AMI": "ami-09b984525e8ba2206"
+     },
+     "eu-west-3": {
+       "AMI": "ami-0b12754d476af8dbb"
+     },
+     "sa-east-1": {
+       "AMI": "ami-0f921f57ccbc209c2"
+     },
+     "us-east-1": {
+       "AMI": "ami-05fb04e2687120d6b"
+     },
+     "us-east-2": {
+       "AMI": "ami-087868e91f1a665d1"
+     },
+     "us-west-1": {
+       "AMI": "ami-0ec3e3a838330c61f"
+     },
+     "us-west-2": {
+       "AMI": "ami-09eb876a926ae86db"
+     },
+     "cn-north-1": {
+       "AMI": "ami-01993b4213b4bffb5"
+     },
+     "cn-northwest-1": {
+       "AMI": "ami-01d4e30d4d4952d0f"
+     },
+     "me-south-1": {
+       "AMI": "ami-02e5029108ce4f322"
+     }
+ },
+ "jmeterMap": {
+   "ap-northeast-1": {
+     "AMI": "ami-18b6aa19"
+   },
+   "ap-northeast-2": {
+     "AMI": "ami-d6df11b8"
+   },
+   "ap-south-1": {
+     "AMI": ""
+   },
+   "ap-southeast-1": {
+     "AMI": "ami-bac1ebe8"
+   },
+   "ap-southeast-2": {
+     "AMI": "ami-b1eb9e8b"
+   },
+   "ca-central-1": {
+     "AMI": "ami-04129260"
+   },
+   "eu-central-1": {
+     "AMI": "ami-9c380b81"
+   },
+   "eu-west-1": {
+     "AMI": "ami-394ecc4e"
+   },
+   "eu-west-2": {
+     "AMI": "ami-0c273368"
+   },
+   "eu-west-3": {
+     "AMI": ""
+   },
+   "sa-east-1": {
+     "AMI": "ami-53f14e4e"
+   },
+   "us-east-1": {
+     "AMI": "ami-4c7a3924"
+   },
+   "us-east-2": {
+     "AMI": "ami-ecb69289"
+   },
+   "us-west-1": {
+     "AMI": "ami-56120b13"
+   },
+   "us-west-2": {
+     "AMI": "ami-17471c27"
+   },
+   "cn-north-1": {
+     "AMI": ""
+   },
+   "cn-northwest-1": {
+     "AMI": ""
+    },
+    "me-south-1": {
+     "AMI": "ami-06cb214f5b7a2412e"
+   }
+ }
+},
+ "Metadata": {
+  "AWS::CloudFormation::Interface": {
+   "ParameterGroups": [
+    {
+     "Label": {
+      "default": "NETWORKING CONFIGURATION"
+     },
+     "Parameters": [
+      "productionStack",
+      "Vpc",
+      "managementSubnetAz1",
+      "managementSubnetAz2",
+      "subnet1Az1",
+      "subnet1Az2",
+      "subnet2Az1",
+      "subnet2Az2",
+      "availabilityZone1",
+      "availabilityZone2",
+      "numberOfAdditionalNics",
+      "additionalNicLocation"
+     ]
+    },
+    {
+     "Label": {
+      "default": "INSTANCE CONFIGURATION"
+     },
+     "Parameters": [
+      "jmeterInstance",
+      "elbInstance",
+      "imageName",
+      "customImageId",
+      "instanceType",
+      "applicationInstanceType",
+      "licenseKey1",
+      "licenseKey2",
+      "managementGuiPort",
+      "sshKey",
+      "restrictedSrcAddress",
+      "restrictedSrcAddressApp",
+      "ntpServer",
+      "timezone"
+     ]
+    },
+    {
+     "Label": {
+      "default": "TAGS"
+     },
+     "Parameters": [
+      "application",
+      "environment",
+      "group",
+      "owner",
+      "costcenter"
+     ]
+    },
+    {},
+    {
+     "Label": {
+      "default": "TEMPLATE ANALYTICS"
+     },
+     "Parameters": [
+      "allowUsageAnalytics"
+     ]
+    },
+    {
+     "Label": {
+      "default": "VIRTUAL SERVICE CONFIGURATION"
+     },
+     "Parameters": [
+      "declarationUrl"
+     ]
+    }
+   ],
+   "ParameterLabels": {
+    "Vpc": {
+     "default": "VPC"
+    },
+    "additionalNicLocation": {
+     "default": "Additional NIC Location"
+    },
+    "allowUsageAnalytics": {
+     "default": "Send Anonymous Statistics to F5"
+    },
+    "productionStack": {
+     "default": "Create Nats in subnets for producion stacks"
+    },
+    "jmeterInstance": {
+      "default": "Create jmeter instance to use for autoscale traffic generation"
+     },
+    "elbInstance": {
+      "default": "Create elb instance to use for autoscale tests."
+    },
+    "application": {
+     "default": "Application"
+    },
+    "applicationInstanceType": {
+     "default": "Application Instance Type"
+    },
+    "availabilityZone1": {
+     "default": "Availability Zone 1"
+    },
+    "availabilityZone2": {
+     "default": "Availability Zone 2"
+    },
+    "costcenter": {
+     "default": "Cost Center"
+    },
+    "customImageId": {
+     "default": "Custom Image Id"
+    },
+    "declarationUrl": {
+     "default": "AS3 Declaration Url"
+    },
+    "environment": {
+     "default": "Environment"
+    },
+    "group": {
+     "default": "Group"
+    },
+    "imageName": {
+     "default": "BIG-IP Image Name"
+    },
+    "instanceType": {
+     "default": "AWS Instance Size"
+    },
+    "licenseKey1": {
+     "default": "License Key 1"
+    },
+    "licenseKey2": {
+     "default": "License Key 2"
+    },
+    "managementGuiPort": {
+     "default": "BIG-IP Management Port"
+    },
+    "managementSubnetAz1": {
+     "default": "Management Subnet AZ1"
+    },
+    "managementSubnetAz2": {
+     "default": "Management Subnet AZ2"
+    },
+    "ntpServer": {
+     "default": "NTP Server"
+    },
+    "numberOfAdditionalNics": {
+     "default": "Number Of Additional NICs"
+    },
+    "owner": {
+     "default": "Owner"
+    },
+    "restrictedSrcAddress": {
+     "default": "Source Address(es) for Management Access"
+    },
+    "restrictedSrcAddressApp": {
+     "default": "Source Address(es) for Web Application Access (80/443)"
+    },
+    "sshKey": {
+     "default": "SSH Key"
+    },
+    "subnet1Az1": {
+     "default": "Subnet1 in AZ1"
+    },
+    "subnet1Az2": {
+     "default": "Subnet1 in AZ2"
+    },
+    "subnet2Az1": {
+     "default": "Subnet2 in AZ1"
+    },
+    "subnet2Az2": {
+     "default": "Subnet2 in AZ2"
+    },
+    "timezone": {
+     "default": "Timezone (Olson)"
+    }
+   }
+  },
+  "Version": "4.1.0"
+ },
+ "Outputs": {
+  "Az1ApplicationSubnet": {
+   "Description": "Az1Application Subnet Id",
+   "Value": {
+    "Ref": "Az1ApplicationSubnet"
+   }
+  },
+  "Az2ApplicationSubnet": {
+   "Description": "Az2Application Subnet Id",
+   "Value": {
+    "Ref": "Az2ApplicationSubnet"
+   }
+  },
+  "subnetGatewayAz1": {
+    "Description": "Subnet Id of subnetGatewayAz1",
+    "Condition": "useProduction",
+    "Value": {
+     "Ref": "subnetGatewayAz1"
+    }
+  },
+  "DnsServers": {
+   "Description": "DNS server for VPC",
+   "Value": "10.0.0.2"
+  },
+  "Vpc": {
+   "Description": "VPC ID",
+   "Value": {
+    "Ref": "Vpc"
+   }
+  },
+  "WebserverPublicIp": {
+   "Description": "Public IP for Webserver",
+   "Value": {
+    "Fn::GetAtt": [
+     "Webserver",
+     "PublicIp"
+    ]
+   }
+  },
+  "WebserverPublicUrl": {
+   "Description": "Public URL for the Webserver",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::GetAtt": [
+        "Webserver",
+        "PublicIp"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "bigipExternalSecurityGroup": {
+   "Description": "Public or External Security Group",
+   "Value": {
+    "Ref": "bigipExternalSecurityGroup"
+   }
+  },
+  "bigipInternalSecurityGroup": {
+   "Description": "Private or Internal Security Group",
+   "Value": {
+    "Ref": "bigipInternalSecurityGroup"
+   }
+  },
+  "bigipManagementSecurityGroup": {
+   "Description": "Management Security Group",
+   "Value": {
+    "Ref": "bigipManagementSecurityGroup"
+   }
+  },
+  "managementSubnetAz1": {
+   "Description": "Az1Management Subnet Id",
+   "Value": {
+    "Ref": "managementSubnetAz1"
+   }
+  },
+  "managementSubnetAz2": {
+   "Description": "Az2Management Subnet Id",
+   "Value": {
+    "Ref": "managementSubnetAz2"
+   }
+  },
+  "subnet1Az1": {
+   "Description": "Az1External Subnet Id",
+   "Value": {
+    "Ref": "subnet1Az1"
+   }
+  },
+  "subnet1Az2": {
+   "Description": "Az2External Subnet Id",
+   "Value": {
+    "Ref": "subnet1Az2"
+   }
+  },
+  "subnet2Az1": {
+   "Description": "Az1Internal Subnet Id",
+   "Value": {
+    "Ref": "subnet2Az1"
+   }
+  },
+  "subnet2Az2": {
+   "Description": "Az2Internal Subnet Id",
+   "Value": {
+    "Ref": "subnet2Az2"
+   }
+  },
+  "webserverPrivateIp": {
+   "Description": "Private IP for Webserver",
+   "Value": {
+    "Fn::GetAtt": [
+     "Webserver",
+     "PrivateIp"
+    ]
+   }
+  },
+  "ELB": {
+   "Description": "ELB created for testing",
+   "Condition": "useELB",
+    "Value": {
+        "Ref": "ELB"
+    }
+  },
+  "ELBDNS": {
+    "Description": "ELB DNS Value for testing",
+    "Condition": "useELB",
+    "Value": {
+     "Fn::GetAtt": [
+      "ELB",
+      "DNSName"
+     ]
+    }
+  }
+ },
+ "Parameters": {
+  "allowUsageAnalytics": {
+   "AllowedValues": [
+    "Yes",
+    "No"
+   ],
+   "Default": "Yes",
+   "Description": "This deployment can send anonymous statistics to F5 to help us determine how to improve our solutions. If you select **No** statistics are not sent.",
+   "Type": "String"
+  },
+  "productionStack": {
+   "AllowedValues": [
+    "Yes",
+    "No"
+   ],
+   "Default": "No",
+   "Description": "Select Yes if you would like to add nat gateways to subnets. Select Yes when environment is used with production stack.",
+   "Type": "String"
+  },
+  "jmeterInstance": {
+    "AllowedValues": [
+     "Yes",
+     "No"
+    ],
+    "Default": "No",
+    "Description": "Select Yes if you would like to create a jmeter instance. Select Yes when environment is used with autoscale tests.",
+    "Type": "String"
+   },
+   "elbInstance": {
+    "AllowedValues": [
+     "Yes",
+     "No"
+    ],
+    "Default": "No",
+    "Description": "Select Yes if you would like to create a elb. Select Yes when environment is used with autoscale tests.",
+    "Type": "String"
+   },
+  "application": {
+   "Default": "f5app",
+   "Description": "Name of the Application Tag",
+   "Type": "String"
+  },
+  "applicationInstanceType": {
+   "AllowedValues": [
+    "t1.micro",
+    "t2.micro",
+    "t3.micro",
+    "t2.small",
+    "m3.medium",
+    "m3.xlarge",
+    "m2.xlarge",
+    "m3.2xlarge",
+    "c3.large",
+    "c3.xlarge"
+   ],
+   "ConstraintDescription": "Must be a valid EC2 instance type",
+   "Default": "t1.micro",
+   "Description": "Webserver EC2 instance type",
+   "Type": "String"
+  },
+  "availabilityZone1": {
+   "Description": "Name of an Availability Zone in this Region",
+   "Type": "AWS::EC2::AvailabilityZone::Name"
+  },
+  "availabilityZone2": {
+   "Description": "Name of an Availability Zone in this Region",
+   "Type": "AWS::EC2::AvailabilityZone::Name"
+  },
+  "costcenter": {
+   "Default": "f5costcenter",
+   "Description": "Name of the Cost Center Tag",
+   "Type": "String"
+  },
+  "customImageId": {
+   "ConstraintDescription": "Must be a valid AMI Id",
+   "Default": "OPTIONAL",
+   "Description": "If you would like to deploy using a custom BIG-IP image, provide the AMI Id.  **Note**: Unless specifically required, leave the default of **OPTIONAL**",
+   "MaxLength": 255,
+   "MinLength": 1,
+   "Type": "String"
+  },
+  "declarationUrl": {
+   "AllowedPattern": "^(http:\\/\\/|https:\\/\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$|^none$",
+   "Default": "none",
+   "Description": "URL for the AS3 declaration JSON file to be deployed. Leave as **none** to deploy without a service configuration.",
+   "Type": "String"
+  },
+  "environment": {
+   "Default": "f5env",
+   "Description": "Name of the Environment Tag",
+   "Type": "String"
+  },
+  "group": {
+   "Default": "f5group",
+   "Description": "Name of the Group Tag",
+   "Type": "String"
+  },
+  "owner": {
+   "Default": "f5owner",
+   "Description": "Name of the Owner Tag",
+   "Type": "String"
+  },
+  "restrictedSrcAddress": {
+   "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+   "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+   "Description": " The IP address range used to SSH and access managment GUI on the EC2 instances",
+   "MaxLength": "18",
+   "MinLength": "9",
+   "Type": "String"
+  },
+  "restrictedSrcAddressApp": {
+   "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+   "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x.",
+   "Description": " The IP address range that can be used to access web traffic (80/443) to the EC2 instances",
+   "MaxLength": "18",
+   "MinLength": "9",
+   "Type": "String"
+  },
+  "sshKey": {
+   "Description": "EC2 KeyPair to enable SSH access to the BIG-IP instance",
+   "Type": "AWS::EC2::KeyPair::KeyName"
+  }
+ },
+ "Resources": {
+  "ApplicationDefaultRoute": {
+   "DependsOn": "AttachGateway",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+      "Fn::If": [
+       "useProduction",
+       {
+        "Ref": "AWS::NoValue"
+       },
+       {
+        "Ref": "InternetGateway"
+       }
+      ]
+    },
+    "NatGatewayId": {
+      "Fn::If": [
+       "useProduction",
+       {
+        "Ref": "natGateway"
+       },
+       {
+        "Ref": "AWS::NoValue"
+       }
+      ]
+    },
+    "RouteTableId": {
+     "Ref": "ApplicationRouteTable"
+    }
+   },
+   "Type": "AWS::EC2::Route"
+  },
+  "ApplicationRouteTable": {
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Application Route Table:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Network",
+      "Value": "Application"
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::RouteTable"
+  },
+  "gatewayDefaultRoute": {
+    "DependsOn": "AttachGateway",
+    "Condition":"useProduction",
+    "Properties": {
+     "DestinationCidrBlock": "0.0.0.0/0",
+     "GatewayId": {
+       "Ref":"InternetGateway"
+     },
+     "RouteTableId": {
+      "Ref": "gatewayRouteTable"
+     }
+    },
+    "Type": "AWS::EC2::Route"
+   },
+   "gatewayRouteTable": {
+    "Condition":"useProduction",
+    "Properties": {
+     "Tags": [
+      {
+       "Key": "Application",
+       "Value": {
+        "Ref": "application"
+       }
+      },
+      {
+       "Key": "Costcenter",
+       "Value": {
+        "Ref": "costcenter"
+       }
+      },
+      {
+       "Key": "Environment",
+       "Value": {
+        "Ref": "environment"
+       }
+      },
+      {
+       "Key": "Group",
+       "Value": {
+        "Ref": "group"
+       }
+      },
+      {
+       "Key": "Name",
+       "Value": {
+        "Fn::Join": [
+         "",
+         [
+          "Application Route Table:",
+          {
+           "Ref": "AWS::StackName"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Key": "Network",
+       "Value": "Application"
+      },
+      {
+       "Key": "Owner",
+       "Value": {
+        "Ref": "owner"
+       }
+      }
+     ],
+     "VpcId": {
+      "Ref": "Vpc"
+     }
+    },
+    "Type": "AWS::EC2::RouteTable"
+   },
+   "gatewaySubnetRouteTableAssociation": {
+    "Condition":"useProduction",
+    "Properties": {
+     "RouteTableId": {
+      "Ref": "gatewayRouteTable"
+     },
+     "SubnetId": {
+      "Ref": "subnetGatewayAz1"
+     }
+    },
+    "Type": "AWS::EC2::SubnetRouteTableAssociation"
+   },
+  "AttachGateway": {
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "InternetGateway"
+    },
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::VPCGatewayAttachment"
+  },
+  "Az1ApplicationSubnet": {
+   "Properties": {
+    "AvailabilityZone": {
+     "Ref": "availabilityZone1"
+    },
+    "CidrBlock": "10.0.3.0/24",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Az",
+         "1",
+         " Application Subnet:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::Subnet"
+  },
+  "Az1ApplicationSubnetRouteTableAssociation": {
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ApplicationRouteTable"
+    },
+    "SubnetId": {
+     "Ref": "Az1ApplicationSubnet"
+    }
+   },
+   "Type": "AWS::EC2::SubnetRouteTableAssociation"
+  },
+  "Az1ExternalSubnetRouteTableAssociation": {
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ExternalRouteTable"
+    },
+    "SubnetId": {
+     "Ref": "subnet1Az1"
+    }
+   },
+   "Type": "AWS::EC2::SubnetRouteTableAssociation"
+  },
+  "Az1InternalSubnetRouteTableAssociation": {
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "InternalRouteTable"
+    },
+    "SubnetId": {
+     "Ref": "subnet2Az1"
+    }
+   },
+   "Type": "AWS::EC2::SubnetRouteTableAssociation"
+  },
+  "Az1ManagementSubnetRouteTableAssociation": {
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ManagementRouteTable"
+    },
+    "SubnetId": {
+     "Ref": "managementSubnetAz1"
+    }
+   },
+   "Type": "AWS::EC2::SubnetRouteTableAssociation"
+  },
+  "Az2ApplicationSubnet": {
+   "Properties": {
+    "AvailabilityZone": {
+     "Ref": "availabilityZone2"
+    },
+    "CidrBlock": "10.0.13.0/24",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Az",
+         "2",
+         " Application Subnet:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::Subnet"
+  },
+  "Az2ApplicationSubnetRouteTableAssociation": {
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ApplicationRouteTable"
+    },
+    "SubnetId": {
+     "Ref": "Az2ApplicationSubnet"
+    }
+   },
+   "Type": "AWS::EC2::SubnetRouteTableAssociation"
+  },
+  "Az2ExternalSubnetRouteTableAssociation": {
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ExternalRouteTable"
+    },
+    "SubnetId": {
+     "Ref": "subnet1Az2"
+    }
+   },
+   "Type": "AWS::EC2::SubnetRouteTableAssociation"
+  },
+  "Az2InternalSubnetRouteTableAssociation": {
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "InternalRouteTable"
+    },
+    "SubnetId": {
+     "Ref": "subnet2Az2"
+    }
+   },
+   "Type": "AWS::EC2::SubnetRouteTableAssociation"
+  },
+  "Az2ManagementSubnetRouteTableAssociation": {
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ManagementRouteTable"
+    },
+    "SubnetId": {
+     "Ref": "managementSubnetAz2"
+    }
+   },
+   "Type": "AWS::EC2::SubnetRouteTableAssociation"
+  },
+  "ExternalDefaultRoute": {
+   "DependsOn": "AttachGateway",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+      "Fn::If": [
+       "useProduction",
+       {
+        "Ref": "AWS::NoValue"
+       },
+       {
+        "Ref": "InternetGateway"
+       }
+      ]
+    },
+    "NatGatewayId": {
+      "Fn::If": [
+       "useProduction",
+       {
+        "Ref": "natGateway"
+       },
+       {
+        "Ref": "AWS::NoValue"
+       }
+      ]
+    },
+    "RouteTableId": {
+     "Ref": "ExternalRouteTable"
+    }
+   },
+   "Type": "AWS::EC2::Route"
+  },
+  "ExternalRouteTable": {
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "External Route Table",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Network",
+      "Value": "External"
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::RouteTable"
+  },
+  "InternalDefaultRoute": {
+   "DependsOn": "AttachGateway",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+      "Fn::If": [
+       "useProduction",
+       {
+        "Ref": "AWS::NoValue"
+       },
+       {
+        "Ref": "InternetGateway"
+       }
+      ]
+    },
+    "NatGatewayId": {
+      "Fn::If": [
+       "useProduction",
+       {
+        "Ref": "natGateway"
+       },
+       {
+        "Ref": "AWS::NoValue"
+       }
+      ]
+    },
+    "RouteTableId": {
+     "Ref": "InternalRouteTable"
+    }
+   },
+   "Type": "AWS::EC2::Route"
+  },
+  "InternalRouteTable": {
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Internal Route Table:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Network",
+      "Value": "Internal"
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::RouteTable"
+  },
+  "InternetGateway": {
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "InternetGateway: ",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ]
+   },
+   "Type": "AWS::EC2::InternetGateway"
+  },
+  "natEipAddress": {
+    "Properties": {
+     "Domain": "vpc"
+    },
+    "Type": "AWS::EC2::EIP"
+   },
+  "natGateway": {
+    "Condition": "useProduction",
+    "Properties": {
+      "AllocationId" : {
+        "Fn::GetAtt": [
+         "natEipAddress",
+         "AllocationId"
+        ]
+      },
+      "SubnetId" : {
+        "Ref": "subnetGatewayAz1"
+      },
+      "Tags": [
+      {
+       "Key": "Application",
+       "Value": {
+        "Ref": "application"
+       }
+      },
+      {
+       "Key": "Costcenter",
+       "Value": {
+        "Ref": "costcenter"
+       }
+      },
+      {
+       "Key": "Environment",
+       "Value": {
+        "Ref": "environment"
+       }
+      },
+      {
+       "Key": "Group",
+       "Value": {
+        "Ref": "group"
+       }
+      },
+      {
+       "Key": "Name",
+       "Value": {
+        "Fn::Join": [
+         "",
+         [
+          "NatGateway: ",
+          {
+           "Ref": "AWS::StackName"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Key": "Owner",
+       "Value": {
+        "Ref": "owner"
+       }
+      }
+     ]
+    },
+    "Type": "AWS::EC2::NatGateway"
+  },
+  "ManagementDefaultRoute": {
+   "DependsOn": "AttachGateway",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+      "Fn::If": [
+       "useProduction",
+       {
+        "Ref": "AWS::NoValue"
+       },
+       {
+        "Ref": "InternetGateway"
+       }
+      ]
+    },
+    "NatGatewayId": {
+      "Fn::If": [
+       "useProduction",
+       {
+        "Ref": "natGateway"
+       },
+       {
+        "Ref": "AWS::NoValue"
+       }
+      ]
+    },
+    "RouteTableId": {
+     "Ref": "ManagementRouteTable"
+    }
+   },
+   "Type": "AWS::EC2::Route"
+  },
+  "ManagementRouteTable": {
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Management Route Table",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Network",
+      "Value": "Mgmt"
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::RouteTable"
+  },
+  "Vpc": {
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": "true",
+    "EnableDnsSupport": "true",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Vpc: ",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ]
+   },
+   "Type": "AWS::EC2::VPC"
+  },
+  "ELB": {
+    "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+    "Condition": "useELB",
+    "Properties": {
+     "Subnets" : [{ "Ref": "managementSubnetAz1" },{ "Ref": "managementSubnetAz2" } ],
+     "HealthCheck": {
+      "Target": "TCP:80",
+      "HealthyThreshold": "2",
+      "UnhealthyThreshold": "2",
+      "Interval": "30",
+      "Timeout": "5"
+     },
+     "Policies" : [{
+       "PolicyName" : "MyCookieStickinessPolicy",
+       "PolicyType" : "AppCookieStickinessPolicyType",
+       "Attributes" : [
+        { "Name" : "CookieName", "Value" : "MyCookie" }
+       ]
+      }],
+     "Listeners" :  [{
+      "InstancePort" : "80",
+      "InstanceProtocol" : "HTTP",
+      "LoadBalancerPort" : "443",
+      "Protocol" : "HTTPS",
+      "SSLCertificateId" : "arn:aws:iam::089591600128:server-certificate/example-website",
+      "PolicyNames" :  [ "MyCookieStickinessPolicy" ]
+     }],
+     "LoadBalancerName" : {
+      "Fn::Join": [
+       "",
+       [
+        "ELB-dewdrop-",
+         {
+          "Ref": "application"
+         }
+       ]
+      ]
+     },
+     "Tags": [
+        {
+         "Key": "Application",
+         "Value": {
+          "Ref": "application"
+         }
+        },
+        {
+         "Key": "Costcenter",
+         "Value": {
+          "Ref": "costcenter"
+         }
+        },
+        {
+         "Key": "Environment",
+         "Value": {
+          "Ref": "environment"
+         }
+        },
+        {
+         "Key": "Group",
+         "Value": {
+          "Ref": "group"
+         }
+        },
+        {
+         "Key": "Name",
+         "Value": {
+          "Fn::Join": [
+           "",
+           [
+            "ELB:",
+             {
+              "Ref": "AWS::StackName"
+             }
+           ]
+          ]
+         }
+        },
+        {
+         "Key": "Owner",
+         "Value": {
+          "Ref": "owner"
+         }
+        }
+       ]
+    },
+    "DependsOn": "AttachGateway"
+  },
+  "Webserver": {
+   "Properties": {
+    "ImageId": {
+     "Fn::FindInMap": [
+      "WebserverRegionMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "AMI"
+     ]
+    },
+    "InstanceType": {
+      "Ref": "applicationInstanceType"
+      },
+    "KeyName": {
+     "Ref": "sshKey"
+    },
+    "NetworkInterfaces": [
+     {
+      "AssociatePublicIpAddress": "true",
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Ref": "AWS::StackName"
+         },
+         " Webserver Network Interface"
+        ]
+       ]
+      },
+      "DeviceIndex": "0",
+      "GroupSet": [
+       {
+        "Ref": "WebserverSecurityGroup"
+       }
+      ],
+      "SubnetId": {
+       "Ref": "Az1ApplicationSubnet"
+      }
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Webserver:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": {
+      "Fn::Join": [
+       "",
+       [
+        "#!/bin/bash\n",
+        "### Xenial 16.04\n",
+        "# Install Docker\n",
+        "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - \n",
+        "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"\n",
+        "sudo apt-get update\n",
+        "sudo apt-get install -y docker-ce\n",
+        "# Deploy App\n",
+        "sudo docker run --name f5demo -p 80:80 -p 443:443 -d f5devcentral/f5-demo-app:latest\n"
+      ]
+      ]
+     }
+    }
+   },
+   "Type": "AWS::EC2::Instance"
+  },
+  "jmeter": {
+    "DependsOn": "ELB",
+    "Condition": "useJmeter",
+    "Properties": {
+     "ImageId": {
+      "Fn::FindInMap": [
+       "jmeterMap",
+       {
+        "Ref": "AWS::Region"
+       },
+       "AMI"
+      ]
+     },
+     "InstanceType": "t1.micro",
+     "KeyName": {
+      "Ref": "sshKey"
+     },
+     "NetworkInterfaces": [
+      {
+       "AssociatePublicIpAddress": "true",
+       "Description": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Ref": "AWS::StackName"
+          },
+          " jmeter Network Interface"
+         ]
+        ]
+       },
+       "DeviceIndex": "0",
+       "GroupSet": [
+        {
+         "Ref": "WebserverSecurityGroup"
+        }
+       ],
+       "SubnetId": {
+        "Ref": "managementSubnetAz1"
+       }
+      }
+     ],
+     "Tags": [
+      {
+       "Key": "Application",
+       "Value": {
+        "Ref": "application"
+       }
+      },
+      {
+       "Key": "Costcenter",
+       "Value": {
+        "Ref": "costcenter"
+       }
+      },
+      {
+       "Key": "Environment",
+       "Value": {
+        "Ref": "environment"
+       }
+      },
+      {
+       "Key": "Group",
+       "Value": {
+        "Ref": "group"
+       }
+      },
+      {
+       "Key": "Name",
+       "Value": {
+        "Fn::Join": [
+         "",
+         [
+          "jMeter:",
+          {
+           "Ref": "AWS::StackName"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Key": "Owner",
+       "Value": {
+        "Ref": "owner"
+       }
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+        "#cloud-config\n",
+        "repo_update: true\n",
+        "repo_upgrade: all\n",
+        "\n",
+        "packages:\n",
+        " - jmeter\n",
+        "\n",
+        "runcmd:\n",
+        "- curl -s -k -f --retry 20 -o /home/ubuntu/simple_jmeter_load.xml https://s3.amazonaws.com/f5-cft/QA/simple_jmeter_load.xml\n",
+        "- ELBNAME=",
+        {
+          "Fn::GetAtt": [
+           "ELB",
+           "DNSName"
+          ]
+        },
+        "\n",
+        "- sed -i -e \"s/<ELBNAME>/${ELBNAME}/g\" /home/ubuntu/simple_jmeter_load.xml\n",
+        "- sudo chown -R ubuntu:ubuntu /home/ubuntu/\n",
+        "# vim: syntax=yaml\n",
+        "write_files:\n",
+        "-   content: |\n",
+        "      date\n",
+        "      echo 'nohup jmeter -n -t simple_jmeter_load.xml &'\n",
+        "      nohup jmeter -n -t simple_jmeter_load.xml &\n",
+        "      ps -ef|grep java\n",
+        "      date\n",
+        "      exit\n",
+        "    path: /home/ubuntu/loadjmeter.sh\n",
+        "    permissions: '0644'\n",
+        "final_message: \"The system is finally up, after $UPTIME seconds\"\n"
+        ]
+       ]
+      }
+     }
+    },
+    "Type": "AWS::EC2::Instance"
+   },
+  "WebserverSecurityGroup": {
+   "Properties": {
+    "GroupDescription": "Enable Access to Webserver",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
+     },
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddressApp"
+      },
+      "FromPort": "80",
+      "IpProtocol": "tcp",
+      "ToPort": "80"
+     },
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Webserver Security Group:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::SecurityGroup"
+  },
+  "bigipExternalSecurityGroup": {
+   "Properties": {
+    "GroupDescription": "Public or external interface rules",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddressApp"
+      },
+      "FromPort": "80",
+      "IpProtocol": "tcp",
+      "ToPort": "80"
+     },
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddressApp"
+      },
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Bigip External Security Group:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::SecurityGroup"
+  },
+  "bigipInternalSecurityGroup": {
+   "Properties": {
+    "GroupDescription": "Allow All from Intra-VPC only",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Bigip Internal Security Group:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::SecurityGroup"
+  },
+  "bigipManagementSecurityGroup": {
+   "Properties": {
+    "GroupDescription": "BIG-IP management interface policy",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
+      "FromPort": "22",
+      "IpProtocol": "tcp",
+      "ToPort": "22"
+     },
+     {
+      "CidrIp": {
+       "Ref": "restrictedSrcAddress"
+      },
+      "FromPort": "443",
+      "IpProtocol": "tcp",
+      "ToPort": "443"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Bigip Management Security Group:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::SecurityGroup"
+  },
+  "managementSubnetAz1": {
+   "Properties": {
+    "AvailabilityZone": {
+     "Ref": "availabilityZone1"
+    },
+    "CidrBlock": "10.0.0.0/24",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Az",
+         "1",
+         " Management Subnet:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::Subnet"
+  },
+  "managementSubnetAz2": {
+   "Properties": {
+    "AvailabilityZone": {
+     "Ref": "availabilityZone2"
+    },
+    "CidrBlock": "10.0.10.0/24",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Az",
+         "2",
+         " Management Subnet:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::Subnet"
+  },
+  "subnet1Az1": {
+   "Properties": {
+    "AvailabilityZone": {
+     "Ref": "availabilityZone1"
+    },
+    "CidrBlock": "10.0.1.0/24",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Az",
+         "1",
+         " External Subnet:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::Subnet"
+  },
+  "subnet1Az2": {
+   "Properties": {
+    "AvailabilityZone": {
+     "Ref": "availabilityZone2"
+    },
+    "CidrBlock": "10.0.11.0/24",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Az",
+         "2",
+         " External Subnet:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::Subnet"
+  },
+  "subnet2Az1": {
+   "Properties": {
+    "AvailabilityZone": {
+     "Ref": "availabilityZone1"
+    },
+    "CidrBlock": "10.0.2.0/24",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Az",
+         "1",
+         " Internal Subnet:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::Subnet"
+  },
+  "subnet2Az2": {
+   "Properties": {
+    "AvailabilityZone": {
+     "Ref": "availabilityZone2"
+    },
+    "CidrBlock": "10.0.12.0/24",
+    "Tags": [
+     {
+      "Key": "Application",
+      "Value": {
+       "Ref": "application"
+      }
+     },
+     {
+      "Key": "Costcenter",
+      "Value": {
+       "Ref": "costcenter"
+      }
+     },
+     {
+      "Key": "Environment",
+      "Value": {
+       "Ref": "environment"
+      }
+     },
+     {
+      "Key": "Group",
+      "Value": {
+       "Ref": "group"
+      }
+     },
+     {
+      "Key": "Name",
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         "Az",
+         "2",
+         " Internal Subnet:",
+         {
+          "Ref": "AWS::StackName"
+         }
+        ]
+       ]
+      }
+     },
+     {
+      "Key": "Owner",
+      "Value": {
+       "Ref": "owner"
+      }
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   },
+   "Type": "AWS::EC2::Subnet"
+  },
+  "subnetGatewayAz1": {
+    "Condition":"useProduction",
+    "Properties": {
+     "AvailabilityZone": {
+      "Ref": "availabilityZone1"
+     },
+     "CidrBlock": "10.0.4.0/24",
+     "Tags": [
+      {
+       "Key": "Application",
+       "Value": {
+        "Ref": "application"
+       }
+      },
+      {
+       "Key": "Costcenter",
+       "Value": {
+        "Ref": "costcenter"
+       }
+      },
+      {
+       "Key": "Environment",
+       "Value": {
+        "Ref": "environment"
+       }
+      },
+      {
+       "Key": "Group",
+       "Value": {
+        "Ref": "group"
+       }
+      },
+      {
+       "Key": "Name",
+       "Value": {
+        "Fn::Join": [
+         "",
+         [
+          "Az",
+          "1",
+          " Gateway Subnet:",
+          {
+           "Ref": "AWS::StackName"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Key": "Owner",
+       "Value": {
+        "Ref": "owner"
+       }
+      }
+     ],
+     "VpcId": {
+      "Ref": "Vpc"
+     }
+    },
+    "Type": "AWS::EC2::Subnet"
+   }
+ }
+}

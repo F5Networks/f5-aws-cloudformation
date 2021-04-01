@@ -65,8 +65,7 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
   - In the *filesToVerify* variable: ensure this includes **tmsh run cli script verifyHash /config/cloud/f5-cloud-libs.tar.gz**.
   
 Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
-Note that in order to form a cluster of devices, a secure trust must be established between BIG-IP systems. To establish this trust, we generate and store credentials in an Amazon S3 bucket.
-
+**NOTE**: In order to form a cluster of devices, a secure trust must be established between BIG-IP systems. To establish this trust, we generate and store credentials as credentials/primary in an Amazon S3 bucket. Upon completion of a successful deployment, these credentials, as well as the corresponding local service account user, are deleted by the f5-cloud-libs cluster provider. If for some reason these credentials are not deleted, you may remove them at any time following deployment.
 ## Tested BIG-IP versions
 The following table lists the versions of BIG-IP that have been tested and validated against F5 AWS solution templates.
 

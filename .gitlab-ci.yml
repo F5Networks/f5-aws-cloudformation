@@ -3,13 +3,14 @@ image: ${ARTIFACTORY_SERVER}/ecosystems-cloudsolutions-docker-dev/dewdrop:$DEWDR
 services:
   - ${ARTIFACTORY_SERVER}/dockerhub-remote/docker:dind
 
-
 stages:
   - template-generator-smoke-tests
   - sprinkle-tests
   - droplets
   - release
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
 
 # validate Cloudformation templates with cfn-lint
 run_cfn_lint:
@@ -23,12 +24,10 @@ run_cfn_lint:
       - triggers
       - pipelines
   script:
-    - apk add --no-cache git
-    - git clone -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_URL}/cloudsolutions/automation-templates/cloud-tools
     - cd cloud-tools/cfn-lint
     - pip install -r requirements.txt
     # need to override primitiveType for autoscaling.Tags.propagateAtLaunch
-    - cfn-lint --override-spec override_propagate.json
+    - cfn-lint --template ../../supported/**/*.template --override-spec override_propagate.json
 
 execute_test_job:
   image: ${ARTIFACTORY_SERVER}/dockerhub-remote/python:3.7-alpine
@@ -41,8 +40,6 @@ execute_test_job:
     TEST_POLICY: set in schedule!
     STACK_TYPE: dewdrop-preproduction
   script:
-    - apk add --no-cache git
-    - git clone -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_URL}/cloudsolutions/automation-templates/cloud-tools
     - pip install -r cloud-tools/master-job/requirements.txt
     - cloud-tools/master-job/sprinkler.py --test-plan $TEST_POLICY --token $CI_JOB_TOKEN --branch $CI_COMMIT_REF_NAME --stack-type $STACK_TYPE --project-id $CI_PROJECT_ID
   retry:
@@ -88,8 +85,6 @@ dewdrop_test_run:
     when: always
     expire_in: 1 week
 
-
-
 publish_to_github:
   stage: release
   image: ${ARTIFACTORY_SERVER}/dockerhub-remote/python:3.7-alpine
@@ -97,8 +92,5 @@ publish_to_github:
     - /(^publish-(\d+\.){1,2}(\d)-(\d+)?$)/
   script:
     - apk add --no-cache jq
-    - apk add --no-cache git
-    - git clone -b develop https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_URL}/cloudsolutions/automation-templates/cloud-tools
     # Execute Release script to push source to github repo
     - ./cloud-tools/release-tool/publish_github.sh
-

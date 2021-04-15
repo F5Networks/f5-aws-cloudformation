@@ -1,0 +1,4 @@
+[submodule "cloud-tools"]
+	path = cloud-tools
+	url = ../../automation-templates/cloud-tools.git
+	branch = develop

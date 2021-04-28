@@ -1,0 +1,16 @@
+aws-china-standalone-test:
+  environment: aws_china
+  parameters-files:
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/n-nic/existing-stack/byol/prepub_parameters_china.yaml
+  run: random
+  random-num-of-tests: 1
+  test-url: 'file://automated-test-scripts/f5-aws-cloudformation/supported/standalone/daily_test_china.yaml'
+aws-failover-test:
+  parameters-files:
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/2nic/existing-stack/payg/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/3nic/existing-stack/payg/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/2nic/existing-stack/byol/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/3nic/existing-stack/byol/prepub_parameters.yaml
+  run: random
+  random-num-of-tests: 1
+  test-url: 'file://automated-test-scripts/f5-aws-cloudformation/supported/failover/daily_test.yaml'

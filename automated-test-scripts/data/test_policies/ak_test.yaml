@@ -1,5 +1,0 @@
-aws-standalone-test:
-    test-url: "file://automated-test-scripts/f5-aws-cloudformation/supported/standalone/daily_test.yaml"
-    run: "all"
-    parameters-files:
-        - "automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/2nic/existing-stack/payg/prepub_parameters.yaml"

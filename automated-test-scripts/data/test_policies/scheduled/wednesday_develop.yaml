@@ -1,0 +1,15 @@
+aws-failover-test:
+  parameters-files:
+    #- automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/3nic/existing-stack/bigiq/prepub_parameters.yaml
+    #- automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/2nic/existing-stack/bigiq/prepub_parameters.yaml
+    #- automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/3nic/existing-stack/bigiq/prepub_parameters.yaml
+  run: random
+  random-num-of-tests: 1
+  test-url: 'file://automated-test-scripts/f5-aws-cloudformation/supported/failover/daily_test.yaml'
+aws-standalone-test:
+  parameters-files:
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/1nic/existing-stack/payg/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/2nic/existing-stack/payg/prepub_parameters.yaml
+  run: random
+  random-num-of-tests: 1
+  test-url: 'file://automated-test-scripts/f5-aws-cloudformation/supported/standalone/daily_test.yaml'

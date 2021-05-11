@@ -244,7 +244,7 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
             " --signal PASSWORD_CREATED",
             " --wait-for MASTER_KEY_CONFIGURED",
             " --file f5-rest-node",
-            " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
+            " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt --include-special-characters'",
             " --log-level " + loglevel,
             " -o /var/log/cloud/aws/generatePassword.log",
             " &>> /var/log/cloud/aws/install.log < /dev/null",
@@ -488,7 +488,7 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
             " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
             " --signal PASSWORD_CREATED",
             " --file f5-rest-node",
-            " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
+            " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt --include-special-characters'",
             " --log-level " + loglevel,
             " -o /var/log/cloud/aws/generatePassword.log",
             " &>> /var/log/cloud/aws/install.log < /dev/null",
@@ -1657,7 +1657,7 @@ def main():
     # Big-IP mapped
     BIGIP_VERSION = '15.1.2.1-0.0.10'
     # Cloudlib Branch
-    branch_cloud = 'v4.24.0'
+    branch_cloud = 'release-4.25.0'
     branch_aws = 'v2.9.1'
     # AS3 branch and package
     branch_as3 = 'v3.25.0'
@@ -1698,9 +1698,9 @@ def main():
 
     # add hashmark to skip cloudlib verification script.
     if ha_type == "same-az" or ha_type == "across-az":
-        comment_out = ""
+        comment_out = "#"
     else:
-        comment_out = ""
+        comment_out = "#"
     # Begin Template
     t = Template()
     # add template version
@@ -4680,7 +4680,7 @@ def main():
                 ]
                 create_user = [
                     "#!/bin/bash",
-                    "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
+                    "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --include-special-characters",
                     "PASSWORD=$(/bin/sed -e $'s:[\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                     "if [ \"$1\" = admin ]; then",
                     "    tmsh modify auth user \"$1\" password ${PASSWORD}",

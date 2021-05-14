@@ -1653,15 +1653,15 @@ def main():
     # Log level
     loglevel = 'silly'
     # Template Version
-    version = '5.11.0'
+    version = '5.12.0'
     # Big-IP mapped
     BIGIP_VERSION = '15.1.2.1-0.0.10'
     # Cloudlib Branch
-    branch_cloud = 'release-4.25.0'
-    branch_aws = 'v2.9.1'
+    branch_cloud = 'v4.25.0'
+    branch_aws = 'v2.10.0'
     # AS3 branch and package
-    branch_as3 = 'v3.25.0'
-    package_as3 = 'f5-appsvcs-3.25.0-3.noarch.rpm'
+    branch_as3 = 'v3.26.1'
+    package_as3 = 'f5-appsvcs-3.26.1-1.noarch.rpm'
     # Build verifyHash file from published verifyHash on CDN
     # Comment this out until f5-cloud-libs released with verifyHash which includes new version of f5-cloud-failover
     urls = ['https://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/' + str(branch_cloud) + '/verifyHash']
@@ -1679,8 +1679,8 @@ def main():
         except requests.exceptions.RequestException as e:
             print(e)
 # Files URL's
-    cfe_version = "1.7.1"
-    cfe_sufix = "-1"
+    cfe_version = "1.8.0"
+    cfe_sufix = "-0"
     cfe_name = "f5-cloud-failover-" + str(cfe_version + cfe_sufix) + ".noarch.rpm"
     cfe = "/var/config/rest/downloads/" + str(cfe_name)
     if ha_type != "standalone":

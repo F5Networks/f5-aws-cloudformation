@@ -29,6 +29,9 @@
   "eu-west-2": {
     "best": "ami-0602be07b34c80953"
   },
+  "eu-west-3": {
+    "best": "ami-039e3af919850e7b4"
+  },
   "sa-east-1": {
     "best": "ami-00c1b0342af6d712b"
   },

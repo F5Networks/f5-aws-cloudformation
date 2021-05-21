@@ -1688,7 +1688,7 @@ def main():
     ### Template Version
     version = '5.11.0'
     ### Big-IP mapped
-    BIGIP_VERSION = '15.1.2.1-0.0.10'
+    BIGIP_VERSION = '16.0.1.1-0.0.6'
     ### Cloudlib Branch
     branch_cloud = 'release-4.25.0'
     branch_aws = 'v2.9.1'

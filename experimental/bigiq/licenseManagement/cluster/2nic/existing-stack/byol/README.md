@@ -26,7 +26,7 @@ You can choose one or both of these types of license pools on your BIG-IQ device
   - A License (Purchase) Pool, which can either be a registration key with a particular number of licenses, or an [ELA](https://www.f5.com/pdf/licensing/big-ip-virtual-edition-enterprise-licensing-agreement-overview.pdf)/subscription pool, which enables self-licensing of BIG-IP virtual editions (VEs), 
   - A Registration Key Pool, which is a pool of single standalone BIG-IP VE registration keys for one or more BIG-IP services. This enables the ability to revoke and reassign a license to BIG-IP VE systems without having to contact F5 to allow the license to be moved.
 
-See the [BIG-IQ documentation](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/big-iq-centralized-management-device-6-0-1/04.html) for more information on these pool types.
+See the [BIG-IQ documentation](https://support.f5.com/csp/knowledge-center/software/BIG-IQ?module=BIG-IQ%20Centralized%20Management&version=6.1.0) for more information on these pool types.
 
 For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
 

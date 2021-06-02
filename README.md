@@ -1,4 +1,4 @@
-# F5 AWS CloudFormation templates
+# F5 AWS CloudFormation Templates 1.0
 [![Slack Status](https://f5cloudsolutions.herokuapp.com/badge.svg)](https://f5cloudsolutions.herokuapp.com)
 [![Releases](https://img.shields.io/github/release/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/releases)
 [![Issues](https://img.shields.io/github/issues/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/issues)
@@ -8,17 +8,24 @@
 
 ## Introduction
 
-Welcome to the GitHub repository for F5's CloudFormation templates for deploying F5 in Amazon Web Services.  All of the templates in this repository have been developed by F5 Networks engineers.
+Welcome to the GitHub repository for F5's CloudFormation Templates 1.0 for deploying F5 in Amazon Web Services.  All of the templates in this repository have been developed by F5 Networks engineers.
 
 For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html) and the README files in each directory.  
 
-Across all branches in this repository, there are two directories: *supported* and *experimental*.
+This repository contains one main directory: supported.
 
-  - **supported**<br>
-  The *supported* directory contains CloudFormation templates that have been created and fully tested by F5 Networks. These templates are fully supported by F5, meaning you can get assistance if necessary from F5 Technical Support via your typical methods.
+The *supported* directory contains our legacy AWS CloudFormation templates (CFTs) that have been created and fully tested by F5 Networks. These legacy cloud solution templates (CST1) are fully supported by F5, meaning you can get assistance if necessary from F5 Technical Support via your typical methods. These legacy templates have been deprecated and are being replaced by our next-generation cloud solution templates (CST2) available at https://github.com/F5Networks/f5-aws-cloudformation-v2. We recommend you adopt the next-generation templates as soon as is feasible.
 
-  - **experimental**<br>
-  The *experimental* directory also contains CloudFormation templates that have been created by F5 Networks. However, these templates have not completed full testing and are subject to change. F5 Networks does not offer technical support for templates in the experimental directory, so use these templates with caution.
+  The planned End of Support (EoS) for legacy cloud templates is 12/31/21.
+  
+  - Deprecation does NOT mean we are removing nor disabling legacy templates.
+  - Customers are free to continue using legacy cloud templates subject to the EoS timeline.
+  - Deprecated legacy cloud templates are officially in sustaining/maintenance mode.
+  - Package updates and critical bug fixes will be considered for deprecated cloud templates.
+  - No additional legacy cloud verification testing will take place on new versions of TMOS (16.0+).
+  - No new features nor legacy cloud templates will be developed.
+  - The Experimental legacy CST1 templates will be removed over time as additional CST2 use cases are delivered.
+
 
 ## Template information
 Descriptions for each template are contained at the top of each template in the *Description* key.
@@ -42,7 +49,7 @@ To see steps for troubleshooting common problems with AWS CloudFormation, see th
 
 ### Copyright
 
-Copyright2014-2019 F5 Networks Inc.
+Copyright 2014-2021 F5 Networks Inc.
 
 
 ### License

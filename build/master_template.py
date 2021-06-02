@@ -244,7 +244,7 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
             " --signal PASSWORD_CREATED",
             " --wait-for MASTER_KEY_CONFIGURED",
             " --file f5-rest-node",
-            " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
+            " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt --include-special-characters'",
             " --log-level " + loglevel,
             " -o /var/log/cloud/aws/generatePassword.log",
             " &>> /var/log/cloud/aws/install.log < /dev/null",
@@ -488,7 +488,7 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
             " f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/runScript.js",
             " --signal PASSWORD_CREATED",
             " --file f5-rest-node",
-            " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt'",
+            " --cl-args '/config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --encrypt --include-special-characters'",
             " --log-level " + loglevel,
             " -o /var/log/cloud/aws/generatePassword.log",
             " &>> /var/log/cloud/aws/install.log < /dev/null",
@@ -1653,15 +1653,15 @@ def main():
     # Log level
     loglevel = 'silly'
     # Template Version
-    version = '5.11.0'
+    version = '5.12.0'
     # Big-IP mapped
-    BIGIP_VERSION = '15.1.2.1-0.0.10'
+    BIGIP_VERSION = '16.0.1.1-0.0.6'
     # Cloudlib Branch
-    branch_cloud = 'v4.24.0'
-    branch_aws = 'v2.9.1'
+    branch_cloud = 'v4.25.0'
+    branch_aws = 'v2.10.0'
     # AS3 branch and package
-    branch_as3 = 'v3.25.0'
-    package_as3 = 'f5-appsvcs-3.25.0-3.noarch.rpm'
+    branch_as3 = 'v3.26.1'
+    package_as3 = 'f5-appsvcs-3.26.1-1.noarch.rpm'
     # Build verifyHash file from published verifyHash on CDN
     # Comment this out until f5-cloud-libs released with verifyHash which includes new version of f5-cloud-failover
     urls = ['https://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/' + str(branch_cloud) + '/verifyHash']
@@ -1679,8 +1679,8 @@ def main():
         except requests.exceptions.RequestException as e:
             print(e)
 # Files URL's
-    cfe_version = "1.7.1"
-    cfe_sufix = "-1"
+    cfe_version = "1.8.0"
+    cfe_sufix = "-0"
     cfe_name = "f5-cloud-failover-" + str(cfe_version + cfe_sufix) + ".noarch.rpm"
     cfe = "/var/config/rest/downloads/" + str(cfe_name)
     if ha_type != "standalone":
@@ -1698,9 +1698,9 @@ def main():
 
     # add hashmark to skip cloudlib verification script.
     if ha_type == "same-az" or ha_type == "across-az":
-        comment_out = ""
+        comment_out = "#"
     else:
-        comment_out = ""
+        comment_out = "#"
     # Begin Template
     t = Template()
     # add template version
@@ -4680,7 +4680,7 @@ def main():
                 ]
                 create_user = [
                     "#!/bin/bash",
-                    "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword",
+                    "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/generatePassword --file /config/cloud/aws/.adminPassword --include-special-characters",
                     "PASSWORD=$(/bin/sed -e $'s:[\\'\"%{};/|#\\x20\\\\\\\\]:\\\\\\\\&:g' < /config/cloud/aws/.adminPassword)",
                     "if [ \"$1\" = admin ]; then",
                     "    tmsh modify auth user \"$1\" password ${PASSWORD}",

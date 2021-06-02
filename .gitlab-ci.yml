@@ -29,7 +29,7 @@ run_cfn_lint:
     # need to override primitiveType for autoscaling.Tags.propagateAtLaunch
     - cfn-lint --template ../../supported/**/*.template --override-spec override_propagate.json
 
-# validate README file(s) only contain links that respond with 200 OK
+#validate README file(s) only contain links that respond with 200 OK
 run_link_checker:
   image: ${ARTIFACTORY_SERVER}/dockerhub-remote/node:10
   stage: smoke-tests

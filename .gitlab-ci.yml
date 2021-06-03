@@ -9,6 +9,7 @@ stages:
   - sprinkle-tests
   - droplets
   - release
+  - publish
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -29,7 +30,7 @@ run_cfn_lint:
     # need to override primitiveType for autoscaling.Tags.propagateAtLaunch
     - cfn-lint --template ../../supported/**/*.template --override-spec override_propagate.json
 
-#validate README file(s) only contain links that respond with 200 OK
+# validate README file(s) only contain links that respond with 200 OK
 run_link_checker:
   image: ${ARTIFACTORY_SERVER}/dockerhub-remote/node:10
   stage: smoke-tests
@@ -138,16 +139,37 @@ dewdrop_test_run:
     expire_in: 1 week
 
 publish_to_github:
+  image: ${ARTIFACTORY_SERVER}/dockerhub-remote/node:8
   stage: release
   only:
-    - /(^publish-(\d+\.){1,2}(\d)-(\d+)?$)/
+    - /(^publish-(v\d*[1-9]*\.)(\d*[1-9]*\.)(\d))/
   script:
-    - apk add --no-cache jq
+    # install jq
+    - apt-get update
+    - apt-get install -y jq
     # Execute Release script to push source to github repo
     - ./cloud-tools/release-tool/publish_github.sh "$ALLOWED_DIRS" "$ALLOWED_FILES"
   variables:
     ALLOWED_DIRS: ".github AMI\ MAPS deploy experimental iApps images supported"
-    ALLOWED_FILES: ".gitignore .gitattributes aws-bigip-version-matrix.md aws-troubleshooting.md aws-update-bigip-image.md iapp-migration.md README.md slack-channel-statement.md template-index.md"
-    GITLAB_API_URL: "$GOOGLE_URL"
-    GIT_HUB_API_TOKEN: "$GOOGLE_GITHUB_API_TOKEN"
-    GITLAB_PRIVATE_TOKEN: "$GOOGLE_GITLAB_API_TOKEN"
+    ALLOWED_FILES: ".gitattributes README.md aws-bigip-version-matrix.md aws-troubleshooting.md aws-update-bigip-image.md iapp-migration.md  slack-channel-statement.md template-index.md"
+    GITLAB_API_URL: "$AWS_URL"
+    GIT_HUB_API_TOKEN: "$AWS_GITHUB_API_TOKEN"
+    GITLAB_PRIVATE_TOKEN: "$AWS_GITLAB_API_TOKEN"
+
+# Check template version, then push the examples/ folder to S3 when a tag in the form of "aws-v1.0.1.0" is added to the main branch
+publish_aws_templates_s3:
+  image: ${ARTIFACTORY_SERVER}/dockerhub-remote/python:3
+  stage: publish
+  only:
+    - /(^publish-(v\d*[1-9]*\.)(\d*[1-9]*\.)(\d))/
+  script:
+    - curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get install -yq nodejs build-essential
+    - npm install -g npm
+    - apt-get install -y jq
+    - pip3 install yq awscli
+    - mkdir -p temp_s3
+    - find supported -name '*.template' -exec cp {} ./temp_s3/ \;
+    - find experimental -name '*.template' -exec cp {} ./temp_s3/ \;
+    - aws s3 cp --recursive --acl public-read temp_s3 s3://f5-cft --metadata-directive REPLACE
+  tags:
+    - cm-official-docker-executor

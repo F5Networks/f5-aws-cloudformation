@@ -4,7 +4,7 @@
 #  replayTimeout = 50
 
 # locate bigip ip addresses: used for all tests
-signal="PASSWORD_REMOVED"
+signal="CUSTOM_CONFIG_DONE"
 case <AUTOSCALE DNS TYPE> in
 via-dns)
   if [[ "<PUBLIC IP>" == "Yes" ]]; then

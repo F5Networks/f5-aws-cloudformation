@@ -1238,7 +1238,7 @@
            "    echo \"Custom config download complete; checking for valid JSON.\"\n",
            "    cat $file_loc | jq .class\n",
            "    if [[ $? == 0 ]]; then\n",
-           "      response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" https://localhost:${managementGuiPort}/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
+           "      response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" http://localhost:8100/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
            "      if [[ $response_code == 200 || $response_code == 502 ]]; then\n",
            "        echo \"Deployment of custom application succeeded.\"\n",
            "        deployed=\"yes\"\n",

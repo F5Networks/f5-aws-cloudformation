@@ -136,6 +136,6 @@ cn-north-1 | cn-northwest-1)
 --capabilities CAPABILITY_IAM --parameters $parameters ;;
 *)
 aws cloudformation create-stack --disable-rollback --region <REGION> --stack-name <STACK NAME> --tags Key=creator,Value=dewdrop Key=delete,Value=True \
---template-url https://"$bucket_name".s3-<REGION>.amazonaws.com/<TEMPLATE NAME> \
+--template-url https://"$bucket_name".s3.amazonaws.com/<TEMPLATE NAME> \
 --capabilities CAPABILITY_IAM --parameters $parameters ;;
 esac

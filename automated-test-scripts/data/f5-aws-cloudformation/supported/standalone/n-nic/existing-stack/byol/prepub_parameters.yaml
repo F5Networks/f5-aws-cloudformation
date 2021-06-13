@@ -18,7 +18,7 @@ NTP SERVER: 0.us.pool.ntp.org
 PHONEHOME: 'No'
 PRIVATE IP TYPE: STATIC
 PUBLIC IP: 'No'
-REGION: eu-west-1
+REGION: us-east-1
 SOLUTION TYPE: standalone
 SSH KEY: dewpt
 STACK NAME: dewdrop-<LICENSE TYPE>-<IMAGE NAME>-n-nic-<DEWPOINT JOB ID>

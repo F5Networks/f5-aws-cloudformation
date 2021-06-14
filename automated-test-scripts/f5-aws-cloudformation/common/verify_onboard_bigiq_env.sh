@@ -3,7 +3,7 @@
 #  replayEnabled = true
 #  replayTimeout = 180
 
-signal="NETWORK_DONE"
+signal="config_complete"
 case <LICENSE TYPE> in
 bigiq)
   if [[ "<PUBLIC IP>" == "Yes" ]]; then
@@ -11,7 +11,7 @@ bigiq)
     echo "BigiqPublicIP=$IP"
     ssh-keygen -R $IP 2>/dev/null
     ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=5 -i /etc/ssl/private/dewpt.pem admin@${IP} 'modify auth user admin shell bash'
-    response=$(ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=5 -i /etc/ssl/private/dewpt.pem admin@${IP} 'ls -al /tmp/f5-cloud-libs-signals /config/cloud/aws')
+    response=$(ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=5 -i /etc/ssl/private/dewpt.pem admin@${IP} 'ls -al /config/cloud')
     echo "response: $response"
   else
     IP=$(aws cloudformation describe-stacks  --region <REGION> --stack-name <STACK NAME>-bigiq|jq -r '.Stacks[0].Outputs[]|select (.OutputKey=="device1ManagementInterfacePrivateIp")|.OutputValue')
@@ -21,12 +21,12 @@ bigiq)
     echo "Bastion host:$bastion"
     ssh-keygen -R $bastion 2>/dev/null
     ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=5 -i /etc/ssl/private/dewpt.pem -o ProxyCommand="ssh -o 'StrictHostKeyChecking no' -o ConnectTimeout=6 -i /etc/ssl/private/dewpt.pem -W %h:%p ubuntu@$bastion" admin@"$IP" 'modify auth user admin shell bash'
-    response=$(ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=5 -i /etc/ssl/private/dewpt.pem -o ProxyCommand="ssh -o 'StrictHostKeyChecking no' -o ConnectTimeout=6 -i /etc/ssl/private/dewpt.pem -W %h:%p ubuntu@$bastion" admin@"$IP" 'ls -al /tmp/f5-cloud-libs-signals /config/cloud/aws')
+    response=$(ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=5 -i /etc/ssl/private/dewpt.pem -o ProxyCommand="ssh -o 'StrictHostKeyChecking no' -o ConnectTimeout=6 -i /etc/ssl/private/dewpt.pem -W %h:%p ubuntu@$bastion" admin@"$IP" 'ls -al /config/cloud')
     echo "response: $response"
   fi ;;
 *)
   echo "BIG-IQ not required for test!"
-  response="NETWORK_DONE"  ;;
+  response="config_complete"  ;;
 esac
 
 

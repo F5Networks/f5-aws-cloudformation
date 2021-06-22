@@ -1,13 +1,13 @@
 aws-autoscale-test:
   parameters-files:
     - automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/ltm/via-lb/1nic/existing-stack/payg/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/ltm/via-lb/1nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/ltm/via-lb/1nic/existing-stack/bigiq/prepub_parameters.yaml
     - automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/waf/via-lb/1nic/existing-stack/payg/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/waf/via-lb/1nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/waf/via-lb/1nic/existing-stack/bigiq/prepub_parameters.yaml
     - automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/ltm/via-dns/1nic/existing-stack/payg/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/ltm/via-dns/1nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/ltm/via-dns/1nic/existing-stack/bigiq/prepub_parameters.yaml
     - automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/waf/via-dns/1nic/existing-stack/payg/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/waf/via-dns/1nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/waf/via-dns/1nic/existing-stack/bigiq/prepub_parameters.yaml
   random-num-of-tests: 2
   run: random
   test-url: 'file://automated-test-scripts/f5-aws-cloudformation/supported/solutions/autoscale/daily_test.yaml'
@@ -41,10 +41,10 @@ aws-failover-test:
     - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/3nic/existing-stack/payg/prepub_parameters.yaml
     - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/2nic/existing-stack/byol/prepub_parameters.yaml
     - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/3nic/existing-stack/byol/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/2nic/existing-stack/bigiq/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/3nic/existing-stack/bigiq/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/2nic/existing-stack/bigiq/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/3nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/2nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/3nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/2nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/3nic/existing-stack/bigiq/prepub_parameters.yaml
   random-num-of-tests: 2
   run: random
   test-url: 'file://automated-test-scripts/f5-aws-cloudformation/supported/failover/daily_test.yaml'
@@ -58,10 +58,10 @@ aws-standalone-test:
     - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/2nic/existing-stack/byol/prepub_parameters.yaml
     - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/3nic/existing-stack/byol/prepub_parameters.yaml
     - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/n-nic/existing-stack/byol/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/1nic/existing-stack/bigiq/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/2nic/existing-stack/bigiq/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/3nic/existing-stack/bigiq/prepub_parameters.yaml
-    #- automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/n-nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/1nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/2nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/3nic/existing-stack/bigiq/prepub_parameters.yaml
+    - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/n-nic/existing-stack/bigiq/prepub_parameters.yaml
   random-num-of-tests: 2
   run: random
   test-url: 'file://automated-test-scripts/f5-aws-cloudformation/supported/standalone/daily_test.yaml'

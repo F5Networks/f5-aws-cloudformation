@@ -104,59 +104,74 @@
      }
  },
  "jmeterMap": {
+   "af-south-1": {
+     "AMI": "ami-0fe43a70ffe3ed0e4"
+   },
+   "ap-east-1": {
+     "AMI": "ami-07959c98f4b75724b"
+   },
    "ap-northeast-1": {
-     "AMI": "ami-18b6aa19"
+     "AMI": "ami-00a329dc4c4ef5f4d"
    },
    "ap-northeast-2": {
-     "AMI": "ami-d6df11b8"
+     "AMI": "ami-0087d4ea1d1ae5954"
    },
+   "ap-northeast-3": {
+    "AMI": "ami-07fc6a42f87062cf0"
+  },
    "ap-south-1": {
-     "AMI": ""
+     "AMI": "ami-0b69d458b3c349789"
    },
    "ap-southeast-1": {
-     "AMI": "ami-bac1ebe8"
+     "AMI": "ami-011da0a28d560b0a1"
    },
    "ap-southeast-2": {
-     "AMI": "ami-b1eb9e8b"
+     "AMI": "ami-0bf2b031e1bec049b"
    },
    "ca-central-1": {
-     "AMI": "ami-04129260"
+     "AMI": "ami-0d45e48f2d3ee4a69"
    },
    "eu-central-1": {
-     "AMI": "ami-9c380b81"
+     "AMI": "ami-039dbb30ffc0e7b2d"
    },
+   "eu-north-1": {
+    "AMI": "ami-0bade619336ab97a0"
+  },
+   "eu-south-1": {
+    "AMI": "ami-0d59fac89968ef629"
+  },
    "eu-west-1": {
-     "AMI": "ami-394ecc4e"
+     "AMI": "ami-0d5c37e430041752b"
    },
    "eu-west-2": {
-     "AMI": "ami-0c273368"
+     "AMI": "ami-0e38ce54480eb3da2"
    },
    "eu-west-3": {
-     "AMI": ""
+     "AMI": "ami-03d5286a3701be628"
    },
    "sa-east-1": {
-     "AMI": "ami-53f14e4e"
+     "AMI": "ami-0ff2861ce13dade33"
    },
    "us-east-1": {
-     "AMI": "ami-4c7a3924"
+     "AMI": "ami-08d73b8b02e8bca3e"
    },
    "us-east-2": {
-     "AMI": "ami-ecb69289"
+     "AMI": "ami-01a0bbed320a72354"
    },
    "us-west-1": {
-     "AMI": "ami-56120b13"
+     "AMI": "ami-08c3f360964dd4391"
    },
    "us-west-2": {
-     "AMI": "ami-17471c27"
+     "AMI": "ami-0a3850c2ef8e092be"
    },
    "cn-north-1": {
-     "AMI": ""
+     "AMI": "ami-0ed0cca7c678c608a"
    },
    "cn-northwest-1": {
-     "AMI": ""
-    },
+     "AMI": "ami-0698ff91e5a79509c"
+   },
     "me-south-1": {
-     "AMI": "ami-06cb214f5b7a2412e"
+     "AMI": "ami-0f87b9912d129aa45"
    }
  }
 },
@@ -1643,7 +1658,7 @@
        "AMI"
       ]
      },
-     "InstanceType": "t1.micro",
+     "InstanceType": "t3.micro",
      "KeyName": {
       "Ref": "sshKey"
      },

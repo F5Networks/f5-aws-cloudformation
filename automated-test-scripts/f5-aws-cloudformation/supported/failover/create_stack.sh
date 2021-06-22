@@ -108,7 +108,7 @@ echo "public ip parameter: $public_ip_param"
 # determine license parameter
 case <LICENSE TYPE> in
 bigiq)
-  bigiq_host=$(aws cloudformation describe-stacks --region <REGION> --stack-name <STACK NAME>-bigiq | jq -r '.Stacks[].Outputs[]|select (.OutputKey=="device1InternalInterfacePrivateIp")|.OutputValue')
+   bigiq_host=$(aws cloudformation describe-stacks --region <REGION> --stack-name <STACK NAME>-bigiq | jq -r '.Stacks[].Outputs[]|select (.OutputKey=="device1ManagementInterfacePrivateIp")|.OutputValue')
   lic_parm="ParameterKey=bigIqAddress,ParameterValue=${bigiq_host} ParameterKey=bigIqLicensePoolName,ParameterValue=<BIGIQ LICENSE POOL> \
   ParameterKey=bigIqPasswordS3Arn,ParameterValue=<BIGIQ LICENSE S3 ARN> ParameterKey=bigIqUsername,ParameterValue=admin ParameterKey=bigIqLicenseUnitOfMeasure,ParameterValue=yearly ParameterKey=bigIqLicenseSkuKeyword1,ParameterValue=BT"  ;;
 byol)

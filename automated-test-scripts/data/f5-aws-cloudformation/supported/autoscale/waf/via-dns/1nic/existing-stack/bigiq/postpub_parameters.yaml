@@ -8,7 +8,6 @@ BIG-IP BUILD: 0.0.6
 BIG-IP VERSION: 16.0.1.1
 BIGIQ LICENSE POOL: production
 BIGIQ LICENSE S3 ARN: arn:aws:s3:::bigiqtest/bigiq.txt
-BRANCH: master
 CUSTOM USER: dewpt_user
 DECLARATION URL: default
 DNS MEMBER IP TYPE: public
@@ -23,14 +22,14 @@ MIN INSTANCES: 2
 NTP SERVER: pool.ntp.org
 PHONEHOME: 'No'
 PUBLIC IP: 'Yes'
-REGION: me-south-1
+REGION: us-west-2
 SOLUTION TYPE: autoscale
 SSH KEY: dewpt
 STACK NAME: dd-<SOLUTION TYPE>-<LICENSE TYPE>-<AUTOSCALE TYPE>-<DEWPOINT JOB ID>
 STACK TYPE: existing-stack
-TEMPLATE NAME: dd-as-<AUTOSCALE TYPE>-<LICENSE TYPE>-<REGION>-github-<BRANCH>-supported-<THROUGHPUT>
-TEMPLATE URL: https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/<BRANCH>/supported/<SOLUTION
+TEMPLATE NAME: dd-as-<AUTOSCALE TYPE>-<LICENSE TYPE>-<REGION>-github-supported-<THROUGHPUT>
+TEMPLATE URL: https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/supported/<SOLUTION
   TYPE>/<AUTOSCALE TYPE>/<AUTOSCALE DNS TYPE>/1nic/existing-stack/<LICENSE TYPE>/f5-<LICENSE
   TYPE>-autoscale-bigip-<AUTOSCALE TYPE>-dns.template
-THROUGHPUT: 25Mbps
+THROUGHPUT: 200Mbps
 TIMEZONE: UTC

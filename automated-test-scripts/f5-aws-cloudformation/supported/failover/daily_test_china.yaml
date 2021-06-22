@@ -1,13 +1,14 @@
 ---
 name: AWS FAILOVER <CLUSTER TYPE> <NIC COUNT>nic <LICENSE TYPE> <IMAGE NAME> <STACK TYPE> <REGION>
 onStart:
+- ../../common/create_s3_bucket.sh
 - ../../common/create_vpc.sh
 - ../../common/verify_create_vpc.sh
-- ../../common/create_s3_bucket.sh
 - ../../common/create_bastion.sh
 - ../../common/create_bigiq.sh
 - ../../common/verify_create_bigiq.sh
 - ../../common/verify_onboard_bigiq_env.sh
+- ../../common/verify_bigiq_ready_env.sh
 - ./create_stack.sh
 - ../../common/verify_create.sh
 - ../../common/verify_instance_status_ok.sh

@@ -51,9 +51,29 @@ ParameterKey=jmeterInstance,ParameterValue=$jmeterInstance ParameterKey=elbInsta
 ParameterKey=application,ParameterValue=$appValue "
 echo "Parameters:$parameters"
 
+if [[ <REGION> == "us-east-1" ]]; then
+    s3_prefix="s3."
+else
+    s3_prefix="s3.<REGION>."
+fi
+bucket_name=`echo <STACK NAME>|cut -c -60|tr '[:upper:]' '[:lower:]'| sed 's:-*$::'`
 case <REGION> in
 cn-north-1 | cn-northwest-1)
-   aws cloudformation create-stack --disable-rollback --region <REGION> --stack-name <STACK NAME>-vpc --tags Key=creator,Value=dewdrop Key=delete,Value=True --template-url https://bastion-hosts.s3.cn-northwest-1.amazonaws.com.cn/test-environment.template --capabilities CAPABILITY_IAM --parameters $parameters ;;
+   aws cloudformation create-stack \
+   --disable-rollback \
+   --region <REGION> \
+   --stack-name <STACK NAME>-vpc \
+   --tags Key=creator,Value=dewdrop Key=delete,Value=True \
+   --template-url https://"$bucket_name"."$s3_prefix"amazonaws.com/test-environment.template \
+   --capabilities CAPABILITY_IAM \
+   --parameters $parameters ;;
 *)
-   aws cloudformation create-stack --disable-rollback --region <REGION> --stack-name <STACK NAME>-vpc --tags Key=creator,Value=dewdrop Key=delete,Value=True --template-url https://s3.amazonaws.com/f5-cft/QA/test-environment.template --capabilities CAPABILITY_IAM --parameters $parameters ;;
+   aws cloudformation create-stack \
+   --disable-rollback \
+   --region <REGION> \
+   --stack-name <STACK NAME>-vpc \
+   --tags Key=creator,Value=dewdrop Key=delete,Value=True \
+   --template-url https://"$bucket_name"."$s3_prefix"amazonaws.com/test-environment.template \
+   --capabilities CAPABILITY_IAM \
+   --parameters $parameters ;;
 esac

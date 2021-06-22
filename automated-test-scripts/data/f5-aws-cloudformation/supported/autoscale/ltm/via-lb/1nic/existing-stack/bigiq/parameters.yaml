@@ -25,8 +25,8 @@ SOLUTION TYPE: autoscale
 SSH KEY: dewpt
 STACK NAME: dd-<SOLUTION TYPE>-<LICENSE TYPE>-<AUTOSCALE TYPE>-<DEWPOINT JOB ID>
 STACK TYPE: existing-stack
-TEMPLATE NAME: dd-as-<AUTOSCALE TYPE>-<LICENSE TYPE>-<REGION>-github-<BRANCH>-supported-<THROUGHPUT>
-TEMPLATE URL: https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/<BRANCH>/supported/<SOLUTION
+TEMPLATE NAME: dd-as-<AUTOSCALE TYPE>-<LICENSE TYPE>-<REGION>-github-supported-<THROUGHPUT>
+TEMPLATE URL: https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/supported/<SOLUTION
   TYPE>/<AUTOSCALE TYPE>/<AUTOSCALE DNS TYPE>/1nic/existing-stack/<LICENSE TYPE>/f5-<LICENSE
   TYPE>-autoscale-bigip-<AUTOSCALE TYPE>.template
 THROUGHPUT: 25Mbps

@@ -24,7 +24,6 @@ The *supported* directory contains our legacy AWS CloudFormation templates (CFTs
   - Package updates and critical bug fixes will be considered for deprecated cloud templates.
   - No additional legacy cloud verification testing will take place on new versions of TMOS (16.0+).
   - No new features nor legacy cloud templates will be developed.
-  - The Experimental legacy CST1 templates will be removed over time as additional CST2 use cases are delivered.
 
 
 ## Template information

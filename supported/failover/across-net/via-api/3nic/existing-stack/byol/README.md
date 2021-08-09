@@ -34,6 +34,7 @@ The following are prerequisites for the F5 3-NIC CFT:
     - External subnet (the subnet for the external network requires a route and access to the Internet for onboarding BIG-IP). 
     - A subnet for the BIG-IP internal interface. 
   - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = < region >.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
+  - The AWS VPC may use one or more IPv4 CIDRs; an internal, local route will be created for each IPv4 CIDR to allow communication between the failover subnets.
   - Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
   - Because you are deploying the BYOL template, you must have a valid BIG-IP license token.
   

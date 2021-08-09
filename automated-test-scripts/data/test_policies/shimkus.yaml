@@ -1,9 +1,7 @@
-# AWS autoscale test
-aws-autoscale-test:
-    test-url: "file://automated-test-scripts/f5-aws-cloudformation/supported/solutions/autoscale/daily_test.yaml"
+# aws failover test
+aws-failover-test:
+    test-url: "file://automated-test-scripts/f5-aws-cloudformation/supported/failover/daily_test.yaml"
     run: "all"
     parameters-files:
-        - "automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/ltm/via-lb/1nic/existing-stack/payg/prepub_parameters.yaml"
-        - "automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/waf/via-lb/1nic/existing-stack/payg/prepub_parameters.yaml"
-        - "automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/ltm/via-dns/1nic/existing-stack/payg/prepub_parameters.yaml"
-        - "automated-test-scripts/data/f5-aws-cloudformation/supported/autoscale/waf/via-dns/1nic/existing-stack/payg/prepub_parameters.yaml"
+        - "automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/3nic/existing-stack/payg/prepub_parameters.yaml"
+        - "automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/3nic/existing-stack/byol/prepub_parameters.yaml"

@@ -5115,7 +5115,7 @@ def main():
                                     "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                                     "GATEWAY_NET2=${GATEWAY_CIDR_BLOCK2%/*}\n",
                                     "GATEWAY2=`echo ${GATEWAY_NET2} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                                    "VPC_CIDR=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/vpc-ipv4-cidr-block/); ",
+                                    "VPC_CIDRS=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/vpc-ipv4-cidr-blocks/); ",
                                 ]
                         if ha_type == "same-az":
                             if stack == "existing" or stack == "full":
@@ -5137,7 +5137,7 @@ def main():
                             "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                             "GATEWAY_NET2=${GATEWAY_CIDR_BLOCK2%/*}\n",
                             "GATEWAY2=`echo ${GATEWAY_NET2} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                            "VPC_CIDR=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/vpc-ipv4-cidr-block/); ",
+                            "VPC_CIDRS=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/vpc-ipv4-cidr-blocks/); ",
                         ]
                 custom_sh += [
                     "PROGNAME=$(basename $0)\n",
@@ -5199,7 +5199,7 @@ def main():
                             network_config += [
                                 "GATEWAY_NET2=${GATEWAY_CIDR_BLOCK2%/*}; ",
                                 "GATEWAY2=`echo ${GATEWAY_NET2} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`; ",
-                                "VPC_CIDR=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-block/); ",
+                                "VPC_CIDRS=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-blocks/); ",
                             ]
                     if num_nics > 3:
                         for number in range(3, 8):
@@ -5339,13 +5339,21 @@ def main():
                             "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
                         ]
                     if num_nics > 2:
-                        custom_sh += [
-                            "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
-                            "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${INTIP} effective-port 1026 ip ${INTIP} } }\"\n",
-                        ]
+                        if ha_type == "same-az":
+                            custom_sh += [
+                                "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
+                                "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${INTIP} effective-port 1026 ip ${INTIP} } }\"\n",
+                            ]
                         if ha_type == "across-az":
                             custom_sh += [
-                                "\"tmsh create /net route /LOCAL_ONLY/int-rt gw $GATEWAY2 network $VPC_CIDR\"\n",
+                                "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
+                                "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${INTIP} effective-port 1026 ip ${INTIP} } }\")\n",
+                                "for CIDR in ${VPC_CIDRS}; do\n", 
+                                "   SUFFIX=$(echo ${CIDR} | tr -d '., /')\n",
+                                "   tmsh+=(\n",
+                                "   \"tmsh create /net route /LOCAL_ONLY/int-rt-${SUFFIX} gw ${GATEWAY2} network ${CIDR}\")\n",
+                                "done\n",
+                                "tmsh+=(\n",
                             ]
                 # License Device
                 if license_type == "byol":

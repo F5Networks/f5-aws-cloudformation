@@ -66,7 +66,7 @@
    ]
   }
  },
- "Description": "Template v5.12.0: Deploys an AWS Auto Scaling group of F5 LTM BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
+ "Description": "Template v5.13.0: Deploys an AWS Auto Scaling group of F5 LTM BYOL instances licensed by BIG-IQ. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
  "Mappings": {
   "BigipRegionMap": {
    "af-south-1": {
@@ -479,7 +479,7 @@
     }
    }
   },
-  "Version": "5.12.0"
+  "Version": "5.13.0"
  },
  "Outputs": {
   "bigipAutoscaleGroup": {
@@ -1137,35 +1137,35 @@
     "Tags": [
      {
       "Key": "Application",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Ref": "application"
       }
      },
      {
       "Key": "Costcenter",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Ref": "costcenter"
       }
      },
      {
       "Key": "Environment",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Ref": "environment"
       }
      },
      {
       "Key": "Group",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Ref": "group"
       }
      },
      {
       "Key": "Name",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Fn::Join": [
         "",
@@ -1180,7 +1180,7 @@
      },
      {
       "Key": "Owner",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Ref": "owner"
       }
@@ -1432,7 +1432,7 @@
              {
               "Ref": "bigIpModules"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-ltm-nlb.template,templateVersion:5.12.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-ltm-nlb.template,templateVersion:5.13.0,licenseType:bigiq\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--license-pool --cloud aws",
              "--big-iq-host",
@@ -1681,7 +1681,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 5.12.0\n",
+           "# Generated from 5.13.0\n",
            "date\n",
            ". /config/cloud/aws/onboard_config_vars\n",
            "if [[ $allowPhoneHome == \"No\" ]]; then\n",
@@ -1791,7 +1791,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 5.12.0\n",
+           "# Generated from 5.13.0\n",
            "hostname=`/usr/bin/curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

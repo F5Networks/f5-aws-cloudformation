@@ -46,7 +46,7 @@
    ]
   }
  },
- "Description": "Template v5.12.0: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v5.13.0: AWS CloudFormation Template for creating a Across-AZs cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "af-south-1": {
@@ -376,7 +376,7 @@
     }
    }
   },
-  "Version": "5.12.0"
+  "Version": "5.13.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -937,7 +937,7 @@
              {
               "Ref": "licenseKey1"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-byol-2nic-bigip.template,templateVersion:5.12.0,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-byol-2nic-bigip.template,templateVersion:5.13.0,licenseType:byol\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -1091,7 +1091,7 @@
            "#!/bin/bash\n",
            "source /config/cloud/aws/onboard_config_vars\n",
            "cfe_file_loc=\"/config/cloud/cfe_config.json\"\n",
-           "cfe_response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" https://localhost:${managementGuiPort}/mgmt/shared/cloud-failover/declare -d @$cfe_file_loc -o /dev/null)\n",
+           "cfe_response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" http://localhost:8100/mgmt/shared/cloud-failover/declare -d @$cfe_file_loc -o /dev/null)\n",
            "if [[ $cfe_response_code == 200 || $cfe_response_code == 502 ]]; then\n",
            "    echo \"Deployment of CFE application succeeded.\"\n",
            "    cfe_deployed=\"yes\"\n",
@@ -1199,7 +1199,7 @@
            "    echo \"Custom config download complete; checking for valid JSON.\"\n",
            "    cat $file_loc | jq .class\n",
            "    if [[ $? == 0 ]]; then\n",
-           "      response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" https://localhost:${managementGuiPort}/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
+           "      response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" http://localhost:8100/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
            "      if [[ $response_code == 200 || $response_code == 502 ]]; then\n",
            "        echo \"Deployment of custom application succeeded.\"\n",
            "        deployed=\"yes\"\n",
@@ -1266,7 +1266,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.12.0\n",
+           "# Generated from 5.13.0\n",
            "hostname=`/usr/bin/curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {
@@ -1993,7 +1993,7 @@
              {
               "Ref": "licenseKey2"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-byol-2nic-bigip.template,templateVersion:5.12.0,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-across-az-cluster-byol-2nic-bigip.template,templateVersion:5.13.0,licenseType:byol\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -2148,7 +2148,7 @@
            "#!/bin/bash\n",
            "source /config/cloud/aws/onboard_config_vars\n",
            "cfe_file_loc=\"/config/cloud/cfe_config.json\"\n",
-           "cfe_response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" https://localhost:${managementGuiPort}/mgmt/shared/cloud-failover/declare -d @$cfe_file_loc -o /dev/null)\n",
+           "cfe_response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" http://localhost:8100/mgmt/shared/cloud-failover/declare -d @$cfe_file_loc -o /dev/null)\n",
            "if [[ $cfe_response_code == 200 || $cfe_response_code == 502 ]]; then\n",
            "    echo \"Deployment of CFE application succeeded.\"\n",
            "    cfe_deployed=\"yes\"\n",
@@ -2271,7 +2271,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.12.0\n",
+           "# Generated from 5.13.0\n",
            "hostname=`/usr/bin/curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

@@ -4,8 +4,8 @@ Use this section to read about known issues and for common troubleshooting steps
 
   - In a case of stack creation failures, disabling rollback allows you to preview events for each provisioned resource as well as preview cf-init.log; see [AWS Docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-init.html#cfn-init-Examples) for more details.
   - There are several common reasons for deployment failure: 
-    * Missing pre-request: see the "Prerequisites" section for a particular AWS CloudFormation Template. See [example](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/standalone/1nic/existing-stack/payg/README.md#prerequisites) for more details.
-    * Missing required parameters; see the "Template parameters" section for the complete list of template parameters required for a particular AWS CloudFormation Template; see [example](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/standalone/1nic/existing-stack/payg/README.md#user-content-installing-the-image-using-the-aws-launch-stack-button) for more details.
+    * Missing pre-request: see the "Prerequisites" section for a particular AWS CloudFormation Template. See [example](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/supported/standalone/1nic/existing-stack/payg/README.md#prerequisites) for more details.
+    * Missing required parameters; see the "Template parameters" section for the complete list of template parameters required for a particular AWS CloudFormation Template; see [example](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/supported/standalone/1nic/existing-stack/payg/README.md#user-content-installing-the-image-using-the-aws-launch-stack-button) for more details.
     * Missing required resources/infastruture; existent stack templates require existent infastructure.
     * Lack of permissions for IAM user used for CloudFormation deployment.
     * Template validation problem; using the [validate-template](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/validate-template.html) method allows you to validate the template against AWS.

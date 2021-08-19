@@ -18,7 +18,7 @@
    ]
   }
  },
- "Description": "Template v5.12.0: Deploys an AWS Auto Scaling group of F5 LTM PAYG instances. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
+ "Description": "Template v5.13.0: Deploys an AWS Auto Scaling group of F5 LTM PAYG instances. Example scaling policies and CloudWatch alarms are associated with the Auto Scaling group.",
  "Mappings": {
   "AWSBigipThrougput": {
    "1000Mbps": {
@@ -817,7 +817,7 @@
     }
    }
   },
-  "Version": "5.12.0"
+  "Version": "5.13.0"
  },
  "Outputs": {
   "bigipAutoscaleGroup": {
@@ -1577,7 +1577,7 @@
              {
               "Ref": "bigIpModules"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-payg-autoscale-bigip-ltm.template,templateVersion:5.12.0,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-payg-autoscale-bigip-ltm.template,templateVersion:5.13.0,licenseType:hourly\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null",
@@ -1696,7 +1696,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 5.12.0\n",
+           "# Generated from 5.13.0\n",
            "date\n",
            ". /config/cloud/aws/onboard_config_vars\n",
            "if [[ $allowPhoneHome == \"No\" ]]; then\n",
@@ -1722,7 +1722,7 @@
            "           echo \"Custom config download complete; checking for valid JSON.\"\n",
            "           cat $file_loc | jq .class\n",
            "           if [[ $? == 0 ]]; then\n",
-           "               response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" https://localhost:${managementGuiPort}/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
+           "               response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" http://localhost:8100/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
            "           if [[ $response_code == 200 || $response_code == 502 ]]; then\n",
            "               echo \"Deployment of custom application succeeded.\"\n",
            "               deployed=\"yes\"\n",
@@ -1749,7 +1749,7 @@
            "           payload=$(echo $payload | jq -c 'del(.ltm.http.pool.members[0].updateInterval) | del(.ltm.http.pool.members[0].tagKey) | del(.ltm.http.pool.members[0].tagValue) | del(.ltm.http.pool.members[0].addressRealm) | del(.ltm.http.pool.members[0].region)')\n",
            "           payload=$(echo $payload | jq -c --arg pool_member $appInternalDnsName '.ltm.http.pool.members[0].hostname = $pool_member | .ltm.http.pool.members[0].addressDiscovery = \"fqdn\"')\n",
            "       fi\n",
-           "        response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" https://localhost:${managementGuiPort}/mgmt/shared/appsvcs/declare -d \"$payload\" -o /dev/null)\n",
+           "        response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" http://localhost:8100/mgmt/shared/appsvcs/declare -d \"$payload\" -o /dev/null)\n",
            "        if [[ $response_code == 200 || $response_code == 502  ]]; then\n",
            "            echo 'Deployment of recommended application succeeded.'\n",
            "        else\n",
@@ -1800,7 +1800,7 @@
           "",
           [
            "#!/bin/bash\n",
-           "# Generated from 5.12.0\n",
+           "# Generated from 5.13.0\n",
            "hostname=`/usr/bin/curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

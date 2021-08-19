@@ -16,15 +16,12 @@ This repository contains one main directory: supported.
 
 The *supported* directory contains our legacy AWS CloudFormation templates (CFTs) that have been created and fully tested by F5 Networks. These legacy cloud solution templates (CST1) are fully supported by F5, meaning you can get assistance if necessary from F5 Technical Support via your typical methods. These legacy templates have been deprecated and are being replaced by our next-generation cloud solution templates (CST2) available at https://github.com/F5Networks/f5-aws-cloudformation-v2. We recommend you adopt the next-generation templates as soon as is feasible.
 
-  The planned End of Support (EoS) for legacy cloud templates is 12/31/21.
-  
   - Deprecation does NOT mean we are removing nor disabling legacy templates.
-  - Customers are free to continue using legacy cloud templates subject to the EoS timeline.
+  - Customers are free to continue using legacy cloud templates.
   - Deprecated legacy cloud templates are officially in sustaining/maintenance mode.
   - Package updates and critical bug fixes will be considered for deprecated cloud templates.
-  - No additional legacy cloud verification testing will take place on new versions of TMOS (16.0+).
+  - No additional legacy cloud verification testing will take place on versions of TMOS later than 16.1+.
   - No new features nor legacy cloud templates will be developed.
-  - The Experimental legacy CST1 templates will be removed over time as additional CST2 use cases are delivered.
 
 
 ## Template information
@@ -33,15 +30,15 @@ For additional information, including how the templates are generated, and assis
 Standalone and HA production stack templates have been deprecated; a new parameter has been added to existing-stack templates to control deployment of public IP addresses.
 
 ### Matrix for tagged releases
-F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types, and throughput levels available for a specific tagged release. See the [AWS Matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md).
+F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types, and throughput levels available for a specific tagged release. See the [AWS Matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md).
 
   
 ### All F5 Supported templates for AWS
-To see a list of all of our supported AWS CloudFormation templates, see the **[AWS Supported Template index](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/template-index.md)**.
+To see a list of all of our supported AWS CloudFormation templates, see the **[AWS Supported Template index](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/template-index.md)**.
 
 
 ### Troubleshooting and Known Issues
-To see steps for troubleshooting common problems with AWS CloudFormation, see the **[Troubleshooting Steps section](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-troubleshooting.md)**. All known issues are on GitHub for better tracking and visibility. See issues with a label of **Known Issues** at https://github.com/f5networks/f5-aws-cloudformation/issues.
+To see steps for troubleshooting common problems with AWS CloudFormation, see the **[Troubleshooting Steps section](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-troubleshooting.md)**. All known issues are on GitHub for better tracking and visibility. See issues with a label of **Known Issues** at https://github.com/f5networks/f5-aws-cloudformation/issues.
 
 
 ---

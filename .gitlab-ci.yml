@@ -50,6 +50,7 @@ run_link_checker:
       - $RELEASE_RUNTIME_INIT_TESTS == "true"
   script:
     - make link_check
+  allow_failure: true
 
 pre_release_test_job:
   stage: sprinkle-tests

@@ -32,8 +32,9 @@ The following are prerequisites for the F5 3-NIC CFT:
   - An existing AWS VPC with two separate Availability Zones, each with three subnets: 
     - Management subnet (the subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library).
     - External subnet (the subnet for the external network requires a route and access to the Internet for onboarding BIG-IP). 
-    - A subnet for the BIG-IP internal interface. 
+    - A subnet for the BIG-IP internal interface.
   - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = < region >.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
+  - The AWS VPC may use one or more IPv4 CIDRs; an internal, local route will be created for each IPv4 CIDR to allow communication between the failover subnets.
   - Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
   
   
@@ -69,8 +70,9 @@ The following table lists the versions of BIG-IP that have been tested and valid
 
 | BIG-IP Version | Build | Solution | Status | Notes |
 | --- | --- | --- | --- | --- |
+| 16.0.1 | 0.0.6 | Standalone, Failover, Autoscale | Validated | |
 | 15.1.2 | 0.0.9 | Standalone, Failover, Autoscale | Validated | |
-| 14.1.3 | 0.0.7 | Standalone, Failover, Autoscale | Validated | |
+| 14.1.4 | 0.0.5 | Standalone, Failover, Autoscale | Validated | |
 | 13.1.3 | 0.0.4 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
 | 12.1.5 | 0.0.2 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
 
@@ -83,10 +85,6 @@ The following table lists the versions of BIG-IP that have been tested and valid
 ### Getting Help
 **F5 Support**  
 Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565). You can modify the template itself if necessary, but if you modify any of the code outside of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
-
-**Community Help**  
-We encourage you to use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 CloudFormation templates. There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance. This slack channel community support should **not** be considered a substitute for F5 Technical Support. See the [Slack Channel Statement](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/slack-channel-statement.md) for guidelines on using this channel.
-
 
 ## Deploying the solution
 The easiest way to deploy this CloudFormation template is to use the Launch button.<br>
@@ -293,7 +291,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright2014-2019 F5 Networks Inc.
+Copyright 2014-2021 F5 Networks Inc.
 
 
 ## License

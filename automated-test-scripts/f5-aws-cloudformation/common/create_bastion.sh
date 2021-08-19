@@ -19,8 +19,8 @@ else
   case <REGION> in
   cn-north-1 | cn-northwest-1)
     aws cloudformation create-stack --disable-rollback --region <REGION> --stack-name <STACK NAME>-bastion --tags Key=creator,Value=dewdrop Key=delete,Value=True \
-    --template-url https://bastion-host.s3.cn-north-1.amazonaws.com.cn/linux-bastion.template \
-    --capabilities CAPABILITY_IAM --parameters ParameterKey=BastionAMIOS,ParameterValue=Ubuntu-Server-16.04-LTS-HVM \
+    --template-url https://bastion-host.s3.cn-north-1.amazonaws.com.cn/linux-bastion-new.template \
+    --capabilities CAPABILITY_IAM --parameters ParameterKey=BastionAMIOS,ParameterValue=Ubuntu-Server-20.04-LTS-HVM \
     ParameterKey=BastionBanner,ParameterValue=https://bastion-host.s3.cn-north-1.amazonaws.com.cn/quickstart-linux-bastion/scripts/banner_message.txt \
     ParameterKey=BastionInstanceType,ParameterValue=m4.xlarge ParameterKey=BastionTenancy,ParameterValue=default \
     ParameterKey=EnableBanner,ParameterValue=false ParameterKey=EnableTCPForwarding,ParameterValue=true \
@@ -30,8 +30,8 @@ else
     ParameterKey=RemoteAccessCIDR,ParameterValue=0.0.0.0/0 ParameterKey=VPCID,ParameterValue=$vpc ParameterKey=AlternativeInitializationScript,ParameterValue=https://bastion-host.s3.cn-north-1.amazonaws.com.cn/quickstart-linux-bastion/scripts/bastion_bootstrap.sh ;;
   *)
     aws cloudformation create-stack --disable-rollback --region <REGION> --stack-name <STACK NAME>-bastion --tags Key=creator,Value=dewdrop Key=delete,Value=True \
-    --template-url https://s3.amazonaws.com/f5-cft/QA/linux-bastion.template \
-    --capabilities CAPABILITY_IAM --parameters ParameterKey=BastionAMIOS,ParameterValue=Ubuntu-Server-16.04-LTS-HVM \
+    --template-url https://s3.amazonaws.com/f5-cft/QA/linux-bastion-new.template \
+    --capabilities CAPABILITY_IAM --parameters ParameterKey=BastionAMIOS,ParameterValue=Ubuntu-Server-20.04-LTS-HVM \
     ParameterKey=BastionBanner,ParameterValue=https://aws-quickstart.s3.amazonaws.com/quickstart-linux-bastion/scripts/banner_message.txt \
     ParameterKey=BastionInstanceType,ParameterValue=t3.micro ParameterKey=BastionTenancy,ParameterValue=default \
     ParameterKey=EnableBanner,ParameterValue=false ParameterKey=EnableTCPForwarding,ParameterValue=true \

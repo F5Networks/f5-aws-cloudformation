@@ -110,7 +110,7 @@ echo "bucket_name=$bucket_name"
 # determine license parameter
 case <LICENSE TYPE> in
 bigiq)
-  bigiq_host=$(aws cloudformation describe-stacks --region <REGION> --stack-name <STACK NAME>-bigiq | jq -r '.Stacks[].Outputs[]|select (.OutputKey=="device1InternalInterfacePrivateIp")|.OutputValue')
+  bigiq_host=$(aws cloudformation describe-stacks --region <REGION> --stack-name <STACK NAME>-bigiq | jq -r '.Stacks[].Outputs[]|select (.OutputKey=="device1ManagementInterfacePrivateIp")|.OutputValue')
   lic_parm="ParameterKey=bigIqAddress,ParameterValue=${bigiq_host} ParameterKey=bigIqLicensePoolName,ParameterValue=<BIGIQ LICENSE POOL> \
   ParameterKey=bigIqPasswordS3Arn,ParameterValue=<BIGIQ LICENSE S3 ARN> ParameterKey=bigIqUsername,ParameterValue=admin ParameterKey=bigIqLicenseUnitOfMeasure,ParameterValue=yearly ParameterKey=bigIqLicenseSkuKeyword1,ParameterValue=BT"  ;;
 byol)
@@ -136,6 +136,6 @@ cn-north-1 | cn-northwest-1)
 --capabilities CAPABILITY_IAM --parameters $parameters ;;
 *)
 aws cloudformation create-stack --disable-rollback --region <REGION> --stack-name <STACK NAME> --tags Key=creator,Value=dewdrop Key=delete,Value=True \
---template-url https://"$bucket_name".s3-<REGION>.amazonaws.com/<TEMPLATE NAME> \
+--template-url https://"$bucket_name".s3.amazonaws.com/<TEMPLATE NAME> \
 --capabilities CAPABILITY_IAM --parameters $parameters ;;
 esac

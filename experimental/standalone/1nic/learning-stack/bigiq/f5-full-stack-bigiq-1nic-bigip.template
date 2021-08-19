@@ -50,7 +50,7 @@
    ]
   }
  },
- "Description": "Template v5.12.0: AWS CloudFormation Template for creating a full stack with a 1NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v5.13.0: AWS CloudFormation Template for creating a full stack with a 1NIC BIG-IP, a 1 Availability Zone VPC, subnets, security groups and a webserver (Bitnami LAMP stack with username bitnami **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "af-south-1": {
@@ -458,7 +458,7 @@
     }
    }
   },
-  "Version": "5.12.0"
+  "Version": "5.13.0"
  },
  "Outputs": {
   "Az1ApplicationSubnet": {
@@ -1156,7 +1156,7 @@
                }
               ]
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-bigiq-1nic-bigip.template,templateVersion:5.12.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-full-stack-bigiq-1nic-bigip.template,templateVersion:5.13.0,licenseType:bigiq\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -1365,7 +1365,7 @@
            "    echo \"Custom config download complete; checking for valid JSON.\"\n",
            "    cat $file_loc | jq .class\n",
            "    if [[ $? == 0 ]]; then\n",
-           "      response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" https://localhost:${managementGuiPort}/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
+           "      response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" http://localhost:8100/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
            "      if [[ $response_code == 200 || $response_code == 502 ]]; then\n",
            "        echo \"Deployment of custom application succeeded.\"\n",
            "        deployed=\"yes\"\n",
@@ -1414,7 +1414,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.12.0\n",
+           "# Generated from 5.13.0\n",
            "hostname=`/usr/bin/curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

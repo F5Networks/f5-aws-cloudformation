@@ -1,7 +1,7 @@
 ## Changing the BIG-IP VE image in an F5 CFT template
 The following procedure describes how to update an F5 AWS CFT template to use a different BIG-IP image than the one referenced in the template.  This is useful if your organization has standardized on a particular version of a template, and the BIG-IP image referenced by the template has been removed from AWS, for reasons such as a vulnerability is discovered in the BIG-IP image used by the template.
 
-Refer to the [AWS CFT Template Matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/aws-bigip-version-matrix.md) to ensure proper compatibility of BIG-IP versions for particular releases.  The BIG-IP version must be in the same family (for example, if you deployed using a v13 image, you use any v13.x image in the template).
+Refer to the [AWS CFT Template Matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md) to ensure proper compatibility of BIG-IP versions for particular releases.  The BIG-IP version must be in the same family (for example, if you deployed using a v13 image, you use any v13.x image in the template).
 
 *Important*  This procedure is only necessary if you need to modify a template that was contained in a previous tagged release.  If you do not need to use an older template, we recommend using the latest templates.
 
@@ -12,7 +12,7 @@ Refer to the [AWS CFT Template Matrix](https://github.com/F5Networks/f5-aws-clou
     *  From the **Branch** list, click the arrow, and then click the **Tags** tab. <br> ![Finding tagged releases](images/tag-location.png)<br>  
     *  Select the Tagged version that contains the template you want to update.  
 3. Copy the contents of the appropriate AMI Map:
-    *  Go to https://github.com/F5Networks/f5-aws-cloudformation/tree/master/AMI%20Maps.
+    *  Go to https://github.com/F5Networks/f5-aws-cloudformation/tree/main/AMI%20Maps.
     *  Click the folder for the BIG-IP product family you are using (for example, if you are using BIG-IP v13.0, click the directory that starts with **13.0**.)
     *  Click the appropriate region map, depending on whether you are using a BYOL or Hourly image.
     *  Click the Raw button, and then copy the entire content of the file.

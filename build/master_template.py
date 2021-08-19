@@ -834,7 +834,7 @@ def create_launch_config_metadata(ha_type, cloudlib_url, cloudlib_aws_url, as3_u
         "           echo \"Custom config download complete; checking for valid JSON.\"\n",
         "           cat $file_loc | jq .class\n",
         "           if [[ $? == 0 ]]; then\n",
-        "               response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" https://localhost:${managementGuiPort}/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
+        "               response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" http://localhost:8100/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
         "           if [[ $response_code == 200 || $response_code == 502 ]]; then\n",
         "               echo \"Deployment of custom application succeeded.\"\n",
         "               deployed=\"yes\"\n",
@@ -904,7 +904,7 @@ def create_launch_config_metadata(ha_type, cloudlib_url, cloudlib_aws_url, as3_u
         ])
 
     custom_sh.extend([
-        "        response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" https://localhost:${managementGuiPort}/mgmt/shared/appsvcs/declare -d \"$payload\" -o /dev/null)\n",
+        "        response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" http://localhost:8100/mgmt/shared/appsvcs/declare -d \"$payload\" -o /dev/null)\n",
         "        if [[ $response_code == 200 || $response_code == 502  ]]; then\n",
         "            echo 'Deployment of recommended application succeeded.'\n",
         "        else\n",
@@ -1653,7 +1653,7 @@ def main():
     # Log level
     loglevel = 'silly'
     # Template Version
-    version = '5.12.0'
+    version = '5.13.0'
     # Big-IP mapped
     BIGIP_VERSION = '16.0.1.1-0.0.6'
     # Cloudlib Branch
@@ -5115,7 +5115,7 @@ def main():
                                     "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                                     "GATEWAY_NET2=${GATEWAY_CIDR_BLOCK2%/*}\n",
                                     "GATEWAY2=`echo ${GATEWAY_NET2} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                                    "VPC_CIDR=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/vpc-ipv4-cidr-block/); ",
+                                    "VPC_CIDRS=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/vpc-ipv4-cidr-blocks/); ",
                                 ]
                         if ha_type == "same-az":
                             if stack == "existing" or stack == "full":
@@ -5137,7 +5137,7 @@ def main():
                             "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                             "GATEWAY_NET2=${GATEWAY_CIDR_BLOCK2%/*}\n",
                             "GATEWAY2=`echo ${GATEWAY_NET2} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
-                            "VPC_CIDR=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/vpc-ipv4-cidr-block/); ",
+                            "VPC_CIDRS=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/vpc-ipv4-cidr-blocks/); ",
                         ]
                 custom_sh += [
                     "PROGNAME=$(basename $0)\n",
@@ -5199,7 +5199,7 @@ def main():
                             network_config += [
                                 "GATEWAY_NET2=${GATEWAY_CIDR_BLOCK2%/*}; ",
                                 "GATEWAY2=`echo ${GATEWAY_NET2} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`; ",
-                                "VPC_CIDR=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-block/); ",
+                                "VPC_CIDRS=$(/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/vpc-ipv4-cidr-blocks/); ",
                             ]
                     if num_nics > 3:
                         for number in range(3, 8):
@@ -5339,13 +5339,21 @@ def main():
                             "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${EXTIP} effective-port 1026 ip ${EXTIP} } }\"\n",
                         ]
                     if num_nics > 2:
-                        custom_sh += [
-                            "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
-                            "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${INTIP} effective-port 1026 ip ${INTIP} } }\"\n",
-                        ]
+                        if ha_type == "same-az":
+                            custom_sh += [
+                                "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
+                                "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${INTIP} effective-port 1026 ip ${INTIP} } }\"\n",
+                            ]
                         if ha_type == "across-az":
                             custom_sh += [
-                                "\"tmsh create /net route /LOCAL_ONLY/int-rt gw $GATEWAY2 network $VPC_CIDR\"\n",
+                                "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
+                                "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${INTIP} effective-port 1026 ip ${INTIP} } }\")\n",
+                                "for CIDR in ${VPC_CIDRS}; do\n",
+                                "   SUFFIX=$(echo ${CIDR} | tr -d '., /')\n",
+                                "   tmsh+=(\n",
+                                "   \"tmsh create /net route /LOCAL_ONLY/int-rt-${SUFFIX} gw ${GATEWAY2} network ${CIDR}\")\n",
+                                "done\n",
+                                "tmsh+=(\n",
                             ]
                 # License Device
                 if license_type == "byol":
@@ -5487,7 +5495,7 @@ def main():
                         "    echo \"Custom config download complete; checking for valid JSON.\"\n",
                         "    cat $file_loc | jq .class\n",
                         "    if [[ $? == 0 ]]; then\n",
-                        "      response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" https://localhost:${managementGuiPort}/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
+                        "      response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" http://localhost:8100/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
                         "      if [[ $response_code == 200 || $response_code == 502 ]]; then\n",
                         "        echo \"Deployment of custom application succeeded.\"\n",
                         "        deployed=\"yes\"\n",
@@ -5531,7 +5539,7 @@ def main():
                         "#!/bin/bash\n",
                         "source /config/cloud/aws/onboard_config_vars\n",
                         "cfe_file_loc=\"/config/cloud/cfe_config.json\"\n",
-                        "cfe_response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" https://localhost:${managementGuiPort}/mgmt/shared/cloud-failover/declare -d @$cfe_file_loc -o /dev/null)\n",
+                        "cfe_response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" http://localhost:8100/mgmt/shared/cloud-failover/declare -d @$cfe_file_loc -o /dev/null)\n",
                         "if [[ $cfe_response_code == 200 || $cfe_response_code == 502 ]]; then\n",
                         "    echo \"Deployment of CFE application succeeded.\"\n",
                         "    cfe_deployed=\"yes\"\n",
@@ -5588,7 +5596,7 @@ def main():
                         "    echo \"Custom config download complete; checking for valid JSON.\"\n",
                         "    cat $file_loc | jq .class\n",
                         "    if [[ $? == 0 ]]; then\n",
-                        "      response_code=$(/usr/bin/curl -skvvu ${adminUsername}:$passwd -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" https://localhost:${managementGuiPort}/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
+                        "      response_code=$(/usr/bin/curl -svvu admin: -w \"%{http_code}\" -X POST -H \"Content-Type: application/json\" -H \"Expect:\" http://localhost:8100/mgmt/shared/appsvcs/declare -d @$file_loc -o /dev/null)\n",
                         "      if [[ $response_code == 200 || $response_code == 502 ]]; then\n",
                         "        echo \"Deployment of custom application succeeded.\"\n",
                         "        deployed=\"yes\"\n",

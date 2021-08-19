@@ -1653,7 +1653,7 @@ def main():
     # Log level
     loglevel = 'silly'
     # Template Version
-    version = '5.12.0'
+    version = '5.13.0'
     # Big-IP mapped
     BIGIP_VERSION = '16.0.1.1-0.0.6'
     # Cloudlib Branch
@@ -5348,7 +5348,7 @@ def main():
                             custom_sh += [
                                 "\"tmsh modify sys db dhclient.mgmt { value disable }\"\n",
                                 "\"tmsh modify cm device ${HOSTNAME} unicast-address { { effective-ip ${INTIP} effective-port 1026 ip ${INTIP} } }\")\n",
-                                "for CIDR in ${VPC_CIDRS}; do\n", 
+                                "for CIDR in ${VPC_CIDRS}; do\n",
                                 "   SUFFIX=$(echo ${CIDR} | tr -d '., /')\n",
                                 "   tmsh+=(\n",
                                 "   \"tmsh create /net route /LOCAL_ONLY/int-rt-${SUFFIX} gw ${GATEWAY2} network ${CIDR}\")\n",

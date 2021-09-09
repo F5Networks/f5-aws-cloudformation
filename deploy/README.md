@@ -20,16 +20,16 @@ Go to the marketplace and accept the user agreement for the version being launch
 If you are new to AWS, we recommend running a full-stack template as that will give you a full working environment you can inspect
 
 ex.
-[full-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/standalone/1nic/learning-stack/payg/f5-full-stack-payg-1nic-bigip.template)
+[full-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/experimental/standalone/1nic/learning-stack/payg/f5-full-stack-payg-1nic-bigip.template)
 
 
 If you are familiar with AWS and have an existing stack, we recommend first trying:
 
-[existing-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/standalone/1nic/existing-stack/payg/f5-existing-stack-payg-1nic-bigip-w-waf.template)
+[existing-stack-hourly-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/experimental/standalone/1nic/existing-stack/payg/f5-existing-stack-payg-1nic-bigip-w-waf.template)
 
 and taking a look at:
 
-[security-groups-for-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/experimental/reference/2nic/security-group-creation/f5-security-groups-for-2nic-bigip.template)
+[security-groups-for-1nic-bigip.template](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/experimental/reference/2nic/security-group-creation/f5-security-groups-for-2nic-bigip.template)
 
 to know which ports to enable.
 
@@ -204,8 +204,8 @@ This section provides steps intended to assist with troubleshooting common probl
 
   - In a case of stack creation failures, disabling rollback allows to preview events for each provisioned resource as well as preview cf-init.log; see [AWS Docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-init.html#cfn-init-Examples) for more details
   - There are several common reasons for deployment failure: 
-    * Missing pre-request; see "Prerequisites" section for a particular AWS CloudFomration Template; see [example](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/standalone/1nic/existing-stack/payg/README.md#prerequisites) for more details
-    * Missing required parameters; see "Template parameters" section for the complete list of template paramteres required for a particular AWS CloudFormation Template; see [example](https://github.com/F5Networks/f5-aws-cloudformation/blob/master/supported/standalone/1nic/existing-stack/payg/README.md#user-content-installing-the-image-using-the-aws-launch-stack-button) for more details 
+    * Missing pre-request; see "Prerequisites" section for a particular AWS CloudFomration Template; see [example](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/supported/standalone/1nic/existing-stack/payg/README.md#prerequisites) for more details
+    * Missing required parameters; see "Template parameters" section for the complete list of template paramteres required for a particular AWS CloudFormation Template; see [example](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/supported/standalone/1nic/existing-stack/payg/README.md#user-content-installing-the-image-using-the-aws-launch-stack-button) for more details 
     * Missing required resources/infastruture; extistent stack templates require existent infastructure
     * Lack of permissions for IAM user used for CloudFormation deployment
     * Template validation problem; using the [validate-template](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/validate-template.html) method allows to validate template against AWS

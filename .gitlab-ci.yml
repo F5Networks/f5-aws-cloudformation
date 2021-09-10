@@ -153,10 +153,10 @@ publish_to_github:
     # Execute Release script to push source to github repo
     - ./cloud-tools/release-tool/publish_github.sh "$ALLOWED_DIRS" "$ALLOWED_FILES"
   variables:
-    ALLOWED_DIRS: ".github AMI\ MAPS deploy experimental iApps images supported"
+    ALLOWED_DIRS: ".github AMI_Maps deploy experimental iApps images supported"
     ALLOWED_FILES: ".gitattributes README.md aws-bigip-version-matrix.md aws-troubleshooting.md aws-update-bigip-image.md iapp-migration.md  slack-channel-statement.md template-index.md"
     GITLAB_API_URL: "$AWS_URL"
-    GIT_HUB_API_TOKEN: "$AWS_GITHUB_API_TOKEN"
+    GITHUB_API_TOKEN: "$AWS_GITHUB_API_TOKEN"
     GITLAB_PRIVATE_TOKEN: "$AWS_GITLAB_API_TOKEN"
 
 # validate README file(s) only contain links that respond with 200 OK

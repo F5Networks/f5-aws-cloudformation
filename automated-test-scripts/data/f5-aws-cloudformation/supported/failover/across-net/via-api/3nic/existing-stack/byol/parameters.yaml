@@ -4,6 +4,7 @@ AUTOFILL EVAL LICENSE KEY 2: null
 BIG IP MODULES: ltm:nominal
 BIG-IP BUILD: 0.0.6
 BIG-IP VERSION: 16.0.1.1
+BRANCH: main
 CLUSTER TYPE: across
 CUSTOM IMAGE ID: OPTIONAL
 CUSTOM USER: dewpt_user
@@ -24,6 +25,6 @@ STACK TYPE: existing-stack
 STACK TYPE FILE: existing-stack
 TEMPLATE NAME: f5-<STACK TYPE FILE>-<CLUSTER TYPE>-az-cluster-<LICENSE TYPE>-<NIC
   COUNT>nic-bigip.template
-TEMPLATE URL: https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/master/supported/failover/<CLUSTER
+TEMPLATE URL: https://raw.githubusercontent.com/F5Networks/f5-aws-cloudformation/<BRANCH>/supported/failover/<CLUSTER
   TYPE>-net/via-api/<NIC COUNT>nic/<STACK TYPE>/<LICENSE TYPE>/<TEMPLATE NAME>
 TIMEZONE: US/Mountain

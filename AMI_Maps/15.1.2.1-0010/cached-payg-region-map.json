@@ -1,4 +1,27 @@
 {
+  "af-south-1": {
+    "AdvancedWaf200Mbps": "ami-0250949e3bf60111b",
+    "AdvancedWaf25Mbps": "ami-0bd9ac9c564a78be3",
+    "Best10000Mbps": "ami-0f8b1aac563e3bb38",
+    "Best1000Mbps": "ami-098137e76e7f8631c",
+    "Best200Mbps": "ami-08b7be41fb47527d8",
+    "Best25Mbps": "ami-0033771968c1b321f",
+    "Best5000Mbps": "ami-0b366e816f0d7e9c5",
+    "Better10000Mbps": "ami-0520f78efa1fb1962",
+    "Better1000Mbps": "ami-080274a620774e963",
+    "Better200Mbps": "ami-0d79ac60828e14458",
+    "Better25Mbps": "ami-098feb660a995d94a",
+    "Better5000Mbps": "ami-016cd4ad3265b032e",
+    "Good10000Mbps": "ami-064983783516bb41b",
+    "Good1000Mbps": "ami-0527aa738fcf3131e",
+    "Good16vCPU": "ami-07f7871a8ac81dc0c",
+    "Good200Mbps": "ami-068d0843a6bf81a85",
+    "Good25Mbps": "ami-005b08404f41cdc0f",
+    "Good5000Mbps": "ami-0a01103f28efd699c",
+    "PerAppVeAwaf200Mbps": "ami-03079a5d13b0ed718",
+    "PerAppVeAwaf25Mbps": "ami-09dcf340b670611ed",
+    "PerAppVeLtm25Mbps": "ami-00ff8e94a3b7fd674"
+  },
   "ap-east-1": {
     "AdvancedWaf200Mbps": "ami-01c082d245143007d",
     "AdvancedWaf25Mbps": "ami-0935f06884b2ffef8",
@@ -20,7 +43,6 @@
     "Good5000Mbps": "ami-0ab9834ea026badee",
     "PerAppVeAwaf200Mbps": "ami-02b849f6672bed398",
     "PerAppVeAwaf25Mbps": "ami-008aa07f46dee009c",
-    "PerAppVeLtm200Mbps": "ami-0fd12f7488a0723ee",
     "PerAppVeLtm25Mbps": "ami-0c7b08a8957c91437"
   },
   "ap-northeast-1": {
@@ -44,7 +66,6 @@
     "Good5000Mbps": "ami-0764d903aafa62c58",
     "PerAppVeAwaf200Mbps": "ami-088f895944ab9e4b4",
     "PerAppVeAwaf25Mbps": "ami-0ea38c70981337688",
-    "PerAppVeLtm200Mbps": "ami-0b12f1adf1f62fee6",
     "PerAppVeLtm25Mbps": "ami-04379bb6701d8c954"
   },
   "ap-northeast-2": {
@@ -68,8 +89,30 @@
     "Good5000Mbps": "ami-01d3fca6b7519318b",
     "PerAppVeAwaf200Mbps": "ami-05b2616bd75d18adf",
     "PerAppVeAwaf25Mbps": "ami-026c73d8ff3402cbb",
-    "PerAppVeLtm200Mbps": "ami-0f131e55e8fb1a0d6",
     "PerAppVeLtm25Mbps": "ami-0f38fb30fdfc2b3f3"
+  },
+  "ap-northeast-3": {
+    "AdvancedWaf200Mbps": "ami-075307b2abc34d213",
+    "AdvancedWaf25Mbps": "ami-04d568992166c5307",
+    "Best10000Mbps": "ami-0fcc46e8919e3454e",
+    "Best1000Mbps": "ami-046a801951566c049",
+    "Best200Mbps": "ami-0f0518744517e1f1d",
+    "Best25Mbps": "ami-0edd9499afdb4c607",
+    "Best5000Mbps": "ami-08503702944581066",
+    "Better10000Mbps": "ami-0c66719658844c95b",
+    "Better1000Mbps": "ami-0ebc2e81d60ec17be",
+    "Better200Mbps": "ami-0ce31a896b43b06a5",
+    "Better25Mbps": "ami-0418367e8c9af8451",
+    "Better5000Mbps": "ami-0114c0c6c5175970b",
+    "Good10000Mbps": "ami-0b2e425ab49fd9bfe",
+    "Good1000Mbps": "ami-0486e071509ff24fd",
+    "Good16vCPU": "ami-01d251e95262880a1",
+    "Good200Mbps": "ami-048aa25068d0bd28e",
+    "Good25Mbps": "ami-06578110c53a0ba8f",
+    "Good5000Mbps": "ami-05d1e8bca220b294f",
+    "PerAppVeAwaf200Mbps": "ami-0fe4590e6a1a81292",
+    "PerAppVeAwaf25Mbps": "ami-05359cc23820ea00d",
+    "PerAppVeLtm25Mbps": "ami-07be3108f729c507e"
   },
   "ap-south-1": {
     "AdvancedWaf200Mbps": "ami-00ea81472634cef18",
@@ -92,7 +135,6 @@
     "Good5000Mbps": "ami-071ef912a0aa6182a",
     "PerAppVeAwaf200Mbps": "ami-018ccd19787c436c4",
     "PerAppVeAwaf25Mbps": "ami-0eb3c581d4fd17d96",
-    "PerAppVeLtm200Mbps": "ami-00df6d5786f9b9809",
     "PerAppVeLtm25Mbps": "ami-0b2a43e7314002335"
   },
   "ap-southeast-1": {
@@ -116,7 +158,6 @@
     "Good5000Mbps": "ami-007fd2e9dd4be06b9",
     "PerAppVeAwaf200Mbps": "ami-0c77bf66292a3cf3a",
     "PerAppVeAwaf25Mbps": "ami-0e934093ef30ff3ae",
-    "PerAppVeLtm200Mbps": "ami-0b5147c61207b4192",
     "PerAppVeLtm25Mbps": "ami-011f3fbc61baca948"
   },
   "ap-southeast-2": {
@@ -140,7 +181,6 @@
     "Good5000Mbps": "ami-050de4edf7ef0e6c3",
     "PerAppVeAwaf200Mbps": "ami-0e96abf57bc87bc31",
     "PerAppVeAwaf25Mbps": "ami-092635782475be56b",
-    "PerAppVeLtm200Mbps": "ami-08b3b11a3e09c2ec7",
     "PerAppVeLtm25Mbps": "ami-0bc2866e0f3449382"
   },
   "ca-central-1": {
@@ -164,7 +204,6 @@
     "Good5000Mbps": "ami-09d998e9b6a8b3d58",
     "PerAppVeAwaf200Mbps": "ami-0985245184562dad2",
     "PerAppVeAwaf25Mbps": "ami-06740abdb748cae66",
-    "PerAppVeLtm200Mbps": "ami-0f7f9bf5889c0f716",
     "PerAppVeLtm25Mbps": "ami-08ebed04cfbb98e2d"
   },
   "eu-central-1": {
@@ -188,7 +227,6 @@
     "Good5000Mbps": "ami-080b1a00b81fce2da",
     "PerAppVeAwaf200Mbps": "ami-0a2fee95bd353c609",
     "PerAppVeAwaf25Mbps": "ami-053e169cd8ab57179",
-    "PerAppVeLtm200Mbps": "ami-0815d5cf1217257a4",
     "PerAppVeLtm25Mbps": "ami-046c91457bcf57164"
   },
   "eu-north-1": {
@@ -212,8 +250,30 @@
     "Good5000Mbps": "ami-01138c80b14ae9799",
     "PerAppVeAwaf200Mbps": "ami-0320d941e61986d3b",
     "PerAppVeAwaf25Mbps": "ami-016ae7d43fc115799",
-    "PerAppVeLtm200Mbps": "ami-0af414a1ac68bad51",
     "PerAppVeLtm25Mbps": "ami-0dba9fd0033dff387"
+  },
+  "eu-south-1": {
+    "AdvancedWaf200Mbps": "ami-088e6a3e67fd65a26",
+    "AdvancedWaf25Mbps": "ami-0e7936cafefe0de84",
+    "Best10000Mbps": "ami-0a76188bffc930444",
+    "Best1000Mbps": "ami-0cb00cab7ed97b7f6",
+    "Best200Mbps": "ami-01aba608537aba8c1",
+    "Best25Mbps": "ami-0587e33bcf2b7b020",
+    "Best5000Mbps": "ami-02fbd5615cd5f36de",
+    "Better10000Mbps": "ami-0793076a4de85538b",
+    "Better1000Mbps": "ami-08ce2eddb531fc753",
+    "Better200Mbps": "ami-044e19a59e73a58a2",
+    "Better25Mbps": "ami-05e7be9e3d207ebd6",
+    "Better5000Mbps": "ami-05582161836cba520",
+    "Good10000Mbps": "ami-01629ab61a2f55cd0",
+    "Good1000Mbps": "ami-0a1ef728a12b9d37e",
+    "Good16vCPU": "ami-0ef42058dc16f1223",
+    "Good200Mbps": "ami-06f9857daca358167",
+    "Good25Mbps": "ami-01037e4eb5b5ab9de",
+    "Good5000Mbps": "ami-013b488fceda44de6",
+    "PerAppVeAwaf200Mbps": "ami-0b48208fcfc2bc7bc",
+    "PerAppVeAwaf25Mbps": "ami-01f797d9760c4a7d6",
+    "PerAppVeLtm25Mbps": "ami-0c6005ded16bdb1ab"
   },
   "eu-west-1": {
     "AdvancedWaf200Mbps": "ami-095d3d903994e2a88",
@@ -236,7 +296,6 @@
     "Good5000Mbps": "ami-0e2e0b4922112e5b9",
     "PerAppVeAwaf200Mbps": "ami-0802d356f2d188b3d",
     "PerAppVeAwaf25Mbps": "ami-0d663b4c5212fa3a5",
-    "PerAppVeLtm200Mbps": "ami-0f2c19bc11fec14e2",
     "PerAppVeLtm25Mbps": "ami-039c43ff8fd7a5231"
   },
   "eu-west-2": {
@@ -260,7 +319,6 @@
     "Good5000Mbps": "ami-0d62ceb96ba9e5b27",
     "PerAppVeAwaf200Mbps": "ami-0222044db9d3df32f",
     "PerAppVeAwaf25Mbps": "ami-0c502e0885a86e22a",
-    "PerAppVeLtm200Mbps": "ami-0a50c3827f9bb20ad",
     "PerAppVeLtm25Mbps": "ami-067e4181fbe7b8b33"
   },
   "eu-west-3": {
@@ -284,7 +342,6 @@
     "Good5000Mbps": "ami-01924dabce1f13b30",
     "PerAppVeAwaf200Mbps": "ami-066951636d471f81c",
     "PerAppVeAwaf25Mbps": "ami-0692f5e492e7250cd",
-    "PerAppVeLtm200Mbps": "ami-00589eb55ddff9dcd",
     "PerAppVeLtm25Mbps": "ami-08720841ddf5893db"
   },
   "me-south-1": {
@@ -308,7 +365,6 @@
     "Good5000Mbps": "ami-02e83cc5916dde16e",
     "PerAppVeAwaf200Mbps": "ami-03fe75d0922ca52e4",
     "PerAppVeAwaf25Mbps": "ami-05cd33be861b6c07b",
-    "PerAppVeLtm200Mbps": "ami-0735099b51f6cfb39",
     "PerAppVeLtm25Mbps": "ami-0c6f38be845e2f314"
   },
   "sa-east-1": {
@@ -332,7 +388,6 @@
     "Good5000Mbps": "ami-08c1e24dff3fb3ed6",
     "PerAppVeAwaf200Mbps": "ami-0ac7b1ab7b9669e22",
     "PerAppVeAwaf25Mbps": "ami-0bb9274cf7ccdffef",
-    "PerAppVeLtm200Mbps": "ami-06e6724518d36e4e5",
     "PerAppVeLtm25Mbps": "ami-0ce6f4a8a6ff9d86d"
   },
   "us-east-1": {
@@ -356,7 +411,6 @@
     "Good5000Mbps": "ami-00066ec32395465b0",
     "PerAppVeAwaf200Mbps": "ami-0605917f93f6eda95",
     "PerAppVeAwaf25Mbps": "ami-0b974dae3e7a42601",
-    "PerAppVeLtm200Mbps": "ami-0874330d49253bba6",
     "PerAppVeLtm25Mbps": "ami-0fc6e6e20f730e681"
   },
   "us-east-2": {
@@ -380,7 +434,6 @@
     "Good5000Mbps": "ami-0e3032736f74caa74",
     "PerAppVeAwaf200Mbps": "ami-04cc8a535c76f1334",
     "PerAppVeAwaf25Mbps": "ami-0d786ca692564c819",
-    "PerAppVeLtm200Mbps": "ami-04e95845a81d7df39",
     "PerAppVeLtm25Mbps": "ami-01e5385fea0f7aad7"
   },
   "us-gov-east-1": {
@@ -404,7 +457,6 @@
     "Good5000Mbps": "ami-032af971ead8e2c5b",
     "PerAppVeAwaf200Mbps": "ami-050e779470ae53156",
     "PerAppVeAwaf25Mbps": "ami-0215056a785175c03",
-    "PerAppVeLtm200Mbps": "ami-0bea72435c5d25c72",
     "PerAppVeLtm25Mbps": "ami-0671205ee3702acc4"
   },
   "us-gov-west-1": {
@@ -428,7 +480,6 @@
     "Good5000Mbps": "ami-010db6405341b2020",
     "PerAppVeAwaf200Mbps": "ami-02d96c91e252fefce",
     "PerAppVeAwaf25Mbps": "ami-0d4b1d8f206342a75",
-    "PerAppVeLtm200Mbps": "ami-08a9d64219b631dfe",
     "PerAppVeLtm25Mbps": "ami-0ceb3525926f8f0fa"
   },
   "us-west-1": {
@@ -452,7 +503,6 @@
     "Good5000Mbps": "ami-07f383db88f5a7f87",
     "PerAppVeAwaf200Mbps": "ami-01223434471115d7f",
     "PerAppVeAwaf25Mbps": "ami-0710cd212a6513ccd",
-    "PerAppVeLtm200Mbps": "ami-02f8d3fd220388ae8",
     "PerAppVeLtm25Mbps": "ami-03fd07ffddcb51042"
   },
   "us-west-2": {
@@ -476,7 +526,6 @@
     "Good5000Mbps": "ami-04fdfdee93df65830",
     "PerAppVeAwaf200Mbps": "ami-08cad5280a151db70",
     "PerAppVeAwaf25Mbps": "ami-04e085d39662477f7",
-    "PerAppVeLtm200Mbps": "ami-07a934c7857ae9701",
     "PerAppVeLtm25Mbps": "ami-099f3f29fcc4d0735"
   }
 }

@@ -1690,13 +1690,13 @@ def main():
     ### Big-IP mapped
     BIGIP_VERSION = '16.1.0-0.0.19'
     ### Cloudlib Branch
-    branch_cloud = 'release-4.25.0'
+    branch_cloud = 'v4.26.5'
     branch_aws = 'v2.9.1'
     branch_cloud_iapps_sd = 'v2.3.2'
     branch_cloud_iapps_logger = 'v1.0.0'
     ### AS3 branch and package
-    branch_as3 = 'v3.25.0'
-    package_as3 = 'f5-appsvcs-3.25.0-3.noarch.rpm'
+    branch_as3 = 'v3.31.0'
+    package_as3 = 'f5-appsvcs-3.31.0-6.noarch.rpm'
     ### Build verifyHash file from published verifyHash on CDN
     urls = [ 'http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/' + str(branch_cloud) + '/verifyHash' ]
     for url in urls:
@@ -1722,7 +1722,7 @@ def main():
     cloud_logger_url = "http://cdn.f5.com/product/cloudsolutions/iapps/common/f5-cloud-logger/" + str(branch_cloud_iapps_logger) + "/f5.cloud_logger.v1.0.0.tmpl"
 
     ### add hashmark to skip cloudlib verification script.
-    comment_out = "#"
+    comment_out = ""
     # Begin Template
     t = Template()
     ## add template version

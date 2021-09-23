@@ -1657,11 +1657,11 @@ def main():
     # Big-IP mapped
     BIGIP_VERSION = '16.1.0-0.0.19'
     # Cloudlib Branch
-    branch_cloud = 'v4.25.0'
+    branch_cloud = 'v4.26.5'
     branch_aws = 'v2.10.0'
     # AS3 branch and package
-    branch_as3 = 'v3.26.1'
-    package_as3 = 'f5-appsvcs-3.26.1-1.noarch.rpm'
+    branch_as3 = 'v3.31.0'
+    package_as3 = 'f5-appsvcs-3.31.0-6.noarch.rpm'
     # Build verifyHash file from published verifyHash on CDN
     # Comment this out until f5-cloud-libs released with verifyHash which includes new version of f5-cloud-failover
     urls = ['https://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/' + str(branch_cloud) + '/verifyHash']
@@ -1679,7 +1679,7 @@ def main():
         except requests.exceptions.RequestException as e:
             print(e)
 # Files URL's
-    cfe_version = "1.8.0"
+    cfe_version = "1.9.0"
     cfe_sufix = "-0"
     cfe_name = "f5-cloud-failover-" + str(cfe_version + cfe_sufix) + ".noarch.rpm"
     cfe = "/var/config/rest/downloads/" + str(cfe_name)
@@ -1698,9 +1698,9 @@ def main():
 
     # add hashmark to skip cloudlib verification script.
     if ha_type == "same-az" or ha_type == "across-az":
-        comment_out = "#"
+        comment_out = ""
     else:
-        comment_out = "#"
+        comment_out = ""
     # Begin Template
     t = Template()
     # add template version

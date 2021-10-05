@@ -58,7 +58,7 @@
    ]
   }
  },
- "Description": "Template v5.13.0: AWS CloudFormation Template for creating a Same-AZ cluster of 3NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v5.14.0: AWS CloudFormation Template for creating a Same-AZ cluster of 3NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "af-south-1": {
@@ -426,7 +426,7 @@
     }
    }
   },
-  "Version": "5.13.0"
+  "Version": "5.14.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -1131,7 +1131,7 @@
                }
               ]
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.0-0.0.19,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template,templateVersion:5.13.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.0-0.0.19,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template,templateVersion:5.14.0,licenseType:bigiq\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -1498,7 +1498,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.13.0\n",
+           "# Generated from 5.14.0\n",
            "hostname=`/usr/bin/curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {
@@ -2263,7 +2263,7 @@
                }
               ]
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.0-0.0.19,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template,templateVersion:5.13.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.0-0.0.19,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-bigiq-3nic-bigip.template,templateVersion:5.14.0,licenseType:bigiq\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -2617,7 +2617,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.13.0\n",
+           "# Generated from 5.14.0\n",
            "hostname=`/usr/bin/curl http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {

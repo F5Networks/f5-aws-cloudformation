@@ -65,10 +65,10 @@ The following table lists the versions of BIG-IP that have been tested and valid
 | BIG-IP Version | Build | Solution | Status | Notes |
 | --- | --- | --- | --- | --- |
 | 16.1.0 | 0.0.19 | Standalone, Failover, Autoscale | Validated | |
-| 15.1.2.1 | 0.0.10 | Standalone, Failover, Autoscale | Validated | |
+| 15.1.4.0 | 0.0.47 | Standalone, Failover, Autoscale | Validated | |
 | 14.1.4.4 | 0.0.4 | Standalone, Failover, Autoscale | Validated | |
-| 13.1.4 | 0.0.3 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
-| 12.1.5 | 0.0.2 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
+| 13.1.4.1 | 0.0.3 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
+| 12.1.6 | 0.0.9 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
 
 ## Supported instance types and hypervisors
   - For a list of supported AWS instance types for this solutions, see http://clouddocs.f5.com/cloud/public/v1/aws/AWS_singleNIC.html#amazon-ec2-instances-for-big-ip-ve.

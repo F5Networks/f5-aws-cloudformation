@@ -36,6 +36,9 @@ F5 has created a matrix that contains all of the tagged releases of the F5 Cloud
 ### All F5 Supported templates for AWS
 To see a list of all of our supported AWS CloudFormation templates, see the **[AWS Supported Template index](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/template-index.md)**.
 
+### Note on IMDSv2
+These templates now use IMDSv2 to access AWS metadata from within instances. IMDSv2 uses session-oriented requests instead of the request/response model used by IMDSv1. Please read more about [IMDSv2 here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html). This does not affect how the templates are deployed but makes your deployments secure against various types of attacks. Please read more on the topic [here](https://aws.amazon.com/blogs/security/defense-in-depth-open-firewalls-reverse-proxies-ssrf-vulnerabilities-ec2-instance-metadata-service/).
+
 
 ### Troubleshooting and Known Issues
 To see steps for troubleshooting common problems with AWS CloudFormation, see the **[Troubleshooting Steps section](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-troubleshooting.md)**. All known issues are on GitHub for better tracking and visibility. See issues with a label of **Known Issues** at https://github.com/f5networks/f5-aws-cloudformation/issues.

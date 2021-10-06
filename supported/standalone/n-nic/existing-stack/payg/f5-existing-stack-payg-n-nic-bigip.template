@@ -1242,45 +1242,46 @@
           "",
           [
            "GATEWAY_MAC=`ifconfig eth1 | egrep ether | awk '{print tolower($2)}'`; ",
-           "GATEWAY_CIDR_BLOCK=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`; ",
+           "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
+           "GATEWAY_CIDR_BLOCK=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`; ",
            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}; ",
            "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}; ",
            "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`; ",
            "GATEWAY_MAC2=`ifconfig eth2 | egrep ether | awk '{print tolower($2)}'`\n",
-           "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`; ",
+           "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`; ",
            "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}; ",
            {
             "Fn::If": [
              "createNic3",
-             "GATEWAY_MAC3=`ifconfig eth3 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK3=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC3}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX3=${GATEWAY_CIDR_BLOCK3#*/};",
+             "GATEWAY_MAC3=`ifconfig eth3 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK3=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC3}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX3=${GATEWAY_CIDR_BLOCK3#*/};",
              ""
             ]
            },
            {
             "Fn::If": [
              "createNic4",
-             "GATEWAY_MAC4=`ifconfig eth4 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK4=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC4}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX4=${GATEWAY_CIDR_BLOCK4#*/};",
+             "GATEWAY_MAC4=`ifconfig eth4 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK4=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC4}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX4=${GATEWAY_CIDR_BLOCK4#*/};",
              ""
             ]
            },
            {
             "Fn::If": [
              "createNic5",
-             "GATEWAY_MAC5=`ifconfig eth5 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK5=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC5}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX5=${GATEWAY_CIDR_BLOCK5#*/};",
+             "GATEWAY_MAC5=`ifconfig eth5 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK5=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC5}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX5=${GATEWAY_CIDR_BLOCK5#*/};",
              ""
             ]
            },
            {
             "Fn::If": [
              "createNic6",
-             "GATEWAY_MAC6=`ifconfig eth6 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK6=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC6}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX6=${GATEWAY_CIDR_BLOCK6#*/};",
+             "GATEWAY_MAC6=`ifconfig eth6 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK6=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC6}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX6=${GATEWAY_CIDR_BLOCK6#*/};",
              ""
             ]
            },
            {
             "Fn::If": [
              "createNic7",
-             "GATEWAY_MAC7=`ifconfig eth7 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK7=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC7}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX7=${GATEWAY_CIDR_BLOCK7#*/};",
+             "GATEWAY_MAC7=`ifconfig eth7 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK7=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC7}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX7=${GATEWAY_CIDR_BLOCK7#*/};",
              ""
             ]
            },
@@ -1449,6 +1450,8 @@
              "\"|sha512sum|cut -d \" \" -f 1`;",
              "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
              "nohup /config/waitThenRun.sh",
+             "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`;",
+             "HOSTNAME=`/usr/bin/curl -sS -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`;",
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
              "--install-ilx-package file:///var/config/rest/downloads/f5-appsvcs-3.31.0-6.noarch.rpm",
              "--wait-for NETWORK_CONFIG_DONE",
@@ -1457,7 +1460,7 @@
              "--log-level silly",
              "--no-reboot",
              "--host localhost",
-             "--hostname `/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+             "--hostname ${HOSTNAME}",
              "--ntp ",
              {
               "Ref": "ntpServer"
@@ -1484,6 +1487,8 @@
             [
              "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
              "nohup /config/waitThenRun.sh",
+             "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`;",
+             "HOSTNAME=`/usr/bin/curl -sS -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`;",
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
              "--install-ilx-package file:///var/config/rest/downloads/f5-appsvcs-3.31.0-6.noarch.rpm",
              "--wait-for NETWORK_CONFIG_DONE",
@@ -1492,7 +1497,7 @@
              "--log-level silly",
              "--no-reboot",
              "--host localhost",
-             "--hostname `/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+             "--hostname ${HOSTNAME}",
              "--ntp ",
              {
               "Ref": "ntpServer"
@@ -1557,6 +1562,7 @@
           "",
           [
            "#!/bin/bash\n",
+           "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
            "PROGNAME=$(basename $0)\n",
            "function error_exit {\n",
            "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
@@ -1622,7 +1628,8 @@
           [
            "INTERFACE=$1",
            "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep ether | awk '{print tolower($2)}'`",
-           "VPC_CIDR_BLOCK=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+           "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`",
+           "VPC_CIDR_BLOCK=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
            "VPC_NET=${VPC_CIDR_BLOCK%/*}",
            "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
            "echo $NAME_SERVER"
@@ -1641,7 +1648,8 @@
            "",
            "#!/bin/bash\n",
            "# Generated from 5.14.0\n",
-           "hostname=`/usr/bin/curl http://169.254.169.254/latest/meta-data/hostname`\n",
+           "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
+           "HOSTNAME=`/usr/bin/curl -sS -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {
             "Ref": "AWS::Region"

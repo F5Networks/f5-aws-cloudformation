@@ -14,6 +14,7 @@ onStart:
 - ../../common/verify_instance_status_ok.sh
 - ../../common/verify_public_ip.sh
 - ../../common/verify_onboard.sh
+- ../../common/verify_AS3.sh
 - ../../common/reboot_instance.sh
 - ../../common/verify_instance_status_ok.sh
 - ../../common/verify_bigip_version.sh

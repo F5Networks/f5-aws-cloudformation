@@ -32,6 +32,7 @@ onStart:
 - ../../common/delete_stack_vpc.sh
 - ../../common/verify_delete_vpc.sh
 onFail:
+- ../../../sleep/3_minutes.sh
 - ../../common/capture_logs.sh
 - ../../common/delete_tags_sd.sh
 - ../../common/delete_s3_bucket.sh

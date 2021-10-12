@@ -9,6 +9,7 @@ stages:
   - sprinkle-tests
   - droplets
   - release
+  - post-release-tests
   - publish
 
 variables:
@@ -31,6 +32,8 @@ run_cfn_lint:
     - cfn-lint --template ../../supported/**/*.template --override-spec override_propagate.json
 
 # validate README file(s) only contain links that respond with 200 OK
+# this pre-release job only checks internal links to avoid failures
+# when tag version is unpublished
 run_link_checker:
   image: ${ARTIFACTORY_SERVER}/dockerhub-remote/node:10
   stage: smoke-tests
@@ -38,9 +41,9 @@ run_link_checker:
     - docker-executor
   only:
     refs:
-      # the current intent is to run only on master and release branches
-      - main
+      # run only on release branch and develop
       - /^R.*/
+      - develop
   except:
     refs:
       - schedules
@@ -50,7 +53,6 @@ run_link_checker:
       - $RELEASE_RUNTIME_INIT_TESTS == "true"
   script:
     - make link_check
-  allow_failure: true
 
 pre_release_test_job:
   stage: sprinkle-tests
@@ -151,11 +153,30 @@ publish_to_github:
     # Execute Release script to push source to github repo
     - ./cloud-tools/release-tool/publish_github.sh "$ALLOWED_DIRS" "$ALLOWED_FILES"
   variables:
-    ALLOWED_DIRS: ".github AMI\ MAPS deploy experimental iApps images supported"
+    ALLOWED_DIRS: ".github AMI_Maps deploy experimental iApps images supported"
     ALLOWED_FILES: ".gitattributes README.md aws-bigip-version-matrix.md aws-troubleshooting.md aws-update-bigip-image.md iapp-migration.md  slack-channel-statement.md template-index.md"
     GITLAB_API_URL: "$AWS_URL"
-    GIT_HUB_API_TOKEN: "$AWS_GITHUB_API_TOKEN"
+    GITHUB_API_TOKEN: "$AWS_GITHUB_API_TOKEN"
     GITLAB_PRIVATE_TOKEN: "$AWS_GITLAB_API_TOKEN"
+
+# validate README file(s) only contain links that respond with 200 OK
+run_link_checker_release:
+  image: ${ARTIFACTORY_SERVER}/dockerhub-remote/node:10
+  stage: post-release-tests
+  tags:
+    - docker-executor
+  only:
+    # run only after release has been published
+    - /(^publish-(v\d*[1-9]*\.)(\d*[1-9]*\.)(\d))/
+  except:
+    refs:
+      - schedules
+      - triggers
+      - pipelines
+    variables:
+      - $RELEASE_RUNTIME_INIT_TESTS == "true"
+  script:
+    - make link_check_release
 
 # Check template version, then push the examples/ folder to S3 when a tag in the form of "aws-v1.0.1.0" is added to the main branch
 publish_aws_templates_s3:

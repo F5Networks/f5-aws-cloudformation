@@ -12,7 +12,7 @@ Refer to the [AWS CFT Template Matrix](https://github.com/F5Networks/f5-aws-clou
     *  From the **Branch** list, click the arrow, and then click the **Tags** tab. <br> ![Finding tagged releases](images/tag-location.png)<br>  
     *  Select the Tagged version that contains the template you want to update.  
 3. Copy the contents of the appropriate AMI Map:
-    *  Go to https://github.com/F5Networks/f5-aws-cloudformation/tree/main/AMI%20Maps.
+    *  Go to https://github.com/F5Networks/f5-aws-cloudformation/tree/main/AMI_Maps.
     *  Click the folder for the BIG-IP product family you are using (for example, if you are using BIG-IP v13.0, click the directory that starts with **13.0**.)
     *  Click the appropriate region map, depending on whether you are using a BYOL or Hourly image.
     *  Click the Raw button, and then copy the entire content of the file.

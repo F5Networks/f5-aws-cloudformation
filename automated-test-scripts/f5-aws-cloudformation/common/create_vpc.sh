@@ -64,7 +64,7 @@ cn-north-1 | cn-northwest-1)
    --region <REGION> \
    --stack-name <STACK NAME>-vpc \
    --tags Key=creator,Value=dewdrop Key=delete,Value=True \
-   --template-url https://"$bucket_name"."$s3_prefix"amazonaws.com/test-environment.template \
+   --template-url https://"$bucket_name"."$s3_prefix"amazonaws.com.cn/test-environment.template \
    --capabilities CAPABILITY_IAM \
    --parameters $parameters ;;
 *)

@@ -1,9 +1,9 @@
 ANALYTICS: 'No'
 BIG IP MODULES: 'gtm:nominal\,asm:nominal'
-BIG-IP BUILD: 0.0.5
-BIG-IP VERSION: 14.1.4.2
+BIG-IP BUILD: 0.0.4
+BIG-IP VERSION: 14.1.4.4
 CLUSTER TYPE: none
-CUSTOM IMAGE ID: ami-0416d402a5aaf6eec
+CUSTOM IMAGE ID: ami-0f113c32025527c1b
 CUSTOM USER: dewpt_user
 DECLARATION URL: 'http://cdn.f5.com/product/cloudsolutions/declarations/sample_02.json'
 IMAGE NAME: AdvancedWaf200Mbps

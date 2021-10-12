@@ -1,4 +1,10 @@
 {
+  "af-south-1": {
+    "AllOneBootLocation": "ami-0fd2aeabbcf5c792d",
+    "AllTwoBootLocations": "ami-031dc9701b5c38f32",
+    "LTMOneBootLocation": "ami-05ee454cd15758b41",
+    "LTMTwoBootLocations": "ami-0ad1069c2de7f398f"
+  },
   "ap-east-1": {
     "AllOneBootLocation": "ami-01ecc0879799b5624",
     "AllTwoBootLocations": "ami-06e2d384ab36eb36c",
@@ -16,6 +22,12 @@
     "AllTwoBootLocations": "ami-097d818e4963e017a",
     "LTMOneBootLocation": "ami-0dc6930449b08e777",
     "LTMTwoBootLocations": "ami-09f39b5e90fc4e609"
+  },
+  "ap-northeast-3": {
+    "AllOneBootLocation": "ami-0d6cdc371b94dff1b",
+    "AllTwoBootLocations": "ami-054ea62cd3918bef9",
+    "LTMOneBootLocation": "ami-008fd65a157563272",
+    "LTMTwoBootLocations": "ami-0890f67aacf08d1b1"
   },
   "ap-south-1": {
     "AllOneBootLocation": "ami-07599b22a1b82878b",

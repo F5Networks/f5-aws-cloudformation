@@ -147,158 +147,158 @@
    ]
   }
  },
- "Description": "Template v5.13.0: AWS CloudFormation Template for creating a 8NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v5.14.0: AWS CloudFormation Template for creating a 8NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "af-south-1": {
-    "AllOneBootLocation": "ami-0876133f99636421d",
-    "AllTwoBootLocations": "ami-08e690156e49bd7ad",
-    "LTMOneBootLocation": "ami-02c5997d6f136eb8a",
-    "LTMTwoBootLocations": "ami-086bc2acd0c2c2eee"
+    "AllOneBootLocation": "ami-0c99c165b65eabd03",
+    "AllTwoBootLocations": "ami-0f022daab6e713d22",
+    "LTMOneBootLocation": "ami-030a6bb6aff6e9f6c",
+    "LTMTwoBootLocations": "ami-0fb2e925b5b47bf6e"
    },
    "ap-east-1": {
-    "AllOneBootLocation": "ami-014b142c9e4a6001e",
-    "AllTwoBootLocations": "ami-01ebb3f7e562db1b4",
-    "LTMOneBootLocation": "ami-0edbf33a2a6917694",
-    "LTMTwoBootLocations": "ami-02b0742a0a1f7dc04"
+    "AllOneBootLocation": "ami-0208d6b198d65bb3b",
+    "AllTwoBootLocations": "ami-0b570672699f89d95",
+    "LTMOneBootLocation": "ami-0830dbc4a689b7ee9",
+    "LTMTwoBootLocations": "ami-065a790b7bb0985b4"
    },
    "ap-northeast-1": {
-    "AllOneBootLocation": "ami-0b46f2be2d8b73273",
-    "AllTwoBootLocations": "ami-0b020f9013c758589",
-    "LTMOneBootLocation": "ami-02018b95758ee3b85",
-    "LTMTwoBootLocations": "ami-07655964612701c10"
+    "AllOneBootLocation": "ami-075e6bf569f326677",
+    "AllTwoBootLocations": "ami-07bfec97c2f3dda83",
+    "LTMOneBootLocation": "ami-076d4b5a78e59e53b",
+    "LTMTwoBootLocations": "ami-0f24dc6777ba71212"
    },
    "ap-northeast-2": {
-    "AllOneBootLocation": "ami-06a43ee69cc633f80",
-    "AllTwoBootLocations": "ami-0de81144ce7c08c31",
-    "LTMOneBootLocation": "ami-04a0f0b0533850632",
-    "LTMTwoBootLocations": "ami-03e78c47d7012035c"
+    "AllOneBootLocation": "ami-0f0c2b14618c700fd",
+    "AllTwoBootLocations": "ami-0393ceaa7f42bd50a",
+    "LTMOneBootLocation": "ami-0a9830bed42c8a537",
+    "LTMTwoBootLocations": "ami-06b94389bd614f85b"
    },
    "ap-northeast-3": {
-    "AllOneBootLocation": "ami-09aac11c2dbed72da",
-    "AllTwoBootLocations": "ami-0db513c6da6afaa28",
-    "LTMOneBootLocation": "ami-01d3aa718212af499",
-    "LTMTwoBootLocations": "ami-0e4739905b9c1e9d4"
+    "AllOneBootLocation": "ami-01fbf781afd06f8f3",
+    "AllTwoBootLocations": "ami-011af717d3ef59f98",
+    "LTMOneBootLocation": "ami-099db071294479356",
+    "LTMTwoBootLocations": "ami-02cfc4867c53996d5"
    },
    "ap-south-1": {
-    "AllOneBootLocation": "ami-097cd41020a8734b5",
-    "AllTwoBootLocations": "ami-0068f483666acedaa",
-    "LTMOneBootLocation": "ami-07cb34d8f1f14f208",
-    "LTMTwoBootLocations": "ami-09beb8c7216bf5480"
+    "AllOneBootLocation": "ami-03eb20664c69657b7",
+    "AllTwoBootLocations": "ami-0d1fd0f4d84f6d4bf",
+    "LTMOneBootLocation": "ami-032adc4ac5b7a4976",
+    "LTMTwoBootLocations": "ami-0dfaedb78a05db738"
    },
    "ap-southeast-1": {
-    "AllOneBootLocation": "ami-0b6ab62b8d3b339d6",
-    "AllTwoBootLocations": "ami-0db52dc4fd51f604a",
-    "LTMOneBootLocation": "ami-0271c68bdd2561ed6",
-    "LTMTwoBootLocations": "ami-0a74184c83d6cddab"
+    "AllOneBootLocation": "ami-0c89f3db8bf5a6229",
+    "AllTwoBootLocations": "ami-0ea3f2decbca83b66",
+    "LTMOneBootLocation": "ami-06e883d8432703a26",
+    "LTMTwoBootLocations": "ami-0f35d8dcbc85157bb"
    },
    "ap-southeast-2": {
-    "AllOneBootLocation": "ami-01cdc1498b0f4dbee",
-    "AllTwoBootLocations": "ami-03b561738463564d0",
-    "LTMOneBootLocation": "ami-05457807d74d02035",
-    "LTMTwoBootLocations": "ami-06190d56073fa57e7"
+    "AllOneBootLocation": "ami-0f7fe107f51025e75",
+    "AllTwoBootLocations": "ami-051cd94d72972ff5a",
+    "LTMOneBootLocation": "ami-06b45c5bb9a537441",
+    "LTMTwoBootLocations": "ami-0d7037021fd3106d3"
    },
    "ca-central-1": {
-    "AllOneBootLocation": "ami-040bc21b21f8f76c1",
-    "AllTwoBootLocations": "ami-00c035493fc7a4164",
-    "LTMOneBootLocation": "ami-0d7af1960e66ad462",
-    "LTMTwoBootLocations": "ami-01757ccd30c6678c7"
+    "AllOneBootLocation": "ami-0d60b420bb07814ea",
+    "AllTwoBootLocations": "ami-009aa31e5a58a04da",
+    "LTMOneBootLocation": "ami-06224d515f6cae271",
+    "LTMTwoBootLocations": "ami-0a4e820d6858f3ade"
    },
    "cn-north-1": {
-    "AllOneBootLocation": "ami-06fab2bab2d092024",
-    "AllTwoBootLocations": "ami-0f431377a42f0071e",
-    "LTMOneBootLocation": "ami-0ef121a9a0ff63820",
-    "LTMTwoBootLocations": "ami-0a21933527877794a"
+    "AllOneBootLocation": "ami-00593d4c636e30141",
+    "AllTwoBootLocations": "ami-01ea14412022863ae",
+    "LTMOneBootLocation": "ami-0c6ed7383c67e9ae6",
+    "LTMTwoBootLocations": "ami-0d64cb4b3eaf5f9e0"
    },
    "cn-northwest-1": {
-    "AllOneBootLocation": "ami-08c5fc960595b3bdb",
-    "AllTwoBootLocations": "ami-0b57f2201446d3bfc",
-    "LTMOneBootLocation": "ami-0456bb83509f57964",
-    "LTMTwoBootLocations": "ami-08ed59807743ee8dd"
+    "AllOneBootLocation": "ami-0a561c5262ef6020f",
+    "AllTwoBootLocations": "ami-004f4cd20de8413b0",
+    "LTMOneBootLocation": "ami-0fe9e8f94520c8f04",
+    "LTMTwoBootLocations": "ami-0bb6a835049faeee0"
    },
    "eu-central-1": {
-    "AllOneBootLocation": "ami-0bb5247015ec0f5a3",
-    "AllTwoBootLocations": "ami-0be8f228048fe57eb",
-    "LTMOneBootLocation": "ami-01d1a4934649669de",
-    "LTMTwoBootLocations": "ami-02a644f8c0908973a"
+    "AllOneBootLocation": "ami-089588cb22565c279",
+    "AllTwoBootLocations": "ami-0bcbdf30fa711c68d",
+    "LTMOneBootLocation": "ami-02ca7252500650e6c",
+    "LTMTwoBootLocations": "ami-0ef59111e090fda08"
    },
    "eu-north-1": {
-    "AllOneBootLocation": "ami-071ad492e64529c1d",
-    "AllTwoBootLocations": "ami-088cdcbd1b65c6f47",
-    "LTMOneBootLocation": "ami-07052865f824bdf6f",
-    "LTMTwoBootLocations": "ami-0e447837f74e1c57d"
+    "AllOneBootLocation": "ami-08d2c40d9821c6730",
+    "AllTwoBootLocations": "ami-02aa8642676f97274",
+    "LTMOneBootLocation": "ami-035b64b7ea0ed4ce1",
+    "LTMTwoBootLocations": "ami-0f203f2c52019a5e5"
    },
    "eu-south-1": {
-    "AllOneBootLocation": "ami-0f17da141a85ad604",
-    "AllTwoBootLocations": "ami-0b78a0ae7f7b5d2da",
-    "LTMOneBootLocation": "ami-03bf6ce47a0e574df",
-    "LTMTwoBootLocations": "ami-0fb65e795523ee095"
+    "AllOneBootLocation": "ami-0aa174e3035df7c8d",
+    "AllTwoBootLocations": "ami-07bbfdde27234ea7d",
+    "LTMOneBootLocation": "ami-0cf246f28e33f91f0",
+    "LTMTwoBootLocations": "ami-0169d298e5c80f0b0"
    },
    "eu-west-1": {
-    "AllOneBootLocation": "ami-077af246290afe9cf",
-    "AllTwoBootLocations": "ami-06ad85690306d2301",
-    "LTMOneBootLocation": "ami-065676b6458042b8c",
-    "LTMTwoBootLocations": "ami-0c68f26cd6217d832"
+    "AllOneBootLocation": "ami-0fb9a63625fb791a0",
+    "AllTwoBootLocations": "ami-0407cd5667b54e56e",
+    "LTMOneBootLocation": "ami-0abaec294600012c9",
+    "LTMTwoBootLocations": "ami-01a88407d4c6866a9"
    },
    "eu-west-2": {
-    "AllOneBootLocation": "ami-0e67b261372ff6de6",
-    "AllTwoBootLocations": "ami-09254b31381c0aa00",
-    "LTMOneBootLocation": "ami-0c3423e70bc8b9360",
-    "LTMTwoBootLocations": "ami-01335f7cd051fdc04"
+    "AllOneBootLocation": "ami-06dd81d4eb81afec0",
+    "AllTwoBootLocations": "ami-0dec8a9207cf00747",
+    "LTMOneBootLocation": "ami-06a8bc6c56a191401",
+    "LTMTwoBootLocations": "ami-0faf7bf09b689652f"
    },
    "eu-west-3": {
-    "AllOneBootLocation": "ami-0fa19ae4e9121c573",
-    "AllTwoBootLocations": "ami-0661833b30df7f0fd",
-    "LTMOneBootLocation": "ami-0408dd9891f0bc6be",
-    "LTMTwoBootLocations": "ami-0acfca07619972108"
+    "AllOneBootLocation": "ami-0752f560314923beb",
+    "AllTwoBootLocations": "ami-0e043ba276505237d",
+    "LTMOneBootLocation": "ami-0f0d8ebb277d0b028",
+    "LTMTwoBootLocations": "ami-0429f893b4332b9ef"
    },
    "me-south-1": {
-    "AllOneBootLocation": "ami-0aac93f32ee899846",
-    "AllTwoBootLocations": "ami-03b3db65773cb5d65",
-    "LTMOneBootLocation": "ami-0440b72c21efee17a",
-    "LTMTwoBootLocations": "ami-0a4f65922ac198cbe"
+    "AllOneBootLocation": "ami-08dd9f6fc67ec19bb",
+    "AllTwoBootLocations": "ami-07c5d703ac09e2391",
+    "LTMOneBootLocation": "ami-0e8bc14dac9b6b898",
+    "LTMTwoBootLocations": "ami-05219c0f4fdbdefd3"
    },
    "sa-east-1": {
-    "AllOneBootLocation": "ami-0cf10a3d2ca8089f5",
-    "AllTwoBootLocations": "ami-086860bb7b24fb21d",
-    "LTMOneBootLocation": "ami-0830d675472fa5abc",
-    "LTMTwoBootLocations": "ami-063e5712ce6838ece"
+    "AllOneBootLocation": "ami-0341d86f3c15f47cd",
+    "AllTwoBootLocations": "ami-0229493250407e031",
+    "LTMOneBootLocation": "ami-0787282baa135e39c",
+    "LTMTwoBootLocations": "ami-033685c4bb53bd124"
    },
    "us-east-1": {
-    "AllOneBootLocation": "ami-09277911650fda36d",
-    "AllTwoBootLocations": "ami-08d7cf776e3a0e6fb",
-    "LTMOneBootLocation": "ami-01b9838f7fd6d54ea",
-    "LTMTwoBootLocations": "ami-08abeb5ce9777e8fc"
+    "AllOneBootLocation": "ami-0d1a88c83efa2a6a0",
+    "AllTwoBootLocations": "ami-08257c0c5bb79a3f1",
+    "LTMOneBootLocation": "ami-05330a5812191b9d3",
+    "LTMTwoBootLocations": "ami-08b9403b0ff3bea91"
    },
    "us-east-2": {
-    "AllOneBootLocation": "ami-029d7d4025e2780f7",
-    "AllTwoBootLocations": "ami-0f515827136b66263",
-    "LTMOneBootLocation": "ami-0a5c3a06a4321b50b",
-    "LTMTwoBootLocations": "ami-0d8e044e8704a8706"
+    "AllOneBootLocation": "ami-0788c0daaebb86627",
+    "AllTwoBootLocations": "ami-0b1df9da864110043",
+    "LTMOneBootLocation": "ami-0b8cf4d3afe2f192b",
+    "LTMTwoBootLocations": "ami-075abe18e4f83886e"
    },
    "us-gov-east-1": {
-    "AllOneBootLocation": "ami-07318bba145374fae",
-    "AllTwoBootLocations": "ami-04b2f46c4fc5ee792",
-    "LTMOneBootLocation": "ami-01263b068f640488b",
-    "LTMTwoBootLocations": "ami-05af4ab1676467f44"
+    "AllOneBootLocation": "ami-08eecc005b0ed9389",
+    "AllTwoBootLocations": "ami-0aeb61378319e6bef",
+    "LTMOneBootLocation": "ami-0966dc4d09883ec42",
+    "LTMTwoBootLocations": "ami-00edab4f000b951b7"
    },
    "us-gov-west-1": {
-    "AllOneBootLocation": "ami-00f1b790634c475b5",
-    "AllTwoBootLocations": "ami-088b58b305b3603c4",
-    "LTMOneBootLocation": "ami-06c59ba5da6f1e72e",
-    "LTMTwoBootLocations": "ami-0654df1f38c8dfcdb"
+    "AllOneBootLocation": "ami-0d6c132a552df7912",
+    "AllTwoBootLocations": "ami-0d1e6f159e970e6af",
+    "LTMOneBootLocation": "ami-0fc260eb95873fbe1",
+    "LTMTwoBootLocations": "ami-02f9d14d66145a740"
    },
    "us-west-1": {
-    "AllOneBootLocation": "ami-0aa95572907d6083d",
-    "AllTwoBootLocations": "ami-0ccabf880ba23f375",
-    "LTMOneBootLocation": "ami-0ab38710a1acbefc8",
-    "LTMTwoBootLocations": "ami-0e25564e6242ed060"
+    "AllOneBootLocation": "ami-0ba2ee0b3a67fad89",
+    "AllTwoBootLocations": "ami-0b6ee9a309166a496",
+    "LTMOneBootLocation": "ami-0f6c23fee1decf97d",
+    "LTMTwoBootLocations": "ami-01d509e58f7495fb4"
    },
    "us-west-2": {
-    "AllOneBootLocation": "ami-0c4d4b14edf4213ab",
-    "AllTwoBootLocations": "ami-0ebb4b5eb9f5029ad",
-    "LTMOneBootLocation": "ami-0e461cff3adc7fe90",
-    "LTMTwoBootLocations": "ami-04c9f433a0551fc2a"
+    "AllOneBootLocation": "ami-068c9b308f8d89fe5",
+    "AllTwoBootLocations": "ami-0e6b62154bdaec138",
+    "LTMOneBootLocation": "ami-0da29df0571f61a89",
+    "LTMTwoBootLocations": "ami-0d5d136f131b7141b"
    }
   }
  },
@@ -477,7 +477,7 @@
     }
    }
   },
-  "Version": "5.13.0"
+  "Version": "5.14.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -918,45 +918,46 @@
           "",
           [
            "GATEWAY_MAC=`ifconfig eth1 | egrep ether | awk '{print tolower($2)}'`; ",
-           "GATEWAY_CIDR_BLOCK=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`; ",
+           "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
+           "GATEWAY_CIDR_BLOCK=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`; ",
            "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}; ",
            "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}; ",
            "GATEWAY=`echo ${GATEWAY_NET} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`; ",
            "GATEWAY_MAC2=`ifconfig eth2 | egrep ether | awk '{print tolower($2)}'`\n",
-           "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`; ",
+           "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`; ",
            "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}; ",
            {
             "Fn::If": [
              "createNic3",
-             "GATEWAY_MAC3=`ifconfig eth3 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK3=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC3}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX3=${GATEWAY_CIDR_BLOCK3#*/};",
+             "GATEWAY_MAC3=`ifconfig eth3 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK3=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC3}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX3=${GATEWAY_CIDR_BLOCK3#*/};",
              ""
             ]
            },
            {
             "Fn::If": [
              "createNic4",
-             "GATEWAY_MAC4=`ifconfig eth4 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK4=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC4}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX4=${GATEWAY_CIDR_BLOCK4#*/};",
+             "GATEWAY_MAC4=`ifconfig eth4 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK4=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC4}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX4=${GATEWAY_CIDR_BLOCK4#*/};",
              ""
             ]
            },
            {
             "Fn::If": [
              "createNic5",
-             "GATEWAY_MAC5=`ifconfig eth5 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK5=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC5}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX5=${GATEWAY_CIDR_BLOCK5#*/};",
+             "GATEWAY_MAC5=`ifconfig eth5 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK5=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC5}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX5=${GATEWAY_CIDR_BLOCK5#*/};",
              ""
             ]
            },
            {
             "Fn::If": [
              "createNic6",
-             "GATEWAY_MAC6=`ifconfig eth6 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK6=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC6}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX6=${GATEWAY_CIDR_BLOCK6#*/};",
+             "GATEWAY_MAC6=`ifconfig eth6 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK6=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC6}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX6=${GATEWAY_CIDR_BLOCK6#*/};",
              ""
             ]
            },
            {
             "Fn::If": [
              "createNic7",
-             "GATEWAY_MAC7=`ifconfig eth7 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK7=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC7}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX7=${GATEWAY_CIDR_BLOCK7#*/};",
+             "GATEWAY_MAC7=`ifconfig eth7 | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK7=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC7}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX7=${GATEWAY_CIDR_BLOCK7#*/};",
              ""
             ]
            },
@@ -1125,15 +1126,17 @@
              "\"|sha512sum|cut -d \" \" -f 1`;",
              "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
              "nohup /config/waitThenRun.sh",
+             "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`;",
+             "HOSTNAME=`/usr/bin/curl -sS -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`;",
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
-             "--install-ilx-package file:///var/config/rest/downloads/f5-appsvcs-3.26.1-1.noarch.rpm",
+             "--install-ilx-package file:///var/config/rest/downloads/f5-appsvcs-3.31.0-6.noarch.rpm",
              "--wait-for NETWORK_CONFIG_DONE",
              "--signal ONBOARD_DONE",
              "-o /var/log/cloud/aws/onboard.log",
              "--log-level silly",
              "--no-reboot",
              "--host localhost",
-             "--hostname `/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+             "--hostname ${HOSTNAME}",
              "--ntp ",
              {
               "Ref": "ntpServer"
@@ -1151,7 +1154,7 @@
              {
               "Ref": "licenseKey1"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.0.1.1-0.0.6,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-byol-n-nic-bigip.template,templateVersion:5.13.0,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.0-0.0.19,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-byol-n-nic-bigip.template,templateVersion:5.14.0,licenseType:byol\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -1164,15 +1167,17 @@
             [
              "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
              "nohup /config/waitThenRun.sh",
+             "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`;",
+             "HOSTNAME=`/usr/bin/curl -sS -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`;",
              "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
-             "--install-ilx-package file:///var/config/rest/downloads/f5-appsvcs-3.26.1-1.noarch.rpm",
+             "--install-ilx-package file:///var/config/rest/downloads/f5-appsvcs-3.31.0-6.noarch.rpm",
              "--wait-for NETWORK_CONFIG_DONE",
              "--signal ONBOARD_DONE",
              "-o /var/log/cloud/aws/onboard.log",
              "--log-level silly",
              "--no-reboot",
              "--host localhost",
-             "--hostname `/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/hostname`",
+             "--hostname ${HOSTNAME}",
              "--ntp ",
              {
               "Ref": "ntpServer"
@@ -1241,6 +1246,7 @@
           "",
           [
            "#!/bin/bash\n",
+           "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
            "PROGNAME=$(basename $0)\n",
            "function error_exit {\n",
            "echo \"${PROGNAME}: ${1:-\\\"Unknown Error\\\"}\" 1>&2\n",
@@ -1306,7 +1312,8 @@
           [
            "INTERFACE=$1",
            "INTERFACE_MAC=`ifconfig ${INTERFACE} | egrep ether | awk '{print tolower($2)}'`",
-           "VPC_CIDR_BLOCK=`/usr/bin/curl -s -f --retry 20 http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
+           "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`",
+           "VPC_CIDR_BLOCK=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${INTERFACE_MAC}/vpc-ipv4-cidr-block`",
            "VPC_NET=${VPC_CIDR_BLOCK%/*}",
            "NAME_SERVER=`echo ${VPC_NET} | awk -F. '{ printf \"%d.%d.%d.%d\", $1, $2, $3, $4+2 }'`",
            "echo $NAME_SERVER"
@@ -1324,8 +1331,9 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.13.0\n",
-           "hostname=`/usr/bin/curl http://169.254.169.254/latest/meta-data/hostname`\n",
+           "# Generated from 5.14.0\n",
+           "TOKEN=`/usr/bin/curl -sS -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
+           "HOSTNAME=`/usr/bin/curl -sS -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
            {
             "Ref": "AWS::Region"
@@ -1380,8 +1388,8 @@
         "source": {
          "Fn::If": [
           "useChinaRegion",
-          "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/v4.25.0/f5-cloud-libs.tar.gz",
-          "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/v4.25.0/f5-cloud-libs.tar.gz"
+          "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/v4.26.5/f5-cloud-libs.tar.gz",
+          "http://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/v4.26.5/f5-cloud-libs.tar.gz"
          ]
         }
        },
@@ -1404,21 +1412,21 @@
            "    sleep 10",
            "done",
            "echo loading verifyHash script",
-           "#if ! tmsh load sys config merge file /config/verifyHash; then",
-           "#    echo cannot validate signature of /config/verifyHash",
-           "#    exit",
-           "#fi",
-           "#echo loaded verifyHash",
-           "#declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/var/config/rest/downloads/f5-appsvcs-3.26.1-1.noarch.rpm\" )",
-           "#for fileToVerify in \"${filesToVerify[@]}\"",
-           "#do",
-           "#    echo verifying \"$fileToVerify\"",
-           "#    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
-           "#        echo \"$fileToVerify\" is not valid",
-           "#        exit 1",
-           "#    fi",
-           "#    echo verified \"$fileToVerify\"",
-           "#done",
+           "if ! tmsh load sys config merge file /config/verifyHash; then",
+           "    echo cannot validate signature of /config/verifyHash",
+           "    exit",
+           "fi",
+           "echo loaded verifyHash",
+           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/var/config/rest/downloads/f5-appsvcs-3.31.0-6.noarch.rpm\" )",
+           "for fileToVerify in \"${filesToVerify[@]}\"",
+           "do",
+           "    echo verifying \"$fileToVerify\"",
+           "    if ! tmsh run cli script verifyHash \"$fileToVerify\"; then",
+           "        echo \"$fileToVerify\" is not valid",
+           "        exit 1",
+           "    fi",
+           "    echo verified \"$fileToVerify\"",
+           "done",
            "mkdir -p /config/cloud/aws/node_modules/@f5devcentral",
            "echo expanding f5-cloud-libs.tar.gz",
            "tar xvfz /config/cloud/f5-cloud-libs.tar.gz -C /config/cloud/aws/node_modules/@f5devcentral",
@@ -1434,7 +1442,7 @@
         "owner": "root"
        },
        "/config/verifyHash": {
-        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) 04cd9b161f619bf0f06f52466f7e1891912737b8b50bda4fe521edd6f7f54818c705d87f745c4f37964c9ab80bcb6f755596917d8b83bffca124e87d7f5efabd\n            set hashes(f5-cloud-libs-aws.tar.gz) 091ea7b18aca7f18a0ec377a6886d5d666cc81349eafa5725ab0758ddcc17c10e03737195384eafd63c117d25913c15a11284d2cc3b221d7ba3c31422172142b\n            set hashes(f5-cloud-libs-azure.tar.gz) e7973a1fe85b5a832c5ecd1cfce66b43b84e42cf2a06b2751734f79812de187ee1ad8730a129cb08198a452157c466bb87180c17dfd2e09b49be6efe9e9a57fe\n            set hashes(f5-cloud-libs-gce.tar.gz) cd95a5cc36c39f80f95476ad000f7dcc21a9fef414c8edac82be2e491c0fa9eba51b145f75ba0f3c0dae48e1c731432217b3bb700f71fe1912152dbe439e8967\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(f5-cloud-libs-consul.tar.gz) a32aab397073df92cbbba5067e5823e9b5fafca862a258b60b6b40aa0975c3989d1e110f706177b2ffbe4dde65305a260a5856594ce7ad4ef0c47b694ae4a513\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(f5.aws_advanced_ha.v1.4.0rc3.tmpl) 2f2339b4bc3a23c9cfd42aae2a6de39ba0658366f25985de2ea53410a745f0f18eedc491b20f4a8dba8db48970096e2efdca7b8efffa1a83a78e5aadf218b134\n            set hashes(f5.aws_advanced_ha.v1.4.0rc4.tmpl) 2418ac8b1f1884c5c096cbac6a94d4059aaaf05927a6a4508fd1f25b8cc6077498839fbdda8176d2cf2d274a27e6a1dae2a1e3a0a9991bc65fc74fc0d02ce963\n            set hashes(f5.aws_advanced_ha.v1.4.0rc5.tmpl) 5e582187ae1a6323e095d41eddd41151d6bd38eb83c634410d4527a3d0e246a8fc62685ab0849de2ade62b0275f51264d2deaccbc16b773417f847a4a1ea9bc4\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 4811a95372d1dbdbb4f62f8bcc48d4bc919fa492cda012c81e3a2fe63d7966cc36ba8677ed049a814a930473234f300d3f8bced2b0db63176d52ac99640ce81b\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) 64a0ed3b5e32a037ba4e71d460385fe8b5e1aecc27dc0e8514b511863952e419a89f4a2a43326abb543bba9bc34376afa114ceda950d2c3bd08dab735ff5ad20\n            set hashes(f5-appsvcs-3.5.1-5.noarch.rpm) ba71c6e1c52d0c7077cdb25a58709b8fb7c37b34418a8338bbf67668339676d208c1a4fef4e5470c152aac84020b4ccb8074ce387de24be339711256c0fa78c8\n            set hashes(f5-appsvcs-3.18.0-4.noarch.rpm) e72ee8005a27070ac399ab097e8aa507a72aae4721d7491589cfeb821db3ef86cbc979e796ab319ec727bb51400ccda813c4b9eb4a6b3d1220a396b582f8f400\n            set hashes(f5-appsvcs-3.20.0-3.noarch.rpm) d4bba8892a2068bb53f88c6090dc65f17707abca35a7ed2fff39980057fe7f7a2ebf710ab2284a1d83d70b7746beabad9df603017c0fd8728f7457661c95ac8d\n            set hashes(f5-appsvcs-3.25.0-3.noarch.rpm) 26f19bdaaa81cbe0421b3e08c09987f9dd0c54b05a626d6a21a836b34248d2d9d83095f0daad8e7a4a068e9ef99b89fbcd246ae8b617ac2b2456599157d0e8b3\n            set hashes(f5-appsvcs-3.26.1-1.noarch.rpm) b460e11679d38a96549b5041def27b419f1a41c8f788f9f8c7a034aa5cb5a8c9fd151c7c439bebd093fcd85cd8657f1c064551d9337566f9fc7e9506c55dc02c\n            set hashes(f5-cloud-failover-1.1.0-0.noarch.rpm) 15a440c299f9e4af86a3d0f5b0d75b0054385b95e47c3ef116d2e0bfb0041a26dcbf549028e2a26d2c718ec61446bd657be38fbbcd9db781efe5414c174ac68c\n            set hashes(f5-cloud-failover-1.3.0-0.noarch.rpm) 19681eb33d9f910c913f8180199485eb653b4b5ebeaae0b90a6ce8341d7a22fed8d21815b5ba148c468852d20cc26fad4c4242e50ecc184f1f8770dacced6f6a\n            set hashes(f5-cloud-failover-1.4.0-0.noarch.rpm) 49e9108a070e0c8713aeb7b330662358542e61b7c53a9d45108d37a9bf5246f9e4aaae10cc61064801dcccd20bfd5108347b0f694510e7ece07f96c45ba683b0\n            set hashes(f5-cloud-failover-1.5.0-0.noarch.rpm) 33a7e2d047106bcce681757a65240bfacedd48e13567e05fdb23a4b269d266aa5001f81158c3964dc297f0428db31c9df428002898d190285b349c59422a573b\n            set hashes(f5-cloud-failover-1.6.1-1.noarch.rpm) c1b842da21b8d1ba21b6eb63c8598a9ea9986d5daddc21e4d280e1d6b09d3db1de8ac7de5c84edf07b43e4af03daf8fe747a4048f6573d955206352cde2cec65\n            set hashes(f5-cloud-failover-1.7.1-1.noarch.rpm) 14ff0cd2bb49780cc0ae3021c4fc8fcc096e3fce2258096a4aa026d6d37de728ca7345bfe3a79031e336e74d25a2b40ff28324c2c752bf0ee71b7fc89b6fc8fe\n            set hashes(f5-cloud-failover-1.8.0-0.noarch.rpm) 23086d1cbf3cb24eac7eba2305156c600fa21f1b896321a2fa5225d331d7e41471edb3f5368144d86848a4520b1e005c014485ff451e7da6429053f58bfe8ce4\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature YZI5vbfbZnV3u5PpMWKe1pVWhxjlpbl5lZ8ebUSaQiqGBErB87g55GApChfe4KGB49FMIXTZ9DCGNg3A9OV3VZNMwpNKLs57EvqFzPLwBXO7cMOS2mIIVByG4wUO3bOt72oQY9TuRQDPPVNoDe6Ptv1LH+9GCUWSsTpCEuUvl/N7j/HHRmlWT2DEorv8ZcINWfrIx7Oa5PGADR6sKJooAInwp6JFO+AQFTtCNzVJyEicck2N8yrVSTUqsMVN2Ycamw+xdKWUT2IDyeCodGBh/38jxfCO2ZzmHwVpeIj57VPpiGMiW0vdHQzQyw/Oz+amGdeABJ1/8oNw4XtZF4HdvA==\n    signing-key /Common/f5-irule\n}",
+        "content": "cli script /Common/verifyHash {\nproc script::run {} {\n        if {[catch {\n            set hashes(f5-cloud-libs.tar.gz) e8d962e295a60687310b50cbf1085c3bc69c76c29439cbce6141a5677d89ffadde9aa1e7308a854486aaba798ce98e35bd25feb9fcc6d9402a9b72ec87856361\n            set hashes(f5-cloud-libs-aws.tar.gz) 091ea7b18aca7f18a0ec377a6886d5d666cc81349eafa5725ab0758ddcc17c10e03737195384eafd63c117d25913c15a11284d2cc3b221d7ba3c31422172142b\n            set hashes(f5-cloud-libs-azure.tar.gz) e7973a1fe85b5a832c5ecd1cfce66b43b84e42cf2a06b2751734f79812de187ee1ad8730a129cb08198a452157c466bb87180c17dfd2e09b49be6efe9e9a57fe\n            set hashes(f5-cloud-libs-gce.tar.gz) cd95a5cc36c39f80f95476ad000f7dcc21a9fef414c8edac82be2e491c0fa9eba51b145f75ba0f3c0dae48e1c731432217b3bb700f71fe1912152dbe439e8967\n            set hashes(f5-cloud-libs-openstack.tar.gz) 5c83fe6a93a6fceb5a2e8437b5ed8cc9faf4c1621bfc9e6a0779f6c2137b45eab8ae0e7ed745c8cf821b9371245ca29749ca0b7e5663949d77496b8728f4b0f9\n            set hashes(f5-cloud-libs-consul.tar.gz) a32aab397073df92cbbba5067e5823e9b5fafca862a258b60b6b40aa0975c3989d1e110f706177b2ffbe4dde65305a260a5856594ce7ad4ef0c47b694ae4a513\n            set hashes(asm-policy-linux.tar.gz) 63b5c2a51ca09c43bd89af3773bbab87c71a6e7f6ad9410b229b4e0a1c483d46f1a9fff39d9944041b02ee9260724027414de592e99f4c2475415323e18a72e0\n            set hashes(f5.http.v1.2.0rc4.tmpl) 47c19a83ebfc7bd1e9e9c35f3424945ef8694aa437eedd17b6a387788d4db1396fefe445199b497064d76967b0d50238154190ca0bd73941298fc257df4dc034\n            set hashes(f5.http.v1.2.0rc6.tmpl) 811b14bffaab5ed0365f0106bb5ce5e4ec22385655ea3ac04de2a39bd9944f51e3714619dae7ca43662c956b5212228858f0592672a2579d4a87769186e2cbfe\n            set hashes(f5.http.v1.2.0rc7.tmpl) 21f413342e9a7a281a0f0e1301e745aa86af21a697d2e6fdc21dd279734936631e92f34bf1c2d2504c201f56ccd75c5c13baa2fe7653213689ec3c9e27dff77d\n            set hashes(f5.aws_advanced_ha.v1.3.0rc1.tmpl) 9e55149c010c1d395abdae3c3d2cb83ec13d31ed39424695e88680cf3ed5a013d626b326711d3d40ef2df46b72d414b4cb8e4f445ea0738dcbd25c4c843ac39d\n            set hashes(f5.aws_advanced_ha.v1.4.0rc1.tmpl) de068455257412a949f1eadccaee8506347e04fd69bfb645001b76f200127668e4a06be2bbb94e10fefc215cfc3665b07945e6d733cbe1a4fa1b88e881590396\n            set hashes(f5.aws_advanced_ha.v1.4.0rc2.tmpl) 6ab0bffc426df7d31913f9a474b1a07860435e366b07d77b32064acfb2952c1f207beaed77013a15e44d80d74f3253e7cf9fbbe12a90ec7128de6facd097d68f\n            set hashes(f5.aws_advanced_ha.v1.4.0rc3.tmpl) 2f2339b4bc3a23c9cfd42aae2a6de39ba0658366f25985de2ea53410a745f0f18eedc491b20f4a8dba8db48970096e2efdca7b8efffa1a83a78e5aadf218b134\n            set hashes(f5.aws_advanced_ha.v1.4.0rc4.tmpl) 2418ac8b1f1884c5c096cbac6a94d4059aaaf05927a6a4508fd1f25b8cc6077498839fbdda8176d2cf2d274a27e6a1dae2a1e3a0a9991bc65fc74fc0d02ce963\n            set hashes(f5.aws_advanced_ha.v1.4.0rc5.tmpl) 5e582187ae1a6323e095d41eddd41151d6bd38eb83c634410d4527a3d0e246a8fc62685ab0849de2ade62b0275f51264d2deaccbc16b773417f847a4a1ea9bc4\n            set hashes(asm-policy.tar.gz) 2d39ec60d006d05d8a1567a1d8aae722419e8b062ad77d6d9a31652971e5e67bc4043d81671ba2a8b12dd229ea46d205144f75374ed4cae58cefa8f9ab6533e6\n            set hashes(deploy_waf.sh) 1a3a3c6274ab08a7dc2cb73aedc8d2b2a23cd9e0eb06a2e1534b3632f250f1d897056f219d5b35d3eed1207026e89989f754840fd92969c515ae4d829214fb74\n            set hashes(f5.policy_creator.tmpl) 06539e08d115efafe55aa507ecb4e443e83bdb1f5825a9514954ef6ca56d240ed00c7b5d67bd8f67b815ee9dd46451984701d058c89dae2434c89715d375a620\n            set hashes(f5.service_discovery.tmpl) 4811a95372d1dbdbb4f62f8bcc48d4bc919fa492cda012c81e3a2fe63d7966cc36ba8677ed049a814a930473234f300d3f8bced2b0db63176d52ac99640ce81b\n            set hashes(f5.cloud_logger.v1.0.0.tmpl) 64a0ed3b5e32a037ba4e71d460385fe8b5e1aecc27dc0e8514b511863952e419a89f4a2a43326abb543bba9bc34376afa114ceda950d2c3bd08dab735ff5ad20\n            set hashes(f5-appsvcs-3.5.1-5.noarch.rpm) ba71c6e1c52d0c7077cdb25a58709b8fb7c37b34418a8338bbf67668339676d208c1a4fef4e5470c152aac84020b4ccb8074ce387de24be339711256c0fa78c8\n            set hashes(f5-appsvcs-3.18.0-4.noarch.rpm) e72ee8005a27070ac399ab097e8aa507a72aae4721d7491589cfeb821db3ef86cbc979e796ab319ec727bb51400ccda813c4b9eb4a6b3d1220a396b582f8f400\n            set hashes(f5-appsvcs-3.20.0-3.noarch.rpm) d4bba8892a2068bb53f88c6090dc65f17707abca35a7ed2fff39980057fe7f7a2ebf710ab2284a1d83d70b7746beabad9df603017c0fd8728f7457661c95ac8d\n            set hashes(f5-appsvcs-3.25.0-3.noarch.rpm) 26f19bdaaa81cbe0421b3e08c09987f9dd0c54b05a626d6a21a836b34248d2d9d83095f0daad8e7a4a068e9ef99b89fbcd246ae8b617ac2b2456599157d0e8b3\n            set hashes(f5-appsvcs-3.26.1-1.noarch.rpm) b460e11679d38a96549b5041def27b419f1a41c8f788f9f8c7a034aa5cb5a8c9fd151c7c439bebd093fcd85cd8657f1c064551d9337566f9fc7e9506c55dc02c\n            set hashes(f5-appsvcs-3.31.0-6.noarch.rpm) 6506fde5d1c2e067662b513387dccda0281d3bbc604fc6dcf8e5740ae563748899f7f335e349006fe3f0e751cd70d4ef8be3701ae45dca305de649f259f090a9\n            set hashes(f5-cloud-failover-1.1.0-0.noarch.rpm) 15a440c299f9e4af86a3d0f5b0d75b0054385b95e47c3ef116d2e0bfb0041a26dcbf549028e2a26d2c718ec61446bd657be38fbbcd9db781efe5414c174ac68c\n            set hashes(f5-cloud-failover-1.3.0-0.noarch.rpm) 19681eb33d9f910c913f8180199485eb653b4b5ebeaae0b90a6ce8341d7a22fed8d21815b5ba148c468852d20cc26fad4c4242e50ecc184f1f8770dacced6f6a\n            set hashes(f5-cloud-failover-1.4.0-0.noarch.rpm) 49e9108a070e0c8713aeb7b330662358542e61b7c53a9d45108d37a9bf5246f9e4aaae10cc61064801dcccd20bfd5108347b0f694510e7ece07f96c45ba683b0\n            set hashes(f5-cloud-failover-1.5.0-0.noarch.rpm) 33a7e2d047106bcce681757a65240bfacedd48e13567e05fdb23a4b269d266aa5001f81158c3964dc297f0428db31c9df428002898d190285b349c59422a573b\n            set hashes(f5-cloud-failover-1.6.1-1.noarch.rpm) c1b842da21b8d1ba21b6eb63c8598a9ea9986d5daddc21e4d280e1d6b09d3db1de8ac7de5c84edf07b43e4af03daf8fe747a4048f6573d955206352cde2cec65\n            set hashes(f5-cloud-failover-1.7.1-1.noarch.rpm) 14ff0cd2bb49780cc0ae3021c4fc8fcc096e3fce2258096a4aa026d6d37de728ca7345bfe3a79031e336e74d25a2b40ff28324c2c752bf0ee71b7fc89b6fc8fe\n            set hashes(f5-cloud-failover-1.8.0-0.noarch.rpm) 23086d1cbf3cb24eac7eba2305156c600fa21f1b896321a2fa5225d331d7e41471edb3f5368144d86848a4520b1e005c014485ff451e7da6429053f58bfe8ce4\n            set hashes(f5-cloud-failover-1.9.0-0.noarch.rpm) 09c15377389ac18313370635fb99f9aff05970807cc60bff074f80f664023cfc0d9f5b7f2ed7a8f879deb2da84a034bb9fa9f4e95f9806d644af518db32f1425\n\n            set file_path [lindex $tmsh::argv 1]\n            set file_name [file tail $file_path]\n\n            if {![info exists hashes($file_name)]} {\n                tmsh::log err \"No hash found for $file_name\"\n                exit 1\n            }\n\n            set expected_hash $hashes($file_name)\n            set computed_hash [lindex [exec /usr/bin/openssl dgst -r -sha512 $file_path] 0]\n            if { $expected_hash eq $computed_hash } {\n                exit 0\n            }\n            tmsh::log err \"Hash does not match for $file_path\"\n            exit 1\n        }]} {\n            tmsh::log err {Unexpected error in verifyHash}\n            exit 1\n        }\n    }\n    script-signature ijLcWdlwi4nfvIH4/jPFJ1Y9XkodKVduq7EFWjeWk0xwfN5rVLkBshuROFJNtonWl5uv2KZG0STT8GcE/Di96uh6UVjDJC0gHwHqEFkjdO3UEqPwo09RQ3lliWroF3xakk9VQ9RtSAH+XQrF59MmAUDkSOyeT/CuF7ApJ4WErcbZrsxia3TiRGBdUWmz0/XCfW4/faEBGTAT6ANw0aLVqwkcgjqY/KwMqXYHLNUvkQboJBfmYUNAug3Z329j7QSdCBlopBOdpmZ3Rq5DOBmy9zQwa0wm911zX12IJliGFQL0amTM+we1hHCWDWtd5iCNkwietksBXR6J31eigC5SgA==\n    signing-key /Common/f5-irule\n}",
         "group": "root",
         "mode": "000755",
         "owner": "root"
@@ -1460,15 +1468,15 @@
         "mode": "000755",
         "owner": "root"
        },
-       "/var/config/rest/downloads/f5-appsvcs-3.26.1-1.noarch.rpm": {
+       "/var/config/rest/downloads/f5-appsvcs-3.31.0-6.noarch.rpm": {
         "group": "root",
         "mode": "000755",
         "owner": "root",
         "source": {
          "Fn::If": [
           "useChinaRegion",
-          "http://cdn.f5.com/product/cloudsolutions/f5-appsvcs-extension/v3.26.1/f5-appsvcs-3.26.1-1.noarch.rpm",
-          "http://cdn.f5.com/product/cloudsolutions/f5-appsvcs-extension/v3.26.1/f5-appsvcs-3.26.1-1.noarch.rpm"
+          "http://cdn.f5.com/product/cloudsolutions/f5-appsvcs-extension/v3.31.0/f5-appsvcs-3.31.0-6.noarch.rpm",
+          "http://cdn.f5.com/product/cloudsolutions/f5-appsvcs-extension/v3.31.0/f5-appsvcs-3.31.0-6.noarch.rpm"
          ]
         }
        }

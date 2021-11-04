@@ -738,6 +738,7 @@
     "m3.xlarge",
     "m3.medium",
     "m3.large",
+    "t3.large",
     "m3.2xlarge",
     "cc2.8xlarge",
     "c5.xlarge",

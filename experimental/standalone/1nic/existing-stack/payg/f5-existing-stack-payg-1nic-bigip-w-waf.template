@@ -942,6 +942,7 @@
     "m4.4xlarge",
     "m4.10xlarge",
     "m5.large",
+    "t3.large",
     "m5.xlarge",
     "m5.2xlarge",
     "m5.4xlarge",

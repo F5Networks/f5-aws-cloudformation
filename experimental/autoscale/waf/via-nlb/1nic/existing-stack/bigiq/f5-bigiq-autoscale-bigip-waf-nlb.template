@@ -707,6 +707,7 @@
     "m4.4xlarge",
     "m4.10xlarge",
     "m5.large",
+    "t3.large",
     "m5.xlarge",
     "m5.2xlarge",
     "m5.4xlarge",
@@ -1142,35 +1143,35 @@
     "Tags": [
      {
       "Key": "Application",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Ref": "application"
       }
      },
      {
       "Key": "Costcenter",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Ref": "costcenter"
       }
      },
      {
       "Key": "Environment",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Ref": "environment"
       }
      },
      {
       "Key": "Group",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Ref": "group"
       }
      },
      {
       "Key": "Name",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Fn::Join": [
         "",
@@ -1185,7 +1186,7 @@
      },
      {
       "Key": "Owner",
-      "PropagateAtLaunch": true,
+      "PropagateAtLaunch": "true",
       "Value": {
        "Ref": "owner"
       }

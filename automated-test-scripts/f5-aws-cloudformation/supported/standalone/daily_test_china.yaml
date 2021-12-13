@@ -1,14 +1,12 @@
 ---
 name: AWS STANDALONE <NIC COUNT>nic <LICENSE TYPE> <IMAGE NAME> <STACK TYPE> <REGION>
 onStart:
+- ../../common/helper_init.sh
+- ../../common/find_bigiq.sh
 - ../../common/create_s3_bucket.sh
 - ../../common/create_vpc.sh
 - ../../common/verify_create_vpc.sh
 - ../../common/create_bastion.sh
-- ../../common/create_bigiq.sh
-- ../../common/verify_create_bigiq.sh
-- ../../common/verify_onboard_bigiq_env.sh
-- ../../common/verify_bigiq_ready_env.sh
 - ./create_stack.sh
 - ../../common/verify_create.sh
 - ../../common/verify_instance_status_ok.sh
@@ -27,8 +25,6 @@ onStart:
 - ../../common/delete_s3_bucket.sh
 - ../../common/delete_stack.sh
 - ../../common/verify_delete.sh
-- ../../common/delete_stack_bigiq.sh
-- ../../common/verify_delete_bigiq.sh
 - ../../common/delete_stack_vpc.sh
 - ../../common/verify_delete_vpc.sh
 onFail:
@@ -39,7 +35,5 @@ onFail:
 - ../../common/delete_stack.sh
 - ../../../sleep/3_minutes.sh
 - ../../common/verify_delete.sh
-- ../../common/delete_stack_bigiq.sh
-- ../../common/verify_delete_bigiq.sh
 - ../../common/delete_stack_vpc.sh
 - ../../common/verify_delete_vpc.sh

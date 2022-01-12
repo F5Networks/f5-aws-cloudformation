@@ -4118,7 +4118,7 @@ def main():
             ))
         if bigip:
             # Build IAM ROLE and POLICY
-            discovery_actions = ["ec2:DescribeInstances", "ec2:DescribeInstanceStatus", "ec2:DescribeAddresses", "ec2:AssociateAddress", "ec2:DisassociateAddress", "ec2:DescribeNetworkInterfaces", "ec2:DescribeNetworkInterfaceAttribute", "ec2:DescribeRouteTables", "ec2:ReplaceRoute", "ec2:assignprivateipaddresses", "sts:AssumeRole" ]
+            discovery_actions = ["ec2:DescribeInstances", "ec2:DescribeInstanceStatus", "ec2:DescribeAddresses", "ec2:AssociateAddress", "ec2:DisassociateAddress", "ec2:DescribeNetworkInterfaces", "ec2:DescribeNetworkInterfaceAttribute", "ec2:DescribeRouteTables", "ec2:DescribeSubnets", "ec2:assignprivateipaddresses" ]
             cfe_actions = ["s3:ListAllMyBuckets", "ec2:UnassignPrivateIpAddresses"]
             if ha_type != "standalone":
                 discovery_actions.extend(cfe_actions)
@@ -4126,9 +4126,9 @@ def main():
             if license_type == "bigiq":
                 discovery_policy.append({"Effect": "Allow", "Action": ["s3:GetObject"], "Resource": {"Ref": "bigIqPasswordS3Arn"}, })
             if ha_type != "standalone":
-                discovery_policy.append({"Effect": "Allow", "Action": ["s3:ListBucket","s3:GetBucketTagging"], "Resource": {"Fn::Join": ["", ["arn:*:s3:::", {"Ref": "S3Bucket"}]]}, },)
+                discovery_policy.append({"Effect": "Allow", "Action": ["s3:ListBucket","s3:GetBucketTagging", "s3:GetBucketLocation"], "Resource": {"Fn::Join": ["", ["arn:*:s3:::", {"Ref": "S3Bucket"}]]}, },)
                 discovery_policy.append({"Effect": "Allow", "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"], "Resource": {"Fn::Join": ["", ["arn:*:s3:::", {"Ref": "S3Bucket"}, "/*"]]}},)
-                discovery_policy.append({"Effect": "Allow", "Action": ["ec2:CreateRoute", "ec2:ReplaceRoute"], "Resource": {"Fn::Join": ["", ["arn:*:ec2:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":route-table/*"]]}})
+                discovery_policy.append({"Effect": "Allow", "Action": ["ec2:CreateRoute", "ec2:ReplaceRoute"], "Resource": {"Fn::Join": ["", ["arn:*:ec2:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":route-table/*"]]}, "Condition": {"StringEquals": {"ec2:ResourceTag/f5_cloud_failover_label": {"Ref":"AWS::StackName"}}}})
                 s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,Tags=Tags(f5_cloud_failover_label=Ref("AWS::StackName"))))
             if (license_type != "hourly" and license_type != "bigiq" and ha_type != "autoscale"):
                 bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(

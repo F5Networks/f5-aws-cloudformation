@@ -2477,9 +2477,8 @@
           "ec2:DescribeNetworkInterfaces",
           "ec2:DescribeNetworkInterfaceAttribute",
           "ec2:DescribeRouteTables",
-          "ec2:ReplaceRoute",
-          "ec2:assignprivateipaddresses",
-          "sts:AssumeRole"
+          "ec2:DescribeSubnets",
+          "ec2:assignprivateipaddresses"
          ],
          "Effect": "Allow",
          "Resource": [

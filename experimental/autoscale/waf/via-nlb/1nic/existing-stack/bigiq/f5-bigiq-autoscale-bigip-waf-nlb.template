@@ -943,6 +943,7 @@
             "ec2:DescribeAddresses",
             "ec2:AssociateAddress",
             "ec2:DisassociateAddress",
+            "ec2:DescribeSubnets",
             "ec2:DescribeNetworkInterfaces",
             "ec2:DescribeNetworkInterfaceAttribute",
             "ec2:DescribeRouteTables",
@@ -1039,6 +1040,7 @@
             "ec2:DescribeAddresses",
             "ec2:AssociateAddress",
             "ec2:DisassociateAddress",
+            "ec2:DescribeSubnets",
             "ec2:DescribeNetworkInterfaces",
             "ec2:DescribeNetworkInterfaceAttribute",
             "ec2:DescribeRouteTables",
@@ -1143,35 +1145,35 @@
     "Tags": [
      {
       "Key": "Application",
-      "PropagateAtLaunch": "true",
+      "PropagateAtLaunch": true,
       "Value": {
        "Ref": "application"
       }
      },
      {
       "Key": "Costcenter",
-      "PropagateAtLaunch": "true",
+      "PropagateAtLaunch": true,
       "Value": {
        "Ref": "costcenter"
       }
      },
      {
       "Key": "Environment",
-      "PropagateAtLaunch": "true",
+      "PropagateAtLaunch": true,
       "Value": {
        "Ref": "environment"
       }
      },
      {
       "Key": "Group",
-      "PropagateAtLaunch": "true",
+      "PropagateAtLaunch": true,
       "Value": {
        "Ref": "group"
       }
      },
      {
       "Key": "Name",
-      "PropagateAtLaunch": "true",
+      "PropagateAtLaunch": true,
       "Value": {
        "Fn::Join": [
         "",
@@ -1186,7 +1188,7 @@
      },
      {
       "Key": "Owner",
-      "PropagateAtLaunch": "true",
+      "PropagateAtLaunch": true,
       "Value": {
        "Ref": "owner"
       }
@@ -1273,18 +1275,6 @@
       "commands": {
        "000-disable-1nicautoconfig": {
         "command": "/usr/bin/setdb provision.1nicautoconfig disable"
-       },
-       "001-rest-provision-extramb": {
-        "command": "/usr/bin/setdb provision.extramb 1000"
-       },
-       "002-rest-use-extramb": {
-        "command": "/usr/bin/setdb restjavad.useextramb true"
-       },
-       "003-rest-post": {
-        "command": "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."
-       },
-       "004-rest-restart": {
-        "command": "bigstart restart restjavad restnoded"
        },
        "010-install-libs": {
         "command": {
@@ -1413,7 +1403,6 @@
              "--wait-for ADMIN_CREATED",
              "--signal ONBOARD_DONE",
              "-o /var/log/cloud/aws/onboard.log",
-             "--install-ilx-package file:///var/config/rest/downloads/f5-appsvcs-3.31.0-6.noarch.rpm",
              "--host localhost",
              "--user",
              {
@@ -1440,7 +1429,7 @@
              {
               "Ref": "bigIpModules"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:16.1.0-0.0.19,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-waf-nlb.template,templateVersion:5.14.0,licenseType:bigiq\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigipVersion:16.1.2.1-0.0.10,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-bigiq-autoscale-bigip-waf-nlb.template,templateVersion:5.14.0,licenseType:bigiq\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--license-pool --cloud aws",
              "--big-iq-host",
@@ -1526,7 +1515,6 @@
              "--wait-for ADMIN_CREATED",
              "--signal ONBOARD_DONE",
              "-o /var/log/cloud/aws/onboard.log",
-             "--install-ilx-package file:///var/config/rest/downloads/f5-appsvcs-3.31.0-6.noarch.rpm",
              "--host localhost",
              "--port 8443",
              "--user",
@@ -2085,7 +2073,7 @@
            "    exit",
            "fi",
            "echo loaded verifyHash",
-           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/var/config/rest/downloads/f5-appsvcs-3.31.0-6.noarch.rpm\")",
+           "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
            "for fileToVerify in \"${filesToVerify[@]}\"",
            "do",
            "    echo verifying \"$fileToVerify\"",
@@ -2143,12 +2131,6 @@
         "group": "root",
         "mode": "000755",
         "owner": "root"
-       },
-       "/var/config/rest/downloads/f5-appsvcs-3.31.0-6.noarch.rpm": {
-        "group": "root",
-        "mode": "000755",
-        "owner": "root",
-        "source": "http://cdn.f5.com/product/cloudsolutions/f5-appsvcs-extension/v3.31.0/f5-appsvcs-3.31.0-6.noarch.rpm"
        }
       }
      }
@@ -2215,6 +2197,24 @@
        "",
        [
         "#!/bin/bash -x\n",
+        "/usr/bin/setdb provision.extramb 1000\n",
+        "/usr/bin/setdb restjavad.useextramb true\n",
+        "cat << EOF >> runtime-init-config.yaml\n",
+        "controls:\n",
+        "  logLevel: info\n",
+        "  logFilename: /var/log/cloud/bigIpRuntimeInit.log\n",
+        "extension_packages:\n",
+        "  install_operations:\n",
+        "    - extensionType: as3\n",
+        "      extensionVersion: 3.34.0\n",
+        "      extensionHash: 05a80ec0848dc5b8876b78a8fbee2980d5a1671d635655b3af604dc830d5fed4\n",
+        "    - extensionType: ts\n",
+        "      extensionVersion: 1.26.0\n",
+        "      extensionHash: 128ec4fb6fd93e4dd7f43520a58f4810a9e20d45b60e7098a3c65ee960964bfa\n",
+        "EOF\n",
+        "/usr/bin/curl -fv --retry 1 --connect-timeout 5 -L http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/v1.4.1/dist/f5-bigip-runtime-init-1.4.1-1.gz.run -o f5-bigip-runtime-init-1.4.1-1.gz.run\n",
+        "bash f5-bigip-runtime-init-1.4.1-1.gz.run -- '--cloud aws'\n",
+        "f5-bigip-runtime-init --config-file runtime-init-config.yaml --skip-telemetry\n",
         "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ",
         {
          "Ref": "AWS::StackId"

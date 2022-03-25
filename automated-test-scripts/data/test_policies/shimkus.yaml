@@ -1,7 +1,7 @@
 aws-failover-test-across:
   test-url: "file://automated-test-scripts/f5-aws-cloudformation/supported/failover/daily_test.yaml"
   run: random
-  random-num-of-tests: 2
+  random-num-of-tests: 1
   parameters-files:
     - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/3nic/existing-stack/byol/prepub_parameters.yaml
     - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/across-net/via-api/2nic/existing-stack/byol/prepub_parameters.yaml
@@ -11,7 +11,7 @@ aws-failover-test-across:
 aws-failover-test-same:
   test-url: "file://automated-test-scripts/f5-aws-cloudformation/supported/failover/daily_test.yaml"
   run: random
-  random-num-of-tests: 2
+  random-num-of-tests: 1
   parameters-files:
     - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/3nic/existing-stack/byol/prepub_parameters.yaml
     - automated-test-scripts/data/f5-aws-cloudformation/supported/failover/same-net/via-api/2nic/existing-stack/byol/prepub_parameters.yaml
@@ -21,7 +21,7 @@ aws-failover-test-same:
 aws-standalone-test:
   test-url: 'file://automated-test-scripts/f5-aws-cloudformation/supported/standalone/daily_test.yaml'
   run: random
-  random-num-of-tests: 2
+  random-num-of-tests: 1
   parameters-files:
     - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/3nic/existing-stack/byol/prepub_parameters.yaml
     - automated-test-scripts/data/f5-aws-cloudformation/supported/standalone/2nic/existing-stack/byol/prepub_parameters.yaml

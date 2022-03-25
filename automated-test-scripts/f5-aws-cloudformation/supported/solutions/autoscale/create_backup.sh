@@ -1,7 +1,7 @@
 #  expectValue = "SUCCESS"
-#  scriptTimeout = 10
+#  scriptTimeout = 5
 #  replayEnabled = true
-#  replayTimeout = 5
+#  replayTimeout = 10
 
 
 pathToMetadata='./tmp/dd_id/'
@@ -47,4 +47,7 @@ fi
 echo "response: $response"
 
 echo "Removing metadata file... $(rm -f "$pathToMetadata/metadata.json")"
-echo "SUCCESS"
+
+if echo $response | grep -e "Validated integrity of recenetly generated UCS file"; then
+  echo "SUCCESS"
+fi

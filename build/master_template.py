@@ -110,7 +110,7 @@ def add_security_group_ingress_resource(t, bigipExternalSecurityGroup, name, ip_
         SourceSecurityGroupId=Ref(bigipExternalSecurityGroup),
     ))
 
-def build_cloudlibs_sh(cfe_verify, comment_out,package_as3):
+def build_cloudlibs_sh(cfe_verify, comment_out, package_as3):
     cloudlibs_sh = [
         "\n",
         "#!/bin/bash",
@@ -132,7 +132,7 @@ def build_cloudlibs_sh(cfe_verify, comment_out,package_as3):
         str(comment_out) + "    exit",
         str(comment_out) + "fi",
         str(comment_out) + "echo loaded verifyHash",
-        str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/var/config/rest/downloads/" + str(package_as3) + "\"" + str(cfe_verify) + ")",
+        str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
         str(comment_out) + "for fileToVerify in \"${filesToVerify[@]}\"",
         str(comment_out) + "do",
         str(comment_out) + "    echo verifying \"$fileToVerify\"",
@@ -201,7 +201,10 @@ def build_rm_password_sh():
     ]
 
 
-def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3):
+def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3, runtime_init_url, package_runtime_init):
+
+    download_runtime_command = "/usr/bin/curl -fv --retry 1 --connect-timeout 5 -L " + runtime_init_url + " -o " + "/var/config/rest/downloads/" + package_runtime_init + "\n"
+    install_runtime_command = "bash " + "/var/config/rest/downloads/" + package_runtime_init + " -- '--cloud aws'\n"
 
     unpack_libs = [
         "mkdir -p /var/log/cloud/aws;",
@@ -293,7 +296,6 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
             "--wait-for ADMIN_CREATED",
             "--signal ONBOARD_DONE",
             "-o /var/log/cloud/aws/onboard.log",
-            "--install-ilx-package file:///var/config/rest/downloads/" + str(package_as3),
             "--host localhost",
             "--user",
             {"Ref": "adminUsername"},
@@ -332,7 +334,6 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
             "--wait-for ADMIN_CREATED",
             "--signal ONBOARD_DONE",
             "-o /var/log/cloud/aws/onboard.log",
-            "--install-ilx-package file:///var/config/rest/downloads/" + str(package_as3),
             "--host localhost",
             "--port 8443",
             "--user",
@@ -549,7 +550,6 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
             "--wait-for NETWORK_CONFIG_DONE",
             "--signal ONBOARD_DONE",
             "-o /var/log/cloud/aws/onboard.log",
-            "--install-ilx-package file:///var/config/rest/downloads/" + str(package_as3),
             "--host localhost",
             "--user",
             {"Ref": "adminUsername"},
@@ -588,7 +588,6 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
             "--wait-for NETWORK_CONFIG_DONE",
             "--signal ONBOARD_DONE",
             "-o /var/log/cloud/aws/onboard.log",
-            "--install-ilx-package file:///var/config/rest/downloads/" + str(package_as3),
             "--host localhost",
             "--port 8443",
             "--user",
@@ -697,9 +696,10 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
 
         commands = {
             '000-disable-1nicautoconfig': {'command': "/usr/bin/setdb provision.1nicautoconfig disable"},
-            '001-rest-provision-extramb': {'command': "/usr/bin/setdb provision.extramb 1000"},
-            '002-rest-use-extramb': {'command': "/usr/bin/setdb restjavad.useextramb true"},
-            '003-rest-post': {'command': "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."},
+            # '001-rest-provision-extramb': {'command': "/usr/bin/setdb provision.extramb 1000"},
+            # '002-rest-use-extramb': {'command': "/usr/bin/setdb restjavad.useextramb true"},
+            # '003-rest-post': {'command': "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."},
+            # '004-rest-restart': {'command': "bigstart restart restjavad restnoded"},
             '010-install-libs': {'command': {"Fn::Join": [" ", unpack_libs]}},
             '020-generate-password': {'command': {"Fn::Join": ["", generate_password]}},
             '030-create-admin-user': {'command': {"Fn::Join": ["", admin_user]}},
@@ -713,7 +713,7 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
 
     return commands
 
-def create_launch_config_metadata(ha_type, cloudlib_url, cloudlib_aws_url, as3_url, lines, cloudlibs_sh, waitthenrun_sh, get_nameserver, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3):
+def create_launch_config_metadata(ha_type, cloudlib_url, cloudlib_aws_url, as3_url, lines, cloudlibs_sh, waitthenrun_sh, get_nameserver, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3, runtime_init_url, package_runtime_init):
     mode = '000755'
     owner = 'root'
     group = 'root'
@@ -1013,7 +1013,6 @@ def create_launch_config_metadata(ha_type, cloudlib_url, cloudlib_aws_url, as3_u
     files = {
         # source
         '/config/cloud/f5-cloud-libs.tar.gz': {'source': cloudlib_url},
-        '/var/config/rest/downloads/' + str(package_as3): {'source': as3_url},
         '/config/cloud/f5-cloud-libs-aws.tar.gz': {'source': cloudlib_aws_url},
         # content
         '/config/verifyHash': {'content': lines},  # target convert to /config/cloud after all fix?
@@ -1051,13 +1050,12 @@ def create_launch_config_metadata(ha_type, cloudlib_url, cloudlib_aws_url, as3_u
         elif list(info.keys())[0] == 'content':
             init_files[file] = InitFile(
                 content=Join(list(info.values())[0].pop(0), list(info.values())[0]),
-                # content=str(info.values()[0]),
                 mode=mode,
                 owner=owner,
                 group=group
             )
     # Build input for init commands
-    d = build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3)
+    d = build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3, runtime_init_url, package_runtime_init)
 
     metadata = Metadata(
         Init({
@@ -1069,9 +1067,26 @@ def create_launch_config_metadata(ha_type, cloudlib_url, cloudlib_aws_url, as3_u
     )
     return metadata
 
-def add_resources_autoscale(ha_type, t, restrictedSrcAddress, managementGuiPort, restrictedSrcAddressApp, Vpc, cloudlib_url, cloudlib_aws_url, as3_url, lines, comment_out, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3):
+
+def add_resources_autoscale(ha_type, t, restrictedSrcAddress, managementGuiPort, restrictedSrcAddressApp, Vpc, cloudlib_url, cloudlib_aws_url, as3_url, lines, comment_out, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3, runtime_init_url, package_runtime_init, download_runtime_command, install_runtime_command):
     ud = Base64(Join('', [
                 "#!/bin/bash -x\n",
+                "mkdir -p /var/log/cloud /config/cloud /var/config/rest/downloads\n",
+                "/usr/bin/setdb provision.extramb 1000\n",
+                "/usr/bin/setdb restjavad.useextramb true\n",
+                "cat << EOF >> /config/cloud/runtime-init-config.yaml\n",
+                "controls:\n",
+                "  logLevel: info\n",
+                "  logFilename: /var/log/cloud/bigIpRuntimeInit.log\n",
+                "extension_packages:\n",
+                "  install_operations:\n",
+                "    - extensionType: as3\n",
+                "      extensionVersion: 3.34.0\n",
+                "      extensionHash: 05a80ec0848dc5b8876b78a8fbee2980d5a1671d635655b3af604dc830d5fed4\n",
+                "EOF\n",
+                download_runtime_command,
+                install_runtime_command,
+                "f5-bigip-runtime-init --config-file /config/cloud/runtime-init-config.yaml --skip-telemetry\n",
                 "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ",
                 {
                     "Ref": "AWS::StackId"
@@ -1155,15 +1170,14 @@ def add_resources_autoscale(ha_type, t, restrictedSrcAddress, managementGuiPort,
                 "ec2:DescribeAddresses",
                 "ec2:AssociateAddress",
                 "ec2:DisassociateAddress",
+                "ec2:DescribeSubnets",
                 "ec2:DescribeNetworkInterfaces",
                 "ec2:DescribeNetworkInterfaceAttribute",
                 "ec2:DescribeRouteTables",
-                "ec2:ReplaceRoute",
-                "ec2:assignprivateipaddresses",
+                "ec2:AssignPrivateIpAddresses",
                 "ec2:DescribeTags",
                 "ec2:CreateTags",
                 "ec2:DeleteTags",
-                "sts:AssumeRole",
                 "cloudwatch:PutMetricData",
                 "cloudformation:ListStackResources",
                 "cloudformation:SignalResource"
@@ -1284,7 +1298,7 @@ def add_resources_autoscale(ha_type, t, restrictedSrcAddress, managementGuiPort,
     waitthenrun_sh = build_waitthenrun_sh()
     get_nameserver = build_get_nameserver()
     get_lines = ["", lines]
-    launch_config_metadata = create_launch_config_metadata(ha_type, cloudlib_url, cloudlib_aws_url, as3_url, get_lines, cloudlibs_sh, waitthenrun_sh, get_nameserver, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3)
+    launch_config_metadata = create_launch_config_metadata(ha_type, cloudlib_url, cloudlib_aws_url, as3_url, get_lines, cloudlibs_sh, waitthenrun_sh, get_nameserver, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3, runtime_init_url, package_runtime_init)
 
     # set vars for add_resource
     if 'waf' in components:
@@ -1663,19 +1677,21 @@ def main():
     # Log level
     loglevel = 'silly'
     # Template Version
-    version = '5.14.0'
+    version = '5.15.0'
     # Big-IP mapped
-    BIGIP_VERSION = '16.1.0-0.0.19'
+    BIGIP_VERSION = '16.1.2.1-0.0.10'
     # Cloudlib Branch
-    branch_cloud = 'v4.26.5'
-    branch_aws = 'v2.10.0'
+    branch_cloud = 'v4.26.8'
+    branch_aws = 'v2.10.1'
     # AS3 branch and package
     branch_as3 = 'v3.31.0'
     package_as3 = 'f5-appsvcs-3.31.0-6.noarch.rpm'
+    # Runtime Init
+    branch_runtime_init = 'v1.4.1'
+    package_runtime_init = 'f5-bigip-runtime-init-1.4.1-1.gz.run'
+    runtime_init_url = 'http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/' + branch_runtime_init + '/dist/' + package_runtime_init
     # Build verifyHash file from published verifyHash on CDN
-    # Comment this out until f5-cloud-libs released with verifyHash which includes new version of f5-cloud-failover
     urls = ['https://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/' + str(branch_cloud) + '/verifyHash']
-    #urls = ['https://ak-metadata-package-poc.s3.amazonaws.com/verifyHash']
     for url in urls:
         try:
             urllib3.disable_warnings()
@@ -1688,7 +1704,7 @@ def main():
                 lines = vhash.read()
         except requests.exceptions.RequestException as e:
             print(e)
-# Files URL's
+    # Files URL's
     cfe_version = "1.9.0"
     cfe_sufix = "-0"
     cfe_name = "f5-cloud-failover-" + str(cfe_version + cfe_sufix) + ".noarch.rpm"
@@ -2622,6 +2638,7 @@ def main():
                 "m4.4xlarge",
                 "m4.10xlarge",
                 "m5.large",
+                "t3.large",
                 "m5.xlarge",
                 "m5.2xlarge",
                 "m5.4xlarge",
@@ -2661,6 +2678,7 @@ def main():
                 "m3.xlarge",
                 "m3.medium",
                 "m3.large",
+                "t3.large",
                 "m3.2xlarge",
                 "cc2.8xlarge",
                 "c5.xlarge",
@@ -2694,6 +2712,7 @@ def main():
                     "m3.xlarge",
                     "m3.medium",
                     "m3.large",
+                    "t3.large",
                     "m3.2xlarge",
                     "cc2.8xlarge",
                     "c5.xlarge",
@@ -2736,6 +2755,7 @@ def main():
                     "c3.8xlarge",
                     "c4.8xlarge",
                     "c5.large",
+                    "t3.large",
                     "c5.xlarge",
                     "c5.2xlarge",
                     "c5.4xlarge",
@@ -2760,6 +2780,7 @@ def main():
                     "c4.4xlarge",
                     "c4.8xlarge",
                     "c5.large",
+                    "t3.large",
                     "c5.xlarge",
                     "c5.2xlarge",
                     "c5.4xlarge",
@@ -2791,6 +2812,7 @@ def main():
                     "c4.4xlarge",
                     "c4.8xlarge",
                     "c5.large",
+                    "t3.large",
                     "c5.xlarge",
                     "c5.2xlarge",
                     "c5.4xlarge",
@@ -3636,8 +3658,10 @@ def main():
         )
 
     # BEGIN RESOURCES
-    if ha_type == "autoscale":
-        add_resources_autoscale(ha_type, t, restrictedSrcAddress, managementGuiPort, restrictedSrcAddressApp, Vpc, cloudlib_url, cloudlib_aws_url, as3_url, lines, comment_out, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3)
+    if ha_type == "autoscale":            
+        download_runtime_command = "/usr/bin/curl -fv --retry 1 --connect-timeout 5 -L " + runtime_init_url + " -o " + "/var/config/rest/downloads/" + package_runtime_init + "\n"
+        install_runtime_command = "bash " + "/var/config/rest/downloads/" + package_runtime_init + " -- '--cloud aws'\n"
+        add_resources_autoscale(ha_type, t, restrictedSrcAddress, managementGuiPort, restrictedSrcAddressApp, Vpc, cloudlib_url, cloudlib_aws_url, as3_url, lines, comment_out, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3, runtime_init_url, package_runtime_init, download_runtime_command, install_runtime_command)
     else:
         if network:
             Vpc = t.add_resource(VPC(
@@ -4112,17 +4136,17 @@ def main():
             ))
         if bigip:
             # Build IAM ROLE and POLICY
-            discovery_actions = ["ec2:DescribeInstances", "ec2:DescribeInstanceStatus", "ec2:DescribeAddresses", "ec2:AssociateAddress", "ec2:DisassociateAddress", "ec2:DescribeNetworkInterfaces", "ec2:DescribeNetworkInterfaceAttribute", "ec2:DescribeRouteTables", "ec2:ReplaceRoute", "ec2:assignprivateipaddresses", "sts:AssumeRole" ]
-            cfe_actions = ["s3:ListAllMyBuckets", "ec2:UnassignPrivateIpAddresses"]
+            discovery_actions = ["ec2:DescribeInstances", "ec2:DescribeInstanceStatus", "ec2:DescribeAddresses", "ec2:AssociateAddress", "ec2:DisassociateAddress", "ec2:DescribeNetworkInterfaces", "ec2:DescribeNetworkInterfaceAttribute", "ec2:DescribeRouteTables", "ec2:DescribeSubnets", "ec2:AssignPrivateIpAddresses" ]
+            cfe_actions = ["s3:ListAllMyBuckets", "ec2:UnassignPrivateIpAddresses", "ec2:AssignIpv6Addresses", "ec2:UnassignIpv6Addresses"]
             if ha_type != "standalone":
                 discovery_actions.extend(cfe_actions)
             discovery_policy = [{"Effect": "Allow", "Action": discovery_actions, "Resource": ["*"]}]
             if license_type == "bigiq":
                 discovery_policy.append({"Effect": "Allow", "Action": ["s3:GetObject"], "Resource": {"Ref": "bigIqPasswordS3Arn"}, })
             if ha_type != "standalone":
-                discovery_policy.append({"Effect": "Allow", "Action": ["s3:ListBucket","s3:GetBucketTagging"], "Resource": {"Fn::Join": ["", ["arn:*:s3:::", {"Ref": "S3Bucket"}]]}, },)
+                discovery_policy.append({"Effect": "Allow", "Action": ["s3:ListBucket","s3:GetBucketTagging", "s3:GetBucketLocation"], "Resource": {"Fn::Join": ["", ["arn:*:s3:::", {"Ref": "S3Bucket"}]]}, },)
                 discovery_policy.append({"Effect": "Allow", "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"], "Resource": {"Fn::Join": ["", ["arn:*:s3:::", {"Ref": "S3Bucket"}, "/*"]]}},)
-                discovery_policy.append({"Effect": "Allow", "Action": ["ec2:CreateRoute", "ec2:ReplaceRoute"], "Resource": {"Fn::Join": ["", ["arn:*:ec2:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":route-table/*"]]}})
+                discovery_policy.append({"Effect": "Allow", "Action": ["ec2:CreateRoute", "ec2:ReplaceRoute"], "Resource": {"Fn::Join": ["", ["arn:*:ec2:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":route-table/*"]]}, "Condition": {"StringEquals": {"ec2:ResourceTag/f5_cloud_failover_label": {"Ref":"AWS::StackName"}}}})
                 s3bucket = t.add_resource(Bucket("S3Bucket", AccessControl=BucketOwnerFullControl,Tags=Tags(f5_cloud_failover_label=Ref("AWS::StackName"))))
             if (license_type != "hourly" and license_type != "bigiq" and ha_type != "autoscale"):
                 bigipServiceDiscoveryAccessRole = t.add_resource(iam.Role(
@@ -4638,7 +4662,7 @@ def main():
                     str(comment_out) + "    exit",
                     str(comment_out) + "fi",
                     str(comment_out) + "echo loaded verifyHash",
-                    str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\" \"/var/config/rest/downloads/" + str(package_as3) + "\" " + str(cfe_verify) + ")",
+                    str(comment_out) + "declare -a filesToVerify=(\"/config/cloud/f5-cloud-libs.tar.gz\" \"/config/cloud/f5-cloud-libs-aws.tar.gz\")",
                     str(comment_out) + "for fileToVerify in \"${filesToVerify[@]}\"",
                     str(comment_out) + "do",
                     str(comment_out) + "    echo verifying \"$fileToVerify\"",
@@ -4728,6 +4752,10 @@ def main():
                     " &>> /var/log/cloud/aws/install.log < /dev/null",
                     " &"
                 ]
+                               
+                download_runtime_command = "/usr/bin/curl -fv --retry 1 --connect-timeout 5 -L " + runtime_init_url + " -o " + "/var/config/rest/downloads/" + package_runtime_init + "\n"
+                install_runtime_command = "bash " + "/var/config/rest/downloads/" + package_runtime_init + " -- '--cloud aws'\n"
+
                 unpack_libs = [
                     "mkdir -p /var/log/cloud/aws;",
                     "nohup /config/installCloudLibs.sh",
@@ -5036,7 +5064,6 @@ def main():
                         "TOKEN=`/usr/bin/curl -sS --retry 20 -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`;",
                         "HOSTNAME=`/usr/bin/curl -sS --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`;",
                         "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
-                        ilx_package,
                         "--port 8443",
                         "--ssl-port ", Ref(managementGuiPort),
                         "--wait-for NETWORK_CONFIG_DONE",
@@ -5064,12 +5091,11 @@ def main():
 
                 if num_nics > 1:
                     onboard_BIG_IP += [
-                        "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`;",
+                        "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth0`;",
                         "nohup /config/waitThenRun.sh",
                         "TOKEN=`/usr/bin/curl -sS --retry 20 -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`;",
                         "HOSTNAME=`/usr/bin/curl -sS --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`;",
                         "f5-rest-node /config/cloud/aws/node_modules/@f5devcentral/f5-cloud-libs/scripts/onboard.js",
-                        ilx_package,
                         "--wait-for NETWORK_CONFIG_DONE",
                         "--signal ONBOARD_DONE",
                     ]
@@ -5124,12 +5150,7 @@ def main():
                                 ]
                             if num_nics > 2:
                                 custom_sh += [
-                                    "INTERFACE_INT=internal\n",
-                                    "IFCONFIG=$(ifconfig $INTERFACE_INT)\n",
-                                    "if [ -z \"$IFCONFIG\" ]; then\n",
-                                    "INTERFACE_INT=eth2\n",
-                                    "fi\n",
-                                    "GATEWAY_MAC2=`ifconfig ${INTERFACE_INT} | egrep ether | awk '{print tolower($2)}'`\n",
+                                    "GATEWAY_MAC2=`cat /config/cloud/net2_mac | awk '{print tolower($2)}'`\n",
                                     "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                                     "GATEWAY_NET2=${GATEWAY_CIDR_BLOCK2%/*}\n",
                                     "GATEWAY2=`echo ${GATEWAY_NET2} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
@@ -5146,12 +5167,7 @@ def main():
                                 ]
                 if ha_type != "standalone" and (BIGIP_INDEX) == CLUSTER_SEED and num_nics > 2 and ha_type == "across-az":
                         custom_sh += [
-                            "INTERFACE_INT=internal\n",
-                            "IFCONFIG=$(ifconfig $INTERFACE_INT)\n",
-                            "if [ -z \"$IFCONFIG\" ]; then\n",
-                            "INTERFACE_INT=eth2\n",
-                            "fi\n",
-                            "GATEWAY_MAC2=`ifconfig ${INTERFACE_INT} | egrep ether | awk '{print tolower($2)}'`\n",
+                            "GATEWAY_MAC2=`cat /config/cloud/net2_mac | awk '{print tolower($2)}'`\n",
                             "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`\n",
                             "GATEWAY_NET2=${GATEWAY_CIDR_BLOCK2%/*}\n",
                             "GATEWAY2=`echo ${GATEWAY_NET2} | awk -F. '{ print $1\".\"$2\".\"$3\".\"$4+1 }'`\n",
@@ -5196,8 +5212,8 @@ def main():
                 if num_nics > 1:
                     vlans = ""
                     network_config = [
-                        "GATEWAY_MAC=`ifconfig eth1 | egrep ether | awk '{print tolower($2)}'`; ",
-                        "TOKEN=`/usr/bin/curl -sS --retry 20 -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
+                        "GATEWAY_MAC=`cat /config/cloud/net1_mac | awk '{print tolower($2)}'`\n",
+                        "sleep 30 && TOKEN=`/usr/bin/curl -sS --retry 20 -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
                         "GATEWAY_CIDR_BLOCK=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC}/subnet-ipv4-cidr-block`; ",
                         "GATEWAY_NET=${GATEWAY_CIDR_BLOCK%/*}; ",
                         "GATEWAY_PREFIX=${GATEWAY_CIDR_BLOCK#*/}; ",
@@ -5205,12 +5221,12 @@ def main():
                     ]
                     if ha_type == "across-az":
                         network_config += [
-                            "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth1`; ",
+                            "NAME_SERVER=`/config/cloud/aws/getNameServer.sh eth0`; ",
                             "MGMT_GATEWAY=`/config/cloud/aws/getManagementGateway.sh eth0`; ",
                         ]
                     if num_nics > 2:
                         network_config += [
-                            "GATEWAY_MAC2=`ifconfig eth2 | egrep ether | awk '{print tolower($2)}'`\n",
+                            "GATEWAY_MAC2=`cat /config/cloud/net2_mac | awk '{print tolower($2)}'`\n",
                             "GATEWAY_CIDR_BLOCK2=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC2}/subnet-ipv4-cidr-block`; ",
                             "GATEWAY_PREFIX2=${GATEWAY_CIDR_BLOCK2#*/}; ",
                         ]
@@ -5224,9 +5240,9 @@ def main():
                         for number in range(3, 8):
                             network_config += [
                                 If("createNic" + str(number),
-                                    "GATEWAY_MAC" + str(number) + "=`ifconfig eth" + str(number) + " | egrep ether | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK" + str(number) + "=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC" + str(number) + "}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX" + str(number) + "=${GATEWAY_CIDR_BLOCK" + str(number) + "#*/};",
+                                    "GATEWAY_MAC" + str(number) + "=`cat /config/cloud/net" + str(number) +"_mac | awk '{print tolower($2)}'`;GATEWAY_CIDR_BLOCK" + str(number) + "=`/usr/bin/curl -s -f --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/network/interfaces/macs/${GATEWAY_MAC" + str(number) + "}/subnet-ipv4-cidr-block`;GATEWAY_PREFIX" + str(number) + "=${GATEWAY_CIDR_BLOCK" + str(number) + "#*/};",
                                     ""
-                                   )
+                                    )
                             ]
                     if ha_type != "standalone":
                         network_config += [
@@ -5641,15 +5657,18 @@ def main():
                 d["000-disable-1nicautoconfig"] = {
                     "command": "/usr/bin/setdb provision.1nicautoconfig disable"
                 }
-                d["001-rest-provision-extramb"] = {
-                    "command": "/usr/bin/setdb provision.extramb 1000"
-                }
-                d["002-rest-use-extramb"] = {
-                    "command": "/usr/bin/setdb restjavad.useextramb true"
-                }
-                d["003-rest-post"] = {
-                    "command": "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."
-                }
+                # d["001-rest-provision-extramb"] = {
+                #     "command": "/usr/bin/setdb provision.extramb 1000"
+                # }
+                # d["002-rest-use-extramb"] = {
+                #     "command": "/usr/bin/setdb restjavad.useextramb true"
+                # }
+                # d["003-rest-post"] = {
+                #     "command": "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."
+                # }
+                # d["004-rest-restart"] = {
+                #     "command": "bigstart restart restjavad restnoded"
+                # }
                 d["010-install-libs"] = {
                     "command": {
                         "Fn::Join": [
@@ -5735,18 +5754,6 @@ def main():
                         owner='root',
                         group='root'
                     ),
-                    '/var/config/rest/downloads/' + str(package_as3): InitFile(
-                        source=as3_url,
-                        mode='000755',
-                        owner='root',
-                        group='root'
-                    ),
-                    str(cfe): InitFile(
-                        source=cfe_url,
-                        mode='000755',
-                        owner='root',
-                        group='root'
-                    ),
                     '/config/verifyHash': InitFile(
                         content=lines,
                         mode='000755',
@@ -5826,18 +5833,6 @@ def main():
                         ),
                         '/config/cloud/f5-cloud-libs-aws.tar.gz': InitFile(
                             source=If("useChinaRegion", cloudlib_aws_url_china, cloudlib_aws_url),
-                            mode='000755',
-                            owner='root',
-                            group='root'
-                        ),
-                        '/var/config/rest/downloads/' + str(package_as3): InitFile(
-                            source=If("useChinaRegion", as3_url_china, as3_url),
-                            mode='000755',
-                            owner='root',
-                            group='root'
-                        ),
-                        str(cfe): InitFile(
-                            source=If("useChinaRegion", cfe_url_china, cfe_url),
                             mode='000755',
                             owner='root',
                             group='root'
@@ -5938,7 +5933,35 @@ def main():
                     RESOURCES[BigipInstance] = t.add_resource(Instance(
                         BigipInstance,
                         Metadata=metadata,
-                        UserData=Base64(Join("", ["#!/bin/bash\n", "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance, " --region ", Ref("AWS::Region"), "\n"])),
+                        UserData=Base64(Join("", [
+                                        "#!/bin/bash\n",
+                                        "mkdir -p /var/log/cloud /config/cloud /var/config/rest/downloads\n",
+                                        "/usr/bin/setdb provision.extramb 1000\n", 
+                                        "/usr/bin/setdb restjavad.useextramb true\n", 
+                                        "cat << EOF >> /config/cloud/runtime-init-config.yaml\n",
+                                        "controls:\n",
+                                        "  logLevel: info\n",
+                                        "  logFilename: /var/log/cloud/bigIpRuntimeInit.log\n",
+                                        "pre_onboard_enabled:\n",
+                                        "  - name: get_ifconfig\n",
+                                        "    type: inline\n",
+                                        "    commands:\n",
+                                        "      - ifconfig eth1 | grep ether > /config/cloud/net1_mac || exit 0\n",
+                                        "      - ifconfig eth2 | grep ether > /config/cloud/net2_mac || exit 0\n",
+                                        "extension_packages:\n",
+                                        "  install_operations:\n",
+                                        "    - extensionType: as3\n",
+                                        "      extensionVersion: 3.34.0\n",
+                                        "      extensionHash: 05a80ec0848dc5b8876b78a8fbee2980d5a1671d635655b3af604dc830d5fed4\n",
+                                        "    - extensionType: cf\n",
+                                        "      extensionVersion: 1.10.0\n",
+                                        "      extensionHash: d758c985cac4dbef4b0732fe5900317ae97e67c6efca621a5b2b02c8c4bbeace\n",
+                                        "EOF\n",
+                                        download_runtime_command, 
+                                        install_runtime_command, 
+                                        "f5-bigip-runtime-init --config-file /config/cloud/runtime-init-config.yaml --skip-telemetry\n", 
+                                        "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance, " --region ", Ref("AWS::Region"), "\n"
+                                        ])),
                         Tags=Tags(
                             Name=Join("", ["Big-IP" + str(BIGIP_INDEX + 1) + ": ", Ref("AWS::StackName")]),
                             Application=Ref(application),
@@ -5976,7 +5999,35 @@ def main():
                         BigipInstance,
                         DependsOn="Bigip" + str(BIGIP_INDEX) + "Instance",
                         Metadata=metadata,
-                        UserData=Base64(Join("", ["#!/bin/bash\n", "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance, " --region ", Ref("AWS::Region"), "\n"])),
+                        UserData=Base64(Join("", [
+                                        "#!/bin/bash\n",
+                                        "mkdir -p /var/log/cloud /config/cloud /var/config/rest/downloads\n",
+                                        "/usr/bin/setdb provision.extramb 1000\n", 
+                                        "/usr/bin/setdb restjavad.useextramb true\n",
+                                        "cat << EOF >> /config/cloud/runtime-init-config.yaml\n",
+                                        "controls:\n",
+                                        "  logLevel: info\n",
+                                        "  logFilename: /var/log/cloud/bigIpRuntimeInit.log\n",
+                                        "pre_onboard_enabled:\n",
+                                        "  - name: get_ifconfig\n",
+                                        "    type: inline\n",
+                                        "    commands:\n",
+                                        "      - ifconfig eth1 | grep ether > /config/cloud/net1_mac || exit 0\n",
+                                        "      - ifconfig eth2 | grep ether > /config/cloud/net2_mac || exit 0\n",
+                                        "extension_packages:\n",
+                                        "  install_operations:\n",
+                                        "    - extensionType: as3\n",
+                                        "      extensionVersion: 3.34.0\n",
+                                        "      extensionHash: 05a80ec0848dc5b8876b78a8fbee2980d5a1671d635655b3af604dc830d5fed4\n",
+                                        "    - extensionType: cf\n",
+                                        "      extensionVersion: 1.10.0\n",
+                                        "      extensionHash: d758c985cac4dbef4b0732fe5900317ae97e67c6efca621a5b2b02c8c4bbeace\n",
+                                        "EOF\n", 
+                                        download_runtime_command, 
+                                        install_runtime_command, 
+                                        "f5-bigip-runtime-init --config-file /config/cloud/runtime-init-config.yaml --skip-telemetry\n", 
+                                        "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance, " --region ", Ref("AWS::Region"), "\n"
+                                        ])),
                         Tags=Tags(
                             Name=Join("", ["Big-IP" + str(BIGIP_INDEX + 1) + ": ", Ref("AWS::StackName")]),
                             Application=Ref(application),
@@ -6013,7 +6064,37 @@ def main():
                     RESOURCES[BigipInstance] = t.add_resource(Instance(
                         BigipInstance,
                         Metadata=metadata,
-                        UserData=Base64(Join("", ["#!/bin/bash\n", "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance, " --region ", Ref("AWS::Region"), "\n"])),
+                        UserData=Base64(Join("", [
+                                        "#!/bin/bash\n",
+                                        "mkdir -p /var/log/cloud /config/cloud /var/config/rest/downloads\n", 
+                                        "/usr/bin/setdb provision.extramb 1000\n", 
+                                        "/usr/bin/setdb restjavad.useextramb true\n",
+                                        "cat << EOF >> /config/cloud/runtime-init-config.yaml\n",
+                                        "controls:\n",
+                                        "  logLevel: info\n",
+                                        "  logFilename: /var/log/cloud/bigIpRuntimeInit.log\n",
+                                        "pre_onboard_enabled:\n",
+                                        "  - name: get_ifconfig\n",
+                                        "    type: inline\n",
+                                        "    commands:\n",
+                                        "      - ifconfig eth1 | grep ether > /config/cloud/net1_mac || exit 0\n",
+                                        "      - ifconfig eth2 | grep ether > /config/cloud/net2_mac || exit 0\n",
+                                        "      - ifconfig eth3 | grep ether > /config/cloud/net3_mac || exit 0\n",
+                                        "      - ifconfig eth4 | grep ether > /config/cloud/net4_mac || exit 0\n",
+                                        "      - ifconfig eth5 | grep ether > /config/cloud/net5_mac || exit 0\n",
+                                        "      - ifconfig eth6 | grep ether > /config/cloud/net6_mac || exit 0\n",
+                                        "      - ifconfig eth7 | grep ether > /config/cloud/net7_mac || exit 0\n",
+                                        "extension_packages:\n",
+                                        "  install_operations:\n",
+                                        "    - extensionType: as3\n",
+                                        "      extensionVersion: 3.34.0\n",
+                                        "      extensionHash: 05a80ec0848dc5b8876b78a8fbee2980d5a1671d635655b3af604dc830d5fed4\n",
+                                        "EOF\n",
+                                        download_runtime_command, 
+                                        install_runtime_command, 
+                                        "f5-bigip-runtime-init --config-file /config/cloud/runtime-init-config.yaml --skip-telemetry\n", 
+                                        "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ", Ref("AWS::StackId"), " -r ", BigipInstance, " --region ", Ref("AWS::Region"), "\n"
+                                        ])),
                         Tags=Tags(
                             Name=Join("", ["Big-IP: ", Ref("AWS::StackName")]),
                             Application=Ref(application),

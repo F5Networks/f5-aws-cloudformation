@@ -1,7 +1,11 @@
 #  expectValue = "StackId"
+#  expectFailValue = "Failed"
 #  scriptTimeout = 10
 #  replayEnabled = false
 #  replayTimeout = 0
+
+
+TMP_DIR='/tmp/<DEWPOINT JOB ID>'
 
 # source_ip=""
 # while [ "$source_ip" == "" ]
@@ -108,9 +112,18 @@ echo "public ip parameter: $public_ip_param"
 # determine license parameter
 case <LICENSE TYPE> in
 bigiq)
-   bigiq_host=$(aws cloudformation describe-stacks --region <REGION> --stack-name <STACK NAME>-bigiq | jq -r '.Stacks[].Outputs[]|select (.OutputKey=="device1ManagementInterfacePrivateIp")|.OutputValue')
+  if [ -f "${TMP_DIR}/bigiq_info.json" ]; then
+      echo "Found existing BIG-IQ"
+      cat ${TMP_DIR}/bigiq_info.json
+      bigiq_address=$(cat ${TMP_DIR}/bigiq_info.json | jq -r .bigiq_address)
+  else
+      echo "Failed - No BIG-IQ found"
+  fi
+  bigiq_secret_arn="arn:aws:s3:::${bucket_name}/bigiq.txt"
+  bigiq_host=${bigiq_address}
+
   lic_parm="ParameterKey=bigIqAddress,ParameterValue=${bigiq_host} ParameterKey=bigIqLicensePoolName,ParameterValue=<BIGIQ LICENSE POOL> \
-  ParameterKey=bigIqPasswordS3Arn,ParameterValue=<BIGIQ LICENSE S3 ARN> ParameterKey=bigIqUsername,ParameterValue=admin ParameterKey=bigIqLicenseUnitOfMeasure,ParameterValue=yearly ParameterKey=bigIqLicenseSkuKeyword1,ParameterValue=BT"  ;;
+  ParameterKey=bigIqPasswordS3Arn,ParameterValue=${bigiq_secret_arn} ParameterKey=bigIqUsername,ParameterValue=admin ParameterKey=bigIqLicenseUnitOfMeasure,ParameterValue=yearly ParameterKey=bigIqLicenseTenant,ParameterValue=<DEWPOINT JOB ID> ParameterKey=bigIqLicenseSkuKeyword1,ParameterValue=BT ParameterKey=bigIqLicenseSkuKeyword2,ParameterValue=1G"  ;;
 byol)
   lic_parm="ParameterKey=licenseKey1,ParameterValue=<AUTOFILL EVAL LICENSE KEY> ParameterKey=licenseKey2,ParameterValue=<AUTOFILL EVAL LICENSE KEY 2>" ;;
 payg)

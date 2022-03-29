@@ -4,7 +4,7 @@ Ensure the template is secure
 To ensure the CloudFormation template is the one provided by F5, you can do some verification.
 
 ## Checksums
-F5 provides checksums for all supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
+F5 provides checksums for all supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://community.f5.com/t5/crowdsrc/checksums-for-f5-supported-cloud-templates-on-github/ta-p/284471.
 
 ## Helper Code
 The CloudFormation template downloads helper code, which is used to configure BIG-IP VE. 

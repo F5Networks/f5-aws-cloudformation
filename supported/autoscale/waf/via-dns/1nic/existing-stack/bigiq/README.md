@@ -202,7 +202,7 @@ The following table lists the versions of BIG-IP that have been tested and valid
 
 | BIG-IP Version | Build | Solution | Status | Notes |
 | --- | --- | --- | --- | --- |
-| 16.1.0 | 0.0.19 | Standalone, Failover, Autoscale | Validated | |
+| 16.1.2.1 | 0.0.10 | Standalone, Failover, Autoscale | Validated | |
 | 15.1.4.0 | 0.0.47 | Standalone, Failover, Autoscale | Validated | |
 | 14.1.4.4 | 0.0.4 | Standalone, Failover, Autoscale | Validated | |
 | 13.1.4.1 | 0.0.3 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
@@ -247,7 +247,7 @@ When the first auto scale instance is launched, a Device Group called "autoscale
 
 Whenever a new instance is launched, it joins the cluster. If those instances are scaled down, they are removed from the cluster and the original instance remains. The cluster membership is updated once every 2 minutes and sends metrics every 60 seconds.
 
-This deployment creates an initial BIG-IP configuration using an [iApp](https://devcentral.f5.com/iapps) that includes a basic virtual service (listening on 0.0.0.0:80) with a WAF policy.   
+This deployment creates an initial BIG-IP configuration using an [iApp](https://community.f5.com/t5/technical-articles/understanding-iapps/ta-p/278430) that includes a basic virtual service (listening on 0.0.0.0:80) with a WAF policy.   
 
 After the first instance is launched, you can log in and customize the configuration (for example substitute a custom policy, add logging, and much more).
 
@@ -346,6 +346,7 @@ Use the following guidance using the iApp template (the iApp now is present on t
 
 For assistance running the iApp template, once you open the iApp, from the *Do you want to see inline help?* question, select **Yes, show inline help**.
 
+---
 
 ### Sending statistical information to F5
 All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  
@@ -372,7 +373,7 @@ This CloudFormation template downloads helper code to configure the BIG-IP syste
   - In the /config/installCloudLibs.sh section: **tmsh load sys config merge file /config/verifyHash**.
   - In the *filesToVerify* variable: ensure this includes **tmsh run cli script verifyHash /config/cloud/f5-cloud-libs.tar.gz**.
   
-Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
+Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://community.f5.com/t5/crowdsrc/checksums-for-f5-supported-cloud-templates-on-github/ta-p/284471.
 
 In order to form a cluster of devices, a secure trust must be established between BIG-IP systems. To establish this trust, we generate and store credentials in an Amazon S3 bucket. You must not delete these credentials from the S3 bucket.
 
@@ -525,7 +526,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright 2014-2021 F5 Networks Inc.
+Copyright 2014-2022 F5 Networks Inc.
 
 
 ## License

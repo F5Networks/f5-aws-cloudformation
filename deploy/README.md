@@ -197,7 +197,6 @@ ex.
 Above will launch the first infra-only stack (vpc, subnets, security groups, webserver) and use the various outputs (vpc, subnets, security groups, etc.) for creating the next stack (Big-IP in an existing stack). Note, the first template does not have a Big-IP but number of comma seperated entries provided for reg_keys parameter must match number and order of templates provided so templates with Big-IPs will get associated keys passed. 
 
 
-
 ## Troubleshooting steps
 
 This section provides steps intended to assist with troubleshooting common problems with AWS CloudFormation deployments: 

@@ -61,7 +61,7 @@ This CloudFormation template downloads helper code to configure the BIG-IQ syste
   - In the /config/installCloudLibs.sh section: **tmsh load sys config merge file /config/verifyHash**.
   - In the *filesToVerify* variable: ensure this includes **tmsh run cli script verifyHash /config/cloud/f5-cloud-libs.tar.gz**.
   
-Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://devcentral.f5.com/codeshare/checksums-for-f5-supported-cft-and-arm-templates-on-github-1014.
+Additionally, F5 provides checksums for all of our supported Amazon Web Services CloudFormation templates. For instructions and the checksums to compare against, see https://community.f5.com/t5/crowdsrc/checksums-for-f5-supported-cloud-templates-on-github/ta-p/284471.
 
 ## Recommended AWS instance types and hypervisors
   - For a list of recommended AWS instance types for the BIG-IQ VE, see https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/bigiq-ve-supported-hypervisors-matrix.html.
@@ -108,14 +108,7 @@ After clicking the Launch button, you must specify the following parameters.
 
 <br>
 
-
-
-
-
 ---
-
-
-
 
 
 ### More documentation
@@ -243,7 +236,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright 2014-2021 F5 Networks Inc.
+Copyright 2014-2022 F5 Networks Inc.
 
 
 ## License

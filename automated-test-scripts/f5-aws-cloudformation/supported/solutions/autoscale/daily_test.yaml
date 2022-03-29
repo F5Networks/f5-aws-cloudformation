@@ -1,17 +1,15 @@
 ---
 name: AWS AUTOSCALE <AUTOSCALE TYPE> <LICENSE TYPE> <THROUGHPUT> <REGION>
 onStart:
+- ../../../common/helper_init.sh
+- ../../../common/find_bigiq.sh
 - ../../../common/create_s3_bucket.sh
 - ../../../common/create_vpc.sh
 - ../../../common/verify_create_vpc.sh
 - ../../../common/create_bastion.sh
 - ../../../common/create_stack_gtm.sh
 - ../../../common/verify_create_gtm.sh
-- ../../../common/create_bigiq.sh
-- ../../../common/verify_create_bigiq.sh
 - ../../../common/verify_onboard_gtm.sh
-- ../../../common/verify_onboard_bigiq_env.sh
-- ../../../common/verify_bigiq_ready_env.sh
 - ./create_stack.sh
 - ../../../common/verify_create.sh
 - ./modify_cooldown_scaling_policies.sh
@@ -48,8 +46,6 @@ onStart:
 - ../../../common/verify_delete.sh
 - ../../../common/delete_stack_gtm.sh
 - ../../../common/verify_delete_gtm.sh
-- ../../../common/delete_stack_bigiq.sh
-- ../../../common/verify_delete_bigiq.sh
 - ../../../common/delete_stack_vpc.sh
 - ../../../common/verify_delete_vpc.sh
 onFail:
@@ -61,7 +57,5 @@ onFail:
 - ../../../common/verify_delete.sh
 - ../../../common/delete_stack_gtm.sh
 - ../../../common/verify_delete_gtm.sh
-- ../../../common/delete_stack_bigiq.sh
-- ../../../common/verify_delete_bigiq.sh
 - ../../../common/delete_stack_vpc.sh
 - ../../../common/verify_delete_vpc.sh

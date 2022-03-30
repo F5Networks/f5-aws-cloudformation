@@ -117,9 +117,6 @@ After clicking the Launch button, you must specify the following parameters.
 
 ---
 
-
-
-
 ### Sending statistical information to F5
 All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  
 None of the information we collect is personally identifiable, and only includes:  
@@ -243,7 +240,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright 2014-2021 F5 Networks Inc.
+Copyright 2014-2022 F5 Networks Inc.
 
 
 ## License

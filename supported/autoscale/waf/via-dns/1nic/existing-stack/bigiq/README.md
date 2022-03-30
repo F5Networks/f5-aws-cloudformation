@@ -346,6 +346,7 @@ Use the following guidance using the iApp template (the iApp now is present on t
 
 For assistance running the iApp template, once you open the iApp, from the *Do you want to see inline help?* question, select **Yes, show inline help**.
 
+---
 
 ### Sending statistical information to F5
 All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  
@@ -525,7 +526,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright 2014-2021 F5 Networks Inc.
+Copyright 2014-2022 F5 Networks Inc.
 
 
 ## License

@@ -139,6 +139,8 @@ After clicking the Launch button, you must specify the following parameters.
 ### Installing the template using the AWS CLI
 If you want to deploy the template using the AWS CLI (aws-cli/1.11.165), use the example **deploy_via_bash.sh** script available [in this repository](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/supported/standalone/1nic/existing-stack/bigiq/deploy_via_bash.sh). Replace the static items (or make them parameters).  
 
+
+
 ---
 
 ### Service Discovery
@@ -295,7 +297,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright 2014-2021 F5 Networks Inc.
+Copyright 2014-2022 F5 Networks Inc.
 
 
 ## License

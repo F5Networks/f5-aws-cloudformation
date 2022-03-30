@@ -155,6 +155,47 @@ In order to pass traffic from your clients to the servers through the BIG-IP sys
 The following is a simple configuration diagram for this clustered, 2-NIC deployment. This solution uses IAM roles for authentication.<br>
 ![Clustered 2-NIC configuration example](../../images/aws-failover-same-net-2nic-multiple-vips-animated.gif)
 
+### In-Place upgrade of BIG-IP v13 instances
+
+When performing an in-place upgrade from BIG-IP software v13.x, you must complete the following steps to ensure that all the components required for failover are copied to the volume where the new version of BIG-IP is installed.  To ensure traffic processing is not interrupted, F5 highly recommends upgrading the standby device, verifying failover functionality, and then upgrading the previously active device. 
+
+From the volume to be upgraded on the standby device, you must edit **cs.dat** to allow inclusion of all files in **/config/cloud** in UCS backup.  
+
+1. Remount the /usr directory as writable:  
+  ``mount -o remount,rw /usr``
+
+2. Back up the cs.dat file:  
+ ``cp /usr/libdata/configsync/cs.dat /usr/libdata/configsync/cs.dat.bak``
+
+3. Edit the cs.dat file:  
+``vi /usr/libdata/configsync/cs.dat``
+
+4. In cs.dat, find the entry similar to the one below (the number between save and ignore may differ):  
+**save.10100.ignore = (/config/cloud/*)**
+
+5. Change **ignore** to **file** in the save key, and remove the parentheses from the value:  
+``save.10100.file = /config/cloud/*``
+
+6. Save the cs.dat file and exit the editor.
+
+7. Remount the **/usr** directory as read-only:  
+``mount -o remount,ro /usr``
+
+8. Create a [UCS archive](https://support.f5.com/csp/article/K13132) in the BIG-IP UI (accept defaults):
+**System > Archives > Create > myUCS** 
+
+9. Download myUCS.ucs locally.
+
+10. Install new ISO and reboot into upgraded volume.
+
+11. Boot into the newly upgraded volume.  
+
+12. After verifying failover functionality, repeat steps 1-11 on the now-standby BIG-IP device.
+
+13. Following the upgrade, all the necessary files should be present and failover should work normally.  To manually restore the UCS archive you created previously, use the following steps:
+    - From the upgraded volume, upload UCS file: **System > Archives > Upload > myUCS.uss**
+    - Restore the previously created UCS archive: **System > Archives > myUCS.ucs > Restore**
+
 ### Sending statistical information to F5
 All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  
 None of the information we collect is personally identifiable, and only includes:  
@@ -278,7 +319,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright 2014-2021 F5 Networks Inc.
+Copyright 2014-2022 F5 Networks Inc.
 
 
 ## License

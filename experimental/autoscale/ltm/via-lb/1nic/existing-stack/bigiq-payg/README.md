@@ -187,6 +187,8 @@ The template first looks for NIC resources with the tags you specify. If it find
 
 To use service discovery, in the **WAF Virtual Service Configuration** section of the template, in the **Application Pool Tag Key** and **Application Pool Tag Value** fields, enter your Key and Value information. If you leave these fields at the default, the template does not use service discovery, and uses the value you include for the Application Pool DNS.  Note that if you enter both the Application Pool DNS value and the Key/Value information, the template only uses the Key/Value fields, which enables service discovery. 
 
+
+
 ---
 
 ### Getting Help
@@ -536,7 +538,7 @@ You have a choice when it comes to filing issues:
 
 ## Copyright
 
-Copyright 2014-2021 F5 Networks Inc.
+Copyright 2014-2022 F5 Networks Inc.
 
 
 ## License

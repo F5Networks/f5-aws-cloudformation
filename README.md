@@ -49,7 +49,7 @@ To see steps for troubleshooting common problems with AWS CloudFormation, see th
 
 ### Copyright
 
-Copyright 2014-2021 F5 Networks Inc.
+Copyright 2014-2022 F5 Networks Inc.
 
 
 ### License

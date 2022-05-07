@@ -74,7 +74,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | VPC ID | vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
 | Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
-| Restricted Source Address to BIG-IP | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH and access the BIG-IP management GUI on the EC2 instances. For stronger security, we do not recommend using 0.0.0.0/0. |
+| Restricted Source Address to BIG-IP | restrictedSrcAddress | Yes | This field restricts management access to a specific network or address. Enter an IP address or address range in CIDR notation. Please do NOT use "0.0.0.0/0". Instead, restrict the IP address range to your client or trusted network, for example "55.55.55.55/32". Production should never expose the BIG-IP Management interface to the Internet. |
 | Restricted Source Address to Application | restrictedSrcAddressApp | Yes | The IP address range that can be used to access web traffic (80/443) to the EC2 instances. |
 | DNS Member IP Type (public / private) | dnsMemberIpType | Yes | The IP type (public / private) to add as the record when updating the DNS provider. |
 | DNS Member Port | dnsMemberPort | Yes | The port for the DNS member to use for monitoring the members status. |

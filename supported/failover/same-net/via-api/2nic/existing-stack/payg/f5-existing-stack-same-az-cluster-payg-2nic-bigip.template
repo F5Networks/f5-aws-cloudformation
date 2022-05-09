@@ -26,7 +26,7 @@
    ]
   }
  },
- "Description": "Template v5.15.0: AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v5.16.0: AWS CloudFormation Template for creating a Same-AZ cluster of 2NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "af-south-1": {
@@ -712,7 +712,7 @@
     }
    }
   },
-  "Version": "5.15.0"
+  "Version": "5.16.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -1249,7 +1249,7 @@
              {
               "Ref": "bigIpModules"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.2.1-0.0.10,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-payg-2nic-bigip.template,templateVersion:5.15.0,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.2.1-0.0.10,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-payg-2nic-bigip.template,templateVersion:5.16.0,licenseType:hourly\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -1547,7 +1547,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.15.0\n",
+           "# Generated from 5.16.0\n",
            "TOKEN=`/usr/bin/curl -sS --retry 20 -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
            "HOSTNAME=`/usr/bin/curl -sS --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
@@ -2209,7 +2209,7 @@
              {
               "Ref": "bigIpModules"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.2.1-0.0.10,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-payg-2nic-bigip.template,templateVersion:5.15.0,licenseType:hourly\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.2.1-0.0.10,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-payg-2nic-bigip.template,templateVersion:5.16.0,licenseType:hourly\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -2493,7 +2493,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.15.0\n",
+           "# Generated from 5.16.0\n",
            "TOKEN=`/usr/bin/curl -sS --retry 20 -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
            "HOSTNAME=`/usr/bin/curl -sS --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",

@@ -1677,7 +1677,7 @@ def main():
     # Log level
     loglevel = 'silly'
     # Template Version
-    version = '5.15.0'
+    version = '5.16.0'
     # Big-IP mapped
     BIGIP_VERSION = '16.1.2.1-0.0.10'
     # Cloudlib Branch

@@ -6,6 +6,9 @@
 | :eyes:    | ***Notice***: These legacy templates are now in maintenance mode and are being replaced by our next-generation templates available in the [Cloud Templates 2.0 GitHub repo](https://github.com/F5Networks/f5-aws-cloudformation-v2). We recommend you adopt the next-generation templates as soon as is feasible. |
 |---------------|:------------------------|  
 
+| :warning: | ***Warning***: Due to vulnerabilities related to [CVE-2022-1388](https://support.f5.com/csp/article/K23605346), do not use templates unless using a custom image (template parameter = bigIpCustomImageId). Updated images are pending publication to Marketplace. For existing deployments, F5 recommends [upgrading to a patched software version](https://support.f5.com/csp/article/K84205182). Production should never expose the BIG-IP Management interface to the Internet. Always ensure `restrictedSrcAddress` has been set to a trusted source network. Please see [K23605346: BIG-IP iControl REST vulnerability CVE-2022-1388](https://support.f5.com/csp/article/K23605346) for more information and latest updates.|
+|---------------|:------------------------|
+
 ## Introduction
 
 Welcome to the GitHub repository for F5's CloudFormation Templates 1.0 for deploying F5 in Amazon Web Services. All of the templates in this repository have been developed by F5 Networks engineers.
@@ -35,6 +38,9 @@ F5 has created a matrix that contains all of the tagged releases of the F5 Cloud
   
 ### All F5 Supported templates for AWS
 To see a list of all of our supported AWS CloudFormation templates, see the **[AWS Supported Template index](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/template-index.md)**.
+
+### Note on IMDSv2
+These templates now use IMDSv2 to access AWS metadata from within instances. IMDSv2 uses session-oriented requests instead of the request/response model used by IMDSv1. Please read more about [IMDSv2 here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html). This does not affect how the templates are deployed but makes your deployments secure against various types of attacks. Please read more on the topic [here](https://aws.amazon.com/blogs/security/defense-in-depth-open-firewalls-reverse-proxies-ssrf-vulnerabilities-ec2-instance-metadata-service/).
 
 
 ### Troubleshooting and Known Issues

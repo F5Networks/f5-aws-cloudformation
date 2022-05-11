@@ -53,6 +53,7 @@ The following are prerequisites for this solution:
     - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
     - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only.  Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
     - The templates now support BIG-IQ licensing using an [ELA](https://www.f5.com/pdf/licensing/big-ip-virtual-edition-enterprise-licensing-agreement-overview.pdf)/[subscription]( https://f5.com/partners/cloud-provider) pool, which enables self-licensing of BIG-IP virtual editions (VEs).
+  - This template uses [F5 BIG-IP Runtime Init](https://github.com/F5Networks/f5-bigip-runtime-init) to install F5 Automation Toolchain packages (AS3, DO, CFE, FAST, and TS). You can update the version of one or more packages by editing the UserData property of the BIG-IP instance resource(s). For example: To update the AS3 package to the latest version, click on the [Github release page](https://github.com/F5Networks/f5-appsvcs-extension/releases) for the f5-appsvcs-extension. In the instance UserData property, in the install_operations section, update the AS3 extensionVersion value to the desired version and the extensionHash value to contents of the RPM sha256 file located in the release assets for that version. You can also add more packages to be installed using the same procedure.
 
 ## Launching the template using the AWS Launch Stack button
 The easiest way to deploy this CloudFormation template is to use the Launch Stack button.<br>
@@ -73,7 +74,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | VPC ID | vpc | Yes | AWS VPC where you want to deploy the BIG-IP VEs |
 | Availability Zone(s) | availabilityZones | Yes | Availability Zones where you want to deploy the BIG-IP VEs (we recommend at least 2) |
 | Subnet ID(s) | subnets | Yes | Public or External Subnet for the Availability Zones |
-| Restricted Source Address to BIG-IP | restrictedSrcAddress | Yes | The IP address range x.x.x.x/x that can be used to SSH and access the BIG-IP management GUI on the EC2 instances. For stronger security, we do not recommend using 0.0.0.0/0. |
+| Restricted Source Address to BIG-IP | restrictedSrcAddress | Yes | This field restricts management access to a specific network or address. Enter an IP address or address range in CIDR notation. Please do NOT use "0.0.0.0/0". Instead, restrict the IP address range to your client or trusted network, for example "55.55.55.55/32". Production should never expose the BIG-IP Management interface to the Internet. |
 | Restricted Source Address to Application | restrictedSrcAddressApp | Yes | The IP address range that can be used to access web traffic (80/443) to the EC2 instances. |
 | DNS Member IP Type (public / private) | dnsMemberIpType | Yes | The IP type (public / private) to add as the record when updating the DNS provider. |
 | DNS Member Port | dnsMemberPort | Yes | The port for the DNS member to use for monitoring the members status. |

@@ -1681,7 +1681,7 @@ def main():
     # Big-IP mapped
     BIGIP_VERSION = '16.1.2.1-0.0.10'
     # Cloudlib Branch
-    branch_cloud = 'v4.26.8'
+    branch_cloud = 'v4.26.9'
     branch_aws = 'v2.10.1'
     # AS3 branch and package
     branch_as3 = 'v3.31.0'

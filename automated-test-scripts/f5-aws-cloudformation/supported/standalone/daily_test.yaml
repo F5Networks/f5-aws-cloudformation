@@ -21,7 +21,7 @@ onStart:
 - ../../common/verify_provisioned_modules.sh
 - ../../common/verify_AS3.sh
 - ../../common/create_user.sh
-- ../../common/verify_declaration_url_AS3.sh
+# - ../../common/verify_declaration_url_AS3.sh
 - ../../common/verify_phone_home.sh
 - ../../common/create_virtual_and_pool.sh
 - ../../common/traffic_test.sh

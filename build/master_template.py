@@ -1677,18 +1677,18 @@ def main():
     # Log level
     loglevel = 'silly'
     # Template Version
-    version = '5.16.0'
+    version = '5.17.0'
     # Big-IP mapped
-    BIGIP_VERSION = '16.1.2.1-0.0.10'
+    BIGIP_VERSION = '16.1.2.2-0.0.28'
     # Cloudlib Branch
-    branch_cloud = 'v4.26.8'
+    branch_cloud = 'v4.27.0'
     branch_aws = 'v2.10.1'
     # AS3 branch and package
     branch_as3 = 'v3.31.0'
     package_as3 = 'f5-appsvcs-3.31.0-6.noarch.rpm'
     # Runtime Init
-    branch_runtime_init = 'v1.4.1'
-    package_runtime_init = 'f5-bigip-runtime-init-1.4.1-1.gz.run'
+    branch_runtime_init = 'v1.4.2'
+    package_runtime_init = 'f5-bigip-runtime-init-1.4.2-1.gz.run'
     runtime_init_url = 'http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/' + branch_runtime_init + '/dist/' + package_runtime_init
     # Build verifyHash file from published verifyHash on CDN
     urls = ['https://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/' + str(branch_cloud) + '/verifyHash']
@@ -5954,8 +5954,8 @@ def main():
                                         "      extensionVersion: 3.34.0\n",
                                         "      extensionHash: 05a80ec0848dc5b8876b78a8fbee2980d5a1671d635655b3af604dc830d5fed4\n",
                                         "    - extensionType: cf\n",
-                                        "      extensionVersion: 1.10.0\n",
-                                        "      extensionHash: d758c985cac4dbef4b0732fe5900317ae97e67c6efca621a5b2b02c8c4bbeace\n",
+                                        "      extensionVersion: 1.11.0\n",
+                                        "      extensionHash: f3c7aca8a19d0dc01e529d38aa0d235b4dfad34beec2584f8402aa9a92c34699\n",
                                         "EOF\n",
                                         download_runtime_command, 
                                         install_runtime_command, 

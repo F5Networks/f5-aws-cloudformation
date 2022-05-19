@@ -22,7 +22,7 @@ onStart:
 - ../../../common/verify_AS3.sh
 - ../../../common/verify_phone_home.sh
 - ../../../common/create_user.sh
-- ../../../common/verify_declaration_url_AS3.sh
+# - ../../../common/verify_declaration_url_AS3.sh
 - ./verify_update_autoscale_ucs.sh
 - ./verify_dns_provider.sh
 - ./verify_min_instances.sh

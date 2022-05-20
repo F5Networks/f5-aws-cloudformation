@@ -11,6 +11,7 @@ stages:
   - release
   - post-release-tests
   - publish
+  - admin
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -91,6 +92,9 @@ scheduled_test_job:
     - docker-executor
   only:
     - schedules
+  except:
+    variables:
+      - $UPDATE_SCHEDULES == "true"
   variables:
     TEST_POLICY: set in schedule!
     STACK_TYPE: dewdrop-preproduction
@@ -195,3 +199,20 @@ publish_aws_templates_s3:
     - aws s3 cp --recursive --acl public-read temp_s3 s3://f5-cft --metadata-directive REPLACE
   tags:
     - cm-official-docker-executor
+
+# manually scheduled job to enable/disable daily scheduled test jobs
+update_daily_test_schedules:
+  image: ${ARTIFACTORY_SERVER}/dockerhub-remote/node:8
+  stage: admin
+  only:
+    variables:
+      - $UPDATE_SCHEDULES == "true"
+  script:
+    - apt-get update
+    - apt-get install -y jq
+    - ./cloud-tools/scheduler-tool/activate-schedule.sh
+  variables:
+    FILTER: "$FILTER"
+    GIT_LAB_API_URL: "$AWS_URL"
+    GIT_LAB_PRIVATE_TOKEN: "$AWS_GITLAB_API_TOKEN"
+    STATE: "$STATE"

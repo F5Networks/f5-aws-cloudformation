@@ -7,14 +7,12 @@
 
 TMP_DIR='/tmp/<DEWPOINT JOB ID>'
 
-#source_ip=""
-#while [ "$source_ip" == "" ]
-#do
-#	sleep 60
-#	echo "Waiting 60 seconds..."
-#	source_ip=`curl ifconfig.io/ip`
-#	echo "source_ip=$source_ip"
-#done
+if [[ "<PUBLIC IP>" == "Yes" ]]; then
+  source_cidr=$(curl ifconfig.me)/32
+else
+  source_cidr='0.0.0.0/0'
+fi
+echo "source_cidr=$source_cidr"
 
 # Capture environment ids required to create stack
 vpc=$(aws cloudformation describe-stacks --region <REGION> --stack-name <STACK NAME>-vpc | jq -r '.Stacks[].Outputs[] |select (.OutputKey=="Vpc")|.OutputValue')
@@ -104,8 +102,6 @@ echo "Subnet1 IP = $subnet1_ip"
 echo "Subnet2 IP = $subnet2_ip"
 echo "Instance Type = $instance_type"
 
-source_cidr='0.0.0.0/0'
-echo "source_cidr=$source_cidr"
 bucket_name=`echo <STACK NAME>|cut -c -60|tr '[:upper:]' '[:lower:]'| sed 's:-*$::'`
 echo "bucket_name=$bucket_name"
 
@@ -135,7 +131,7 @@ public_ip_param="ParameterKey=provisionPublicIP,ParameterValue=<PUBLIC IP>"
 echo "public ip parameter: $public_ip_param"
 
 parameters="ParameterKey=allowUsageAnalytics,ParameterValue=<ANALYTICS> ParameterKey=Vpc,ParameterValue=$vpc ParameterKey=imageName,ParameterValue=<IMAGE NAME> ParameterKey=customImageId,ParameterValue=<CUSTOM IMAGE ID> \
-ParameterKey=instanceType,ParameterValue=$instance_type ParameterKey=restrictedSrcAddress,ParameterValue=$source_cidr ParameterKey=restrictedSrcAddressApp,ParameterValue=$source_cidr \
+ParameterKey=instanceType,ParameterValue=$instance_type ParameterKey=restrictedSrcAddress,ParameterValue=$source_cidr ParameterKey=restrictedSrcAddressApp,ParameterValue=0.0.0.0/0 \
 ParameterKey=sshKey,ParameterValue=<SSH KEY> ParameterKey=declarationUrl,ParameterValue=<DECLARATION URL> ParameterKey=allowPhoneHome,ParameterValue=<PHONEHOME> ParameterKey=ntpServer,ParameterValue=<NTP SERVER> \
 ParameterKey=bigIpModules,ParameterValue='<BIG IP MODULES>' ParameterKey=timezone,ParameterValue=<TIMEZONE> $lic_parm $network_param $public_ip_param"
 echo "Parameters:$parameters"

@@ -3,6 +3,10 @@
 #  replayEnabled = false
 #  replayTimeout = 0
 
+
+source_cidr=$(curl ifconfig.me)/32
+echo "source_cidr=$source_cidr"
+
 # Capture environment ids required to create stack
 vpc=$(aws cloudformation describe-stacks --region <REGION> --stack-name <STACK NAME>-vpc | jq -r '.Stacks[].Outputs[] |select (.OutputKey=="Vpc")|.OutputValue')
 echo "VPC:$vpc"
@@ -27,7 +31,7 @@ else
     ParameterKey=EnableX11Forwarding,ParameterValue=true ParameterKey=KeyPairName,ParameterValue=dewpt ParameterKey=NumBastionHosts,ParameterValue=1 \
     ParameterKey=PublicSubnet1ID,ParameterValue=$gw_sub_az1 ParameterKey=PublicSubnet2ID,ParameterValue=$gw_sub_az1 \
     ParameterKey=QSS3BucketName,ParameterValue=aws-quickstart ParameterKey=QSS3KeyPrefix,ParameterValue=quickstart-linux-bastion/ \
-    ParameterKey=RemoteAccessCIDR,ParameterValue=0.0.0.0/0 ParameterKey=VPCID,ParameterValue=$vpc ParameterKey=AlternativeInitializationScript,ParameterValue=https://bastion-host.s3.cn-north-1.amazonaws.com.cn/quickstart-linux-bastion/scripts/bastion_bootstrap.sh ;;
+    ParameterKey=RemoteAccessCIDR,ParameterValue=$source_cidr ParameterKey=VPCID,ParameterValue=$vpc ParameterKey=AlternativeInitializationScript,ParameterValue=https://bastion-host.s3.cn-north-1.amazonaws.com.cn/quickstart-linux-bastion/scripts/bastion_bootstrap.sh ;;
   *)
     aws cloudformation create-stack --disable-rollback --region <REGION> --stack-name <STACK NAME>-bastion --tags Key=creator,Value=dewdrop Key=delete,Value=True \
     --template-url https://s3.amazonaws.com/f5-cft/QA/linux-bastion-new.template \
@@ -38,6 +42,6 @@ else
     ParameterKey=EnableX11Forwarding,ParameterValue=true ParameterKey=KeyPairName,ParameterValue=dewpt ParameterKey=NumBastionHosts,ParameterValue=1 \
     ParameterKey=PublicSubnet1ID,ParameterValue=$gw_sub_az1 ParameterKey=PublicSubnet2ID,ParameterValue=$gw_sub_az1 \
     ParameterKey=QSS3BucketName,ParameterValue=aws-quickstart ParameterKey=QSS3KeyPrefix,ParameterValue=quickstart-linux-bastion/ \
-    ParameterKey=RemoteAccessCIDR,ParameterValue=0.0.0.0/0 ParameterKey=VPCID,ParameterValue=$vpc ;;
+    ParameterKey=RemoteAccessCIDR,ParameterValue=$source_cidr ParameterKey=VPCID,ParameterValue=$vpc ;;
   esac
 fi

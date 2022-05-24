@@ -7,14 +7,12 @@
 
 TMP_DIR='/tmp/<DEWPOINT JOB ID>'
 
-# source_ip=""
-# while [ "$source_ip" == "" ]
-# do
-#	sleep 60
-#	echo "Waiting 60 seconds..."
-#	source_ip=`curl ifconfig.io/ip`
-#	echo "source_ip=$source_ip"
-# done
+if [[ "<PUBLIC IP>" == "Yes" ]]; then
+  source_cidr=$(curl ifconfig.me)/32
+else
+  source_cidr='0.0.0.0/0'
+fi
+echo "source_cidr=$source_cidr"
 
 # Capture environment ids required to create stack
 vpc=$(aws cloudformation describe-stacks --region <REGION> --stack-name <STACK NAME>-vpc | jq -r '.Stacks[].Outputs[] |select (.OutputKey=="Vpc")|.OutputValue')
@@ -101,8 +99,6 @@ esac
 echo "Network_param = $network_param"
 echo "Instance Type = $instance_type"
 
-source_cidr='0.0.0.0/0'
-echo "source_cidr=$source_cidr"
 bucket_name=`echo <STACK NAME>|cut -c -60|tr '[:upper:]' '[:lower:]'| sed 's:-*$::'`
 echo "bucket_name=$bucket_name"
 

@@ -46,7 +46,7 @@
    ]
   }
  },
- "Description": "Template v5.17.0: AWS CloudFormation Template for creating a Same-AZ cluster of 3NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v5.18.0: AWS CloudFormation Template for creating a Same-AZ cluster of 3NIC BIG-IPs in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "af-south-1": {
@@ -364,7 +364,7 @@
     }
    }
   },
-  "Version": "5.17.0"
+  "Version": "5.18.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -958,7 +958,7 @@
              {
               "Ref": "licenseKey1"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.2.2-0.0.28,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-byol-3nic-bigip.template,templateVersion:5.17.0,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.2.2-0.0.28,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-byol-3nic-bigip.template,templateVersion:5.18.0,licenseType:byol\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -1268,7 +1268,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.17.0\n",
+           "# Generated from 5.18.0\n",
            "TOKEN=`/usr/bin/curl -sS --retry 20 -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
            "HOSTNAME=`/usr/bin/curl -sS --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
@@ -1656,14 +1656,14 @@
         "extension_packages:\n",
         "  install_operations:\n",
         "    - extensionType: as3\n",
-        "      extensionVersion: 3.34.0\n",
-        "      extensionHash: 05a80ec0848dc5b8876b78a8fbee2980d5a1671d635655b3af604dc830d5fed4\n",
+        "      extensionVersion: 3.36.1\n",
+        "      extensionHash: 48876a92d3d8fe7da70310882dc9fd1499d209579d798394715e18c12138daf3\n",
         "    - extensionType: cf\n",
         "      extensionVersion: 1.11.0\n",
         "      extensionHash: f3c7aca8a19d0dc01e529d38aa0d235b4dfad34beec2584f8402aa9a92c34699\n",
         "EOF\n",
-        "/usr/bin/curl -fv --retry 1 --connect-timeout 5 -L http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/v1.4.2/dist/f5-bigip-runtime-init-1.4.2-1.gz.run -o /var/config/rest/downloads/f5-bigip-runtime-init-1.4.2-1.gz.run\n",
-        "bash /var/config/rest/downloads/f5-bigip-runtime-init-1.4.2-1.gz.run -- '--cloud aws'\n",
+        "/usr/bin/curl -fv --retry 1 --connect-timeout 5 -L http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/v1.5.0/dist/f5-bigip-runtime-init-1.5.0-1.gz.run -o /var/config/rest/downloads/f5-bigip-runtime-init-1.5.0-1.gz.run\n",
+        "bash /var/config/rest/downloads/f5-bigip-runtime-init-1.5.0-1.gz.run -- '--cloud aws'\n",
         "f5-bigip-runtime-init --config-file /config/cloud/runtime-init-config.yaml --skip-telemetry\n",
         "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ",
         {
@@ -1991,7 +1991,7 @@
              {
               "Ref": "licenseKey2"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.2.2-0.0.28,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-byol-3nic-bigip.template,templateVersion:5.17.0,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.2.2-0.0.28,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-same-az-cluster-byol-3nic-bigip.template,templateVersion:5.18.0,licenseType:byol\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -2287,7 +2287,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 5.17.0\n",
+           "# Generated from 5.18.0\n",
            "TOKEN=`/usr/bin/curl -sS --retry 20 -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
            "HOSTNAME=`/usr/bin/curl -sS --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
@@ -2675,14 +2675,14 @@
         "extension_packages:\n",
         "  install_operations:\n",
         "    - extensionType: as3\n",
-        "      extensionVersion: 3.34.0\n",
-        "      extensionHash: 05a80ec0848dc5b8876b78a8fbee2980d5a1671d635655b3af604dc830d5fed4\n",
+        "      extensionVersion: 3.36.1\n",
+        "      extensionHash: 48876a92d3d8fe7da70310882dc9fd1499d209579d798394715e18c12138daf3\n",
         "    - extensionType: cf\n",
         "      extensionVersion: 1.10.0\n",
         "      extensionHash: d758c985cac4dbef4b0732fe5900317ae97e67c6efca621a5b2b02c8c4bbeace\n",
         "EOF\n",
-        "/usr/bin/curl -fv --retry 1 --connect-timeout 5 -L http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/v1.4.2/dist/f5-bigip-runtime-init-1.4.2-1.gz.run -o /var/config/rest/downloads/f5-bigip-runtime-init-1.4.2-1.gz.run\n",
-        "bash /var/config/rest/downloads/f5-bigip-runtime-init-1.4.2-1.gz.run -- '--cloud aws'\n",
+        "/usr/bin/curl -fv --retry 1 --connect-timeout 5 -L http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/v1.5.0/dist/f5-bigip-runtime-init-1.5.0-1.gz.run -o /var/config/rest/downloads/f5-bigip-runtime-init-1.5.0-1.gz.run\n",
+        "bash /var/config/rest/downloads/f5-bigip-runtime-init-1.5.0-1.gz.run -- '--cloud aws'\n",
         "f5-bigip-runtime-init --config-file /config/cloud/runtime-init-config.yaml --skip-telemetry\n",
         "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ",
         {

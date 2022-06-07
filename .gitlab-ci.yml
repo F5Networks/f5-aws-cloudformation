@@ -11,6 +11,7 @@ stages:
   - release
   - post-release-tests
   - publish
+  - admin
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -91,6 +92,9 @@ scheduled_test_job:
     - docker-executor
   only:
     - schedules
+  except:
+    variables:
+      - $UPDATE_SCHEDULES == "true"
   variables:
     TEST_POLICY: set in schedule!
     STACK_TYPE: dewdrop-preproduction
@@ -153,7 +157,7 @@ publish_to_github:
     # Execute Release script to push source to github repo
     - ./cloud-tools/release-tool/publish_github.sh "$ALLOWED_DIRS" "$ALLOWED_FILES"
   variables:
-    ALLOWED_DIRS: ".github AMI_Maps deploy experimental iApps images supported"
+    ALLOWED_DIRS: ".github AMI_Maps deploy iApps images supported"
     ALLOWED_FILES: ".gitattributes README.md aws-bigip-version-matrix.md aws-troubleshooting.md aws-update-bigip-image.md iapp-migration.md  slack-channel-statement.md template-index.md"
     GITLAB_API_URL: "$AWS_URL"
     GITHUB_API_TOKEN: "$AWS_GITHUB_API_TOKEN"
@@ -191,7 +195,23 @@ publish_aws_templates_s3:
     - pip3 install yq awscli
     - mkdir -p temp_s3
     - find supported -name '*.template' -exec cp {} ./temp_s3/ \;
-    - find experimental -name '*.template' -exec cp {} ./temp_s3/ \;
     - aws s3 cp --recursive --acl public-read temp_s3 s3://f5-cft --metadata-directive REPLACE
   tags:
     - cm-official-docker-executor
+
+# manually scheduled job to enable/disable daily scheduled test jobs
+update_daily_test_schedules:
+  image: ${ARTIFACTORY_SERVER}/dockerhub-remote/node:8
+  stage: admin
+  only:
+    variables:
+      - $UPDATE_SCHEDULES == "true"
+  script:
+    - apt-get update
+    - apt-get install -y jq
+    - ./cloud-tools/scheduler-tool/activate-schedule.sh
+  variables:
+    FILTER: "$FILTER"
+    GIT_LAB_API_URL: "$AWS_URL"
+    GIT_LAB_PRIVATE_TOKEN: "$AWS_GITLAB_API_TOKEN"
+    STATE: "$STATE"

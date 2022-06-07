@@ -7,6 +7,13 @@
 
 TMP_DIR='/tmp/<DEWPOINT JOB ID>'
 
+if [[ "<PUBLIC IP>" == "Yes" ]]; then
+  source_cidr=$(curl ifconfig.me)/32
+else
+  source_cidr='0.0.0.0/0'
+fi
+echo "source_cidr=$source_cidr"
+
 # Capture environment ids required to create stack
 vpc=$(aws cloudformation describe-stacks --region <REGION> --stack-name <STACK NAME>-vpc | jq -r '.Stacks[].Outputs[] |select (.OutputKey=="Vpc")|.OutputValue')
 echo "VPC:$vpc"
@@ -109,7 +116,7 @@ templateParams="ParameterKey=allowUsageAnalytics,ParameterValue=<ANALYTICS> Para
 ParameterKey=applicationPoolTagKey,ParameterValue=Name ParameterKey=applicationPoolTagValue,ParameterValue=Webserver:<STACK NAME>-vpc \
 ParameterKey=appInternalDnsName,ParameterValue=$awsAppInternalDnsName ParameterKey=availabilityZones,ParameterValue=\"${az_parm}\" \
 ParameterKey=deploymentName,ParameterValue=dewdrop-as-<DEWPOINT JOB ID> \
-ParameterKey=sshKey,ParameterValue=dewpt ParameterKey=subnets,ParameterValue=\"${mgmt_parm}\" ParameterKey=restrictedSrcAddress,ParameterValue=0.0.0.0/0 \
+ParameterKey=sshKey,ParameterValue=dewpt ParameterKey=subnets,ParameterValue=\"${mgmt_parm}\" ParameterKey=restrictedSrcAddress,ParameterValue=$source_cidr \
 ParameterKey=restrictedSrcAddressApp,ParameterValue=0.0.0.0/0 ParameterKey=Vpc,ParameterValue=$vpc ParameterKey=notificationEmail,ParameterValue=<EMAIL> \
 ParameterKey=instanceType,ParameterValue=$instance_type ParameterKey=scalingMinSize,ParameterValue=<MIN INSTANCES> ParameterKey=scalingMaxSize,ParameterValue=<MAX INSTANCES> \
 ParameterKey=imageName,ParameterValue=$image_name ParameterKey=throughput,ParameterValue=<THROUGHPUT> ParameterKey=declarationUrl,ParameterValue=<DECLARATION URL> ParameterKey=allowPhoneHome,ParameterValue=<PHONEHOME> \

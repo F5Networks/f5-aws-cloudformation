@@ -1,0 +1,232 @@
+{
+  "af-south-1": {
+    "Better1000Mbps": "ami-08b0cb8764e9079f4",
+    "Better200Mbps": "ami-06253e34f54fec3f4",
+    "Better25Mbps": "ami-0d2206e5e480cd4e5",
+    "Better5000Mbps": "ami-0a83baf833bc65354",
+    "Good1000Mbps": "ami-083766b4ff9f85732",
+    "Good200Mbps": "ami-03fdef3fe4aa47beb",
+    "Good25Mbps": "ami-0311b8f862e7d1996",
+    "Good5000Mbps": "ami-0714e8836db2c72a9"
+  },
+  "ap-east-1": {
+    "Better1000Mbps": "ami-0d0ced2bb152baf31",
+    "Better200Mbps": "ami-07b7cff5989c14eda",
+    "Better25Mbps": "ami-00c3d57da88250aac",
+    "Better5000Mbps": "ami-09793279dadfec83d",
+    "Good1000Mbps": "ami-0c66ebb5166cc3aca",
+    "Good200Mbps": "ami-07af76ce0012224da",
+    "Good25Mbps": "ami-088fdc10a9852d75f",
+    "Good5000Mbps": "ami-0716677980e698948"
+  },
+  "ap-northeast-1": {
+    "Better1000Mbps": "ami-014bb99b0daa6d0c6",
+    "Better200Mbps": "ami-05c18253d9e8ad447",
+    "Better25Mbps": "ami-005de361ec2a25a70",
+    "Better5000Mbps": "ami-0957fcc2042dba485",
+    "Good1000Mbps": "ami-0ea836765390cdeaf",
+    "Good200Mbps": "ami-0187e13e8db586e48",
+    "Good25Mbps": "ami-020622007a713ad87",
+    "Good5000Mbps": "ami-006a34767d7b36353"
+  },
+  "ap-northeast-2": {
+    "Better1000Mbps": "ami-007135c51990564a9",
+    "Better200Mbps": "ami-04fafd4f936b4509c",
+    "Better25Mbps": "ami-08ab572cc099c767e",
+    "Better5000Mbps": "ami-05fdd058bf88ac348",
+    "Good1000Mbps": "ami-0ee5da90e87bea55c",
+    "Good200Mbps": "ami-01f214a79d0649fb7",
+    "Good25Mbps": "ami-0bd799331bbd57da3",
+    "Good5000Mbps": "ami-06bd8c3acb4a06972"
+  },
+  "ap-northeast-3": {
+    "Better1000Mbps": "ami-03a5d20d3137729cc",
+    "Better200Mbps": "ami-0deb10e424e8824fd",
+    "Better25Mbps": "ami-06fd2a77ec78293dc",
+    "Better5000Mbps": "ami-0d48f48446a2d5e17",
+    "Good1000Mbps": "ami-0c7881fe16207d517",
+    "Good200Mbps": "ami-0235317e21510e9f7",
+    "Good25Mbps": "ami-05d1ae9c824cda746",
+    "Good5000Mbps": "ami-06fe3e424ed4516f6"
+  },
+  "ap-south-1": {
+    "Better1000Mbps": "ami-0999cfd34b0171caf",
+    "Better200Mbps": "ami-0e503ad0be50f20e9",
+    "Better25Mbps": "ami-0b7023963f8b7c4d7",
+    "Better5000Mbps": "ami-0713526f6fb9b37a5",
+    "Good1000Mbps": "ami-0e39cc77e8fb33c4a",
+    "Good200Mbps": "ami-05ce0bede07fc90a3",
+    "Good25Mbps": "ami-0ecccc0f5f3405451",
+    "Good5000Mbps": "ami-030cd359ccfee562c"
+  },
+  "ap-southeast-1": {
+    "Better1000Mbps": "ami-0164dfba68f034f5d",
+    "Better200Mbps": "ami-0fd5e556159499395",
+    "Better25Mbps": "ami-091663579ea86664b",
+    "Better5000Mbps": "ami-04f235ebe3bfa0c45",
+    "Good1000Mbps": "ami-036308de44fd45f76",
+    "Good200Mbps": "ami-052cb79545a579660",
+    "Good25Mbps": "ami-0f3b272b65b44abf5",
+    "Good5000Mbps": "ami-0a1b42c738fa28a2d"
+  },
+  "ap-southeast-2": {
+    "Better1000Mbps": "ami-03d81ab09f7f68455",
+    "Better200Mbps": "ami-0637ef3d9656878f7",
+    "Better25Mbps": "ami-093edf1686f58c53f",
+    "Better5000Mbps": "ami-096cd97a9e0b810fc",
+    "Good1000Mbps": "ami-04f216355450abef4",
+    "Good200Mbps": "ami-0e33af6775c01ad51",
+    "Good25Mbps": "ami-0e267234dc270d070",
+    "Good5000Mbps": "ami-0e5cdd43306325b74"
+  },
+  "ca-central-1": {
+    "Better1000Mbps": "ami-097a380aa67468bf2",
+    "Better200Mbps": "ami-0bd03dfa8c102a021",
+    "Better25Mbps": "ami-05fed989590fe3060",
+    "Better5000Mbps": "ami-019e553f55ee3aeeb",
+    "Good1000Mbps": "ami-08826d0f24eea695c",
+    "Good200Mbps": "ami-025bf5bc0ed0db79f",
+    "Good25Mbps": "ami-05706cf3a11208780",
+    "Good5000Mbps": "ami-05df06284aba0ea55"
+  },
+  "eu-central-1": {
+    "Better1000Mbps": "ami-07d2e50fac445ae89",
+    "Better200Mbps": "ami-07fa59da590571257",
+    "Better25Mbps": "ami-0de0d541527e82c75",
+    "Better5000Mbps": "ami-0981fdeb73b1577af",
+    "Good1000Mbps": "ami-044053ceeaae0bb59",
+    "Good200Mbps": "ami-0b3afdfbc94db5cae",
+    "Good25Mbps": "ami-0ceb94636989e8dfe",
+    "Good5000Mbps": "ami-0e5d02b12cfe91e84"
+  },
+  "eu-north-1": {
+    "Better1000Mbps": "ami-054d9d41d6d5ace91",
+    "Better200Mbps": "ami-0b31c37ba9a12ac0c",
+    "Better25Mbps": "ami-0d437bd4f62a63490",
+    "Better5000Mbps": "ami-0e3800a77169d9167",
+    "Good1000Mbps": "ami-05998a4e90fec2832",
+    "Good200Mbps": "ami-0e75fbf6f7503da9e",
+    "Good25Mbps": "ami-0c916686021965d1d",
+    "Good5000Mbps": "ami-034d1cd5ca806293c"
+  },
+  "eu-south-1": {
+    "Better1000Mbps": "ami-0dd723d9da74408b0",
+    "Better200Mbps": "ami-0771b8b65b6c07278",
+    "Better25Mbps": "ami-0a7fced83334bb024",
+    "Better5000Mbps": "ami-0414663d14a872209",
+    "Good1000Mbps": "ami-06be33e6598631d13",
+    "Good200Mbps": "ami-0897037dfa7f7c861",
+    "Good25Mbps": "ami-00df9ef6be0158f3e",
+    "Good5000Mbps": "ami-04fa3ef67a97d9d87"
+  },
+  "eu-west-1": {
+    "Better1000Mbps": "ami-014e588e1b96c58dd",
+    "Better200Mbps": "ami-0622397ce744f6cf8",
+    "Better25Mbps": "ami-07a2950ad347b2db2",
+    "Better5000Mbps": "ami-07a09891e6ad8dfb0",
+    "Good1000Mbps": "ami-096b80d10298d4fc2",
+    "Good200Mbps": "ami-0fec100b72d860b64",
+    "Good25Mbps": "ami-0dd378d8e73cf7809",
+    "Good5000Mbps": "ami-09bc3573ab1165608"
+  },
+  "eu-west-2": {
+    "Better1000Mbps": "ami-022278a0fc7977092",
+    "Better200Mbps": "ami-009aeef390df71f7b",
+    "Better25Mbps": "ami-0ecf0cf597e50c221",
+    "Better5000Mbps": "ami-0215d9ba9bcda96a0",
+    "Good1000Mbps": "ami-08bd8bf8e9fe1fc3e",
+    "Good200Mbps": "ami-02ac970ba2633e455",
+    "Good25Mbps": "ami-07e9c204dfa358c58",
+    "Good5000Mbps": "ami-0ffdc3aad44043e90"
+  },
+  "eu-west-3": {
+    "Better1000Mbps": "ami-0df4592e0329fdda1",
+    "Better200Mbps": "ami-01b17a97d683d4254",
+    "Better25Mbps": "ami-04aa990f5f987c113",
+    "Better5000Mbps": "ami-07277a9089406ff1a",
+    "Good1000Mbps": "ami-0f81f99f691bdff3a",
+    "Good200Mbps": "ami-0c61a60ce31acd4d7",
+    "Good25Mbps": "ami-0c29be3f72a39c961",
+    "Good5000Mbps": "ami-0621dbcd95b083dfa"
+  },
+  "me-south-1": {
+    "Better1000Mbps": "ami-0a35819256f451efa",
+    "Better200Mbps": "ami-0ca5d607c99c8eecd",
+    "Better25Mbps": "ami-0b08a0d053959e83b",
+    "Better5000Mbps": "ami-0b9f21da8f50ae810",
+    "Good1000Mbps": "ami-0918492922c56aad7",
+    "Good200Mbps": "ami-04a7e016a2c0edf19",
+    "Good25Mbps": "ami-0676090757256fc53",
+    "Good5000Mbps": "ami-030f370c65ecc9a9c"
+  },
+  "sa-east-1": {
+    "Better1000Mbps": "ami-01664fd922a38b0a2",
+    "Better200Mbps": "ami-0ef4f97bd3f0c0fd9",
+    "Better25Mbps": "ami-0c34cb17c1e7d763c",
+    "Better5000Mbps": "ami-020a3978a2edc4ad1",
+    "Good1000Mbps": "ami-0957004a4e16b6402",
+    "Good200Mbps": "ami-03c6263c033a3e5d0",
+    "Good25Mbps": "ami-0510c2e88afa6ab7b",
+    "Good5000Mbps": "ami-0083b3746b3b8c3f5"
+  },
+  "us-east-1": {
+    "Better1000Mbps": "ami-03acb2f14b23f86ee",
+    "Better200Mbps": "ami-0d23d9127575c4d96",
+    "Better25Mbps": "ami-0bd0dfd451800bea9",
+    "Better5000Mbps": "ami-0a96fd28bdca47106",
+    "Good1000Mbps": "ami-0d3a221ff9c0ecb5f",
+    "Good200Mbps": "ami-05d96ed2d46fe8fc9",
+    "Good25Mbps": "ami-0c8bb766711a5b544",
+    "Good5000Mbps": "ami-0211877a8c8d48b33"
+  },
+  "us-east-2": {
+    "Better1000Mbps": "ami-0323209b2b8536cb9",
+    "Better200Mbps": "ami-0b541b68b22394fa9",
+    "Better25Mbps": "ami-02a7bd7a7600346f0",
+    "Better5000Mbps": "ami-01b88e627f7dd1296",
+    "Good1000Mbps": "ami-0d9bdc8dac5fc0b82",
+    "Good200Mbps": "ami-06ee5cfbd41adac25",
+    "Good25Mbps": "ami-0f58d7ab442388a5c",
+    "Good5000Mbps": "ami-027803b6a63fbd0cb"
+  },
+  "us-gov-east-1": {
+    "Better1000Mbps": "ami-0cc0939e679af1562",
+    "Better200Mbps": "ami-0b2f9381e42937255",
+    "Better25Mbps": "ami-09299f8a3d9e1d949",
+    "Better5000Mbps": "ami-0baf7af31a85d8e22",
+    "Good1000Mbps": "ami-0d4193bc69170f112",
+    "Good200Mbps": "ami-0f9e43eaa71beecec",
+    "Good25Mbps": "ami-0804d48813fe31412",
+    "Good5000Mbps": "ami-0b0b0e440ea4f94ba"
+  },
+  "us-gov-west-1": {
+    "Better1000Mbps": "ami-0b1b1cd1c985bc2e3",
+    "Better200Mbps": "ami-0d5b5127ce0c36b8f",
+    "Better25Mbps": "ami-0f21f735b2ee5f249",
+    "Better5000Mbps": "ami-0cd4f17faa4647b5f",
+    "Good1000Mbps": "ami-0cd74decb0f667eb6",
+    "Good200Mbps": "ami-09c73899df1706d1c",
+    "Good25Mbps": "ami-0f3f094f7fe4ad819",
+    "Good5000Mbps": "ami-04fc5de678e2406bd"
+  },
+  "us-west-1": {
+    "Better1000Mbps": "ami-05d65f5fea6873346",
+    "Better200Mbps": "ami-00bf4fbfe4c389a21",
+    "Better25Mbps": "ami-0453f713970721a46",
+    "Better5000Mbps": "ami-040d68c4111cef66c",
+    "Good1000Mbps": "ami-04afd7eb9cdc833f7",
+    "Good200Mbps": "ami-03472a656bbeb1616",
+    "Good25Mbps": "ami-0eecc191a17e1e012",
+    "Good5000Mbps": "ami-0760a549988fa1261"
+  },
+  "us-west-2": {
+    "Better1000Mbps": "ami-0a85e8d7050210a33",
+    "Better200Mbps": "ami-0e8bafe7e5c749349",
+    "Better25Mbps": "ami-0b2a96ec290026060",
+    "Better5000Mbps": "ami-0f4d457f825e53790",
+    "Good1000Mbps": "ami-0f4e098cb1b16c771",
+    "Good200Mbps": "ami-0492a91663633c036",
+    "Good25Mbps": "ami-0b7d6b267e314980b",
+    "Good5000Mbps": "ami-0c196f165c5bc80c5"
+  }
+}

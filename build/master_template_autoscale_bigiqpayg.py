@@ -445,6 +445,7 @@ def build_init_commands(ha_type,loglevel,components,license_type,BIGIP_VERSION,t
         '001-rest-provision-extramb': {'command': "/usr/bin/setdb provision.extramb 1000"},
         '002-rest-use-extramb': {'command': "/usr/bin/setdb restjavad.useextramb true"},
         '003-rest-post': {'command': "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."},
+        '005-delete-route': {'command': "tmsh list net route default && tmsh delete net route default"},
         '010-install-libs': {'command':{"Fn::Join":[" ", unpack_libs]}},
         '015-network-config': {'command': {"Fn::Join": [" ", network_config]}},
         '017-set-master-key': {'command': {"Fn::Join": ["", set_masterKey]}},
@@ -1688,7 +1689,7 @@ def main():
     ### Template Version
     version = '5.11.0'
     ### Big-IP mapped
-    BIGIP_VERSION = '16.1.0-0.0.19'
+    BIGIP_VERSION = '16.1.3.1-0.0.11'
     ### Cloudlib Branch
     branch_cloud = 'v4.26.5'
     branch_aws = 'v2.9.1'
@@ -4654,6 +4655,9 @@ def main():
                 }
                 d["003-rest-post"] = {
                     "command": "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."
+                }
+                d["005-delete-route"] = {
+                    "command": "tmsh list net route default && tmsh delete net route default"
                 }
                 d["010-install-libs"] = {
                     "command": {

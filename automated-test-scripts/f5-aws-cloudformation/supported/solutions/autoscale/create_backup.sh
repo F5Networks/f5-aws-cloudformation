@@ -1,7 +1,7 @@
 #  expectValue = "SUCCESS"
 #  scriptTimeout = 5
 #  replayEnabled = true
-#  replayTimeout = 10
+#  replayTimeout = 30
 
 
 pathToMetadata='./tmp/dd_id/'

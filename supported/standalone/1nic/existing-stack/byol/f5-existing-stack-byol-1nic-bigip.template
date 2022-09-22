@@ -90,146 +90,158 @@
    ]
   }
  },
- "Description": "Template v6.0.0: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
+ "Description": "Template v6.1.0: AWS CloudFormation Template for creating a 1NIC BIG-IP in an existing VPC **WARNING** This template creates Amazon EC2 Instances. You will be billed for the AWS resources used if you create a stack from this template.",
  "Mappings": {
   "BigipRegionMap": {
    "af-south-1": {
-    "AllOneBootLocation": "ami-0dfbeee49873274fa",
-    "AllTwoBootLocations": "ami-0533a5ca2f72739cb",
-    "LTMOneBootLocation": "ami-079ad18eb84d3f309",
-    "LTMTwoBootLocations": "ami-034cb408217dc54cb"
+    "AllOneBootLocation": "ami-0706d5fc943cc6bee",
+    "AllTwoBootLocations": "ami-086f44eccf0fd3b29",
+    "LTMOneBootLocation": "ami-0872fa4c2e2a59732",
+    "LTMTwoBootLocations": "ami-069acde5778d4b80f"
    },
    "ap-east-1": {
-    "AllOneBootLocation": "ami-0e8aa75e23abe67ce",
-    "AllTwoBootLocations": "ami-09b7720294469933c",
-    "LTMOneBootLocation": "ami-0c06b8ad18c3b9cf9",
-    "LTMTwoBootLocations": "ami-037397fc30a0de8c4"
+    "AllOneBootLocation": "ami-095a1ac14f06ac597",
+    "AllTwoBootLocations": "ami-01de85324ae416523",
+    "LTMOneBootLocation": "ami-0b0d33190e39e9047",
+    "LTMTwoBootLocations": "ami-09b6a951024ed633a"
    },
    "ap-northeast-1": {
-    "AllOneBootLocation": "ami-034fabd8744490bab",
-    "AllTwoBootLocations": "ami-09ae2aa8399de5afb",
-    "LTMOneBootLocation": "ami-07821f043c009b018",
-    "LTMTwoBootLocations": "ami-0020d02745c69941c"
+    "AllOneBootLocation": "ami-0ad22dc2ce3110d4a",
+    "AllTwoBootLocations": "ami-05d5294cf9a6f32ca",
+    "LTMOneBootLocation": "ami-0bdd3c544356c821e",
+    "LTMTwoBootLocations": "ami-074acc845c0d9b1f6"
    },
    "ap-northeast-2": {
-    "AllOneBootLocation": "ami-0974a7b09735112a6",
-    "AllTwoBootLocations": "ami-017e211b350cd590a",
-    "LTMOneBootLocation": "ami-0c94f6d898486a57b",
-    "LTMTwoBootLocations": "ami-016e3ca29bed266b7"
+    "AllOneBootLocation": "ami-081bdc5803e237b9a",
+    "AllTwoBootLocations": "ami-0d37773ecfa64889f",
+    "LTMOneBootLocation": "ami-05ef15703a6cd2fba",
+    "LTMTwoBootLocations": "ami-0b21072a7a6e7602f"
    },
    "ap-northeast-3": {
-    "AllOneBootLocation": "ami-058d04d1752db0b34",
-    "AllTwoBootLocations": "ami-0b1e1d92a52a2f9d9",
-    "LTMOneBootLocation": "ami-052cee81a2b1a84d6",
-    "LTMTwoBootLocations": "ami-0b08aa34894776ed4"
+    "AllOneBootLocation": "ami-02c18c25b214afb74",
+    "AllTwoBootLocations": "ami-0950515fa11f3cc02",
+    "LTMOneBootLocation": "ami-066ebcdd1a65b3f7e",
+    "LTMTwoBootLocations": "ami-0983852883355c143"
    },
    "ap-south-1": {
-    "AllOneBootLocation": "ami-0d165427b3486757f",
-    "AllTwoBootLocations": "ami-0964482d488fb0433",
-    "LTMOneBootLocation": "ami-067f178a3850f85c4",
-    "LTMTwoBootLocations": "ami-0664c9dbb6448ad28"
+    "AllOneBootLocation": "ami-0a9019a3eb558e36c",
+    "AllTwoBootLocations": "ami-0c3b82e4072d116dd",
+    "LTMOneBootLocation": "ami-088ef197a2fd0245e",
+    "LTMTwoBootLocations": "ami-0df6515c2fe7e33d4"
    },
    "ap-southeast-1": {
-    "AllOneBootLocation": "ami-03b7db72ab0237a6f",
-    "AllTwoBootLocations": "ami-076f1d7a054fd558b",
-    "LTMOneBootLocation": "ami-084bf9a0b8eba8379",
-    "LTMTwoBootLocations": "ami-0998cb84ea43eae3c"
+    "AllOneBootLocation": "ami-0667c693a93931686",
+    "AllTwoBootLocations": "ami-0b374fe1c11fe9070",
+    "LTMOneBootLocation": "ami-079c333ec4e84ecd1",
+    "LTMTwoBootLocations": "ami-02c90c19d5e437174"
    },
    "ap-southeast-2": {
-    "AllOneBootLocation": "ami-0dfed0d9c43f527c1",
-    "AllTwoBootLocations": "ami-0e7e3e854f4fc7cc3",
-    "LTMOneBootLocation": "ami-0b5e8223da755570b",
-    "LTMTwoBootLocations": "ami-00b0d44474301b700"
+    "AllOneBootLocation": "ami-03a1fc7b6ef69125a",
+    "AllTwoBootLocations": "ami-0f49b9b956467b137",
+    "LTMOneBootLocation": "ami-00324622f502e9534",
+    "LTMTwoBootLocations": "ami-05bad03f1389e6e31"
    },
    "ca-central-1": {
-    "AllOneBootLocation": "ami-0483aa8a852f828cc",
-    "AllTwoBootLocations": "ami-02737b3c1cc6d5c2f",
-    "LTMOneBootLocation": "ami-047d316c9ff83568b",
-    "LTMTwoBootLocations": "ami-08229d96809b521c9"
+    "AllOneBootLocation": "ami-0a1121d7336a7a28e",
+    "AllTwoBootLocations": "ami-040934063caea64b4",
+    "LTMOneBootLocation": "ami-0f4ce8190401d1b82",
+    "LTMTwoBootLocations": "ami-01426c597d8330d25"
+   },
+   "cn-north-1": {
+    "AllOneBootLocation": "ami-0ac75590ac2eb3f16",
+    "AllTwoBootLocations": "ami-09d8ea237f625ec1e",
+    "LTMOneBootLocation": "ami-030bbf6474f8c067e",
+    "LTMTwoBootLocations": "ami-007dd565a5b1afb57"
+   },
+   "cn-northwest-1": {
+    "AllOneBootLocation": "ami-0c1c8a969cf1d2237",
+    "AllTwoBootLocations": "ami-041792a5c7360a69e",
+    "LTMOneBootLocation": "ami-05f91f05fd75df8bb",
+    "LTMTwoBootLocations": "ami-0984673315be601b2"
    },
    "eu-central-1": {
-    "AllOneBootLocation": "ami-0c35bd8d63b07daf5",
-    "AllTwoBootLocations": "ami-0c5ffc78b6f732c33",
-    "LTMOneBootLocation": "ami-0e15326fa4c701549",
-    "LTMTwoBootLocations": "ami-0e040f41749584d3b"
+    "AllOneBootLocation": "ami-077c99b2f355a84fd",
+    "AllTwoBootLocations": "ami-0ffc0fc9f5b157077",
+    "LTMOneBootLocation": "ami-05a6f33a8537430eb",
+    "LTMTwoBootLocations": "ami-0b45fe39629e7f1fb"
    },
    "eu-north-1": {
-    "AllOneBootLocation": "ami-01fbee0825f147392",
-    "AllTwoBootLocations": "ami-0a17a9d02897eb6d6",
-    "LTMOneBootLocation": "ami-07612f698ef991c55",
-    "LTMTwoBootLocations": "ami-0e81122eec6e3a785"
+    "AllOneBootLocation": "ami-009b9e6a8ecdc27b6",
+    "AllTwoBootLocations": "ami-0734cfc5633202269",
+    "LTMOneBootLocation": "ami-058ea3912fecc0eb7",
+    "LTMTwoBootLocations": "ami-0416c0d986dbee218"
    },
    "eu-south-1": {
-    "AllOneBootLocation": "ami-043aac4d17bf608b4",
-    "AllTwoBootLocations": "ami-058634801dd2a251a",
-    "LTMOneBootLocation": "ami-0fff2aaa94d63e1e4",
-    "LTMTwoBootLocations": "ami-0c56c58ba6cd662a1"
+    "AllOneBootLocation": "ami-08b605e1e0ed3a714",
+    "AllTwoBootLocations": "ami-0c82ac92445a42316",
+    "LTMOneBootLocation": "ami-0d48080a682fa26b9",
+    "LTMTwoBootLocations": "ami-09f1fea1ff49459ab"
    },
    "eu-west-1": {
-    "AllOneBootLocation": "ami-06ddceb02705dea15",
-    "AllTwoBootLocations": "ami-01d8781aeb5813ad5",
-    "LTMOneBootLocation": "ami-0efea981ebbc9751e",
-    "LTMTwoBootLocations": "ami-0cc4d3fcf460b3f97"
+    "AllOneBootLocation": "ami-044d90704fcdd9bbe",
+    "AllTwoBootLocations": "ami-0cd9cf7722d6aff6c",
+    "LTMOneBootLocation": "ami-03044b2c51b415d6c",
+    "LTMTwoBootLocations": "ami-0b46d655c80f3b495"
    },
    "eu-west-2": {
-    "AllOneBootLocation": "ami-00e79456c19031258",
-    "AllTwoBootLocations": "ami-0d4d764198e0ea5ff",
-    "LTMOneBootLocation": "ami-00a995a9a124a48dc",
-    "LTMTwoBootLocations": "ami-0e72cfceb7c2f46b3"
+    "AllOneBootLocation": "ami-04f69b9c4db56e42d",
+    "AllTwoBootLocations": "ami-051d4399216dc768e",
+    "LTMOneBootLocation": "ami-0f05d93d06ab88a74",
+    "LTMTwoBootLocations": "ami-0e47087147e483cde"
    },
    "eu-west-3": {
-    "AllOneBootLocation": "ami-0bdb7d9a3523d9ebb",
-    "AllTwoBootLocations": "ami-03142f096ee99e351",
-    "LTMOneBootLocation": "ami-0d4221b32cbb7ed24",
-    "LTMTwoBootLocations": "ami-066cb8f2961f003cf"
+    "AllOneBootLocation": "ami-0c2f1cc3d09809d56",
+    "AllTwoBootLocations": "ami-04eff2d1222b84395",
+    "LTMOneBootLocation": "ami-078b91b4dc24e7f84",
+    "LTMTwoBootLocations": "ami-0ffd477b30aacbf29"
    },
    "me-south-1": {
-    "AllOneBootLocation": "ami-0be9426e07f3f4eb2",
-    "AllTwoBootLocations": "ami-01390b8e01f07faa0",
-    "LTMOneBootLocation": "ami-03fbcf52186a5f772",
-    "LTMTwoBootLocations": "ami-0719d5d529ba86d08"
+    "AllOneBootLocation": "ami-0de8b531dcaba1c18",
+    "AllTwoBootLocations": "ami-006829ae46e74ff8d",
+    "LTMOneBootLocation": "ami-05fff57da68a737f1",
+    "LTMTwoBootLocations": "ami-0faab60ae19861933"
    },
    "sa-east-1": {
-    "AllOneBootLocation": "ami-032c2e748edcb48bf",
-    "AllTwoBootLocations": "ami-0025f7354c48aee04",
-    "LTMOneBootLocation": "ami-092da2492b690825e",
-    "LTMTwoBootLocations": "ami-0414380fba11f7320"
+    "AllOneBootLocation": "ami-0fe62501444293dd4",
+    "AllTwoBootLocations": "ami-0fb18b0b2e5dbb68f",
+    "LTMOneBootLocation": "ami-0d5956a755da80a55",
+    "LTMTwoBootLocations": "ami-08d04561e35d6f3b9"
    },
    "us-east-1": {
-    "AllOneBootLocation": "ami-05a28aa79f0302703",
-    "AllTwoBootLocations": "ami-07bb79b3d693bf4e5",
-    "LTMOneBootLocation": "ami-0096fe8f72b7213c3",
-    "LTMTwoBootLocations": "ami-069f108a97f8e2a6b"
+    "AllOneBootLocation": "ami-0c4e106f9bf47b945",
+    "AllTwoBootLocations": "ami-075d08a821fe9441d",
+    "LTMOneBootLocation": "ami-0ccc53dd100b79c93",
+    "LTMTwoBootLocations": "ami-0aab5d56161633471"
    },
    "us-east-2": {
-    "AllOneBootLocation": "ami-01cb26a7d94a8a11e",
-    "AllTwoBootLocations": "ami-0271c595ba662fc67",
-    "LTMOneBootLocation": "ami-03432d5e19f7b2bcb",
-    "LTMTwoBootLocations": "ami-080c48e7e9a53db2e"
+    "AllOneBootLocation": "ami-04ad033560a2ef447",
+    "AllTwoBootLocations": "ami-0169d7c99adc0233d",
+    "LTMOneBootLocation": "ami-0c79610034aa45e8c",
+    "LTMTwoBootLocations": "ami-06fe16f3ae8d1fcef"
    },
    "us-gov-east-1": {
-    "AllOneBootLocation": "ami-0840dbe53811d52e2",
-    "AllTwoBootLocations": "ami-0657b3f99810b641b",
-    "LTMOneBootLocation": "ami-0989a1eebda85a27b",
-    "LTMTwoBootLocations": "ami-0be8e054f4c61c673"
+    "AllOneBootLocation": "ami-061ed9cabda915425",
+    "AllTwoBootLocations": "ami-09b40f2b42f6d6447",
+    "LTMOneBootLocation": "ami-05984f523b2de4b9f",
+    "LTMTwoBootLocations": "ami-07eacfe1d6f339943"
    },
    "us-gov-west-1": {
-    "AllOneBootLocation": "ami-062c074dbadf4a10c",
-    "AllTwoBootLocations": "ami-0d85fbcefe0e5e7fa",
-    "LTMOneBootLocation": "ami-0143bb30dae4c6ab4",
-    "LTMTwoBootLocations": "ami-02c6bde0f1852ad23"
+    "AllOneBootLocation": "ami-0cbf68a2c78a2cbf4",
+    "AllTwoBootLocations": "ami-0404d4b0bce435472",
+    "LTMOneBootLocation": "ami-0ece75d934403967e",
+    "LTMTwoBootLocations": "ami-0288060a5395d1f53"
    },
    "us-west-1": {
-    "AllOneBootLocation": "ami-076ac77c479233cac",
-    "AllTwoBootLocations": "ami-0607a1ba16abf0924",
-    "LTMOneBootLocation": "ami-049b38272ebf54ff0",
-    "LTMTwoBootLocations": "ami-0a3014ec582be0c17"
+    "AllOneBootLocation": "ami-0b56da167fb688fe6",
+    "AllTwoBootLocations": "ami-0bf76e850f6b51fb6",
+    "LTMOneBootLocation": "ami-0a195906eeb75c43c",
+    "LTMTwoBootLocations": "ami-0c364c4e20343d520"
    },
    "us-west-2": {
-    "AllOneBootLocation": "ami-0627e81a050bfa5f3",
-    "AllTwoBootLocations": "ami-062be6fc0eb3c02d8",
-    "LTMOneBootLocation": "ami-043bd151d020279e1",
-    "LTMTwoBootLocations": "ami-0146ac24f5faee4c5"
+    "AllOneBootLocation": "ami-062b7ba06f4e36cf5",
+    "AllTwoBootLocations": "ami-089182acbfc02e3bf",
+    "LTMOneBootLocation": "ami-021a53bfc720b7f06",
+    "LTMTwoBootLocations": "ami-016bedc0247dc2455"
    }
   }
  },
@@ -420,7 +432,7 @@
     }
    }
   },
-  "Version": "6.0.0"
+  "Version": "6.1.0"
  },
  "Outputs": {
   "Bigip1ExternalInterfacePrivateIp": {
@@ -729,6 +741,9 @@
          ]
         }
        },
+       "039-delete-route": {
+        "command": "tmsh list net route default && tmsh delete net route default"
+       },
        "040-network-config": {
         "command": {
          "Fn::Join": [
@@ -803,7 +818,7 @@
              {
               "Ref": "licenseKey1"
              },
-             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.2.2-0.0.28,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-byol-1nic-bigip.template,templateVersion:6.0.0,licenseType:byol\"",
+             "--metrics \"cloudName:aws,region:${REGION},bigIpVersion:16.1.3.1-0.0.11,customerId:${CUSTOMERID},deploymentId:${DEPLOYMENTID},templateName:f5-existing-stack-byol-1nic-bigip.template,templateVersion:6.1.0,licenseType:byol\"",
              "-d tm.tcpudptxchecksum:software-only ",
              "--ping",
              "&>> /var/log/cloud/aws/install.log < /dev/null &"
@@ -984,7 +999,7 @@
           [
            "",
            "#!/bin/bash\n",
-           "# Generated from 6.0.0\n",
+           "# Generated from 6.1.0\n",
            "TOKEN=`/usr/bin/curl -sS --retry 20 -X PUT 'http://169.254.169.254/latest/api/token' -H 'X-aws-ec2-metadata-token-ttl-seconds: 120'`\n",
            "HOSTNAME=`/usr/bin/curl -sS --retry 20 -H 'X-aws-ec2-metadata-token: '$TOKEN'' http://169.254.169.254/latest/meta-data/hostname`\n",
            "region='",
@@ -1265,8 +1280,8 @@
         "      extensionVersion: 3.36.1\n",
         "      extensionHash: 48876a92d3d8fe7da70310882dc9fd1499d209579d798394715e18c12138daf3\n",
         "EOF\n",
-        "/usr/bin/curl -fv --retry 1 --connect-timeout 5 -L http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/v1.5.0/dist/f5-bigip-runtime-init-1.5.0-1.gz.run -o /var/config/rest/downloads/f5-bigip-runtime-init-1.5.0-1.gz.run\n",
-        "bash /var/config/rest/downloads/f5-bigip-runtime-init-1.5.0-1.gz.run -- '--cloud aws'\n",
+        "/usr/bin/curl -fv --retry 1 --connect-timeout 5 -L http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/v1.5.1/dist/f5-bigip-runtime-init-1.5.1-1.gz.run -o /var/config/rest/downloads/f5-bigip-runtime-init-1.5.1-1.gz.run\n",
+        "bash /var/config/rest/downloads/f5-bigip-runtime-init-1.5.1-1.gz.run -- '--cloud aws'\n",
         "f5-bigip-runtime-init --config-file /config/cloud/runtime-init-config.yaml --skip-telemetry\n",
         "/opt/aws/apitools/cfn-init/bin/cfn-init -v -s ",
         {

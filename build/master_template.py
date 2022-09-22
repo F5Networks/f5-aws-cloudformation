@@ -477,8 +477,9 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
             '001-rest-provision-extramb': {'command': "/usr/bin/setdb provision.extramb 1000"},
             '002-rest-use-extramb': {'command': "/usr/bin/setdb restjavad.useextramb true"},
             '003-rest-post': {'command': "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."},
-            '004-rest-restart': {'command': "bigstart restart restjavad restnoded"},
+            '004-rest-restart': {'command': "bigstart restart restjavad restnoded"},       
             '010-install-libs': {'command': {"Fn::Join": [" ", unpack_libs]}},
+            '014-delete-route': {'command': "tmsh list net route default && tmsh delete net route default"},
             '015-network-config': {'command': {"Fn::Join": [" ", network_config]}},
             '017-set-master-key': {'command': {"Fn::Join": ["", set_masterKey]}},
             '020-generate-password': {'command': {"Fn::Join": ["", generate_password]}},
@@ -703,6 +704,7 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
             '010-install-libs': {'command': {"Fn::Join": [" ", unpack_libs]}},
             '020-generate-password': {'command': {"Fn::Join": ["", generate_password]}},
             '030-create-admin-user': {'command': {"Fn::Join": ["", admin_user]}},
+            '039-delete-route': {'command': "tmsh list net route default && tmsh delete net route default"},
             '040-network-config': {'command': {"Fn::Join": [" ", network_config]}},
             '050-onboard-BIG-IP': {'command': {"Fn::If": ["optin", {"Fn::Join": [" ", onboard_BIG_IP_metrics]}, {"Fn::Join": [" ", onboard_BIG_IP]}]}},
             '060-custom-config': {'command': {"Fn::Join": [" ", custom_command]}},
@@ -1677,9 +1679,9 @@ def main():
     # Log level
     loglevel = 'silly'
     # Template Version
-    version = '6.0.0'
+    version = '6.1.0'
     # Big-IP mapped
-    BIGIP_VERSION = '16.1.2.2-0.0.28'
+    BIGIP_VERSION = '16.1.3.1-0.0.11'
     # Cloudlib Branch
     branch_cloud = 'v4.27.1'
     branch_aws = 'v2.10.1'
@@ -1687,8 +1689,8 @@ def main():
     branch_as3 = 'v3.31.0'
     package_as3 = 'f5-appsvcs-3.31.0-6.noarch.rpm'
     # Runtime Init
-    branch_runtime_init = 'v1.5.0'
-    package_runtime_init = 'f5-bigip-runtime-init-1.5.0-1.gz.run'
+    branch_runtime_init = 'v1.5.1'
+    package_runtime_init = 'f5-bigip-runtime-init-1.5.1-1.gz.run'
     runtime_init_url = 'http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/' + branch_runtime_init + '/dist/' + package_runtime_init
     # Build verifyHash file from published verifyHash on CDN
     urls = ['https://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/' + str(branch_cloud) + '/verifyHash']
@@ -5691,6 +5693,10 @@ def main():
                             ]
                         }
                     }
+                if num_nics == 1:
+                    d["039-delete-route"] = {
+                        "command": "tmsh list net route default && tmsh delete net route default"
+                    }
                 d["040-network-config"] = {
                     "command": {
                         "Fn::Join": [
@@ -5954,8 +5960,8 @@ def main():
                                         "      extensionVersion: 3.36.1\n",
                                         "      extensionHash: 48876a92d3d8fe7da70310882dc9fd1499d209579d798394715e18c12138daf3\n",
                                         "    - extensionType: cf\n",
-                                        "      extensionVersion: 1.11.0\n",
-                                        "      extensionHash: f3c7aca8a19d0dc01e529d38aa0d235b4dfad34beec2584f8402aa9a92c34699\n",
+                                        "      extensionVersion: 1.13.0\n",
+                                        "      extensionHash: 93be496d250838697d8a9aca8bd0e6fe7480549ecd43280279f0a63fc741ab50\n",
                                         "EOF\n",
                                         download_runtime_command, 
                                         install_runtime_command, 
@@ -6020,8 +6026,8 @@ def main():
                                         "      extensionVersion: 3.36.1\n",
                                         "      extensionHash: 48876a92d3d8fe7da70310882dc9fd1499d209579d798394715e18c12138daf3\n",
                                         "    - extensionType: cf\n",
-                                        "      extensionVersion: 1.10.0\n",
-                                        "      extensionHash: d758c985cac4dbef4b0732fe5900317ae97e67c6efca621a5b2b02c8c4bbeace\n",
+                                        "      extensionVersion: 1.13.0\n",
+                                        "      extensionHash: 93be496d250838697d8a9aca8bd0e6fe7480549ecd43280279f0a63fc741ab50\n",
                                         "EOF\n", 
                                         download_runtime_command, 
                                         install_runtime_command, 

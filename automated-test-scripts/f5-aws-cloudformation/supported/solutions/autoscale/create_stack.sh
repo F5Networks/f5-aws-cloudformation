@@ -116,6 +116,7 @@ templateParams="ParameterKey=allowUsageAnalytics,ParameterValue=<ANALYTICS> Para
 ParameterKey=applicationPoolTagKey,ParameterValue=Name ParameterKey=applicationPoolTagValue,ParameterValue=Webserver:<STACK NAME>-vpc \
 ParameterKey=appInternalDnsName,ParameterValue=$awsAppInternalDnsName ParameterKey=availabilityZones,ParameterValue=\"${az_parm}\" \
 ParameterKey=deploymentName,ParameterValue=dewdrop-as-<DEWPOINT JOB ID> \
+ParameterKey=customImageId,ParameterValue=OPTIONAL \
 ParameterKey=sshKey,ParameterValue=dewpt ParameterKey=subnets,ParameterValue=\"${mgmt_parm}\" ParameterKey=restrictedSrcAddress,ParameterValue=$source_cidr \
 ParameterKey=restrictedSrcAddressApp,ParameterValue=0.0.0.0/0 ParameterKey=Vpc,ParameterValue=$vpc ParameterKey=notificationEmail,ParameterValue=<EMAIL> \
 ParameterKey=instanceType,ParameterValue=$instance_type ParameterKey=scalingMinSize,ParameterValue=<MIN INSTANCES> ParameterKey=scalingMaxSize,ParameterValue=<MAX INSTANCES> \

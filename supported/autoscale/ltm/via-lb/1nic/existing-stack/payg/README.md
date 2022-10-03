@@ -21,35 +21,40 @@ This is an *existing stack* template, meaning the networking infrastructure MUST
 
 Auto scaling means that as traffic through the BIG-IP VE or the BIG-IP CPU utilization increases or decreases, the number of BIG-IP VE LTM instances automatically increases or decreases accordingly (based on values you enter in the template). The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality.
 
-See our [video on YouTube](https://www.youtube.com/watch?v=VQ3IgGWsePs) to see this template in action.  For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
+See our [video on YouTube](https://www.youtube.com/watch?v=VQ3IgGWsePs) to see this template in action. For information on getting started using F5's CFT templates on GitHub, see [Amazon Web Services: Solutions 101](http://clouddocs.f5.com/cloud/public/v1/aws/AWS_solutions101.html).
 
 
 ## Prerequisites
 The following are prerequisites for this solution:
- - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdministratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles.  For details on permissions and all AWS configuration, see https://aws.amazon.com/documentation/.
+ - The appropriate permission in AWS to launch CloudFormation (CFT) templates. You must be using an IAM user with the AdministratorAccess policy attached and have permission to create Auto Scale Groups, S3 Buckets, Instances, and IAM Instance Profiles. For details on permissions and all AWS configuration, see https://aws.amazon.com/documentation/.
  - An existing AWS VPC with a public subnet, a classic Elastic load balancer (ELB) in front of the BIG-IP VE(s), and a DNS name for the application pool (which can be also be the DNS name of an ELB if using one behind the BIG-IP(s)). 
-   - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP LTM auto scale tier.  See [ELB configuration](#elb) for an example of the ELB configuration.
+   - The classic ELB in front of the BIG-IP VEs must be preconfigured to perform SSL offload for the BIG-IP LTM auto scale tier. See [ELB configuration](#elb) for an example of the ELB configuration.
    - The subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library. 
  - Access to BIG-IP images in the Amazon region within which you are working.
- - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**.  This only appears the first time you attempt to launch an F5 image.
+ - Accepted the EULA for all Images in the AWS marketplace. If you have not deployed BIG-IP VE in your environment before, search for F5 in the Marketplace and then click **Accept Software Terms**. This only appears the first time you attempt to launch an F5 image.
  - Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
  
 ## Important configuration notes
- - All supported versions of F5 CloudFormation templates include Application Services 3 Extension (AS3) v3.18.0 on the BIG-IP VE.  As of release 4.1.2, all supported templates give the option of including the URL of an AS3 declaration, which you can use to specify the BIG-IP configuration you want on your newly created BIG-IP VE(s).  In templates such as autoscale, where an F5-recommended configuration is deployed by default, specifying an AS3 declaration URL will override the default configuration with your declaration.   See the [AS3 documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/) for details on how to use AS3.   
- - There are new options for BIG-IP license bundles. See the [the version matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md) for details and applicable templates.  
+ - All supported versions of F5 CloudFormation templates include Application Services 3 Extension (AS3) v3.18.0 on the BIG-IP VE. As of release 4.1.2, all supported templates give the option of including the URL of an AS3 declaration, which you can use to specify the BIG-IP configuration you want on your newly created BIG-IP VE(s). In templates such as autoscale, where an F5-recommended configuration is deployed by default, specifying an AS3 declaration URL will override the default configuration with your declaration. See the [AS3 documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/) for details on how to use AS3. 
+ - There are new options for BIG-IP license bundles. See the [the version matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md) for details and applicable templates.
  - The **sa-east** region does not support using the **m4.xlarge** instance size. If you are using that region, you must select a different instance size. 
- - All of the BIG-IP VE members in the cluster are active and process traffic.  See [Detailed Clustering Information](#detailed-clustering-information).
+ - All of the BIG-IP VE members in the cluster are active and process traffic. See [Detailed Clustering Information](#detailed-clustering-information).
  - This solution uses an AMI image with BIG-IP v13 or later.
- - This template supports service discovery via the Application Services 3 Extension (AS3).  See the [Service Discovery section](#service-discovery) for details.
+ - This template supports service discovery via the Application Services 3 Extension (AS3). See the [Service Discovery section](#service-discovery) for details.
  - This template supports telemetry streaming via the F5 Telemetry Streaming extension (TS). See [Telemetry Streaming](#telemetry-streaming) for details.
- - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
+ - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts. See https://support.f5.com/csp/article/K2873 for details.
  - After deploying the template, if you make manual changes to the BIG-IP configuration, you must see [this section](#important-if-you-make-manual-changes-to-big-ip-after-launching-the-template).
  - This template includes a master election feature, which ensures that if the existing master BIG-IP VE is unavailable, a new master is selected from the BIG-IP VEs in the cluster. As a part of this process, the template creates an IAM role-protected SQS queue (https://aws.amazon.com/sqs/) for communication between the BIG-IP VEs, and encrypted credentials are sent on this queue. Additionally, the template creates public keys for the BIG-IP VEs and puts them in an S3 bucket in the public_keys folder. See [How this solution works](#how-this-solution-works) for more details.
  - This template creates a user account named cluster-admin, which is used to join BIG-IP VE instances to the autoscale cluster. The password for this account is automatically generated and includes one special character; if using a custom password policy, the policy should require no more than one special character.
- - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates.  See [Sending statistical information to F5](#sending-statistical-information-to-f5).
+ - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates. See [Sending statistical information to F5](#sending-statistical-information-to-f5).
  - F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughputs available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md.
  - F5 AWS CFT templates now capture all deployment logs to the BIG-IP VE in **/var/log/cloud/aws**. Depending on which template you are using, this includes deployment logs (stdout/stderr), Cloud Libs execution logs, recurring solution logs (metrics, failover, and so on), and more.
  - This template uses [F5 BIG-IP Runtime Init](https://github.com/F5Networks/f5-bigip-runtime-init) to install F5 Automation Toolchain packages (AS3, DO, CFE, FAST, and TS). You can update the version of one or more packages by editing the UserData property of the BIG-IP instance resource(s). For example: To update the AS3 package to the latest version, click on the [Github release page](https://github.com/F5Networks/f5-appsvcs-extension/releases) for the f5-appsvcs-extension. In the instance UserData property, in the install_operations section, update the AS3 extensionVersion value to the desired version and the extensionHash value to contents of the RPM sha256 file located in the release assets for that version. You can also add more packages to be installed using the same procedure.
+ - Beginning with release 6.0.0, the default PAYG images have been updated to "F5 BIG-IP BEST with IPI and Threat Campaigns". IMPORTANT: changing the image can affect re-deployments (see above). If you have an existing subscription and need to preserve the previous image ID/name, use the **customImageId** parameter, used for custom images (for example, clones or different versions from the marketplace). To see a list of available BIG-IP images and IDs from the marketplace (for example in "us-east-1"), you can run the AWS command below:
+   ```
+   $ aws ec2 describe-images --owners aws-marketplace --region us-east-1 --filters "Name=description,Values=F5*BIGIP**"  --query 'Images[*].[ImageId,Description,CreationDate]'
+   ```
+
  
 
 ## Launching the template using the AWS Launch Stack buttons
@@ -64,7 +69,7 @@ See [Template Parameters](#template-parameters) for guidance on the parameters p
 
 
 ### Template Parameters ###
-Once you have launched the CFT, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.  
+Once you have launched the CFT, you need to complete the template by entering the required parameter values. The following table can help you gather the information you need before beginning the template.
 
 
 | CFT Label | Parameter Name | Required | Description |
@@ -95,7 +100,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 | Notification Email | notificationEmail | Yes | Valid email address to send Auto Scaling Event Notifications |
 | Virtual Service Port | virtualServicePort | Yes | Port on BIG-IP (the default is 80) |
 | Application Pool Member Port | applicationPort | Yes | Application Pool Member Port on BIG-IP (the default is 80) |
-| Application Pool DNS | appInternalDnsName | Yes | DNS name (such as poolapp.example.com) for the application pool.  This is not required if you are using the [Service Discovery feature](#service-discovery). |
+| Application Pool DNS | appInternalDnsName | Yes | DNS name (such as poolapp.example.com) for the application pool. This is not required if you are using the [Service Discovery feature](#service-discovery). |
 | Application Pool Tag Key | applicationPoolTagKey | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with this key and the value you specify next. |
 | Application Pool Tag Value | applicationPoolTagValue | No | This is used for the [Service Discovery feature](#service-discovery). If you specify a non-default value here, the template automatically discovers the pool members you have tagged with the key you specified and this value. |
 | AS3 Declaration URL | declarationUrl | No | URL for the [AS3](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/) declaration JSON file to be deployed. Leave as **none** to deploy without a service configuration. |
@@ -114,7 +119,7 @@ Once you have launched the CFT, you need to complete the template by entering th
 
 The default template values are set artificially low for testing.<br>
 The templates defaults are set to 80% and 20% respectively.<br> 
-To adjust the thresholds,  set them according to the utility size (optional).<br> 
+To adjust the thresholds, set them according to the utility size (optional).<br> 
 For example, if you wanted use different percentages in the scaling threshold(s), modify the ***.80*** or ***.20*** in the following calculations to represent the percentage you want to use. Then take the result and use that as the appropriate threshold value in the CFT.
 
 *Scale Up Bytes Thresholds:* <br>
@@ -144,18 +149,18 @@ Once you have completed the template and the BIG-IP system instantiates *(estima
 
 <a name="note"></a>
 <br>
-**Note**: If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template as described in this section.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access to the Configuration utility if necessary.  In this deployment, the BIG-IP Configuration utility port is 8443 by default.
+**Note**: If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template as described in this section. You can then create a user account with admin-level permissions on the BIG-IP VE to allow access to the Configuration utility if necessary. In this deployment, the BIG-IP Configuration utility port is 8443 by default.
 
 
-You can now configure the BIG-IP VE as applicable for your configuration.  See the BIG-IP documentation for details (https://support.f5.com/csp/tech-documents)
+You can now configure the BIG-IP VE as applicable for your configuration. See the BIG-IP documentation for details (https://support.f5.com/csp/tech-documents)
 
 <a name="manual"></a>
 #### IMPORTANT: If you make manual changes to BIG-IP after launching the template
 
-The template now automatically saves a BIG-IP back up UCS file (to the **/backup** directory in the S3 bucket created by the template) every night at 12am, and saves 7 days of back up UCS files.  If you make manual changes to the configuration, we recommend immediately making a backup of your BIG-IP configuration manually and storing the resulting UCS file in the S3 bucket created by the template to ensure the master election process functions properly.  
+The template now automatically saves a BIG-IP back up UCS file (to the **/backup** directory in the S3 bucket created by the template) every night at 12am, and saves 7 days of back up UCS files. If you make manual changes to the configuration, we recommend immediately making a backup of your BIG-IP configuration manually and storing the resulting UCS file in the S3 bucket created by the template to ensure the master election process functions properly.
 To manually save the BIG-IP configuration to a UCS file:
 
-  1. Backup your BIG-IP configuration (ideally the cluster primary) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive.  Use the following syntax to save the backup UCS file:<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
+  1. Backup your BIG-IP configuration (ideally the cluster primary) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive. Use the following syntax to save the backup UCS file:<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
   
   2. Store the UCS file in the S3 bucket created by the solution in folder called **/backup**.
 
@@ -169,14 +174,14 @@ In AWS, you have two options for tagging objects that the service discovery feat
   - *Tag a VM resource*<br>
 The BIG-IP VE will discover the primary public or private IP addresses for the primary NIC configured for the tagged VM.
   - *Tag a NIC resource*<br>
-The BIG-IP VE will discover the primary public or private IP addresses for the tagged NIC.  Use this option if you want to use the secondary NIC of a VM in the pool.
+The BIG-IP VE will discover the primary public or private IP addresses for the tagged NIC. Use this option if you want to use the secondary NIC of a VM in the pool.
 
 
 The template first looks for NIC resources with the tags you specify. If it finds NICs with the proper tags, it does not look for VM resources. If it does not find NIC resources, it looks for VM resources with the proper tags.
 
 **Important**: Make sure the tags and IP addresses you use are unique. You should not tag multiple AWS nodes with the same key/tag combination if those nodes use the same IP address.
 
-To use service discovery, in the **WAF Virtual Service Configuration** section of the template, in the **Application Pool Tag Key** and **Application Pool Tag Value** fields, enter your Key and Value information. If you leave these fields at the default, the template does not use service discovery, and uses the value you include for the Application Pool DNS.  Note that if you enter both the Application Pool DNS value and the Key/Value information, the template only uses the Key/Value fields, which enables service discovery. 
+To use service discovery, in the **WAF Virtual Service Configuration** section of the template, in the **Application Pool Tag Key** and **Application Pool Tag Value** fields, enter your Key and Value information. If you leave these fields at the default, the template does not use service discovery, and uses the value you include for the Application Pool DNS. Note that if you enter both the Application Pool DNS value and the Key/Value information, the template only uses the Key/Value fields, which enables service discovery. 
 
 ---
 
@@ -194,7 +199,7 @@ The following table lists the versions of BIG-IP that have been tested and valid
 ---
 
 ### Getting Help
-**F5 Support**  
+**F5 Support**
 Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565). You can modify the template itself if necessary, but if you modify any of the code ***outside*** of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
 
 ---
@@ -210,7 +215,7 @@ All BIG-IP VE instances deploy with a single interface (NIC) attached to a publi
   - Deploy integration with EC2 Auto Scale and CloudWatch services for scaling of the BIG-IP tier.
   - Create an initial HTTP virtual server
 
-The CloudFormation template uses the default **Good** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.  
+The CloudFormation template uses the default **Good** image available in the AWS marketplace to license these modules (you can choose 1000, 200, or 25 Mbps). Once the first instance is deployed, it becomes the cluster primary and all subsequent instances launched will join a cluster primary to pull the latest configuration from the cluster. In this respect, you can make changes to the running configuration of this cluster and not have to manage the lifecycle of the configuration strictly through the Launch Configuration.
 
 #### Configuration Example <a name="config"></a>
 
@@ -224,15 +229,15 @@ The following is a simple configuration diagram deployment.
 
 
 #### Detailed clustering information
-This solution creates a clustered system with "AutoSync" enabled, so any change is immediately propagated throughout the cluster. Each cluster member instance reports "Active" and "Actively" processes traffic.  Although Autosync is enabled and technically you can make changes to any existing clustered member, for consistency we recommend you make any changes to the original, primary instance.
+This solution creates a clustered system with "AutoSync" enabled, so any change is immediately propagated throughout the cluster. Each cluster member instance reports "Active" and "Actively" processes traffic. Although Autosync is enabled and technically you can make changes to any existing clustered member, for consistency we recommend you make any changes to the original, primary instance.
 
-Note: There is no indication of the "primary" instance in the BIG-IP Configuration utility itself; this is simply an administrative designation in this deployment. To determine the primary instance, look for instance with *Scale-In Protection*.  You can find the Scale-In Protection value in AWS by clicking **Auto Scaling Groups** > *Click your Auto Scale group* > **Instances Tab**, and then under the Protected From tab, look for the instance with **Scale-In**.  
+Note: There is no indication of the "primary" instance in the BIG-IP Configuration utility itself; this is simply an administrative designation in this deployment. To determine the primary instance, look for instance with *Scale-In Protection*. You can find the Scale-In Protection value in AWS by clicking **Auto Scaling Groups** > *Click your Auto Scale group* > **Instances Tab**, and then under the Protected From tab, look for the instance with **Scale-In**.
 
 When the first auto scale instance is launched, a Device Group called "autoscale-group" is automatically created. 
 
 Whenever a new instance is launched, it joins the cluster. If those instances are scaled down, they are removed from the cluster and the original instance remains. The cluster membership is updated once every 10 minutes and sends metrics every 60 seconds using [iCall](https://community.f5.com/t5/technical-articles/what-is-icall/ta-p/288206).
 
-This deployment creates an initial BIG-IP configuration using an [iApp](https://community.f5.com/t5/technical-articles/understanding-iapps/ta-p/278430) that includes a basic virtual service (listening on 0.0.0.0:80).   
+This deployment creates an initial BIG-IP configuration using an [iApp](https://community.f5.com/t5/technical-articles/understanding-iapps/ta-p/278430) that includes a basic virtual service (listening on 0.0.0.0:80).
 
 After the first instance is launched, you can log in and customize the configuration (for example add logging, and much more).
 
@@ -264,7 +269,7 @@ The CloudFormation Template creates and leverages several AWS resources to suppo
   - **Primary Election Process**<br>
     In the event of a failure or scale-in event that deallocates the primary instance, a new primary instance is elected by the autoscale script based on the following criteria:
     - Last backup time: If only one device has a running configuration, that device is promoted to primary. This is determined based on the lastBackup timestamp, which is set to the beginning of epoch time by default; this date gets updated with sync cluster creation.
-    - Lowest management IP address (private): If ***both*** devices have lastBackup set to either a) the default value or b) a non-default value, the device with the lowest  private management IP address will be promoted to primary.
+    - Lowest management IP address (private): If ***both*** devices have lastBackup set to either a) the default value or b) a non-default value, the device with the lowest private management IP address will be promoted to primary.
   - **Restore From UCS**<br>
     The template now automatically saves a BIG-IP back up UCS file (to the **/backup** directory in the S3 bucket created by the template) every night at 12am, and saves 7 days of back up UCS files. In the event the system needs to restore from a backup UCS file, the UCS with the latest timestamp will be restored when the following conditions are met:
     - No device present has a running configuration. Any device with a running configuration will be promoted to primary before UCS will be restored.
@@ -289,24 +294,24 @@ Clustering is only done within a Launch Configuration ID basis, so any changes t
  
 **Note**: Because the template now automatically saves a BIG-IP back up UCS file every night at 12am and saves 7 days of back up UCS files, steps 1 and 2 are not necessary unless you have made recent changes.
  
-  1. Backup your BIG-IP configuration (ideally the cluster primary) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive.  Use the following syntax to save the backup UCS file:<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
+  1. Backup your BIG-IP configuration (ideally the cluster primary) by creating a [UCS](https://support.f5.com/csp/article/K13132) archive. Use the following syntax to save the backup UCS file:<br> ```# tmsh save /sys ucs /var/tmp/original.ucs```
   
   2. Store the UCS file in the S3 bucket created by the solution in folder called **/backup**.
     
-  3. Update the Stack in AWS (click **CloudFormation > Action > Update Stack**).  
+  3. Update the Stack in AWS (click **CloudFormation > Action > Update Stack**).
  
   4. The first instance from the new Launch Config becomes the new cluster primary and looks for a UCS in that backup folder for the latest configuration. NOTE: It selects the UCS with the latest timestamp. All subsequent instances from that launch config then sync the latest configuration from the cluster primary as usual. 
 
 ---
 ### Removing the deployment
 
-To remove the deployment, there are few objects that need to be removed manually before you can delete the stack associated with the clustered auto scale BIG-IP CloudFormation template.  
+To remove the deployment, there are few objects that need to be removed manually before you can delete the stack associated with the clustered auto scale BIG-IP CloudFormation template.
 
 1. Remove Scale-In Protection 
-You must first remove "Instance Teardown" Protection on one of the auto scaled instances launched. From the AWS Console, click **EC2 > Auto Scaling Groups >** *Select your BIG-IP auto scale Group* **> Instances Tab >** *Select the Instance with "Scale-In" in the "Protected From" Tab*.  Right Click or select the Actions Tab and then click **Instance Protection > Remove Scale-In Protection**
+You must first remove "Instance Teardown" Protection on one of the auto scaled instances launched. From the AWS Console, click **EC2 > Auto Scaling Groups >** *Select your BIG-IP auto scale Group* **> Instances Tab >** *Select the Instance with "Scale-In" in the "Protected From" Tab*. Right Click or select the Actions Tab and then click **Instance Protection > Remove Scale-In Protection**
 
 2. Delete the S3 Bucket
-This deployment creates an S3 bucket using the following naming convention: *(your-deploymentName)-autoscale-bigip-s3bucket-52byo83nzxlu*.  To delete the S3 bucket, go to the S3 page in the AWS Console, and then click **Bucket > Empty Bucket**.
+This deployment creates an S3 bucket using the following naming convention: *(your-deploymentName)-autoscale-bigip-s3bucket-52byo83nzxlu*. To delete the S3 bucket, go to the S3 page in the AWS Console, and then click **Bucket > Empty Bucket**.
 
 
 3. Delete the CloudFormation stack
@@ -334,8 +339,8 @@ For assistance running the iApp template, once you open the iApp, from the *Do y
 ---
 
 ### Sending statistical information to F5
-All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  
-None of the information we collect is personally identifiable, and only includes:  
+All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.
+None of the information we collect is personally identifiable, and only includes:
 
 - Customer ID: this is a hash of the customer ID, not the actual ID
 - Deployment ID: hash of stack ID
@@ -550,7 +555,7 @@ If you find an issue, we would love to hear about it.
 You have a choice when it comes to filing issues:
   - Use the **Issues** link on the GitHub menu bar in this repository for items such as enhancement or feature requests and non-urgent bug fixes. Tell us as much as you can about what you found and how you found it.
   - Contact us at [solutionsfeedback@f5.com](mailto:solutionsfeedback@f5.com?subject=GitHub%20Feedback) for general feedback or enhancement requests. 
-  - Use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 cloud templates.  There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance.
+  - Use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 cloud templates. There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance.
   - For templates in the **supported** directory, contact F5 Technical support via your typical method for more time sensitive changes and other issues requiring immediate support.
 
 

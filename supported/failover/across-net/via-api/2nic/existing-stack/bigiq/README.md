@@ -16,11 +16,11 @@
  
 ## Introduction
 
-This solution uses a CloudFormation Template to launch and configure two BIG-IP 2-NIC VEs in a clustered, highly available configuration across Amazon Availability Zones, using a [BIG-IQ device](https://f5.com/products/big-iq-centralized-management) with a pool of BIG-IP licenses in order to license BIG-IP VEs using BYOL licenses.  
+This solution uses a CloudFormation Template to launch and configure two BIG-IP 2-NIC VEs in a clustered, highly available configuration across Amazon Availability Zones, using a [BIG-IQ device](https://f5.com/products/big-iq-centralized-management) with a pool of BIG-IP licenses in order to license BIG-IP VEs using BYOL licenses.
 
 This is an *existing stack* template, meaning the networking infrastructure MUST be available prior to deploying. See the Template Parameters Section for required networking objects. By default, the template will create and attach Public IP Address(es) to the BIG-IP interface(s). Where dictated by security policy or in deployments where accessing resources does not require a Public IP address on the BIG-IP VE, such as users connecting to internal applications using a VPN, set the **provisionPublicIP** parameter to 'No', which will not create Public IP Address(es).
 
-The BIG-IP VE can detect Availability Zone failure and automatically shift public traffic to the BIG-IP in the Availability Zone that is unaffected. In a 2-NIC implementation, one interface is for management and one is for data-plane traffic, each with a unique public/private IP. Traffic flows from the BIG-IP VE to the application servers.  
+The BIG-IP VE can detect Availability Zone failure and automatically shift public traffic to the BIG-IP in the Availability Zone that is unaffected. In a 2-NIC implementation, one interface is for management and one is for data-plane traffic, each with a unique public/private IP. Traffic flows from the BIG-IP VE to the application servers.
 
 The BIG-IP VEs have the <a href="https://f5.com/products/big-ip/local-traffic-manager-ltm">Local Traffic Manager</a> (LTM) module enabled to provide advanced traffic management functionality. This means you can also configure the BIG-IP VE to enable F5's L4/L7 security features, access control, and intelligent traffic management.
 
@@ -31,38 +31,41 @@ For information on getting started using F5's CFT templates on GitHub, see [Amaz
 The following are prerequisites for the F5 2-NIC CFT:
   - An existing AWS VPC with two separate Availability Zones, each with two subnets: 
     - Management subnet (the subnet for the management network requires a route and access to the Internet for the initial configuration to download the BIG-IP cloud library).
-    - External subnet (the subnet for the external network requires a route and access to the Internet for onboarding BIG-IP).  
+    - External subnet (the subnet for the external network requires a route and access to the Internet for onboarding BIG-IP).
   - The AWS VPC must have **DNS Hostnames** enabled, and the VPC DHCP default option *domain-name = < region >.compute.internal domain-name-servers = AmazonProvidedDNS* is required.
   - Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information.
   -	BIG-IQ prerequisites:
     - This solution supports the two most recent versions of BIG-IQ (see the [Version Matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md) for specific versions).
     - The templates now support BIG-IQ licensing using an [ELA](https://www.f5.com/pdf/licensing/big-ip-virtual-edition-enterprise-licensing-agreement-overview.pdf)/subscription pool, which enables self-licensing of BIG-IP virtual editions (VEs).
-    -	You must have a pool of BIG-IP VE licenses on your BIG-IQ device. Only Registration Key and ELA/subscription pools are supported.  See the [BIG-IQ documentation](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/bigiq-central-mgmt-device-5-3-0/3.html) for more detailed information on License pool types.
+    -	You must have a pool of BIG-IP VE licenses on your BIG-IQ device. Only Registration Key and ELA/subscription pools are supported. See the [BIG-IQ documentation](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/bigiq-central-mgmt-device-5-3-0/3.html) for more detailed information on License pool types.
     -	Your BIG-IQ system must have at least [2 NICs](https://support.f5.com/kb/en-us/products/big-iq-centralized-mgmt/manuals/product/big-iq-central-mgmt-amazon-web-services-setup-5-2-0/1.html#guid-bd42a26b-9fa6-4127-88ab-fe5ab06bd3c2).
     - You must have your BIG-IQ password (only, no other content) in a file in your S3 bucket. The template asks for the full path to this file.
-    - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only.  Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
+    - We strongly recommend you set the AWS user account permissions for the S3 bucket and the object containing the BIG-IQ password to **Read, Write** only. Do **NOT** enable public permissions for *Any authenticated user* or *Everyone*.
   
   
 ## Important configuration notes
-  - All supported versions of AWS F5 CloudFormation Failover templates now include F5 Cloud Failover Extension (CFE) v1.1.0 on the BIG-IP VE. The F5 Cloud Failover Extension (CFE) is an iControl LX extension that provides L3 failover functionality in cloud environments, effectively replacing Gratuitous ARP (GARP). Cloud Failover Extension uses a declarative model, meaning you provide a JSON declaration using a single REST API call. The declaration represents the configuration that Cloud Failover Extension is responsible for creating on a BIG-IP system. This template constructs and posts required declaration to CFE required to handle IP failover. However, if you you wish to configure route failover CFE feature, you will need to do 2 additional steps. 1) Tag appropriate route tables with key/value: "f5_cloud_failover_label/your stack name". 2) Post modified declaration with correct affected CIDR blocks. Note: You can use GET method to url https://yourBigIP/mgmt/shared/cloud-failover/declare to retrieve existing CFE declaration. See the [CFE documentation](https://clouddocs.f5.com/products/extensions/f5-cloud-failover/latest/) for details on how to use CFE.
-  - All supported versions of F5 CloudFormation templates include Application Services 3 Extension (AS3) v3.18.0 on the BIG-IP VE.  As of release 4.1.2, all supported templates give the option of including the URL of an AS3 declaration, which you can use to specify the BIG-IP configuration you want on your newly created BIG-IP VE(s).  In templates such as autoscale, where an F5-recommended configuration is deployed by default, specifying an AS3 declaration URL will override the default configuration with your declaration.   See the [AS3 documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/) for details on how to use AS3.   
-  - HA with BIG-IP APM module is not supported with this solution. By design, this solution uses a separate virtual server address for each availability zone. This configuration is not compatible with APM session state mirroring which is required to support highly available APM fail-overs. BIG-IP with APM can be used with this solution, however, active sessions will be lost during a failover event.
-  - There are new options for BIG-IP license bundles. See the [the version matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md) for details and applicable templates.  
-  - Beginning with release 3.3.0, the BIG-IP image names have changed (previous options were Good, Better, and Best).  Now you choose a BIG-IP VE image based on whether you need [LTM](https://www.f5.com/products/big-ip-services/local-traffic-manager) only or All modules available (including [WAF](https://www.f5.com/products/security/advanced-waf), [AFM](https://www.f5.com/products/security/advanced-firewall-manager), etc.), and if you need 1 or 2 boot locations.  Use 2 boot locations if you expect to upgrade the BIG-IP VE in the future. If you do not need room to upgrade (if you intend to create a new instance when a new version of BIG-IP VE is released), use an image with 1 boot location.  See this [Matrix](https://clouddocs.f5.com/cloud/public/v1/matrix.html#amazon-web-services) for recommended AWS instance types.
-  - This template creates AWS Security Groups as a part of the deployment. For the external Security Group, this includes a port for accessing your applications on port 80/443.  If your applications need additional ports, you must add those to the external Security Group created by the template.  For instructions on adding ports, see the AWS documentation.
-  - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
-  - This solution uses an AMI image with BIG-IP v13 or later.
-  - This template supports service discovery via the Application Services 3 Extension (AS3).  See the [Service Discovery section](#service-discovery) for details.
-  - This template supports telemetry streaming via the F5 Telemetry Streaming extension (TS). See [Telemetry Streaming](#telemetry-streaming) for details.
-  - In order to pass traffic from your clients to the servers, after launching the template you must create virtual servers on the BIG-IP VE.  See [Creating a virtual server](#creating-virtual-servers-on-the-big-ip-ve).
-  - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
-  - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates.  See [Sending statistical information to F5](#sending-statistical-information-to-f5).
-  - This template supports disabling the auto-phonehome system setting via the allowPhoneHome parameter. See [Overview of the Automatic Update Check and Automatic Phone Home features](https://support.f5.com/csp/article/K15000) for more information.
-  - F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughputs available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md.
-  - These CloudFormation templates incorporate an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the *learning-stacks* folder in the **experimental** directory.
-  - SNAT is not required if your application server’s default route points through the BIG-IPs NICs. See [Cloud Failover Extension documentation](https://clouddocs.f5.com/products/extensions/f5-cloud-failover/latest/userguide/faq.html#is-snat-required)
-  - Disabling SNAT is done by turing off SRC/DST Check; [AWS EC2 documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#change_source_dest_check)
+  - This solution template provides an initial deployment only for an "infrastructure" use case (meaning that it does not support managing the entire deployment exclusively via the template's "Update-Stack" function). This solution leverages cloud-init to send the instance user_data, which is only used to provide an initial BIG-IP configuration and not as the primary configuration API for a long-running platform. Although "Update-Stack" can be used to update some cloud resources, as the BIG-IP configuration needs to align with the cloud resources, like IPs to NICs, updating one without the other can result in inconsistent states, while updating other resources, like the image name or instance type, can trigger an entire instance redeployment. For instance, to upgrade software versions, traditional in-place upgrades should be leveraged. See [AskF5 Knowledge Base](https://support.f5.com/csp/article/K84554955) for more information.
+  - There are new options for BIG-IP license bundles.
+  - F5 has created a matrix located [here](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md) that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types, and throughput levels available for a specific tagged release. 
+  - Beginning with release 3.3.0, the BIG-IP image names have changed (previous options were Good, Better, and Best). Now you choose a BIG-IP VE image based on whether you need [LTM](https://www.f5.com/products/big-ip-services/local-traffic-manager) only or All modules available (including [WAF](https://www.f5.com/products/security/advanced-waf), [AFM](https://www.f5.com/products/security/advanced-firewall-manager), etc.), and if you need 1 or 2 boot locations. Use 2 boot locations if you expect to upgrade the BIG-IP VE in the future. If you do not need room to upgrade (if you intend to create a new instance when a new version of BIG-IP VE is released), use an image with 1 boot location. See this [Matrix](https://clouddocs.f5.com/cloud/public/v1/matrix.html#amazon-web-services) for recommended AWS instance types. For custom images (for example, different versions from the marketplace, clones or those created by the [F5 BIG-IP Image Generator](https://github.com/f5devcentral/f5-bigip-image-generator/)), update the **customImageId** parameter. To see a list of available BIG-IP images and IDs from the marketplace (for example in "us-east-1"), you can run the AWS command below:
+    ``` 
+    $ aws ec2 describe-images --owners aws-marketplace --region us-east-1 --filters "Name=description,Values=F5*BIGIP**" --query 'Images[*].[ImageId,Description,CreationDate]' 
+    ```
+  - All supported versions of F5 CloudFormation templates include Application Services 3 Extension (AS3) on the BIG-IP VE. As of release 4.1.2, all supported templates give the option of including the URL of an AS3 declaration, which you can use to specify the BIG-IP configuration you want on your newly created BIG-IP VE(s). See the [AS3 documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/) for details on how to use AS3.
+  - All supported versions of AWS F5 CloudFormation Failover templates now include F5 Cloud Failover Extension (CFE) on the BIG-IP VE. The F5 Cloud Failover Extension (CFE) is an iControl LX extension that provides L3 failover functionality in cloud environments, effectively replacing Gratuitous ARP (GARP). Cloud Failover Extension uses a declarative model, meaning you provide a JSON declaration using a single REST API call. The declaration represents the configuration that Cloud Failover Extension is responsible for creating on a BIG-IP system. This template constructs and posts required declaration to CFE required to handle IP failover. However, if you you wish to configure route failover CFE feature, you will need to do 2 additional steps. 1) Tag appropriate route tables with key/value: "f5_cloud_failover_label/your stack name". 2) Post modified declaration with correct affected CIDR blocks. Note: You can use GET method to url https://yourBigIP/mgmt/shared/cloud-failover/declare to retrieve existing CFE declaration. See the [CFE documentation](https://clouddocs.f5.com/products/extensions/f5-cloud-failover/latest/) for details on how to use CFE.
   - This template uses [F5 BIG-IP Runtime Init](https://github.com/F5Networks/f5-bigip-runtime-init) to install F5 Automation Toolchain packages (AS3, DO, CFE, FAST, and TS). You can update the version of one or more packages by editing the UserData property of the BIG-IP instance resource(s). For example: To update the AS3 package to the latest version, click on the [Github release page](https://github.com/F5Networks/f5-appsvcs-extension/releases) for the f5-appsvcs-extension. In the instance UserData property, in the install_operations section, update the AS3 extensionVersion value to the desired version and the extensionHash value to contents of the RPM sha256 file located in the release assets for that version. You can also add more packages to be installed using the same procedure.
+  - This template creates AWS Security Groups as a part of the deployment. For the external Security Group, this includes a port for accessing your applications on port 80/443. If your applications need additional ports, you must add those to the external Security Group created by the template. For instructions on adding ports, see the AWS documentation.
+  - This solution uses the SSH key to enable access to the BIG-IP system(s). If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template. You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
+  - This template supports service discovery via the Application Services 3 Extension (AS3). See the [Service Discovery section](#service-discovery) for details.
+  - This template supports telemetry streaming via the F5 Telemetry Streaming extension (TS). See [Telemetry Streaming](#telemetry-streaming) for details.
+  - In order to pass traffic from your clients to the servers, after launching the template you must create virtual servers on the BIG-IP VE. See [Creating a virtual server](#creating-virtual-servers-on-the-big-ip-ve).
+ - HA with BIG-IP APM module is not supported with this solution. By design, this solution uses a separate virtual server address for each availability zone. This configuration is not compatible with APM session state mirroring which is required to support highly available APM fail-overs. BIG-IP with APM can be used with this solution, however, active sessions will be lost during a failover event.
+ - SNAT is not required if your application server’s default route points through the BIG-IPs NICs. See [Cloud Failover Extension documentation](https://clouddocs.f5.com/products/extensions/f5-cloud-failover/latest/userguide/faq.html#is-snat-required)
+ - Disabling SNAT is done by turing off SRC/DST Check; [AWS EC2 documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#change_source_dest_check)
+  - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts. See https://support.f5.com/csp/article/K2873 for details.
+  - F5 AWS CFT templates now capture all deployment logs to the BIG-IP VE in **/var/log/cloud/aws**. Depending on which template you are using, this includes deployment logs (stdout/stderr), Cloud Libs execution logs, recurring solution logs (metrics, failover, and so on), and more.
+  - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates. See [Sending statistical information to F5](#sending-statistical-information-to-f5).
+  - This template supports disabling the auto-phonehome system setting via the allowPhoneHome parameter. See [Overview of the Automatic Update Check and Automatic Phone Home features](https://support.f5.com/csp/article/K15000) for more information.
 
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. If you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Details](#security-details) for the exact code in each of the following sections.
@@ -78,7 +81,7 @@ The following table lists the versions of BIG-IP that have been tested and valid
 
 | BIG-IP Version | Build | Solution | Status | Notes |
 | --- | --- | --- | --- | --- |
-| 16.1.2.2 | 0.0.28 | Standalone, Failover, Autoscale | Validated | |
+| 16.1.3.1 | 0.0.11 | Standalone, Failover, Autoscale | Validated | |
 | 15.1.5.1 | 0.0.14 | Standalone, Failover, Autoscale | Validated | |
 | 14.1.4.6 | 0.0.8 | Standalone, Failover, Autoscale | Validated | |
 | 13.1.5 | 0.0.32 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
@@ -91,7 +94,7 @@ The following table lists the versions of BIG-IP that have been tested and valid
 
 
 ### Getting Help
-**F5 Support**  
+**F5 Support**
 Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565). You can modify the template itself if necessary, but if you modify any of the code outside of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
 
 ## Deploying the solution
@@ -108,7 +111,7 @@ The easiest way to deploy this CloudFormation template is to use the Launch butt
 <br>
 
 **Template Parameters**<br>
-After clicking the Launch button, you must specify the following parameters.  
+After clicking the Launch button, you must specify the following parameters.
 
 
 | CFT Label | Parameter Name | Required | Description |
@@ -118,7 +121,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Management Subnet AZ2 | managementSubnetAz2 | Yes | Management subnet ID for Availability Zone 2. |
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID for Availability Zone 1. |
 | Subnet1 AZ1 | subnet1Az2 | Yes | Public or External subnet ID for Availability Zone 2. |
-| BIG-IP Image Name | imageName | Yes | Image names starting with **All** have all BIG-IP modules available. Image names starting with **LTM** have only the LTM module available.  Use Two Boot Locations if you expect to upgrade the BIG-IP VE in the future. If you do not need room to upgrade (if you intend to create a new instance when a new version of BIG-IP VE is released), use one Boot Location. |
+| BIG-IP Image Name | imageName | Yes | Image names starting with **All** have all BIG-IP modules available. Image names starting with **LTM** have only the LTM module available. Use Two Boot Locations if you expect to upgrade the BIG-IP VE in the future. If you do not need room to upgrade (if you intend to create a new instance when a new version of BIG-IP VE is released), use one Boot Location. |
 | Custom Image Id | customImageId | No | This parameter allows you to deploy using a custom BIG-IP image if necessary. If applicable, type the AMI Id in this field. **Note**: Unless specifically required, leave the default of **OPTIONAL**. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
 | SSH Key | sshKey | Yes | Name of an existing EC2 KeyPair to enable SSH access to the instance |
@@ -147,17 +150,17 @@ After clicking the Launch button, you must specify the following parameters.
 
 
 ### Installing the template using the AWS CLI
-If you want to deploy the template using the AWS CLI(aws-cli/1.11.165), use the example **deploy_via_bash.sh** script available [in this repository](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/supported/failover/across-net/via-api/2nic/existing-stack/bigiq/deploy_via_bash.sh). Replace the static items (or make them parameters).  
+If you want to deploy the template using the AWS CLI(aws-cli/1.11.165), use the example **deploy_via_bash.sh** script available [in this repository](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/supported/failover/across-net/via-api/2nic/existing-stack/bigiq/deploy_via_bash.sh). Replace the static items (or make them parameters).
 
 ---
 
 ### Service Discovery
 
-This template previously supported configuring service discovery using the f5.service_discovery iApp template.  That iApp has been deprecated and removed from this template.  You can now configure service discovery using the F5 AS3 extension, which is installed by all Cloudformation templates by default.  See the official AS3 [documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/service-discovery.html) and the iApp migration [guide](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/iapp-migration.md) for more information and examples.
+This template previously supported configuring service discovery using the f5.service_discovery iApp template. That iApp has been deprecated and removed from this template. You can now configure service discovery using the F5 AS3 extension, which is installed by all Cloudformation templates by default. See the official AS3 [documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/service-discovery.html) and the iApp migration [guide](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/iapp-migration.md) for more information and examples.
 
 ### Telemetry Streaming
 
-This template previously supported configuring device telemetry using the f5.cloud_logger iApp template.  That iApp has been deprecated and removed from this template.  You can now configure telemetry streaming using the F5 Telemetry Streaming extension.  See the official TS [documentation](https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest/) and the iApp migration [guide](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/iapp-migration.md) for installation steps and examples.
+This template previously supported configuring device telemetry using the f5.cloud_logger iApp template. That iApp has been deprecated and removed from this template. You can now configure telemetry streaming using the F5 Telemetry Streaming extension. See the official TS [documentation](https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest/) and the iApp migration [guide](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/iapp-migration.md) for installation steps and examples.
 
 ## Creating virtual servers on the BIG-IP VE
 
@@ -175,7 +178,7 @@ To create a BIG-IP virtual server you need to know the AWS secondary private IP 
 6. Configure the rest of the virtual server as appropriate.
 7. In the Resources section, from the **Default Pool** list, select the name of the pool you want to use.
 8. Click the **Finished** button.
-9. Repeat as necessary.  <br>
+9. Repeat as necessary. <br>
 When you have completed the virtual server configuration, you must modify the virtual addresses to use Traffic Group None using the following guidance.
 10. On the Main tab, click **Local Traffic > Virtual Servers**.
 11. On the Menu bar, click the **Virtual Address List** tab.
@@ -191,11 +194,11 @@ The following is a simple configuration diagram for this clustered, 2-NIC deploy
 
 ### In-Place upgrade of BIG-IP v13 instances
 
-When performing an in-place upgrade from BIG-IP software v13.x, you must complete the following steps to ensure that all the components required for failover are copied to the volume where the new version of BIG-IP is installed.  To ensure traffic processing is not interrupted, F5 highly recommends upgrading the standby device, verifying failover functionality, and then upgrading the previously active device. 
+When performing an in-place upgrade from BIG-IP software v13.x, you must complete the following steps to ensure that all the components required for failover are copied to the volume where the new version of BIG-IP is installed. To ensure traffic processing is not interrupted, F5 highly recommends upgrading the standby device, verifying failover functionality, and then upgrading the previously active device. 
 
-From the volume to be upgraded on the standby device, you must edit **cs.dat** to allow inclusion of all files in **/config/cloud** in UCS backup.  
+From the volume to be upgraded on the standby device, you must edit **cs.dat** to allow inclusion of all files in **/config/cloud** in UCS backup. 
 
-1. Remount the /usr directory as writable:  
+1. Remount the /usr directory as writable:
   ``mount -o remount,rw /usr``
 
 2. Back up the cs.dat file:  
@@ -207,12 +210,12 @@ From the volume to be upgraded on the standby device, you must edit **cs.dat** t
 4. In cs.dat, find the entry similar to the one below (the number between save and ignore may differ):  
 **save.10100.ignore = (/config/cloud/*)**
 
-5. Change **ignore** to **file** in the save key, and remove the parentheses from the value:  
+5. Change **ignore** to **file** in the save key, and remove the parentheses from the value:
 ``save.10100.file = /config/cloud/*``
 
 6. Save the cs.dat file and exit the editor.
 
-7. Remount the **/usr** directory as read-only:  
+7. Remount the **/usr** directory as read-only:
 ``mount -o remount,ro /usr``
 
 8. Create a [UCS archive](https://support.f5.com/csp/article/K13132) in the BIG-IP UI (accept defaults):
@@ -222,17 +225,17 @@ From the volume to be upgraded on the standby device, you must edit **cs.dat** t
 
 10. Install new ISO and reboot into upgraded volume.
 
-11. Boot into the newly upgraded volume.  
+11. Boot into the newly upgraded volume.
 
 12. After verifying failover functionality, repeat steps 1-11 on the now-standby BIG-IP device.
 
-13. Following the upgrade, all the necessary files should be present and failover should work normally.  To manually restore the UCS archive you created previously, use the following steps:
+13. Following the upgrade, all the necessary files should be present and failover should work normally. To manually restore the UCS archive you created previously, use the following steps:
     - From the upgraded volume, upload UCS file: **System > Archives > Upload > myUCS.uss**
     - Restore the previously created UCS archive: **System > Archives > myUCS.ucs > Restore**
 
 ### Sending statistical information to F5
-All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  
-None of the information we collect is personally identifiable, and only includes:  
+All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.
+None of the information we collect is personally identifiable, and only includes:
 
 - Customer ID: this is a hash of the customer ID, not the actual ID
 - Deployment ID: hash of stack ID
@@ -346,7 +349,7 @@ If you find an issue, we would love to hear about it.
 You have a choice when it comes to filing issues:
   - Use the **Issues** link on the GitHub menu bar in this repository for items such as enhancement or feature requests and non-urgent bug fixes. Tell us as much as you can about what you found and how you found it.
   - Contact us at [solutionsfeedback@f5.com](mailto:solutionsfeedback@f5.com?subject=GitHub%20Feedback) for general feedback or enhancement requests. 
-  - Use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 cloud templates.  There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance.
+  - Use our [Slack channel](https://f5cloudsolutions.herokuapp.com) for discussion and assistance on F5 cloud templates. There are F5 employees who are members of this community who typically monitor the channel Monday-Friday 9-5 PST and will offer best-effort assistance.
   - For templates in the **supported** directory, contact F5 Technical support via your typical method for more time sensitive changes and other issues requiring immediate support.
 
 

@@ -33,24 +33,24 @@ The following are prerequisites for the F5 3-NIC CFT:
   - Key pair for management access to BIG-IP VE (you can create or import the key pair in AWS), see http://docs.aws.amazon.com/cli/latest/reference/iam/upload-server-certificate.html for information. 
 
 ## Important configuration notes
-  - This solution template provides an initial deployment only for an "infrastructure" use case (meaning that it does not support managing the entire deployment exclusively via the template's "Update-Stack" function). This solution leverages cloud-init to send the instance user_data, which is only used to provide an initial BIG-IP configuration and not as the primary configuration API for a long-running platform. Although "Update-Stack" can be used to update some cloud resources, as the BIG-IP configuration needs to align with the cloud resources, like IPs to NICs, updating one without the other can result in inconsistent states, while updating other resources, like the image name or instance type, can trigger an entire instance redeployment. For instance, to upgrade software versions, traditional in-place upgrades should be leveraged. See AskF5 Knowledge Base for more information."
-  - The default PAYG images have been updated to "F5 BIG-IP BEST with IPI and Threat Campaigns".  Note: that changing the image can affect re-deployments (see above). If you have an existing subscription and need to preserve the image id/name, use the custom image parameter (template parameter = bigIpCustomImageId).
-  - All supported versions of F5 CloudFormation templates include Application Services 3 Extension (AS3) v3.18.0 on the BIG-IP VE.  As of release 4.1.2, all supported templates give the option of including the URL of an AS3 declaration, which you can use to specify the BIG-IP configuration you want on your newly created BIG-IP VE(s).  In templates such as autoscale, where an F5-recommended configuration is deployed by default, specifying an AS3 declaration URL will override the default configuration with your declaration.   See the [AS3 documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/) for details on how to use AS3.   
-  - There are new options for BIG-IP license bundles. See the [the version matrix](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md) for details and applicable templates.  
-  - This template creates AWS Security Groups as a part of the deployment. For the external Security Group, this includes a port for accessing your applications on port 80/443.  If your applications need additional ports, you must add those to the external Security Group created by the template.  For instructions on adding ports, see the AWS documentation.
-  - This solution uses the SSH key to enable access to the BIG-IP system. If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template.  You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
-  - This solution uses an AMI image with BIG-IP v13 or later.
-  - This template supports service discovery via the Application Services 3 Extension (AS3).  See the [Service Discovery section](#service-discovery) for details.
+ - This solution template provides an initial deployment only for an "infrastructure" use case (meaning that it does not support managing the entire deployment exclusively via the template's "Update-Stack" function). This solution leverages cloud-init to send the instance user_data, which is only used to provide an initial BIG-IP configuration and not as the primary configuration API for a long-running platform. Although "Update-Stack" can be used to update some cloud resources, as the BIG-IP configuration needs to align with the cloud resources, like IPs to NICs, updating one without the other can result in inconsistent states, while updating other resources, like the image name or instance type, can trigger an entire instance redeployment. For instance, to upgrade software versions, traditional in-place upgrades should be leveraged. See AskF5 Knowledge Base for more information.
+ - There are new options for BIG-IP license bundles.
+ - F5 has created a matrix located [here](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md) that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types, and throughput levels available for a specific tagged release. 
+ - Beginning with release 6.0.0, the default PAYG images have been updated to "F5 BIG-IP BEST with IPI and Threat Campaigns". IMPORTANT: changing the image can affect re-deployments (see above). If you have an existing subscription and need to preserve the previous image ID/name, use the **customImageId** parameter, used for custom images (for example, clones or different versions from the marketplace). To see a list of available BIG-IP images and IDs from the marketplace (for example in "us-east-1"), you can run the AWS command below:
+   ```
+   $ aws ec2 describe-images --owners aws-marketplace --region us-east-1 --filters "Name=description,Values=F5*BIGIP**"  --query 'Images[*].[ImageId,Description,CreationDate]'
+   ```
+ - All supported versions of F5 CloudFormation templates include Application Services 3 Extension (AS3) on the BIG-IP VE. As of release 4.1.2, all supported templates give the option of including the URL of an AS3 declaration, which you can use to specify the BIG-IP configuration you want on your newly created BIG-IP VE(s). See the [AS3 documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/) for details on how to use AS3.
+ - This template uses [F5 BIG-IP Runtime Init](https://github.com/F5Networks/f5-bigip-runtime-init) to install F5 Automation Toolchain packages (AS3, DO, CFE, FAST, and TS). You can update the version of one or more packages by editing the UserData property of the BIG-IP instance resource(s). For example: To update the AS3 package to the latest version, click on the [Github release page](https://github.com/F5Networks/f5-appsvcs-extension/releases) for the f5-appsvcs-extension. In the instance UserData property, in the install_operations section, update the AS3 extensionVersion value to the desired version and the extensionHash value to contents of the RPM sha256 file located in the release assets for that version. You can also add more packages to be installed using the same procedure. 
+  - This template creates AWS Security Groups as a part of the deployment. For the external Security Group, this includes a port for accessing your applications on port 80/443. If your applications need additional ports, you must add those to the external Security Group created by the template. For instructions on adding ports, see the AWS documentation.
+  - This solution uses the SSH key to enable access to the BIG-IP system. If you want access to the BIG-IP web-based Configuration utility, you must first SSH into the BIG-IP VE using the SSH key you provided in the template. You can then create a user account with admin-level permissions on the BIG-IP VE to allow access if necessary.
+  - This template supports service discovery via the Application Services 3 Extension (AS3). See the [Service Discovery section](#service-discovery) for details.
   - This template supports telemetry streaming via the F5 Telemetry Streaming extension (TS). See [Telemetry Streaming](#telemetry-streaming) for details.
-  - In order to pass traffic from your clients to the servers, after launching the template you must create a virtual server on the BIG-IP VE.  See [Creating a virtual server](#creating-virtual-servers-on-the-big-ip-ve).
-  - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts.  See https://support.f5.com/csp/article/K2873 for details.
-  - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates.  See [Sending statistical information to F5](#sending-statistical-information-to-f5).
+  - In order to pass traffic from your clients to the servers, after launching the template you must create a virtual server on the BIG-IP VE. See [Creating a virtual server](#creating-virtual-servers-on-the-big-ip-ve).
+  - After deploying the template, if you need to change your BIG-IP VE password, there are a number of special characters that you should avoid using for F5 product user accounts. See https://support.f5.com/csp/article/K2873 for details.
+  - This template can send non-identifiable statistical information to F5 Networks to help us improve our templates. See [Sending statistical information to F5](#sending-statistical-information-to-f5).
   - This template supports disabling the auto-phonehome system setting via the allowPhoneHome parameter. See [Overview of the Automatic Update Check and Automatic Phone Home features](https://support.f5.com/csp/article/K15000) for more information.
-  - F5 has created a matrix that contains all of the tagged releases of the F5 Cloud Formation Templates (CFTs) for Amazon AWS, and the corresponding BIG-IP versions, license types and throughputs available for a specific tagged release. See https://github.com/F5Networks/f5-aws-cloudformation/blob/main/aws-bigip-version-matrix.md.
-  - These CloudFormation templates incorporate an existing Virtual Private Cloud (VPC). If you would like to run a *full stack* which creates and configures the BIG-IP, the AWS infrastructure, as well as a backend webserver, see the templates located in the *learning-stacks* folder in the **experimental** directory.
-  - F5 AWS CFT templates now capture all deployment logs to the BIG-IP VE in **/var/log/cloud/aws**. Depending on which template you are using, this includes deployment logs (stdout/stderr), Cloud Libs execution logs, recurring solution logs (metrics, failover, and so on), and more.
-  - This template uses [F5 BIG-IP Runtime Init](https://github.com/F5Networks/f5-bigip-runtime-init) to install F5 Automation Toolchain packages (AS3, DO, CFE, FAST, and TS). You can update the version of one or more packages by editing the UserData property of the BIG-IP instance resource(s). For example: To update the AS3 package to the latest version, click on the [Github release page](https://github.com/F5Networks/f5-appsvcs-extension/releases) for the f5-appsvcs-extension. In the instance UserData property, in the install_operations section, update the AS3 extensionVersion value to the desired version and the extensionHash value to contents of the RPM sha256 file located in the release assets for that version. You can also add more packages to be installed using the same procedure.
-    
+
 ## Security
 This CloudFormation template downloads helper code to configure the BIG-IP system. If you want to verify the integrity of the template, you can open the CFT and ensure the following lines are present. See [Security Details](#security-details) for the exact code in each of the following sections.
   - In the /config/verifyHash section: script-signature and then a hashed signature.
@@ -64,7 +64,7 @@ The following table lists the versions of BIG-IP that have been tested and valid
 
 | BIG-IP Version | Build | Solution | Status | Notes |
 | --- | --- | --- | --- | --- |
-| 16.1.2.2 | 0.0.28 | Standalone, Failover, Autoscale | Validated | |
+| 16.1.3.1 | 0.0.11 | Standalone, Failover, Autoscale | Validated | |
 | 15.1.5.1 | 0.0.14 | Standalone, Failover, Autoscale | Validated | |
 | 14.1.4.6 | 0.0.8 | Standalone, Failover, Autoscale | Validated | |
 | 13.1.5 | 0.0.32 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
@@ -76,7 +76,7 @@ The following table lists the versions of BIG-IP that have been tested and valid
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 
 ### Getting Help
-**F5 Support**  
+**F5 Support**
 Because this template has been created and fully tested by F5 Networks, it is fully supported by F5. This means you can get assistance if necessary from [F5 Technical Support](https://support.f5.com/csp/article/K25327565). You can modify the template itself if necessary, but if you modify any of the code outside of the lines ### START CUSTOM TMSH CONFIGURATION and ### END CUSTOM TMSH CONFIGURATION the template is no longer supported by F5.
 
 ## Deploying the F5 3 NIC solution
@@ -88,12 +88,12 @@ You have two options for launching this solution:
 The easiest way to deploy this CloudFormation template is to use the Launch button.<br>
 **Important**: You may have to select the AWS region in which you want to deploy after clicking the Launch Stack button.
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-3nic-PAYG&templateURL=https://f5-cft.s3.amazonaws.com/f5-existing-stack-payg-3nic-bigip.template">  
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=BigIp-3nic-PAYG&templateURL=https://f5-cft.s3.amazonaws.com/f5-existing-stack-payg-3nic-bigip.template">
    <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 <br>
 
 **Template Parameters**<br>
-After clicking the Launch button, you must specify the following parameters.  
+After clicking the Launch button, you must specify the following parameters.
 
 
 | CFT Label | Parameter Name | Required | Description |
@@ -102,7 +102,7 @@ After clicking the Launch button, you must specify the following parameters.
 | Management Subnet AZ1 | managementSubnetAz1 | Yes | Management subnet ID |
 | Subnet1 AZ1 | subnet1Az1 | Yes | Public or External subnet ID |
 | Subnet2 AZ1 | subnet1Az1 | Yes | Public or External subnet ID for the second subnet. |
-| Subnet1 AZ1 Static IP Addresses |  subnet1Az1Address | No | Optional. If you want to assign static IP address(es) in the subnet, type them here.  Separate multiple IP addresses with a comma (the first is the Primary IP address, all others are Secondary). The following solution requires 2 static ip addresses. Otherwise, leave DYNAMIC and a dynamic address is assigned based on the subnet you specified. |
+| Subnet1 AZ1 Static IP Addresses | subnet1Az1Address | No | Optional. If you want to assign static IP address(es) in the subnet, type them here. Separate multiple IP addresses with a comma (the first is the Primary IP address, all others are Secondary). The following solution requires 2 static ip addresses. Otherwise, leave DYNAMIC and a dynamic address is assigned based on the subnet you specified. |
 | BIG-IP Image Name | imageName | Yes | F5 BIG-IP Performance Type. |
 | Custom Image Id | customImageId | No | This parameter allows you to deploy using a custom BIG-IP image if necessary. If applicable, type the AMI Id in this field. **Note**: Unless specifically required, leave the default of **OPTIONAL**. |
 | AWS Instance Size | instanceType | Yes | Size for the F5 BIG-IP virtual instance. |
@@ -124,17 +124,17 @@ After clicking the Launch button, you must specify the following parameters.
 
 
 ### Installing the template using the AWS CLI
-If you want to deploy the template using the AWS CLI(aws-cli/1.11.165), use the example **deploy_via_bash.sh** script available [in this repository](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/supported/standalone/3nic/existing-stack/payg/deploy_via_bash.sh). Replace the static items (or make them parameters).  
+If you want to deploy the template using the AWS CLI(aws-cli/1.11.165), use the example **deploy_via_bash.sh** script available [in this repository](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/supported/standalone/3nic/existing-stack/payg/deploy_via_bash.sh). Replace the static items (or make them parameters).
 
 ---
 
 ### Service Discovery
 
-This template previously supported configuring service discovery using the f5.service_discovery iApp template.  That iApp has been deprecated and removed from this template.  You can now configure service discovery using the F5 AS3 extension, which is installed by all Cloudformation templates by default.  See the official AS3 [documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/service-discovery.html) and the iApp migration [guide](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/iapp-migration.md) for more information and examples.
+This template previously supported configuring service discovery using the f5.service_discovery iApp template. That iApp has been deprecated and removed from this template. You can now configure service discovery using the F5 AS3 extension, which is installed by all Cloudformation templates by default. See the official AS3 [documentation](https://clouddocs.f5.com/products/extensions/f5-appsvcs-extension/latest/userguide/service-discovery.html) and the iApp migration [guide](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/iapp-migration.md) for more information and examples.
 
 ### Telemetry Streaming
 
-This template previously supported configuring device telemetry using the f5.cloud_logger iApp template.  That iApp has been deprecated and removed from this template.  You can now configure telemetry streaming using the F5 Telemetry Streaming extension.  See the official TS [documentation](https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest/) and the iApp migration [guide](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/iapp-migration.md) for installation steps and examples.
+This template previously supported configuring device telemetry using the f5.cloud_logger iApp template. That iApp has been deprecated and removed from this template. You can now configure telemetry streaming using the F5 Telemetry Streaming extension. See the official TS [documentation](https://clouddocs.f5.com/products/extensions/f5-telemetry-streaming/latest/) and the iApp migration [guide](https://github.com/F5Networks/f5-aws-cloudformation/blob/main/iapp-migration.md) for installation steps and examples.
 
 ## Creating virtual servers on the BIG-IP VE
 
@@ -161,8 +161,8 @@ The following is a simple configuration diagram for this 3-NIC deployment. In th
 For more information on F5 solutions for AWS, including manual configuration instructions for many of our AWS templates, see our Cloud Docs site: http://clouddocs.f5.com/cloud/public/v1/.
 
 ### Sending statistical information to F5
-All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.  
-None of the information we collect is personally identifiable, and only includes:  
+All of the F5 templates now have an option to send anonymous statistical data to F5 Networks to help us improve future templates.
+None of the information we collect is personally identifiable, and only includes:
 
 - Customer ID: this is a hash of the customer ID, not the actual ID
 - Deployment ID: hash of stack ID

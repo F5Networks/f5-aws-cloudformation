@@ -474,10 +474,14 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
 
         commands = {
             '000-disable-1nicautoconfig': {'command': "/usr/bin/setdb provision.1nicautoconfig disable"},
-            '001-rest-provision-extramb': {'command': "/usr/bin/setdb provision.extramb 1000"},
-            '002-rest-use-extramb': {'command': "/usr/bin/setdb restjavad.useextramb true"},
-            '003-rest-post': {'command': "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."},
-            '004-rest-restart': {'command': "bigstart restart restjavad restnoded"},       
+            '001-rest-extend-rpm-timeout': {'command': "/usr/bin/setdb iapplxrpm.timeout 300 || exit 0"},
+            '002-rest-extend-icrd-timeout': {'command': "/usr/bin/setdb icrd.timeout 180 || exit 0"},
+            '003-rest-extend-restjavad-timeout': {'command': "/usr/bin/setdb restjavad.timeout 180 || exit 0"},
+            '004-rest-extend-restnoded-timeout': {'command': "/usr/bin/setdb restnoded.timeout 180 || exit 0"},
+            '005-rest-provision-extramb': {'command': "/usr/bin/setdb provision.extramb 1000"},
+            '006-rest-use-extramb': {'command': "/usr/bin/setdb restjavad.useextramb true"},
+            '007-rest-post': {'command': "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."},
+            '008-rest-restart': {'command': "bigstart restart restjavad restnoded"},       
             '010-install-libs': {'command': {"Fn::Join": [" ", unpack_libs]}},
             '014-delete-route': {'command': "tmsh list net route default && tmsh delete net route default"},
             '015-network-config': {'command': {"Fn::Join": [" ", network_config]}},
@@ -697,10 +701,14 @@ def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSI
 
         commands = {
             '000-disable-1nicautoconfig': {'command': "/usr/bin/setdb provision.1nicautoconfig disable"},
-            # '001-rest-provision-extramb': {'command': "/usr/bin/setdb provision.extramb 1000"},
-            # '002-rest-use-extramb': {'command': "/usr/bin/setdb restjavad.useextramb true"},
-            # '003-rest-post': {'command': "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."},
-            # '004-rest-restart': {'command': "bigstart restart restjavad restnoded"},
+            '001-rest-extend-rpm-timeout': {'command': "/usr/bin/setdb iapplxrpm.timeout 300 || exit 0"},
+            '002-rest-extend-icrd-timeout': {'command': "/usr/bin/setdb icrd.timeout 180 || exit 0"},
+            '003-rest-extend-restjavad-timeout': {'command': "/usr/bin/setdb restjavad.timeout 180 || exit 0"},
+            '004-rest-extend-restnoded-timeout': {'command': "/usr/bin/setdb restnoded.timeout 180 || exit 0"},
+            '005-rest-provision-extramb': {'command': "/usr/bin/setdb provision.extramb 1000"},
+            '006-rest-use-extramb': {'command': "/usr/bin/setdb restjavad.useextramb true"},
+            '007-rest-post': {'command': "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."},
+            '008-rest-restart': {'command': "bigstart restart restjavad restnoded"},  
             '010-install-libs': {'command': {"Fn::Join": [" ", unpack_libs]}},
             '020-generate-password': {'command': {"Fn::Join": ["", generate_password]}},
             '030-create-admin-user': {'command': {"Fn::Join": ["", admin_user]}},
@@ -1679,11 +1687,11 @@ def main():
     # Log level
     loglevel = 'silly'
     # Template Version
-    version = '6.2.0'
+    version = '6.3.0'
     # Big-IP mapped
     BIGIP_VERSION = '16.1.3.2-0.0.4'
     # Cloudlib Branch
-    branch_cloud = 'v4.27.1'
+    branch_cloud = 'v4.28.1'
     branch_aws = 'v2.10.1'
     # AS3 branch and package
     branch_as3 = 'v3.31.0'
@@ -5659,18 +5667,30 @@ def main():
                 d["000-disable-1nicautoconfig"] = {
                     "command": "/usr/bin/setdb provision.1nicautoconfig disable"
                 }
-                # d["001-rest-provision-extramb"] = {
-                #     "command": "/usr/bin/setdb provision.extramb 1000"
-                # }
-                # d["002-rest-use-extramb"] = {
-                #     "command": "/usr/bin/setdb restjavad.useextramb true"
-                # }
-                # d["003-rest-post"] = {
-                #     "command": "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."
-                # }
-                # d["004-rest-restart"] = {
-                #     "command": "bigstart restart restjavad restnoded"
-                # }
+                d["001-rest-extend-rpm-timeout"] = {
+                    "command": "/usr/bin/setdb iapplxrpm.timeout 300 || exit 0"
+                }
+                d["002-rest-extend-icrd-timeout"] = {
+                    "command": "/usr/bin/setdb icrd.timeout 180 || exit 0"
+                }
+                d["003-rest-extend-restjavad-timeout"] = {
+                    "command": "/usr/bin/setdb restjavad.timeout 180 || exit 0"
+                }
+                d["004-rest-extend-restnoded-timeout"] = {
+                    "command": "/usr/bin/setdb restnoded.timeout 180 || exit 0"
+                }
+                d["005-rest-provision-extramb"] = {
+                    "command": "/usr/bin/setdb provision.extramb 1000"
+                }
+                d["006-rest-use-extramb"] = {
+                    "command": "/usr/bin/setdb restjavad.useextramb true"
+                }
+                d["007-rest-post"] = {
+                    "command": "/usr/bin/curl -s -f -u admin: -H \"Content-Type: application/json\" -d '{\"maxMessageBodySize\":134217728}' -X POST http://localhost:8100/mgmt/shared/server/messaging/settings/8100 | jq ."
+                }
+                d["008-rest-restart"] = {
+                    "command": "bigstart restart restjavad restnoded"
+                }
                 d["010-install-libs"] = {
                     "command": {
                         "Fn::Join": [

@@ -74,7 +74,7 @@ The following table lists the versions of BIG-IP that have been tested and valid
 | 12.1.6 | 0.0.9 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
 
 ## Supported instance types and hypervisors
-  - For a list of supported AWS instance types for this solutions, see http://clouddocs.f5.com/cloud/public/v1/aws/AWS_singleNIC.html#amazon-ec2-instances-for-big-ip-ve.
+  - For a list of supported AWS instance types for this solutions, see https://clouddocs.f5.com/cloud/public/v1/matrix.html#amazon-web-services.
 
   - For a list versions of the BIG-IP Virtual Edition (VE) and F5 licenses that are supported on specific hypervisors and AWS, see https://support.f5.com/kb/en-us/products/big-ip_ltm/manuals/product/ve-supported-hypervisor-matrix.html.
 

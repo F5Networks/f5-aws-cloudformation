@@ -1,9 +1,9 @@
 ANALYTICS: 'No'
 BIG IP MODULES: 'ltm:nominal'
-BIG-IP BUILD: 0.0.3
-BIG-IP VERSION: 14.1.5.2
+BIG-IP BUILD: 0.0.5
+BIG-IP VERSION: 14.1.5.3
 CLUSTER TYPE: same
-CUSTOM IMAGE ID: ami-0c9a45b43eab11c8d
+CUSTOM IMAGE ID: ami-042b2edb18347f47e
 CUSTOM USER: dewpt_user
 DECLARATION URL: 'http://cdn.f5.com/product/cloudsolutions/declarations/sample_02.json'
 IMAGE NAME: Good200Mbps

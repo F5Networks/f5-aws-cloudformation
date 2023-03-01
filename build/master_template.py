@@ -185,7 +185,6 @@ def build_waitthenrun_sh():
     ]
     return waitthenrun_sh
 
-
 def build_rm_password_sh():
     rm_password_sh = [
         "",
@@ -199,7 +198,6 @@ def build_rm_password_sh():
         "echo 'starting rm-srv-user'\n",
         "declare -a tmsh=()\n",
     ]
-
 
 def build_init_commands(ha_type, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3, runtime_init_url, package_runtime_init):
 
@@ -1077,7 +1075,6 @@ def create_launch_config_metadata(ha_type, cloudlib_url, cloudlib_aws_url, as3_u
     )
     return metadata
 
-
 def add_resources_autoscale(ha_type, t, restrictedSrcAddress, managementGuiPort, restrictedSrcAddressApp, Vpc, cloudlib_url, cloudlib_aws_url, as3_url, lines, comment_out, loglevel, components, license_type, BIGIP_VERSION, template_name, version, package_as3, runtime_init_url, package_runtime_init, download_runtime_command, install_runtime_command):
     ud = Base64(Join('', [
                 "#!/bin/bash -x\n",
@@ -1091,8 +1088,8 @@ def add_resources_autoscale(ha_type, t, restrictedSrcAddress, managementGuiPort,
                 "extension_packages:\n",
                 "  install_operations:\n",
                 "    - extensionType: as3\n",
-                "      extensionVersion: 3.40.0\n",
-                "      extensionHash: 708533815cb8e608b4d28fbb730f0ed34617ce5def53c5462c0ab98bd54730fc\n",
+                "      extensionVersion: 3.43.0\n",
+                "      extensionHash: 6e50f828292c3e9417136693b7fba232ca4c004187ae1499e83e39210b500e7a\n",
                 "EOF\n",
                 download_runtime_command,
                 install_runtime_command,
@@ -1687,9 +1684,9 @@ def main():
     # Log level
     loglevel = 'silly'
     # Template Version
-    version = '6.3.0'
+    version = '6.4.0'
     # Big-IP mapped
-    BIGIP_VERSION = '16.1.3.2-0.0.4'
+    BIGIP_VERSION = '16.1.3.3-0.0.3'
     # Cloudlib Branch
     branch_cloud = 'v4.28.1'
     branch_aws = 'v2.10.1'
@@ -1697,8 +1694,8 @@ def main():
     branch_as3 = 'v3.31.0'
     package_as3 = 'f5-appsvcs-3.31.0-6.noarch.rpm'
     # Runtime Init
-    branch_runtime_init = 'v1.5.1'
-    package_runtime_init = 'f5-bigip-runtime-init-1.5.1-1.gz.run'
+    branch_runtime_init = 'v1.6.0'
+    package_runtime_init = 'f5-bigip-runtime-init-1.6.0-1.gz.run'
     runtime_init_url = 'http://cdn.f5.com/product/cloudsolutions/f5-bigip-runtime-init/' + branch_runtime_init + '/dist/' + package_runtime_init
     # Build verifyHash file from published verifyHash on CDN
     urls = ['https://cdn.f5.com/product/cloudsolutions/f5-cloud-libs/' + str(branch_cloud) + '/verifyHash']
@@ -5977,11 +5974,11 @@ def main():
                                         "extension_packages:\n",
                                         "  install_operations:\n",
                                         "    - extensionType: as3\n",
-                                        "      extensionVersion: 3.40.0\n",
-                                        "      extensionHash: 708533815cb8e608b4d28fbb730f0ed34617ce5def53c5462c0ab98bd54730fc\n",
+                                        "      extensionVersion: 3.43.0\n",
+                                        "      extensionHash: 6e50f828292c3e9417136693b7fba232ca4c004187ae1499e83e39210b500e7a\n",
                                         "    - extensionType: cf\n",
-                                        "      extensionVersion: 1.13.0\n",
-                                        "      extensionHash: 93be496d250838697d8a9aca8bd0e6fe7480549ecd43280279f0a63fc741ab50\n",
+                                        "      extensionVersion: 1.14.0\n",
+                                        "      extensionHash: 22b262f3f354a1a29ff6aa3e706708e2d0b0abf5585c1db62a04682a9bcfe9bd\n",
                                         "EOF\n",
                                         download_runtime_command, 
                                         install_runtime_command, 
@@ -6043,11 +6040,11 @@ def main():
                                         "extension_packages:\n",
                                         "  install_operations:\n",
                                         "    - extensionType: as3\n",
-                                        "      extensionVersion: 3.40.0\n",
-                                        "      extensionHash: 708533815cb8e608b4d28fbb730f0ed34617ce5def53c5462c0ab98bd54730fc\n",
+                                        "      extensionVersion: 3.43.0\n",
+                                        "      extensionHash: 6e50f828292c3e9417136693b7fba232ca4c004187ae1499e83e39210b500e7a\n",
                                         "    - extensionType: cf\n",
-                                        "      extensionVersion: 1.13.0\n",
-                                        "      extensionHash: 93be496d250838697d8a9aca8bd0e6fe7480549ecd43280279f0a63fc741ab50\n",
+                                        "      extensionVersion: 1.14.0\n",
+                                        "      extensionHash: 22b262f3f354a1a29ff6aa3e706708e2d0b0abf5585c1db62a04682a9bcfe9bd\n",
                                         "EOF\n", 
                                         download_runtime_command, 
                                         install_runtime_command, 
@@ -6113,8 +6110,8 @@ def main():
                                         "extension_packages:\n",
                                         "  install_operations:\n",
                                         "    - extensionType: as3\n",
-                                        "      extensionVersion: 3.40.0\n",
-                                        "      extensionHash: 708533815cb8e608b4d28fbb730f0ed34617ce5def53c5462c0ab98bd54730fc\n",
+                                        "      extensionVersion: 3.43.0\n",
+                                        "      extensionHash: 6e50f828292c3e9417136693b7fba232ca4c004187ae1499e83e39210b500e7a\n",
                                         "EOF\n",
                                         download_runtime_command, 
                                         install_runtime_command, 

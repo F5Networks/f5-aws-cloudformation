@@ -74,9 +74,9 @@ The following table lists the versions of BIG-IP that have been tested and valid
 
 | BIG-IP Version | Build | Solution | Status | Notes |
 | --- | --- | --- | --- | --- |
-| 16.1.3.2 | 0.0.4 | Standalone, Failover, Autoscale | Validated | |
-| 15.1.7 | 0.0.6 | Standalone, Failover, Autoscale | Validated | |
-| 14.1.5.2 | 0.0.3 | Standalone, Failover, Autoscale | Validated | |
+| 16.1.3.3 | 0.0.3 | Standalone, Failover, Autoscale | Validated | |
+| 15.1.8.1 | 0.0.3 | Standalone, Failover, Autoscale | Validated | |
+| 14.1.5.3 | 0.0.5 | Standalone, Failover, Autoscale | Validated | |
 | 13.1.5.1 | 0.0.2 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
 | 12.1.6 | 0.0.9 | Standalone, Failover, Autoscale | Not Validated | F5 CFE requires BIG-IP 14.1 or later |
 

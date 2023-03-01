@@ -1,9 +1,9 @@
 ANALYTICS: 'No'
 BIG IP MODULES: 'gtm:nominal\,asm:nominal'
-BIG-IP BUILD: 0.0.3
-BIG-IP VERSION: 14.1.5.2
+BIG-IP BUILD: 0.0.5
+BIG-IP VERSION: 14.1.5.3
 CLUSTER TYPE: none
-CUSTOM IMAGE ID: ami-0f113c32025527c1b
+CUSTOM IMAGE ID: ami-00931fd54ec28b684
 CUSTOM USER: dewpt_user
 DECLARATION URL: 'http://cdn.f5.com/product/cloudsolutions/declarations/sample_02.json'
 IMAGE NAME: AdvancedWaf200Mbps
@@ -15,7 +15,7 @@ NIC COUNT: 3
 NTP SERVER: 0.us.pool.ntp.org
 PHONEHOME: 'No'
 PRIVATE IP TYPE: STATIC
-PUBLIC IP: 'No'
+PUBLIC IP: 'Yes'
 REGION: us-east-2
 SOLUTION TYPE: standalone
 SSH KEY: dewpt

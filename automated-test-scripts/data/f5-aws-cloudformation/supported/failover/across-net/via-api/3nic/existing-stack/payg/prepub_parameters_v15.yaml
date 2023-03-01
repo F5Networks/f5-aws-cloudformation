@@ -1,9 +1,9 @@
 ANALYTICS: 'No'
 BIG IP MODULES: ltm:nominal
-BIG-IP BUILD: 0.0.14
-BIG-IP VERSION: 15.1.5.1
+BIG-IP BUILD: 0.0.3
+BIG-IP VERSION: 15.1.8.1
 CLUSTER TYPE: across
-CUSTOM IMAGE ID: ami-033e992376abd8a15
+CUSTOM IMAGE ID: ami-05f0cf7b1fcc6d85d
 CUSTOM USER: dewpt_user
 DECLARATION URL: https://cdn.f5.com/product/cloudsolutions/declarations/sample_02.json
 IMAGE NAME: Better1000Mbps

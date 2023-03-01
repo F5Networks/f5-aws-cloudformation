@@ -1,0 +1,152 @@
+{
+  "af-south-1": {
+    "AllOneBootLocation": "ami-07f508697c73164ed",
+    "AllTwoBootLocations": "ami-00f6881bb518dae90",
+    "LTMOneBootLocation": "ami-0a8f089021e0d111a",
+    "LTMTwoBootLocations": "ami-01f13bd6af5514cc5"
+  },
+  "ap-east-1": {
+    "AllOneBootLocation": "ami-059398b711ab74f9a",
+    "AllTwoBootLocations": "ami-0e58d44110a00eff5",
+    "LTMOneBootLocation": "ami-0c0896a44aae273b1",
+    "LTMTwoBootLocations": "ami-0f12529ed9d2ee04a"
+  },
+  "ap-northeast-1": {
+    "AllOneBootLocation": "ami-04c042ced2f95c975",
+    "AllTwoBootLocations": "ami-0ce7c7c545ee7625a",
+    "LTMOneBootLocation": "ami-0beca76668f1652ff",
+    "LTMTwoBootLocations": "ami-036a8ddcb200af0e2"
+  },
+  "ap-northeast-2": {
+    "AllOneBootLocation": "ami-097d3caa6edbe6905",
+    "AllTwoBootLocations": "ami-0db5ddd71893073a6",
+    "LTMOneBootLocation": "ami-0946d1387e21afa18",
+    "LTMTwoBootLocations": "ami-05f6f6e38a433d175"
+  },
+  "ap-northeast-3": {
+    "AllOneBootLocation": "ami-0572db9a8e679ae87",
+    "AllTwoBootLocations": "ami-02e0d9444042b329f",
+    "LTMOneBootLocation": "ami-0ce2410120aab06a4",
+    "LTMTwoBootLocations": "ami-0c3005cc4975ec6f6"
+  },
+  "ap-south-1": {
+    "AllOneBootLocation": "ami-06815e3c6860c0a76",
+    "AllTwoBootLocations": "ami-08a9512d3e9daf77a",
+    "LTMOneBootLocation": "ami-0ffe407270ed02ab3",
+    "LTMTwoBootLocations": "ami-0abc8a66a5735e8e9"
+  },
+  "ap-southeast-1": {
+    "AllOneBootLocation": "ami-0d916166a3abba03f",
+    "AllTwoBootLocations": "ami-0c6915e0f65f6a63c",
+    "LTMOneBootLocation": "ami-08c2a3752d62a2915",
+    "LTMTwoBootLocations": "ami-095c792c2c1ffdecf"
+  },
+  "ap-southeast-2": {
+    "AllOneBootLocation": "ami-07365e9e0d998db3b",
+    "AllTwoBootLocations": "ami-082c1c76f7a7074d2",
+    "LTMOneBootLocation": "ami-07543ad2a1f5d84b7",
+    "LTMTwoBootLocations": "ami-03333838590afce78"
+  },
+  "ca-central-1": {
+    "AllOneBootLocation": "ami-044fef02561005984",
+    "AllTwoBootLocations": "ami-067a9fa7eecf83a3a",
+    "LTMOneBootLocation": "ami-0c5441da790ed8f6a",
+    "LTMTwoBootLocations": "ami-02d75c8697db9ef54"
+  },
+  "cn-north-1": {
+    "AllOneBootLocation": "ami-0f785e0cf1d2ba6cd",
+    "AllTwoBootLocations": "ami-09e9e09afabb8489e",
+    "LTMOneBootLocation": "ami-04517c99fb536fb0f",
+    "LTMTwoBootLocations": "ami-0a1e1601c88b76012"
+  },
+  "cn-northwest-1": {
+    "AllOneBootLocation": "ami-084fbb18777558d75",
+    "AllTwoBootLocations": "ami-09f1a937055050897",
+    "LTMOneBootLocation": "ami-0060b80d92530c722",
+    "LTMTwoBootLocations": "ami-014ff7d8aaec868b9"
+  },
+  "eu-central-1": {
+    "AllOneBootLocation": "ami-0260b7a93e78b8b95",
+    "AllTwoBootLocations": "ami-0c35006da5a7affe5",
+    "LTMOneBootLocation": "ami-07782b28f4b869c56",
+    "LTMTwoBootLocations": "ami-00ad8fa8567d7111a"
+  },
+  "eu-north-1": {
+    "AllOneBootLocation": "ami-01cf1281e5dfacc1f",
+    "AllTwoBootLocations": "ami-02ed7cc8d451662eb",
+    "LTMOneBootLocation": "ami-0bca9b6c91beaa22b",
+    "LTMTwoBootLocations": "ami-0dc232370bd9197c1"
+  },
+  "eu-south-1": {
+    "AllOneBootLocation": "ami-049f7c59714c72e24",
+    "AllTwoBootLocations": "ami-0acb1b0111529693b",
+    "LTMOneBootLocation": "ami-0836ae7ca0c067213",
+    "LTMTwoBootLocations": "ami-0c07af631d2fe7299"
+  },
+  "eu-west-1": {
+    "AllOneBootLocation": "ami-0d7d5c9427e717e3d",
+    "AllTwoBootLocations": "ami-0f5d1942e73858298",
+    "LTMOneBootLocation": "ami-0dc55095a8d11358f",
+    "LTMTwoBootLocations": "ami-078aa9ae4fb035687"
+  },
+  "eu-west-2": {
+    "AllOneBootLocation": "ami-0ea5a3e55a2baf4df",
+    "AllTwoBootLocations": "ami-0bc6292e3d79ebb2f",
+    "LTMOneBootLocation": "ami-00265b3ff120af95c",
+    "LTMTwoBootLocations": "ami-0f75772e2f674dcbc"
+  },
+  "eu-west-3": {
+    "AllOneBootLocation": "ami-02f37db11187d57ed",
+    "AllTwoBootLocations": "ami-05641f306822683ea",
+    "LTMOneBootLocation": "ami-045813fded17489ac",
+    "LTMTwoBootLocations": "ami-0a94029703af065f8"
+  },
+  "me-south-1": {
+    "AllOneBootLocation": "ami-092f5cc7efe35a320",
+    "AllTwoBootLocations": "ami-068a56abce94e4b4b",
+    "LTMOneBootLocation": "ami-035b88eb0b991fe29",
+    "LTMTwoBootLocations": "ami-0b988ee90ab58a344"
+  },
+  "sa-east-1": {
+    "AllOneBootLocation": "ami-0c7456b7b053707a6",
+    "AllTwoBootLocations": "ami-0c9604ac0511009f6",
+    "LTMOneBootLocation": "ami-0ec5f1959ae9eaa69",
+    "LTMTwoBootLocations": "ami-034f4a0dd723b7164"
+  },
+  "us-east-1": {
+    "AllOneBootLocation": "ami-0a17092d537bbe8a5",
+    "AllTwoBootLocations": "ami-067633d4c58e4b24b",
+    "LTMOneBootLocation": "ami-018a3f4377c1ecd3f",
+    "LTMTwoBootLocations": "ami-0b1fc76fcce569e9d"
+  },
+  "us-east-2": {
+    "AllOneBootLocation": "ami-0946719b6ced3d8bb",
+    "AllTwoBootLocations": "ami-000e61eac46bea2bd",
+    "LTMOneBootLocation": "ami-07a706ab9d509051a",
+    "LTMTwoBootLocations": "ami-0758dd33a91501e2b"
+  },
+  "us-gov-east-1": {
+    "AllOneBootLocation": "ami-0d7250f536312d14f",
+    "AllTwoBootLocations": "ami-07757f46b508c6768",
+    "LTMOneBootLocation": "ami-0193e054488c3e209",
+    "LTMTwoBootLocations": "ami-0035796e19e8cdb6d"
+  },
+  "us-gov-west-1": {
+    "AllOneBootLocation": "ami-009baed5144faa603",
+    "AllTwoBootLocations": "ami-0a75517bc19bc389d",
+    "LTMOneBootLocation": "ami-0bfdaf7b8518b07a0",
+    "LTMTwoBootLocations": "ami-0411e9ba0432270f2"
+  },
+  "us-west-1": {
+    "AllOneBootLocation": "ami-0a79ea8bce46620c9",
+    "AllTwoBootLocations": "ami-07555b0dc65482d11",
+    "LTMOneBootLocation": "ami-06d5703855db075ed",
+    "LTMTwoBootLocations": "ami-0ceac248585fd283a"
+  },
+  "us-west-2": {
+    "AllOneBootLocation": "ami-024b4a76effccef70",
+    "AllTwoBootLocations": "ami-0ec30c065842c3ee4",
+    "LTMOneBootLocation": "ami-01885ddfbe712f887",
+    "LTMTwoBootLocations": "ami-0f844baeec398c3ee"
+  }
+}

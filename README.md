@@ -3,7 +3,7 @@
 [![Releases](https://img.shields.io/github/release/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/releases)
 [![Issues](https://img.shields.io/github/issues/f5networks/f5-aws-cloudformation.svg)](https://github.com/f5networks/f5-aws-cloudformation/issues)
 
-| :eyes:    | ***Notice***: These legacy templates are now in maintenance mode and are being replaced by our next-generation templates available in the [Cloud Templates 2.0 GitHub repo](https://github.com/F5Networks/f5-aws-cloudformation-v2). We recommend you adopt the next-generation templates as soon as is feasible. |
+| :eyes: | ***Notice***: F5 BIG-IP Cloud Solution Templates v1 (CSTv1) have reached their End of Life (EoL) and have been replaced by our next-generation templates available in the [Cloud Templates 2.0 GitHub repo](https://github.com/F5Networks/f5-aws-cloudformation-v2). We recommend you adopt the next-generation templates as soon as is feasible. |
 |---------------|:------------------------|  
 
 ## Introduction
